@@ -140,7 +140,7 @@ class NewClientModal(QDialog):
 
     text = 'Launch a new Chromium instance:\n\n'
     text += '- Isolated from all other browser instances\n'
-    text += f'- Pre-configured to use proxy port {client_info["proxyPort"]} and accept OneProxy SSL Certificates\n'
+    text += f'- Pre-configured to use proxy port {client_info["proxyPort"]} and accept PnTest SSL Certificates\n'
     text += f'- Records rendered HTML from the browser using port {client_info["browserPort"]}\n'
     text += f'- Version {client_info["version"]}\n'
     text += f'- Command: {client_info["command"]}\n'
@@ -152,7 +152,7 @@ class NewClientModal(QDialog):
 
     text = 'Launch a new Chrome instance:\n\n'
     text += '- Isolated from all other browser instances\n'
-    text += f'- Pre-configured to use proxy port {client_info["proxyPort"]} and accept OneProxy SSL Certificates\n'
+    text += f'- Pre-configured to use proxy port {client_info["proxyPort"]} and accept PnTest SSL Certificates\n'
     text += f'- Records rendered HTML from the browser using port {client_info["browserPort"]}\n'
     text += f'- Version {client_info["version"]}\n'
     text += f'- Command: {client_info["command"]}\n'
@@ -164,7 +164,7 @@ class NewClientModal(QDialog):
 
     text = 'Launch a new Firefox instance:\n\n'
     text += '- Isolated from all other browser instances\n'
-    text += f'- Pre-configured to use proxy port {client_info["proxyPort"]} and accept OneProxy SSL Certificates\n'
+    text += f'- Pre-configured to use proxy port {client_info["proxyPort"]} and accept PnTest SSL Certificates\n'
     text += f'- DOES NOT Record rendered HTML from the browser as this is not yet supported by Firefox\n'
     text += f'- Version {client_info["version"]}\n'
     text += f'- Command: {client_info["command"]}\n'

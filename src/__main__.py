@@ -12,6 +12,8 @@ from lib.palettes import Palettes
 from widgets.main_window import MainWindow
 
 THEME = 'dark'
+DB_PATH = '/home/evan/Desktop/pntest.db'
+BACKEND_PATH_RELATIVE = 'bin/oneproxy-backend'
 
 def excepthook(type, value, tb):
   # TODO: Only close the backend if the exception is fatal
@@ -24,29 +26,18 @@ def excepthook(type, value, tb):
 
 sys.excepthook = excepthook
 
-def main_test():
-  app = QApplication(sys.argv)
-
-  # Create a simple dialog box
-  msg_box = QMessageBox()
-  msg_box.setText("Hello World!")
-  msg_box.show()
-
-  sys.exit(msg_box.exec_())
-
 def main():
   app = QApplication(sys.argv)
 
   app_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
-  db_path = '/home/evan/Desktop/oneproxy.db'
 
   print(f'[Frontend] App path: {app_path}')
-  print(f'[Frontend] DB path: {db_path}')
+  print(f'[Frontend] DB path: {DB_PATH}')
 
-  database = Database(db_path)
+  database = Database(DB_PATH)
   database.load_or_create()
 
-  backend = Backend(app_path, db_path)
+  backend = Backend(app_path, DB_PATH, BACKEND_PATH_RELATIVE)
   backend.register_callback('backendLoaded', lambda: print('Backend Loaded!'))
   backend.start()
 

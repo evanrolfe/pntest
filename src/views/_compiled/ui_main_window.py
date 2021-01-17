@@ -77,7 +77,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"OneProxy", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"PnTest", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"Edit", None))
         self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))

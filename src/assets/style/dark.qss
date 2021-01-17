@@ -247,6 +247,14 @@ QPushButton#sendButton {
   font-weight: 600;
 }
 
+QPushButton#sendButton:hover {
+  background-color: #288FF7;
+}
+
+QPushButton#sendButton:pressed {
+  background-color: #1485F6;
+}
+
 QPushButton#saveButton {
   font-size: 13px;
   font-weight: 600;
