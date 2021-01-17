@@ -28,7 +28,7 @@
         <height>20</height>
         </size>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayoutIntercept">
         <property name="leftMargin">
         <number>0</number>
         </property>
@@ -56,7 +56,7 @@
         </widget>
         </item>
         <item>
-        <spacer name="horizontalSpacer">
+        <spacer name="horizontalSpacerIntercept">
           <property name="orientation">
           <enum>Qt::Horizontal</enum>
           </property>

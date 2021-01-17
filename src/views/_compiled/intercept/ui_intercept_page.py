@@ -3,16 +3,13 @@
 ################################################################################
 ## Form generated from reading UI file 'intercept_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.14.2
+## Created by: Qt User Interface Compiler version 5.15.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
+from PySide2.QtCore import *
+from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
@@ -31,9 +28,9 @@ class Ui_InterceptPage(object):
         sizePolicy.setHeightForWidth(self.crawlerToolbar.sizePolicy().hasHeightForWidth())
         self.crawlerToolbar.setSizePolicy(sizePolicy)
         self.crawlerToolbar.setMaximumSize(QSize(16777215, 20))
-        self.horizontalLayout = QHBoxLayout(self.crawlerToolbar)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayoutIntercept = QHBoxLayout(self.crawlerToolbar)
+        self.horizontalLayoutIntercept.setObjectName(u"horizontalLayoutIntercept")
+        self.horizontalLayoutIntercept.setContentsMargins(0, 0, 0, 0)
         self.label = QLabel(self.crawlerToolbar)
         self.label.setObjectName(u"label")
         font = QFont()
@@ -42,11 +39,11 @@ class Ui_InterceptPage(object):
         font.setWeight(50)
         self.label.setFont(font)
 
-        self.horizontalLayout.addWidget(self.label)
+        self.horizontalLayoutIntercept.addWidget(self.label)
 
-        self.horizontalSpacer = QSpacerItem(158, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
+        self.horizontalSpacerIntercept = QSpacerItem(158, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
-        self.horizontalLayout.addItem(self.horizontalSpacer)
+        self.horizontalLayoutIntercept.addItem(self.horizontalSpacerIntercept)
 
 
         self.verticalLayout_5.addWidget(self.crawlerToolbar)
@@ -64,34 +61,34 @@ class Ui_InterceptPage(object):
 
         self.verticalLayout_2.addWidget(self.interceptTitle)
 
-        self.horizontalLayout1 = QHBoxLayout()
-        self.horizontalLayout1.setObjectName(u"horizontalLayout1")
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.forwardButton = QPushButton(InterceptPage)
         self.forwardButton.setObjectName(u"forwardButton")
 
-        self.horizontalLayout1.addWidget(self.forwardButton)
+        self.horizontalLayout.addWidget(self.forwardButton)
 
         self.forwardInterceptButton = QPushButton(InterceptPage)
         self.forwardInterceptButton.setObjectName(u"forwardInterceptButton")
 
-        self.horizontalLayout1.addWidget(self.forwardInterceptButton)
+        self.horizontalLayout.addWidget(self.forwardInterceptButton)
 
         self.dropButton = QPushButton(InterceptPage)
         self.dropButton.setObjectName(u"dropButton")
 
-        self.horizontalLayout1.addWidget(self.dropButton)
+        self.horizontalLayout.addWidget(self.dropButton)
 
         self.enabledButton = QPushButton(InterceptPage)
         self.enabledButton.setObjectName(u"enabledButton")
 
-        self.horizontalLayout1.addWidget(self.enabledButton)
+        self.horizontalLayout.addWidget(self.enabledButton)
 
-        self.horizontalSpacer1 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout1.addItem(self.horizontalSpacer1)
+        self.horizontalLayout.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout1)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
 
 
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
