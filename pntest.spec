@@ -4,10 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['src/__main__.py'],
-             pathex=[
-               '/home/evan/Code/pntest',
-               '/home/evan/Code/pntest/src'
-              ],
+             pathex=['/home/evan/Code/pntest/src', '/home/evan/Code/pntest/venv/lib/python3.6/site-packages/', '/home/evan/Code/pntest'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -22,19 +19,15 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
           [],
-          exclude_binaries=True,
           name='pntest',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
+          upx_exclude=[],
+          runtime_tmpdir=None,
           console=False )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               upx_exclude=[],
-               name='pntest')
