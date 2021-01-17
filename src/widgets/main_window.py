@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
   def __init__(self, *args, **kwargs):
     super(MainWindow, self).__init__(*args, **kwargs)
 
-    self.setWindowTitle('OneProxy')
+    self.setWindowTitle('PnTest')
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
 
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
 
   @Slot()
   def reload_style(self):
-    file = QFile('/home/evan/Code/oneproxy/src/frontend/assets/style/dark2.qss')
+    file = QFile('/home/evan/Code/pntest/src/assets/style/dark.qss')
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
     self.setStyleSheet(stream.readAll())

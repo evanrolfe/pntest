@@ -11,37 +11,7 @@ from lib.database import Database
 from lib.palettes import Palettes
 from widgets.main_window import MainWindow
 
-THEME = 'dark2'
-
-DARK2_STYLE = """
-QListWidget#sideBar {
-  background: #3F3F3F;
-}
-
-QListWidget::item#sideBar {
-  padding: 5px;
-}
-
-QListWidget::item::!selected#sideBar {
-  border-left: 2px solid #3F3F3F;
-}
-
-QListWidget::item::selected#sideBar {
-  border-left: 2px solid #2A82DA;
-}
-
-QTabWidget::pane {
-  margin: 1px 1px 1px 1px;
-  padding: -1px;
-}
-"""
-
-LIGHT_STYLE = """
-QTabWidget::pane {
-  margin: 1px 1px 1px 1px;
-  padding: -1px;
-}
-"""
+THEME = 'dark'
 
 def excepthook(type, value, tb):
   # TODO: Only close the backend if the exception is fatal
@@ -95,15 +65,13 @@ def main():
   app.setStyle('Fusion')
 
   if (THEME == 'light'):
-    app.setStyleSheet(LIGHT_STYLE)
+    file = QFile('/home/evan/Code/pntest/src/assets/style/light.qss')
   elif (THEME == 'dark'):
-    app.setPalette(Palettes.dark())
-  elif (THEME == 'dark2'):
-    # Setup stylesheet:
-    file = QFile('/home/evan/Code/oneproxy/src/frontend/assets/style/dark2.qss')
-    file.open(QFile.ReadOnly | QFile.Text)
-    stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
+    file = QFile('/home/evan/Code/pntest/src/assets/style/dark.qss')
+
+  file.open(QFile.ReadOnly | QFile.Text)
+  stream = QTextStream(file)
+  app.setStyleSheet(stream.readAll())
 
   sys.exit(app.exec_())
 
