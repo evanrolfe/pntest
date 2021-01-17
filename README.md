@@ -39,7 +39,7 @@ Compile Qt UI files to python with:
 
 ## Build
 ```
-pyinstaller --name="pntest" --windowed ./src/__main__.py --onedir --paths=/home/evan/Code/pntest/src --paths=/home/evan/Code/pntest/venv/lib/python3.6/site-packages/
+./scripts/build.sh
 ```
 
 ## Pip Dependencies

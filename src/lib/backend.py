@@ -18,10 +18,11 @@ class Backend:
         Backend()
     return Backend.__instance
 
-  def __init__(self, app_path, db_path, backend_path_rel):
+  def __init__(self, app_path, db_path, backend_path):
     self.app_path = app_path
     self.db_path = db_path
-    self.backend_path = f'{self.app_path}/{backend_path_rel}'
+    #self.backend_path = f'{self.app_path}/{backend_path_rel}'
+    self.backend_path = backend_path
     self.callbacks = {
       'newRequest': [],
       'updatedRequest': [],

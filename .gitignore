@@ -5,3 +5,5 @@ venv
 build
 dist
 include/pntest-backend
+include/node_sqlite3.node
+production.log

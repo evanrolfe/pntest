@@ -5,7 +5,7 @@ block_cipher = None
 
 a = Analysis(['src/__main__.py'],
              pathex=['/home/evan/Code/pntest/src', '/home/evan/Code/pntest/venv/lib/python3.6/site-packages/', '/home/evan/Code/pntest'],
-             binaries=[],
+             binaries=[('include/pntest-backend', 'include/'), ('include/node_sqlite3.node', 'include/')],
              datas=[],
              hiddenimports=[],
              hookspath=[],
@@ -27,7 +27,7 @@ exe = EXE(pyz,
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
-          upx=True,
+          upx=False,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False )
