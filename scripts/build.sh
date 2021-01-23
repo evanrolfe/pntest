@@ -18,4 +18,6 @@ pyinstaller --name="pntest" --windowed ./src/__main__.py --onefile \
   --paths=/home/evan/Code/pntest/venv/lib/python3.6/site-packages/ \
   --add-binary='include/pntest-backend:include/' \
   --add-binary='include/node_sqlite3.node:include/' \
+  --add-data='src/style/dark.qss:style/' \
+  --add-data='src/style/light.qss:style/' \
   --noupx

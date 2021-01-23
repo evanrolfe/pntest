@@ -1,0 +1,4 @@
+QTabWidget::pane {
+  margin: 1px 1px 1px 1px;
+  padding: -1px;
+}

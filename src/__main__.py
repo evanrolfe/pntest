@@ -13,7 +13,7 @@ from widgets.main_window import MainWindow
 
 THEME = 'dark'
 DB_PATH = '/home/evan/Desktop/pntest.db'
-BACKEND_PATH_RELATIVE = 'include/pntest-backend'
+BACKEND_PATH_RELATIVE = 'include/pntest-core'
 
 # Get absolute path to resource, works for dev and for PyInstaller
 def resource_path(app_path, relative_path):
@@ -36,17 +36,21 @@ def main():
   app = QApplication(sys.argv)
 
   app_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
+  src_path = os.path.join(app_path, 'src')
   backend_path = resource_path(app_path, BACKEND_PATH_RELATIVE)
+  data_path = resource_path(app_path, 'include')
+  style_dir_path = resource_path(src_path, 'style')
 
   print(f'[Frontend] App path: {app_path}')
   print(f'[Frontend] Backend path: {backend_path}')
+  print(f'[Frontend] Data path: {data_path}')
   print(f'[Frontend] DB path: {DB_PATH}')
+  print(f'[Frontend] style dir path: {style_dir_path}')
 
   database = Database(DB_PATH)
   database.load_or_create()
 
-
-  backend = Backend(app_path, DB_PATH, backend_path)
+  backend = Backend(app_path, data_path, DB_PATH, backend_path)
   backend.register_callback('backendLoaded', lambda: print('Backend Loaded!'))
   backend.start()
 
@@ -65,10 +69,12 @@ def main():
   app.setStyle('Fusion')
 
   if (THEME == 'light'):
-    file = QFile('/home/evan/Code/pntest/src/assets/style/light.qss')
+    style_path = os.path.join(style_dir_path, 'light.qss')
   elif (THEME == 'dark'):
-    file = QFile('/home/evan/Code/pntest/src/assets/style/dark.qss')
+    style_path = os.path.join(style_dir_path, 'dark.qss')
 
+  print(f'--------> looking for style sheet in {style_path}')
+  file = QFile(style_path)
   file.open(QFile.ReadOnly | QFile.Text)
   stream = QTextStream(file)
   app.setStyleSheet(stream.readAll())

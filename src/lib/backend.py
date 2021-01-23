@@ -18,10 +18,10 @@ class Backend:
         Backend()
     return Backend.__instance
 
-  def __init__(self, app_path, db_path, backend_path):
+  def __init__(self, app_path, data_path, db_path, backend_path):
     self.app_path = app_path
+    self.data_path = data_path
     self.db_path = db_path
-    #self.backend_path = f'{self.app_path}/{backend_path_rel}'
     self.backend_path = backend_path
     self.callbacks = {
       'newRequest': [],
@@ -47,7 +47,7 @@ class Backend:
     #self.register_callback('backendLoaded', lambda: loop.call_soon(print('!!!!!!!!!!!!!!! done'), future, 'backendLoaded'))
 
     self.backend_proc = QProcess()
-    self.backend_proc.start(f'{self.backend_path} --appPath={self.app_path} --dbPath={self.db_path}')
+    self.backend_proc.start(f'{self.backend_path} --appPath={self.app_path} --dbPath={self.db_path} --dataPath={self.data_path}')
     self.backend_proc.readyReadStandardOutput.connect(self.std_out_received)
     self.backend_proc.readyReadStandardError.connect(self.std_err_received)
 
