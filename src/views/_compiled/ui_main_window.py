@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"PnTest", None))
         self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open project", None))
-        self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save project", None))
+        self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save project as", None))
         self.actionExit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
         self.actionPreferences.setText(QCoreApplication.translate("MainWindow", u"Preferences", None))
         self.actionAbout_PnTest.setText(QCoreApplication.translate("MainWindow", u"About PnTest", None))

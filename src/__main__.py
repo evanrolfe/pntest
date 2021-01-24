@@ -2,6 +2,7 @@ import sys
 import traceback
 import pathlib
 import os
+
 from PySide2.QtWidgets import QApplication, QLabel, QStyleFactory, QMessageBox
 from PySide2.QtCore import QFile, QTextStream, Qt, QCoreApplication, QSettings
 from PySide2.QtGui import QPalette, QColor
@@ -9,11 +10,11 @@ from PySide2.QtGui import QPalette, QColor
 from lib.backend import Backend
 from lib.database import Database
 from lib.palettes import Palettes
+from lib.stylesheet_loader import StyleheetLoader
 from widgets.main_window import MainWindow
 
 THEME = 'dark'
 BACKEND_PATH_RELATIVE = 'include/pntest-core'
-EXIT_CODE_REBOOT = -11231351
 
 # Get absolute path to resource, works for dev and for PyInstaller
 def resource_path(app_path, relative_path):
@@ -63,23 +64,16 @@ def main():
   app.aboutToQuit.connect(main_window.about_to_quit)
 
   # Settings:
-  QCoreApplication.setOrganizationName('PnTLimted')
+  QCoreApplication.setOrganizationName('PnT Limted')
   QCoreApplication.setOrganizationDomain('getpntest.com')
   QCoreApplication.setApplicationName('PnTest')
 
   # Style:
   app.setStyle('Fusion')
-
-  if (THEME == 'light'):
-    style_path = os.path.join(style_dir_path, 'light.qss')
-  elif (THEME == 'dark'):
-    style_path = os.path.join(style_dir_path, 'dark.qss')
-
-  print(f'--------> looking for style sheet in {style_path}')
-  file = QFile(style_path)
-  file.open(QFile.ReadOnly | QFile.Text)
-  stream = QTextStream(file)
-  app.setStyleSheet(stream.readAll())
+  style_loader = StyleheetLoader(style_dir_path)
+  stylesheet = style_loader.load_theme(THEME)
+  #stylesheet = get_stylesheet(style_dir_path)
+  app.setStyleSheet(stylesheet)
 
   sys.exit(app.exec_())
 
