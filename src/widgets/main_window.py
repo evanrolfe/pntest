@@ -1,7 +1,7 @@
 import sys
 import pathlib
 
-from PySide2.QtWidgets import QApplication, QMainWindow, QLabel, QHeaderView, QAbstractItemView, QStackedWidget, QToolButton, QAction, QMenu, QShortcut, QListWidgetItem, QListView
+from PySide2.QtWidgets import QApplication, QMainWindow, QLabel, QHeaderView, QAbstractItemView, QStackedWidget, QToolButton, QAction, QMenu, QShortcut, QListWidgetItem, QListView, QFileDialog
 from PySide2.QtCore import QFile, Qt, QTextStream, QResource, SIGNAL, Slot, QPoint, QSize, QSettings, Signal
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtSql import QSqlDatabase, QSqlQuery
@@ -93,9 +93,7 @@ class MainWindow(QMainWindow):
     self.network_page_widget.send_request_to_editor.connect(self.show_editor_page)
 
     # Menubar:
-    menu_bar = self.menuBar()
-    menu_bar.setNativeMenuBar(True)
-
+    self.setup_menu_actions()
     self.restore_layout_state()
     self.show_editor_page()
 
@@ -197,3 +195,17 @@ class MainWindow(QMainWindow):
       self.ui.stackedWidget.setCurrentWidget(self.crawls_page)
     elif item_value == 'requests':
       self.ui.stackedWidget.setCurrentWidget(self.editor_page)
+
+  @Slot()
+  def open_project(self):
+    print('Open!')
+    fileName = QFileDialog.getOpenFileName(
+      self,
+      "Open Image",
+      "/home/evan",
+      "Image Files (*.png *.jpg *.bmp)"
+    )
+    print(fileName)
+
+  def setup_menu_actions(self):
+    self.ui.actionOpen.triggered.connect(self.open_project)

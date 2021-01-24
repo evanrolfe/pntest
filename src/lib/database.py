@@ -1,4 +1,5 @@
 import re
+import os
 
 from PySide2.QtSql import QSqlDatabase, QSqlQuery
 from orator import DatabaseManager, Model
@@ -151,6 +152,11 @@ class Database:
 
     orator_db = DatabaseManager(config)
     Model.set_connection_resolver(orator_db)
+
+  def delete_existing_db(self):
+    if os.path.isfile(self.db_path):
+      print('[Frontend] found existing db, deleting.')
+      os.remove(self.db_path)
 
   def load_or_create(self):
     self.db = QSqlDatabase.addDatabase('QSQLITE')

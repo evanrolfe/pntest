@@ -12,7 +12,6 @@ from lib.palettes import Palettes
 from widgets.main_window import MainWindow
 
 THEME = 'dark'
-DB_PATH = '/home/evan/Desktop/pntest.db'
 BACKEND_PATH_RELATIVE = 'include/pntest-core'
 
 # Get absolute path to resource, works for dev and for PyInstaller
@@ -39,18 +38,20 @@ def main():
   src_path = os.path.join(app_path, 'src')
   backend_path = resource_path(app_path, BACKEND_PATH_RELATIVE)
   data_path = resource_path(app_path, 'include')
+  tmp_db_path = resource_path(app_path, 'pntest-tmp.db')
   style_dir_path = resource_path(src_path, 'style')
 
   print(f'[Frontend] App path: {app_path}')
   print(f'[Frontend] Backend path: {backend_path}')
   print(f'[Frontend] Data path: {data_path}')
-  print(f'[Frontend] DB path: {DB_PATH}')
+  print(f'[Frontend] DB path: {tmp_db_path}')
   print(f'[Frontend] style dir path: {style_dir_path}')
 
-  database = Database(DB_PATH)
+  database = Database(tmp_db_path)
+  database.delete_existing_db()
   database.load_or_create()
 
-  backend = Backend(app_path, data_path, DB_PATH, backend_path)
+  backend = Backend(app_path, data_path, tmp_db_path, backend_path)
   backend.register_callback('backendLoaded', lambda: print('Backend Loaded!'))
   backend.start()
 
