@@ -1,5 +1,6 @@
 import sys
 import pathlib
+import shutil
 
 from PySide2.QtWidgets import QApplication, QMainWindow, QLabel, QHeaderView, QAbstractItemView, QStackedWidget, QToolButton, QAction, QMenu, QShortcut, QListWidgetItem, QListView, QFileDialog
 from PySide2.QtCore import QFile, Qt, QTextStream, QResource, SIGNAL, Slot, QPoint, QSize, QSettings, Signal
@@ -191,13 +192,35 @@ class MainWindow(QMainWindow):
      "~/",
      "PnTest Project Files (*.pnt *.db)"
     )
-    file_path = file[0]
-    print(f'Opening {file_path}')
+    db_path = file[0]
+    print(f'Opening {db_path}')
     database = Database.get_instance()
-    database.reload_with_new_database(file_path)
-    self.backend.reload_with_new_database(file_path)
+    database.reload_with_new_database(db_path)
+    self.backend.reload_with_new_database(db_path)
 
     self.reload()
 
+  @Slot()
+  def save_project_as(self):
+    file = QFileDialog.getSaveFileName(
+     self,
+     "Save Project As",
+     "~/",
+     "PnTest Project Files (*.pnt *.db)"
+    )
+    new_db_path = file[0]
+
+    database = Database.get_instance()
+    database.close()
+
+    shutil.copy(database.db_path, new_db_path)
+    print(f'[Frontend] Copied {database.db_path} to {new_db_path}')
+
+    database.load_new_database(new_db_path)
+    self.reload()
+
+    #self.backend.reload_with_new_database(file_path)
+
   def setup_menu_actions(self):
     self.ui.actionOpen.triggered.connect(self.open_project)
+    self.ui.actionSave.triggered.connect(self.save_project_as)

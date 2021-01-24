@@ -97,6 +97,11 @@ class Database:
     self.load_or_create()
     self.load_orator_db()
 
+  def load_new_database(self, new_db_path):
+    self.db_path = new_db_path
+    self.load_or_create()
+    self.load_orator_db()
+
   def close(self):
     self.db.close()
     self.orator_db.purge()
