@@ -4,6 +4,6 @@ venv
 **/__pycache__
 build
 dist
-include/pntest-backend
+include/pntest-core
 include/node_sqlite3.node
 production.log

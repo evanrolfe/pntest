@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ## Develop
 Run the app:
 ```
-python src/__main__.py
+python src
 ```
 
 Compile Qt assets to python with:
