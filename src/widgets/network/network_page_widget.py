@@ -22,8 +22,8 @@ class NetworkPageWidget(QWidget):
     self.request_data = RequestData()
     self.request_data.load_requests()
     self.requests_table_model = RequestsTableModel(self.request_data)
-
     self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
+
     self.ui.requestsTableWidget.request_selected.connect(self.select_request)
     self.ui.requestsTableWidget.delete_requests.connect(self.delete_requests)
     self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
@@ -35,6 +35,14 @@ class NetworkPageWidget(QWidget):
     #self.ui.requestsTableAndViewSplitter.setStyleSheet("padding: 0px;")
     #self.ui.requestsTableAndViewSplitter.setSpacing(0)
     self.restore_layout_state()
+
+  def reload(self):
+    self.ui.requestViewWidget.clear_request()
+    self.request_data = RequestData()
+    self.request_data.load_requests()
+    self.requests_table_model = RequestsTableModel(self.request_data)
+    self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
+    print('NetworkPage: reloaded!')
 
   def restore_layout_state(self):
     settings = AppSettings.get_instance()

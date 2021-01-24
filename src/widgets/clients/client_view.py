@@ -12,6 +12,9 @@ class ClientView(QWidget):
     self.ui = Ui_ClientView()
     self.ui.setupUi(self)
 
+  def clear(self):
+    self.ui.clientBodyText.setPlainText('')
+
   def set_client(self, client):
     text = f"{client.title}\nType: {client.type}\nProxy port: {client.proxy_port}" \
       f"\nBrowser port: {client.browser_port}\nStatus: {client.open_text()}"

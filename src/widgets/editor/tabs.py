@@ -52,12 +52,8 @@ class Tabs(QTabWidget):
 
     self.setTabText(index, new_tab_text)
 
-    print(f'Changing {editor_item.id} {editor_item.name} in index {index}')
-
   @Slot()
   def editor_item_form_changed(self, editor_item, modified):
-    print(f'Editor Item {editor_item.id} is modified? {modified}')
-
     index = self.get_index_for_editor_item(editor_item)
     tab_text = self.tabText(index)
     last_char = tab_text[-1]

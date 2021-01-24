@@ -23,6 +23,19 @@ class RequestView(QWidget):
     #self.highlighter = HtmlHighlighter(self.ui.responseBodyRawText.document())
     #self.ui.bodyTab.setCurrentWidget(self.ui.responseBodyWebview)
 
+  def clear_request(self):
+    self.ui.requestHeadersText.setPlainText('')
+    self.ui.responseHeadersText.setPlainText('')
+
+    self.ui.responseBodyRawText.setPlainText('')
+    self.ui.responseBodyModifiedText.setPlainText('')
+    self.ui.responseBodyParsedText.setPlainText('')
+
+    self.ui.responseBodyPreview.setHtml(None)
+
+    self.ui.headerTabs.setTabEnabled(3, False)
+    self.ui.bodyTabs.setTabEnabled(1, False)
+
   def set_request(self, request):
     self.ui.requestHeadersText.setPlainText(request.request_headers_parsed())
     self.ui.responseHeadersText.setPlainText(request.response_headers_parsed())

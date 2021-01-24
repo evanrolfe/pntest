@@ -15,10 +15,7 @@ class ItemExplorer(QTreeView):
   def __init__(self, *args, **kwargs):
     super(ItemExplorer, self).__init__(*args, **kwargs)
 
-    editor_items = EditorItem.order_by('item_type', 'asc').get()
-    self.tree_model = EditorTreeModel('Requests', editor_items)
-    self.tree_model.change_selection.connect(self.change_selection)
-    self.tree_model.item_renamed.connect(self.item_renamed)
+    self.reload_data()
 
     self.setModel(self.tree_model)
     self.setDragDropMode(QAbstractItemView.InternalMove)
@@ -31,6 +28,14 @@ class ItemExplorer(QTreeView):
     self.customContextMenuRequested.connect(self.right_click)
     self.doubleClicked.connect(self.double_click)
     self.clicked.connect(self.click)
+
+  def reload_data(self):
+    editor_items = EditorItem.order_by('item_type', 'asc').get()
+    self.tree_model = EditorTreeModel('Requests', editor_items)
+    self.tree_model.change_selection.connect(self.change_selection)
+    self.tree_model.item_renamed.connect(self.item_renamed)
+    self.setModel(self.tree_model)
+    print(f'ItemExplorer: reloading with {len(editor_items)} items')
 
   @Slot()
   def change_selection(self, index):

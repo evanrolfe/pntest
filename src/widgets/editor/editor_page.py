@@ -24,6 +24,10 @@ class EditorPage(QWidget):
     self.ui.itemExplorer.item_deleted.connect(self.ui.tabs.close_item)
     self.ui.itemExplorer.item_renamed.connect(self.ui.tabs.change_item)
 
+  def reload(self):
+    self.ui.tabs.clear()
+    self.ui.itemExplorer.reload_data()
+
   def restore_layout_state(self):
     settings = AppSettings.get_instance()
     splitter_state = settings.get("EditorPage.splitter", None)

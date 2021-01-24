@@ -12,6 +12,9 @@ class CrawlView(QWidget):
     self.ui = Ui_CrawlView()
     self.ui.setupUi(self)
 
+  def clear(self):
+    self.ui.crawlBodyText.setPlainText('')
+
   def set_crawl(self, crawl):
     text = f"Selected crawl: {crawl.id}" \
 

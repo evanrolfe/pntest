@@ -31,7 +31,8 @@ class ClientsPage(QWidget):
     self.new_client_modal = NewClientModal(self)
     self.ui.newClientButton.clicked.connect(self.new_client_click)
 
-  def showEvent(self, event):
+  def reload(self):
+    self.ui.clientView.clear()
     self.reload_table_data()
 
   def reload_table_data(self):

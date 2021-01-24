@@ -12,6 +12,7 @@ from PySide2 import QtXml
 from views._compiled.ui_main_window import Ui_MainWindow
 
 from lib.app_settings import AppSettings
+from lib.database import Database
 from widgets.network.network_page_widget import NetworkPageWidget
 from widgets.intercept.intercept_page import InterceptPage
 from widgets.clients.clients_page import ClientsPage
@@ -196,16 +197,26 @@ class MainWindow(QMainWindow):
     elif item_value == 'requests':
       self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 
+  def reload(self):
+    self.network_page_widget.reload()
+    self.editor_page.reload()
+    self.clients_page.reload()
+
   @Slot()
   def open_project(self):
     print('Open!')
-    fileName = QFileDialog.getOpenFileName(
-      self,
-      "Open Image",
-      "/home/evan",
-      "Image Files (*.png *.jpg *.bmp)"
-    )
-    print(fileName)
+    # TODO
+    #fileName = QFileDialog.getOpenFileName(
+    #  self,
+    #  "Open Image",
+    #  "/home/evan",
+    #  "Image Files (*.png *.jpg *.bmp)"
+    #)
+    #print(fileName)
+    database = Database.get_instance()
+    database.reload_with_new_database('/home/evan/Desktop/pntest.db')
+    self.reload()
+
 
   def setup_menu_actions(self):
     self.ui.actionOpen.triggered.connect(self.open_project)

@@ -32,7 +32,8 @@ class CrawlsPage(QWidget):
     self.new_crawl.crawl_saved.connect(self.reload_table_data)
     self.ui.newCrawlerButton.clicked.connect(lambda: self.new_crawl.show())
 
-  def showEvent(self, event):
+  def reload(self):
+    self.ui.crawlView.clear()
     self.reload_table_data()
 
   @Slot()

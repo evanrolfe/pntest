@@ -13,6 +13,7 @@ from widgets.main_window import MainWindow
 
 THEME = 'dark'
 BACKEND_PATH_RELATIVE = 'include/pntest-core'
+EXIT_CODE_REBOOT = -11231351
 
 # Get absolute path to resource, works for dev and for PyInstaller
 def resource_path(app_path, relative_path):
