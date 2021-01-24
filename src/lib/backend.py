@@ -40,6 +40,12 @@ class Backend:
         Backend.__instance = self
   # /Singleton method stuff
 
+  def reload_with_new_database(self, new_db_path):
+    self.kill()
+    self.db_path = new_db_path
+    self.start()
+
+
   def start(self):
     print("Starting the backend...")
     #loop = asyncio.get_event_loop()

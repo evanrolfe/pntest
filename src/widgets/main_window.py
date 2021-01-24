@@ -26,25 +26,6 @@ import assets._compiled.assets
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-#   background: #E9E9E9;
-sidebar_style = """
-QListWidget#sideBar {
-  background: #3F3F3F;
-}
-
-QListWidget::item#sideBar {
-  padding: 5px;
-}
-
-QListWidget::item::!selected#sideBar {
-  border-left: 2px solid #3F3F3F;
-}
-
-QListWidget::item::selected#sideBar {
-  border-left: 2px solid #2A82DA;
-}
-"""
-
 class MainWindow(QMainWindow):
   reload_style = Signal()
 
@@ -204,19 +185,19 @@ class MainWindow(QMainWindow):
 
   @Slot()
   def open_project(self):
-    print('Open!')
-    # TODO
-    #fileName = QFileDialog.getOpenFileName(
-    #  self,
-    #  "Open Image",
-    #  "/home/evan",
-    #  "Image Files (*.png *.jpg *.bmp)"
-    #)
-    #print(fileName)
+    file = QFileDialog.getOpenFileName(
+     self,
+     "Open Project",
+     "~/",
+     "PnTest Project Files (*.pnt *.db)"
+    )
+    file_path = file[0]
+    print(f'Opening {file_path}')
     database = Database.get_instance()
-    database.reload_with_new_database('/home/evan/Desktop/pntest.db')
-    self.reload()
+    database.reload_with_new_database(file_path)
+    self.backend.reload_with_new_database(file_path)
 
+    self.reload()
 
   def setup_menu_actions(self):
     self.ui.actionOpen.triggered.connect(self.open_project)
