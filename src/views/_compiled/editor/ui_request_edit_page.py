@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widgets.shared.loader import Loader
+
 
 class Ui_RequestEditPage(object):
     def setupUi(self, RequestEditPage):
@@ -99,7 +101,9 @@ class Ui_RequestEditPage(object):
         self.verticalLayout.addWidget(self.requestTabs)
 
         self.splitter2.addWidget(self.layoutWidget)
-        self.responseTabs = QTabWidget(self.splitter2)
+        self.stackedWidget = QStackedWidget(self.splitter2)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.responseTabs = QTabWidget()
         self.responseTabs.setObjectName(u"responseTabs")
         sizePolicy2.setHeightForWidth(self.responseTabs.sizePolicy().hasHeightForWidth())
         self.responseTabs.setSizePolicy(sizePolicy2)
@@ -125,7 +129,11 @@ class Ui_RequestEditPage(object):
         self.verticalLayout_4_body2.addWidget(self.responseHeadersText)
 
         self.responseTabs.addTab(self.responseHeadersTab, "")
-        self.splitter2.addWidget(self.responseTabs)
+        self.stackedWidget.addWidget(self.responseTabs)
+        self.loaderWidget = Loader()
+        self.loaderWidget.setObjectName(u"loaderWidget")
+        self.stackedWidget.addWidget(self.loaderWidget)
+        self.splitter2.addWidget(self.stackedWidget)
         self.requestEditSplitter.addWidget(self.splitter2)
 
         self.verticalLayout_2.addWidget(self.requestEditSplitter)
