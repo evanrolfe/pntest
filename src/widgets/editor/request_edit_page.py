@@ -214,7 +214,7 @@ class RequestEditPage(QWidget):
 
   def hide_fuzz_table(self):
     self.ui.fuzzRequestsTable.setVisible(False)
-    self.ui.toggleFuzzTableButton.setText(">>")
+    self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
 
   @Slot()
   def toggle_fuzz_table(self):
@@ -225,9 +225,9 @@ class RequestEditPage(QWidget):
       self.restore_layout_state()
 
     if (visible):
-      self.ui.toggleFuzzTableButton.setText("<<")
+      self.ui.toggleFuzzTableButton.setText("9 Saved Examples [-]")
     else:
-      self.ui.toggleFuzzTableButton.setText(">>")
+      self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
 
   def restore_layout_state(self):
     splitter_state = self.settings.get("RequestEditPage.splitter", None)

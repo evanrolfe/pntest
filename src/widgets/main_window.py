@@ -14,6 +14,7 @@ from views._compiled.ui_main_window import Ui_MainWindow
 
 from lib.app_settings import AppSettings
 from lib.database import Database
+from lib.stylesheet_loader import StyleheetLoader
 from widgets.network.network_page_widget import NetworkPageWidget
 from widgets.intercept.intercept_page import InterceptPage
 from widgets.clients.clients_page import ClientsPage
@@ -98,10 +99,9 @@ class MainWindow(QMainWindow):
 
   @Slot()
   def reload_style(self):
-    file = QFile('/home/evan/Code/pntest/src/assets/style/dark.qss')
-    file.open(QFile.ReadOnly | QFile.Text)
-    stream = QTextStream(file)
-    self.setStyleSheet(stream.readAll())
+    style_loader = StyleheetLoader('/home/evan/Code/pntest/src/style/')
+    stylesheet = style_loader.load_theme('dark')
+    self.setStyleSheet(stylesheet)
 
     print('reloaded the stylesheet!')
 

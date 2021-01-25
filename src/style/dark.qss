@@ -188,7 +188,6 @@ QSplitter#requestEditSplitter {
 }
 
 QWidget#requestHeadersForm {
-  border: 1px solid white;
   margin: 5px;
 }
 
@@ -242,7 +241,8 @@ QPushButton:pressed {
 }
 
 QPushButton#toggleFuzzTableButton {
-  height: 10px;
+  background-color: $bg-dark;
+  min-width: 10px;
 }
 
 QPushButton#sendButton {
@@ -288,12 +288,11 @@ QComboBox::drop-down {
   subcontrol-position: top right;
   width: 25px;
 
-  border-left-width: 1px;
-  border-left-color: $bg-extra-dark;
-  border-left-style: solid; /* just a single line */
+  border-left-width: 0px;
   border-top-right-radius: 3px; /* same radius as the QComboBox */
   border-bottom-right-radius: 3px;
 
+  image: url(":/icons/dark/icons8-sort-down-18.png");
 }
 
 /*------------------------------------------------------------------------------*

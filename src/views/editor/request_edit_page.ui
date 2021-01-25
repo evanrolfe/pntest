@@ -51,19 +51,6 @@
            <number>10</number>
           </property>
           <item>
-           <widget class="QPushButton" name="toggleFuzzTableButton">
-            <property name="maximumSize">
-             <size>
-              <width>35</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>&lt;&lt;</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -75,6 +62,13 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="toggleFuzzTableButton">
+            <property name="text">
+             <string>Saved Examples (10) &lt;&lt;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -90,7 +84,7 @@
            <number>10</number>
           </property>
           <property name="bottomMargin">
-           <number>10</number>
+           <number>20</number>
           </property>
           <item>
            <widget class="QComboBox" name="methodInput"/>
@@ -140,62 +134,62 @@
        </layout>
       </widget>
       <widget class="QStackedWidget" name="stackedWidget">
-        <widget class="QTabWidget" name="responseTabs">
-          <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-            </sizepolicy>
+       <widget class="QTabWidget" name="responseTabs">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="responseBodyTab">
+         <attribute name="title">
+          <string>Response</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4_body">
+          <property name="leftMargin">
+           <number>0</number>
           </property>
-          <property name="currentIndex">
-            <number>0</number>
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <widget class="QWidget" name="responseBodyTab">
-            <attribute name="title">
-            <string>Response</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_4_body">
-            <property name="leftMargin">
-              <number>0</number>
-            </property>
-            <property name="topMargin">
-              <number>0</number>
-            </property>
-            <property name="rightMargin">
-              <number>0</number>
-            </property>
-            <property name="bottomMargin">
-              <number>0</number>
-            </property>
-            <item>
-              <widget class="QPlainTextEdit" name="responseBodyText"/>
-            </item>
-            </layout>
-          </widget>
-          <widget class="QWidget" name="responseHeadersTab">
-            <attribute name="title">
-            <string>Headers</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_4_body2">
-            <property name="leftMargin">
-              <number>0</number>
-            </property>
-            <property name="topMargin">
-              <number>0</number>
-            </property>
-            <property name="rightMargin">
-              <number>0</number>
-            </property>
-            <property name="bottomMargin">
-              <number>0</number>
-            </property>
-            <item>
-              <widget class="QPlainTextEdit" name="responseHeadersText"/>
-            </item>
-            </layout>
-          </widget>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPlainTextEdit" name="responseBodyText"/>
+          </item>
+         </layout>
         </widget>
-        <widget class="Loader" name="loaderWidget"/>
+        <widget class="QWidget" name="responseHeadersTab">
+         <attribute name="title">
+          <string>Headers</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4_body2">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPlainTextEdit" name="responseHeadersText"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="Loader" name="loaderWidget"/>
       </widget>
      </widget>
     </widget>

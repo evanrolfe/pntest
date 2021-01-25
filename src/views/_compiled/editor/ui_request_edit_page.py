@@ -49,22 +49,21 @@ class Ui_RequestEditPage(object):
         self.layout1 = QHBoxLayout()
         self.layout1.setObjectName(u"layout1")
         self.layout1.setContentsMargins(10, 10, 10, -1)
-        self.toggleFuzzTableButton = QPushButton(self.layoutWidget)
-        self.toggleFuzzTableButton.setObjectName(u"toggleFuzzTableButton")
-        self.toggleFuzzTableButton.setMaximumSize(QSize(35, 16777215))
-
-        self.layout1.addWidget(self.toggleFuzzTableButton)
-
         self.horizontalSpacer = QSpacerItem(388, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.layout1.addItem(self.horizontalSpacer)
+
+        self.toggleFuzzTableButton = QPushButton(self.layoutWidget)
+        self.toggleFuzzTableButton.setObjectName(u"toggleFuzzTableButton")
+
+        self.layout1.addWidget(self.toggleFuzzTableButton)
 
 
         self.verticalLayout.addLayout(self.layout1)
 
         self.requestActionsLayout = QHBoxLayout()
         self.requestActionsLayout.setObjectName(u"requestActionsLayout")
-        self.requestActionsLayout.setContentsMargins(10, 10, 10, 10)
+        self.requestActionsLayout.setContentsMargins(10, 10, 10, 20)
         self.methodInput = QComboBox(self.layoutWidget)
         self.methodInput.setObjectName(u"methodInput")
 
@@ -150,7 +149,7 @@ class Ui_RequestEditPage(object):
 
     def retranslateUi(self, RequestEditPage):
         RequestEditPage.setWindowTitle(QCoreApplication.translate("RequestEditPage", u"Form", None))
-        self.toggleFuzzTableButton.setText(QCoreApplication.translate("RequestEditPage", u"<<", None))
+        self.toggleFuzzTableButton.setText(QCoreApplication.translate("RequestEditPage", u"Saved Examples (10) <<", None))
         self.sendButton.setText(QCoreApplication.translate("RequestEditPage", u"Send", None))
         self.saveButton.setText(QCoreApplication.translate("RequestEditPage", u"Save", None))
         self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyTab), QCoreApplication.translate("RequestEditPage", u"Response", None))

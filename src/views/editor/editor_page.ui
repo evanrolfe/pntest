@@ -102,7 +102,7 @@
        </sizepolicy>
       </property>
      </widget>
-     <widget class="Tabs" name="tabs"/>
+     <widget class="Tabs" name="editorTabs"/>
     </widget>
    </item>
   </layout>

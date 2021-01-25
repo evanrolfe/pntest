@@ -64,9 +64,9 @@ class Ui_EditorPage(object):
         sizePolicy1.setHeightForWidth(self.itemExplorer.sizePolicy().hasHeightForWidth())
         self.itemExplorer.setSizePolicy(sizePolicy1)
         self.editorSplitter.addWidget(self.itemExplorer)
-        self.tabs = Tabs(self.editorSplitter)
-        self.tabs.setObjectName(u"tabs")
-        self.editorSplitter.addWidget(self.tabs)
+        self.editorTabs = Tabs(self.editorSplitter)
+        self.editorTabs.setObjectName(u"editorTabs")
+        self.editorSplitter.addWidget(self.editorTabs)
 
         self.verticalLayout.addWidget(self.editorSplitter)
 

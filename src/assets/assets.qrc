@@ -23,6 +23,7 @@
     <file>icons/light/icons8-spiderweb-50.png</file>
     <file>icons/light/icons8-document-50.png</file>
     <file>icons/light/icons8-upload-link-document-50.png</file>
+    <file>icons/light/icons8-sort-down-24.png</file>
 
     <file>icons/dark/icons8-add-new-50.png</file>
     <file>icons/dark/icons8-browse-page-50.png</file>
@@ -35,5 +36,6 @@
     <file>icons/dark/icons8-spiderweb-50.png</file>
     <file>icons/dark/icons8-document-50.png</file>
     <file>icons/dark/icons8-upload-link-document-50.png</file>
+    <file>icons/dark/icons8-sort-down-18.png</file>
   </qresource>
 </RCC>

@@ -19,13 +19,14 @@ class EditorPage(QWidget):
     self.ui.setupUi(self)
     self.restore_layout_state()
 
-    self.ui.itemExplorer.item_double_clicked.connect(self.ui.tabs.open_item)
-    self.ui.itemExplorer.item_created.connect(self.ui.tabs.open_item)
-    self.ui.itemExplorer.item_deleted.connect(self.ui.tabs.close_item)
-    self.ui.itemExplorer.item_renamed.connect(self.ui.tabs.change_item)
+    self.ui.itemExplorer.item_double_clicked.connect(self.ui.editorTabs.open_item)
+    self.ui.itemExplorer.item_created.connect(self.ui.editorTabs.open_item)
+    self.ui.itemExplorer.item_deleted.connect(self.ui.editorTabs.close_item)
+    self.ui.itemExplorer.item_renamed.connect(self.ui.editorTabs.change_item)
+    self.ui.editorTabs.setObjectName('editorTabs')
 
   def reload(self):
-    self.ui.tabs.clear()
+    self.ui.editorTabs.clear()
     self.ui.itemExplorer.reload_data()
 
   def restore_layout_state(self):
