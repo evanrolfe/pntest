@@ -22,7 +22,9 @@ class Ui_CrawlsPage(object):
             CrawlsPage.setObjectName(u"CrawlsPage")
         CrawlsPage.resize(897, 581)
         self.verticalLayout = QVBoxLayout(CrawlsPage)
+        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.crawlerToolbar = QWidget(CrawlsPage)
         self.crawlerToolbar.setObjectName(u"crawlerToolbar")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
@@ -30,10 +32,10 @@ class Ui_CrawlsPage(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.crawlerToolbar.sizePolicy().hasHeightForWidth())
         self.crawlerToolbar.setSizePolicy(sizePolicy)
-        self.crawlerToolbar.setMaximumSize(QSize(16777215, 20))
+        self.crawlerToolbar.setMaximumSize(QSize(16777215, 40))
         self.horizontalLayout = QHBoxLayout(self.crawlerToolbar)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setContentsMargins(10, 5, 10, 5)
         self.label = QLabel(self.crawlerToolbar)
         self.label.setObjectName(u"label")
         font = QFont()
@@ -44,7 +46,7 @@ class Ui_CrawlsPage(object):
 
         self.horizontalLayout.addWidget(self.label)
 
-        self.horizontalSpacer = QSpacerItem(158, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(158, 40, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
@@ -57,10 +59,10 @@ class Ui_CrawlsPage(object):
 
         self.verticalLayout.addWidget(self.crawlerToolbar)
 
-        self.splitter = QSplitter(CrawlsPage)
-        self.splitter.setObjectName(u"splitter")
-        self.splitter.setOrientation(Qt.Horizontal)
-        self.crawlsTable = CrawlsTable(self.splitter)
+        self.crawlerSplitter = QSplitter(CrawlsPage)
+        self.crawlerSplitter.setObjectName(u"crawlerSplitter")
+        self.crawlerSplitter.setOrientation(Qt.Horizontal)
+        self.crawlsTable = CrawlsTable(self.crawlerSplitter)
         self.crawlsTable.setObjectName(u"crawlsTable")
         sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -68,17 +70,17 @@ class Ui_CrawlsPage(object):
         sizePolicy1.setHeightForWidth(self.crawlsTable.sizePolicy().hasHeightForWidth())
         self.crawlsTable.setSizePolicy(sizePolicy1)
         self.crawlsTable.setMinimumSize(QSize(350, 0))
-        self.splitter.addWidget(self.crawlsTable)
-        self.crawlView = CrawlView(self.splitter)
+        self.crawlerSplitter.addWidget(self.crawlsTable)
+        self.crawlView = CrawlView(self.crawlerSplitter)
         self.crawlView.setObjectName(u"crawlView")
         sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.crawlView.sizePolicy().hasHeightForWidth())
         self.crawlView.setSizePolicy(sizePolicy2)
-        self.splitter.addWidget(self.crawlView)
+        self.crawlerSplitter.addWidget(self.crawlView)
 
-        self.verticalLayout.addWidget(self.splitter)
+        self.verticalLayout.addWidget(self.crawlerSplitter)
 
 
         self.retranslateUi(CrawlsPage)

@@ -56,6 +56,16 @@ class Ui_Loader(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
+        self.spinnerWidget = QWidget(Loader)
+        self.spinnerWidget.setObjectName(u"spinnerWidget")
+        self.spinnerWidget.setMinimumSize(QSize(50, 50))
+
+        self.horizontalLayout_2.addWidget(self.spinnerWidget)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
+
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 

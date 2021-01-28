@@ -187,7 +187,10 @@ QVBoxLayout#requestBodyFormLayout, QVBoxLayout#interceptedRequestLayout {
   border-top: 1px solid $border-dark;
 }
 
-QSplitter#requestsTableAndViewSplitter, QSplitter#editorSplitter, QSplitter#clientsSplitter {
+QSplitter#requestsTableAndViewSplitter,
+  QSplitter#editorSplitter,
+  QSplitter#clientsSplitter,
+  QSplitter#crawlerSplitter {
   border-top: 1px solid $border-dark;
 }
 
