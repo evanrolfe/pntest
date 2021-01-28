@@ -22,5 +22,6 @@ pyinstaller --name="pntest" --windowed ./src/__main__.py --onefile \
   --add-binary='include/rootCA.csr:include/' \
   --add-binary='include/rootCA.key:include/' \
   --add-data='src/style/dark.qss:style/' \
+  --add-data='src/style/dark_theme.qss:style/' \
   --add-data='src/style/light.qss:style/' \
   --noupx
