@@ -12,9 +12,6 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from widgets.network.network_requests_table import NetworkRequestsTable
-from widgets.shared.request_view import RequestView
-
 
 class Ui_InterceptPage(object):
     def setupUi(self, InterceptPage):
@@ -56,7 +53,9 @@ class Ui_InterceptPage(object):
         self.interceptedRequestLayout = QVBoxLayout()
         self.interceptedRequestLayout.setObjectName(u"interceptedRequestLayout")
         self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setSpacing(10)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(10, 5, 10, 15)
         self.interceptTitle = QLabel(InterceptPage)
         self.interceptTitle.setObjectName(u"interceptTitle")
         font1 = QFont()
@@ -67,6 +66,7 @@ class Ui_InterceptPage(object):
         self.verticalLayout_2.addWidget(self.interceptTitle)
 
         self.horizontalLayout2 = QHBoxLayout()
+        self.horizontalLayout2.setSpacing(6)
         self.horizontalLayout2.setObjectName(u"horizontalLayout2")
         self.forwardButton = QPushButton(InterceptPage)
         self.forwardButton.setObjectName(u"forwardButton")

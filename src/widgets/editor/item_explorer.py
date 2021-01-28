@@ -38,6 +38,7 @@ class ItemExplorer(QTreeView):
     self.customContextMenuRequested.connect(self.right_click)
     self.doubleClicked.connect(self.double_click)
     self.clicked.connect(self.click)
+    self.header().setObjectName('itemExplorerHeader')
 
     #delegate = TreeItemDelegate()
     #self.setItemDelegate(delegate)

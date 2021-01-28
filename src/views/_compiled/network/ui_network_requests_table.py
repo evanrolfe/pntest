@@ -26,6 +26,7 @@ class Ui_NetworkRequestsTable(object):
         sizePolicy.setHeightForWidth(NetworkRequestsTable.sizePolicy().hasHeightForWidth())
         NetworkRequestsTable.setSizePolicy(sizePolicy)
         self.verticalLayout_3 = QVBoxLayout(NetworkRequestsTable)
+        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_2 = QHBoxLayout()

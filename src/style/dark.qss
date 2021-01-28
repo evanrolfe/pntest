@@ -70,6 +70,10 @@ QHeaderView::section {
   font-weight: normal;
 }
 
+QHeaderView::section#itemExplorerHeader {
+  padding-left: 10px;
+}
+
 QHeaderView::section:selected, QHeaderView::section:checked {
   font-weight: 900;
 }

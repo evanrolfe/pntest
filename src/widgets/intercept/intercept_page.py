@@ -14,23 +14,23 @@ class InterceptPage(QWidget):
     self.ui = Ui_InterceptPage()
     self.ui.setupUi(self)
 
-    # self.__set_buttons_enabled(False)
+    self.__set_buttons_enabled(False)
 
-    # # Register callback with the backend:
-    # self.backend = Backend.get_instance()
-    # self.backend.register_callback('requestIntercepted', self.request_intercepted)
-    # self.backend.register_callback('responseIntercepted', self.response_intercepted)
+    # Register callback with the backend:
+    self.backend = Backend.get_instance()
+    self.backend.register_callback('requestIntercepted', self.request_intercepted)
+    self.backend.register_callback('responseIntercepted', self.response_intercepted)
 
-    # # Connect buttons:
-    # self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
-    # self.ui.forwardInterceptButton.clicked.connect(self.forward_intercept_button_clicked)
-    # self.ui.enabledButton.clicked.connect(self.enabled_button_clicked)
+    # Connect buttons:
+    self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
+    self.ui.forwardInterceptButton.clicked.connect(self.forward_intercept_button_clicked)
+    self.ui.enabledButton.clicked.connect(self.enabled_button_clicked)
 
-    # # Set enabled/disabled:
-    # # self.ui.enabledButton.setCheckable(True)
-    # intercept_enabled = Setting.intercept_enabled()
-    # self.set_enabled(intercept_enabled)
-    # # self.ui.enabledButton.setDown(intercept_enabled)
+    # Set enabled/disabled:
+    # self.ui.enabledButton.setCheckable(True)
+    intercept_enabled = Setting.intercept_enabled()
+    self.set_enabled(intercept_enabled)
+    # self.ui.enabledButton.setDown(intercept_enabled)
 
   def request_intercepted(self, request):
     self.intercepted_request = request
