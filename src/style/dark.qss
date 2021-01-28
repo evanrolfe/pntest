@@ -32,6 +32,14 @@ QTabBar::tab:selected {
   border-top: 2px solid $item-bright;
 }
 
+QTabBar::tab:selected:hover {
+  background-color: $bg-extra-dark;
+}
+
+QTabBar::tab:hover {
+  background-color: $bg-input;
+}
+
 QTabBar::tab:disabled {
   color: black;
   background-color: $bg-mid;
