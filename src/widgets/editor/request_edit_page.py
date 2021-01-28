@@ -91,6 +91,7 @@ class RequestEditPage(QWidget):
     self.request.set_request_headers(headers)
     self.request.save()
 
+    self.form_input_changed.emit(False)
     print(f'saving {method} {url} to request {self.request.id}')
 
   @Slot()
