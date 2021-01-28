@@ -1,9 +1,19 @@
-from PySide2.QtWidgets import QTreeView, QAbstractItemView, QMenu, QMessageBox, QAction
-from PySide2.QtCore import QFile, Signal, Slot, Qt, QItemSelectionModel, QModelIndex
+from PySide2.QtWidgets import QTreeView, QAbstractItemView, QMenu, QMessageBox, QAction, QStyledItemDelegate
+from PySide2.QtCore import QFile, Signal, Slot, Qt, QItemSelectionModel, QModelIndex, QSize
+from PySide2.QtGui import QBrush, QColor, QIcon
 
 from models.data.editor_item import EditorItem
 from models.qt.editor_tree_model import EditorTreeModel
 from models.qt.editor_tree_item import EditorTreeItem
+
+class TreeItemDelegate(QStyledItemDelegate):
+  def __init__(self, parent=None):
+    self.parent = parent
+    super(TreeItemDelegate, self).__init__(parent=None)
+
+  def paint(self, painter, options, index):
+    #options.backgroundBrush = QBrush(QColor('#000000'))
+    QStyledItemDelegate.paint(self, painter, options, index)
 
 class ItemExplorer(QTreeView):
   item_created = Signal(EditorItem)
@@ -28,6 +38,11 @@ class ItemExplorer(QTreeView):
     self.customContextMenuRequested.connect(self.right_click)
     self.doubleClicked.connect(self.double_click)
     self.clicked.connect(self.click)
+
+    #delegate = TreeItemDelegate()
+    #self.setItemDelegate(delegate)
+    self.setIconSize(QSize(20,12))
+
 
   def reload_data(self):
     editor_items = EditorItem.order_by('item_type', 'asc').get()

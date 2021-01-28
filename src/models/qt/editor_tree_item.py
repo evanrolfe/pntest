@@ -83,5 +83,5 @@ class EditorTreeItem(object):
     if self.is_dir:
       return None
     else:
-      return QIcon(":/icons/dark/icons8-document-50.png")
+      return QIcon(":/icons/dark/methods/get.png")
 

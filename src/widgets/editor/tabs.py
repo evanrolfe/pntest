@@ -1,7 +1,8 @@
 import sys
 
 from PySide2.QtWidgets import QApplication, QWidget, QTabWidget
-from PySide2.QtCore import Slot
+from PySide2.QtCore import Slot, QSize
+from PySide2.QtGui import QIcon
 
 from lib.app_settings import AppSettings
 from lib.backend import Backend
@@ -13,6 +14,7 @@ class Tabs(QTabWidget):
 
     self.setTabsClosable(True)
     self.setMovable(True)
+    self.setIconSize(QSize(20,12))
 
     self.tabCloseRequested.connect(self.close_tab)
 
@@ -23,7 +25,7 @@ class Tabs(QTabWidget):
     if existing_tab_index == None:
       request_edit_page = RequestEditPage(editor_item)
       request_edit_page.form_input_changed.connect(lambda modified: self.editor_item_form_changed(editor_item, modified))
-      self.insertTab(self.count(), request_edit_page, editor_item.name)
+      self.insertTab(self.count(), request_edit_page, QIcon(":/icons/dark/methods/post.png"), editor_item.name)
       self.setCurrentIndex(self.count()-1)
     else:
       self.setCurrentIndex(existing_tab_index)
