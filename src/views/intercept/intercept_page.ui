@@ -6,76 +6,91 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>741</width>
-    <height>511</height>
+    <width>897</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="crawlerToolbar" native="true">
-      <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-        </sizepolicy>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>40</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>10</number>
       </property>
-      <property name="maximumSize">
-        <size>
-        <width>16777215</width>
-        <height>20</height>
-        </size>
+      <property name="topMargin">
+       <number>5</number>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayoutIntercept">
-        <property name="leftMargin">
-        <number>0</number>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
-        <property name="topMargin">
-        <number>0</number>
+        <property name="text">
+         <string>INTERCEPT</string>
         </property>
-        <property name="rightMargin">
-        <number>0</number>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="bottomMargin">
-        <number>0</number>
+        <property name="sizeType">
+         <enum>QSizePolicy::Maximum</enum>
         </property>
-        <item>
-        <widget class="QLabel" name="label">
-          <property name="font">
-          <font>
-            <pointsize>10</pointsize>
-            <weight>50</weight>
-            <bold>false</bold>
-          </font>
-          </property>
-          <property name="text">
-          <string>INTERCEPT</string>
-          </property>
-        </widget>
-        </item>
-        <item>
-        <spacer name="horizontalSpacerIntercept">
-          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-          <enum>QSizePolicy::Maximum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-          <size>
-            <width>158</width>
-            <height>20</height>
-          </size>
-          </property>
-        </spacer>
-        </item>
-      </layout>
-      </widget>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>158</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_3">
+    <layout class="QVBoxLayout" name="interceptedRequestLayout">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -92,7 +107,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout2">
          <item>
           <widget class="QPushButton" name="forwardButton">
            <property name="text">
@@ -122,7 +137,7 @@
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="horizontalSpacer2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -175,7 +190,7 @@
         <attribute name="title">
          <string>Body</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QVBoxLayout" name="verticalLayout5">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -202,6 +217,20 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>NetworkRequestsTable</class>
+   <extends>QWidget</extends>
+   <header>widgets.network.network_requests_table.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RequestView</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.request_view.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

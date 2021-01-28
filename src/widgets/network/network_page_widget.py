@@ -29,11 +29,6 @@ class NetworkPageWidget(QWidget):
     self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
     self.ui.requestsTableWidget.send_request_to_editor.connect(self.send_request_to_editor)
 
-    #self.ui.requestsTableAndViewSplitter.layout().setContentsMargins(0, 0, 0, 0)
-    #self.ui.layout().setContentsMargins(0, 0, 0, 0)
-    #self.ui.requestsTableAndViewSplitter.layout().setContentsMargins(0, 0, 0, 0)
-    #self.ui.requestsTableAndViewSplitter.setStyleSheet("padding: 0px;")
-    #self.ui.requestsTableAndViewSplitter.setSpacing(0)
     self.restore_layout_state()
 
   def reload(self):

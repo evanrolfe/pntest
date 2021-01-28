@@ -12,14 +12,19 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widgets.network.network_requests_table import NetworkRequestsTable
+from widgets.shared.request_view import RequestView
+
 
 class Ui_InterceptPage(object):
     def setupUi(self, InterceptPage):
         if not InterceptPage.objectName():
             InterceptPage.setObjectName(u"InterceptPage")
-        InterceptPage.resize(741, 511)
-        self.verticalLayout_5 = QVBoxLayout(InterceptPage)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        InterceptPage.resize(897, 581)
+        self.verticalLayout = QVBoxLayout(InterceptPage)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.crawlerToolbar = QWidget(InterceptPage)
         self.crawlerToolbar.setObjectName(u"crawlerToolbar")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
@@ -27,10 +32,10 @@ class Ui_InterceptPage(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.crawlerToolbar.sizePolicy().hasHeightForWidth())
         self.crawlerToolbar.setSizePolicy(sizePolicy)
-        self.crawlerToolbar.setMaximumSize(QSize(16777215, 20))
-        self.horizontalLayoutIntercept = QHBoxLayout(self.crawlerToolbar)
-        self.horizontalLayoutIntercept.setObjectName(u"horizontalLayoutIntercept")
-        self.horizontalLayoutIntercept.setContentsMargins(0, 0, 0, 0)
+        self.crawlerToolbar.setMaximumSize(QSize(16777215, 40))
+        self.horizontalLayout = QHBoxLayout(self.crawlerToolbar)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(10, 5, 10, 5)
         self.label = QLabel(self.crawlerToolbar)
         self.label.setObjectName(u"label")
         font = QFont()
@@ -39,17 +44,17 @@ class Ui_InterceptPage(object):
         font.setWeight(50)
         self.label.setFont(font)
 
-        self.horizontalLayoutIntercept.addWidget(self.label)
+        self.horizontalLayout.addWidget(self.label)
 
-        self.horizontalSpacerIntercept = QSpacerItem(158, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(158, 40, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
-        self.horizontalLayoutIntercept.addItem(self.horizontalSpacerIntercept)
+        self.horizontalLayout.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout_5.addWidget(self.crawlerToolbar)
+        self.verticalLayout.addWidget(self.crawlerToolbar)
 
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.interceptedRequestLayout = QVBoxLayout()
+        self.interceptedRequestLayout.setObjectName(u"interceptedRequestLayout")
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.interceptTitle = QLabel(InterceptPage)
@@ -61,37 +66,37 @@ class Ui_InterceptPage(object):
 
         self.verticalLayout_2.addWidget(self.interceptTitle)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout2 = QHBoxLayout()
+        self.horizontalLayout2.setObjectName(u"horizontalLayout2")
         self.forwardButton = QPushButton(InterceptPage)
         self.forwardButton.setObjectName(u"forwardButton")
 
-        self.horizontalLayout.addWidget(self.forwardButton)
+        self.horizontalLayout2.addWidget(self.forwardButton)
 
         self.forwardInterceptButton = QPushButton(InterceptPage)
         self.forwardInterceptButton.setObjectName(u"forwardInterceptButton")
 
-        self.horizontalLayout.addWidget(self.forwardInterceptButton)
+        self.horizontalLayout2.addWidget(self.forwardInterceptButton)
 
         self.dropButton = QPushButton(InterceptPage)
         self.dropButton.setObjectName(u"dropButton")
 
-        self.horizontalLayout.addWidget(self.dropButton)
+        self.horizontalLayout2.addWidget(self.dropButton)
 
         self.enabledButton = QPushButton(InterceptPage)
         self.enabledButton.setObjectName(u"enabledButton")
 
-        self.horizontalLayout.addWidget(self.enabledButton)
+        self.horizontalLayout2.addWidget(self.enabledButton)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.horizontalLayout2.addItem(self.horizontalSpacer2)
 
 
-        self.verticalLayout_3.addLayout(self.verticalLayout_2)
+        self.verticalLayout_2.addLayout(self.horizontalLayout2)
+
+
+        self.interceptedRequestLayout.addLayout(self.verticalLayout_2)
 
         self.interceptTabs = QTabWidget(InterceptPage)
         self.interceptTabs.setObjectName(u"interceptTabs")
@@ -113,21 +118,21 @@ class Ui_InterceptPage(object):
         self.interceptTabs.addTab(self.headersTab, "")
         self.bodyTab = QWidget()
         self.bodyTab.setObjectName(u"bodyTab")
-        self.verticalLayout = QVBoxLayout(self.bodyTab)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout5 = QVBoxLayout(self.bodyTab)
+        self.verticalLayout5.setSpacing(0)
+        self.verticalLayout5.setObjectName(u"verticalLayout5")
+        self.verticalLayout5.setContentsMargins(0, 0, 0, 0)
         self.bodyText = QPlainTextEdit(self.bodyTab)
         self.bodyText.setObjectName(u"bodyText")
 
-        self.verticalLayout.addWidget(self.bodyText)
+        self.verticalLayout5.addWidget(self.bodyText)
 
         self.interceptTabs.addTab(self.bodyTab, "")
 
-        self.verticalLayout_3.addWidget(self.interceptTabs)
+        self.interceptedRequestLayout.addWidget(self.interceptTabs)
 
 
-        self.verticalLayout_5.addLayout(self.verticalLayout_3)
+        self.verticalLayout.addLayout(self.interceptedRequestLayout)
 
 
         self.retranslateUi(InterceptPage)

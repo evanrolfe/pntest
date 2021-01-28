@@ -57,13 +57,13 @@ class MainWindow(QMainWindow):
 
     # Set padding on widgets:
     self.ui.centralWidget.layout().setContentsMargins(0, 0, 0, 0)
-    self.ui.stackedWidget.setContentsMargins(0, 0, 0, 0)
+    #self.ui.stackedWidget.setContentsMargins(0, 0, 0, 0)
 
     margins = [0, 0, 0, 0]
-    self.network_page_widget.layout().setContentsMargins(*margins)
-    self.clients_page.layout().setContentsMargins(*margins)
+    #self.network_page_widget.layout().setContentsMargins(*margins)
+    #self.intercept_page.layout().setContentsMargins(*margins)
+    #self.clients_page.layout().setContentsMargins(*margins)
     self.crawls_page.layout().setContentsMargins(*margins)
-    self.intercept_page.layout().setContentsMargins(*margins)
     self.editor_page.layout().setContentsMargins(*margins)
 
     # Add actions to sidebar:

@@ -49,12 +49,6 @@ class Ui_MainWindow(object):
 
         self.stackedWidget = QStackedWidget(self.centralWidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        self.page = QWidget()
-        self.page.setObjectName(u"page")
-        self.stackedWidget.addWidget(self.page)
-        self.page_2 = QWidget()
-        self.page_2.setObjectName(u"page_2")
-        self.stackedWidget.addWidget(self.page_2)
 
         self.horizontalLayout.addWidget(self.stackedWidget)
 

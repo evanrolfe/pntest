@@ -179,15 +179,11 @@ QSplitter::handle:hover {
 /*------------------------------------------------------------------------------*
  * Borders
  *------------------------------------------------------------------------------*/
-QVBoxLayout#requestBodyFormLayout {
+QVBoxLayout#requestBodyFormLayout, QVBoxLayout#interceptedRequestLayout {
   border-top: 1px solid $border-dark;
 }
 
-QSplitter#requestsTableAndViewSplitter {
-  border-top: 1px solid $border-dark;
-}
-
-QSplitter#editorSplitter {
+QSplitter#requestsTableAndViewSplitter, QSplitter#editorSplitter, QSplitter#clientsSplitter {
   border-top: 1px solid $border-dark;
 }
 
