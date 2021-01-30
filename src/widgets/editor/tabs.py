@@ -1,14 +1,17 @@
 import sys
 
 from PySide2.QtWidgets import QApplication, QWidget, QTabWidget
-from PySide2.QtCore import Slot, QSize
+from PySide2.QtCore import Slot, QSize, Signal
 from PySide2.QtGui import QIcon
 
 from lib.app_settings import AppSettings
 from lib.backend import Backend
+from models.data.editor_item import EditorItem
 from widgets.editor.request_edit_page import RequestEditPage
 
 class Tabs(QTabWidget):
+  item_changed = Signal(EditorItem)
+
   def __init__(self, *args, **kwargs):
     super(Tabs, self).__init__(*args, **kwargs)
 
@@ -25,7 +28,8 @@ class Tabs(QTabWidget):
     if existing_tab_index == None:
       request_edit_page = RequestEditPage(editor_item)
       request_edit_page.form_input_changed.connect(lambda modified: self.editor_item_form_changed(editor_item, modified))
-      self.insertTab(self.count(), request_edit_page, QIcon(":/icons/dark/methods/post.png"), editor_item.name)
+      request_edit_page.request_saved.connect(lambda: self.reload_icon(editor_item))
+      self.insertTab(self.count(), request_edit_page, editor_item.icon(), editor_item.name)
       self.setCurrentIndex(self.count()-1)
     else:
       self.setCurrentIndex(existing_tab_index)
@@ -53,6 +57,12 @@ class Tabs(QTabWidget):
       new_tab_text += '*'
 
     self.setTabText(index, new_tab_text)
+
+  @Slot()
+  def reload_icon(self, editor_item):
+    index = self.get_index_for_editor_item(editor_item)
+    self.setTabIcon(index, editor_item.icon())
+    self.item_changed.emit(editor_item)
 
   @Slot()
   def editor_item_form_changed(self, editor_item, modified):

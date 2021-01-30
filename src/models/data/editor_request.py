@@ -5,6 +5,8 @@ from widgets.editor.request_headers_form import RequestHeadersForm
 
 class EditorRequest(Model):
   __table__ = 'editor_requests'
+  # Default values:
+  __attributes__ = { 'method': 'GET' }
 
   def children(self):
     return EditorRequest.where('parent_id', '=', self.id).order_by('created_at', 'desc').get()

@@ -42,5 +42,11 @@
     <file>icons/dark/loader.gif</file>
     <file>icons/dark/methods/get.png</file>
     <file>icons/dark/methods/post.png</file>
+    <file>icons/dark/methods/put.png</file>
+    <file>icons/dark/methods/patch.png</file>
+    <file>icons/dark/methods/delete.png</file>
+    <file>icons/dark/methods/options.png</file>
+    <file>icons/dark/methods/head.png</file>
+    <file>icons/dark/methods/other.png</file>
   </qresource>
 </RCC>

@@ -6,15 +6,6 @@ from models.data.editor_item import EditorItem
 from models.qt.editor_tree_model import EditorTreeModel
 from models.qt.editor_tree_item import EditorTreeItem
 
-class TreeItemDelegate(QStyledItemDelegate):
-  def __init__(self, parent=None):
-    self.parent = parent
-    super(TreeItemDelegate, self).__init__(parent=None)
-
-  def paint(self, painter, options, index):
-    #options.backgroundBrush = QBrush(QColor('#000000'))
-    QStyledItemDelegate.paint(self, painter, options, index)
-
 class ItemExplorer(QTreeView):
   item_created = Signal(EditorItem)
   item_deleted = Signal(EditorItem)
@@ -35,15 +26,12 @@ class ItemExplorer(QTreeView):
     self.setAcceptDrops(True)
     self.setContextMenuPolicy(Qt.CustomContextMenu)
     self.setDragDropOverwriteMode(True)
+    self.setIconSize(QSize(25,15))
+
     self.customContextMenuRequested.connect(self.right_click)
     self.doubleClicked.connect(self.double_click)
     self.clicked.connect(self.click)
     self.header().setObjectName('itemExplorerHeader')
-
-    #delegate = TreeItemDelegate()
-    #self.setItemDelegate(delegate)
-    self.setIconSize(QSize(20,12))
-
 
   def reload_data(self):
     editor_items = EditorItem.order_by('item_type', 'asc').get()
@@ -52,6 +40,11 @@ class ItemExplorer(QTreeView):
     self.tree_model.item_renamed.connect(self.item_renamed)
     self.setModel(self.tree_model)
     print(f'ItemExplorer: reloading with {len(editor_items)} items')
+
+  @Slot()
+  def reload_item(self, editor_item):
+    print(f'ItemExplorer: reloading editor item: {editor_item.name}')
+    self.tree_model.layoutChanged.emit()
 
   @Slot()
   def change_selection(self, index):

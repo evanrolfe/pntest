@@ -1,4 +1,5 @@
 from orator import Model
+from PySide2.QtGui import QIcon
 from models.data.editor_request import EditorRequest
 from models.request_data import RequestData
 
@@ -56,4 +57,12 @@ class EditorItem(Model):
     print('Saved')
     return editor_item
 
+  def icon(self):
+    if self.item_type == 'request':
+      icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
 
+      method = self.item().method.lower()
+      if method not in icon_methods:
+        method = 'other'
+
+      return QIcon(f":/icons/dark/methods/{method}.png")

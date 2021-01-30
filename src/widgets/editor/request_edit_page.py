@@ -17,8 +17,9 @@ from lib.http_request import HttpRequest
 
 class RequestEditPage(QWidget):
   form_input_changed = Signal(bool)
+  request_saved = Signal()
 
-  METHODS = ['GET','POST','PATCH','PUT','DELETE']
+  METHODS = ['GET','POST','PATCH','PUT','DELETE', 'OPTIONS', 'HEAD']
 
   def __init__(self, editor_item):
     super(RequestEditPage, self).__init__()
@@ -92,6 +93,7 @@ class RequestEditPage(QWidget):
     self.request.save()
 
     self.form_input_changed.emit(False)
+    self.request_saved.emit()
     print(f'saving {method} {url} to request {self.request.id}')
 
   @Slot()

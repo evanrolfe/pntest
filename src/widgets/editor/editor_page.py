@@ -23,6 +23,7 @@ class EditorPage(QWidget):
     self.ui.itemExplorer.item_created.connect(self.ui.editorTabs.open_item)
     self.ui.itemExplorer.item_deleted.connect(self.ui.editorTabs.close_item)
     self.ui.itemExplorer.item_renamed.connect(self.ui.editorTabs.change_item)
+    self.ui.editorTabs.item_changed.connect(self.ui.itemExplorer.reload_item)
     self.ui.editorTabs.setObjectName('editorTabs')
 
   def reload(self):

@@ -48,10 +48,8 @@ class EditorTreeModel(QAbstractItemModel):
       if not item.is_dir:
         self.item_renamed.emit(item.editor_item)
 
-      print('setData EditRole')
       return True
     elif role == Qt.DisplayRole:
-      print('setData DisplayRole')
       self.layoutChanged.emit()
       return True
 
