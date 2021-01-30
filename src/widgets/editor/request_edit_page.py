@@ -53,7 +53,7 @@ class RequestEditPage(QWidget):
 
     #self.show_loader()
     self.threadpool = QThreadPool()
-    self.ui.loaderWidget.ui.cancelButton.clicked.connect(lambda: print('TODO: Cancel Request'))
+    self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
     # Keyboard shortcuts:
     self.connect(QShortcut(QKeySequence(Qt.CTRL + Qt.Key_S), self), SIGNAL('activated()'), self.save_request)
@@ -128,12 +128,17 @@ class RequestEditPage(QWidget):
     http_request = HttpRequest(method, url, headers, body)
 
     # Pass the function to execute
-    worker = BackgroundWorker(lambda: http_request.send()) # Any other args, kwargs are passed to the run function
-    worker.signals.result.connect(self.response_received)
-    worker.signals.error.connect(self.request_error)
-    worker.signals.finished.connect(self.hide_loader)
+    self.worker = BackgroundWorker(lambda: http_request.send()) # Any other args, kwargs are passed to the run function
+    self.worker.signals.result.connect(self.response_received)
+    self.worker.signals.error.connect(self.request_error)
+    self.worker.signals.finished.connect(self.hide_loader)
 
-    self.threadpool.start(worker)
+    self.threadpool.start(self.worker)
+
+  @Slot()
+  def cancel_request(self):
+    self.worker.kill()
+    self.hide_loader()
 
   @Slot()
   def form_field_changed(self):

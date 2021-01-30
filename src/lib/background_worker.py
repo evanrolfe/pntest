@@ -17,12 +17,20 @@ class BackgroundWorker(QRunnable):
     self.args = args
     self.kwargs = kwargs
     self.signals = WorkerSignals()
+    self.alive = True
+
+  def kill(self):
+    self.alive = False
 
   @Slot()
   def run(self):
     # Retrieve args/kwargs here; and fire processing using them
     try:
       result = self.fn(*self.args, **self.kwargs)
+
+      # Hacky way of allow us to "cancel" a worker
+      if not self.alive:
+        return
     except:
       exctype, value = sys.exc_info()[:2]
       self.signals.error.emit((exctype, value, traceback.format_exc()))

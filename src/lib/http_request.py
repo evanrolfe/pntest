@@ -15,7 +15,7 @@ class HttpRequest:
     request = Request(self.method, self.url, headers = self.parsed_headers(), data = self.body)
     prepped_request = session.prepare_request(request)
 
-    self.response = session.send(prepped_request)
+    self.response = session.send(prepped_request, timeout=30)
     return self.response
 
   def parsed_headers(self):
