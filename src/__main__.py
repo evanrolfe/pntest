@@ -49,9 +49,16 @@ def main():
   print(f'[Frontend] DB path: {tmp_db_path}')
   print(f'[Frontend] style dir path: {style_dir_path}')
 
-  database = Database(tmp_db_path)
-  database.delete_existing_db()
-  database.load_or_create()
+  # Load DB from the CLI if argument given
+  try:
+    tmp_db_path = sys.argv[1]
+    print(f'[Frontend] Overridding DB path from CLI: {tmp_db_path}')
+    database = Database(tmp_db_path)
+    database.load_or_create()
+  except IndexError:
+    database = Database(tmp_db_path)
+    database.delete_existing_db()
+    database.load_or_create()
 
   backend = Backend(app_path, data_path, tmp_db_path, backend_path)
   backend.register_callback('backendLoaded', lambda: print('Backend Loaded!'))
