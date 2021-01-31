@@ -6,6 +6,17 @@ from models.request_data import RequestData
 class EditorItem(Model):
   __table__ = 'editor_items'
 
+  # NOTE: This only works for requests
+  def duplicate(self):
+    editor_request = self.item().duplicate()
+    editor_request.save()
+
+    editor_item = EditorItem()
+    editor_item.name = self.name
+    editor_item.item_type = self.item_type
+    editor_item.item_id = editor_request.id
+    return editor_item
+
   def children(self):
     return EditorItem.where('parent_id', '=', self.id).order_by('item_type', 'asc').get()
 

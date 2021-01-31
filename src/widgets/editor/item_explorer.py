@@ -32,6 +32,7 @@ class ItemExplorer(QTreeView):
     self.doubleClicked.connect(self.double_click)
     self.clicked.connect(self.click)
     self.header().setObjectName('itemExplorerHeader')
+    self.copied_editor_item = None
 
   def reload_data(self):
     editor_items = EditorItem.order_by('item_type', 'asc').get()
@@ -96,17 +97,28 @@ class ItemExplorer(QTreeView):
     rename_action = QAction("Rename")
     rename_action.triggered.connect(lambda: self.edit(index))
 
+    paste_action = QAction("Paste")
+    paste_action.triggered.connect(lambda: self.paste_clicked(index))
+
+    copy_action = QAction("Copy")
+    copy_action.triggered.connect(lambda: self.copy_clicked(index))
+
     delete_action = QAction("Delete")
     delete_action.triggered.connect(lambda: self.delete_clicked(index))
 
+    # TODO: Refactor all these if statements:
     menu = QMenu(self)
     if tree_item.is_dir:
       menu.addAction(new_request_action)
       menu.addAction(new_dir_action)
+      if self.copied_editor_item != None:
+        menu.addAction(paste_action)
+    else:
+      menu.addAction(copy_action)
 
     if index.isValid():
-      menu.addAction(rename_action)
       menu.addAction(delete_action)
+      menu.addAction(rename_action)
 
     menu.exec_(self.viewport().mapToGlobal(position))
 
@@ -130,6 +142,17 @@ class ItemExplorer(QTreeView):
     child_editor_item.item_type = 'dir'
 
     self.insertChild(child_editor_item, parent_index)
+
+  @Slot()
+  def copy_clicked(self, parent_index):
+    tree_item = self.tree_model.getItem(parent_index)
+    self.copied_editor_item = tree_item.editor_item.duplicate()
+
+  @Slot()
+  def paste_clicked(self, parent_index):
+    tree_item = self.tree_model.getItem(parent_index)
+    self.insertChild(self.copied_editor_item, parent_index)
+    self.item_created.emit(self.copied_editor_item)
 
   @Slot()
   def delete_clicked(self, index):
