@@ -2,6 +2,7 @@ import sys
 
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView
 from PySide2.QtCore import QFile, Slot
+from PySide2.QtGui import QIcon
 from PySide2.QtUiTools import QUiLoader
 
 from views._compiled.clients.ui_clients_page import Ui_ClientsPage
@@ -10,6 +11,11 @@ from lib.backend import Backend
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
 from widgets.new_client_modal import NewClientModal
+
+CHROMIUM_COMMAND = b'{"command": "createClient", "type": "chromium"}'
+CHROME_COMMAND = b'{"command": "createClient", "type": "chrome"}'
+FIREFOX_COMMAND = b'{"command": "createClient", "type": "firefox"}'
+ANYTHING_COMMAND = b'{"command": "createClient", "type": "anything"}'
 
 class ClientsPage(QWidget):
   def __init__(self, *args, **kwargs):
@@ -27,12 +33,34 @@ class ClientsPage(QWidget):
     self.backend = Backend.get_instance()
     self.backend.register_callback('clientsChanged', self.reload_table_data)
 
-    # Create new client modal
-    self.new_client_modal = NewClientModal(self)
-    self.ui.newClientButton.clicked.connect(self.new_client_click)
+    # Add Icons:
+    self.ui.chromiumButton.setIcon(QIcon(':/icons/icons8-chromium.svg'))
+    self.ui.chromeButton.setIcon(QIcon(':/icons/icons8-chrome.svg'))
+    self.ui.firefoxButton.setIcon(QIcon(':/icons/icons8-firefox.svg'))
+    self.ui.anythingButton.setIcon(QIcon(':/icons/icons8-question-mark.png'))
+
+    # Connect client buttons:
+    self.ui.chromiumButton.clicked.connect(lambda: self.launch_client('chromium'))
+    self.ui.chromeButton.clicked.connect(lambda: self.launch_client('chrome'))
+    self.ui.firefoxButton.clicked.connect(lambda: self.launch_client('firefox'))
+    self.ui.anythingButton.clicked.connect(lambda: self.launch_client('anything'))
+    self.ui.terminalButton.clicked.connect(lambda: self.launch_client('terminal'))
+
+    # Register callback with the backend:
+    self.backend = Backend.get_instance()
+    self.backend.register_callback('clientsAvailable', self.set_clients)
+
+    # Disable clients not available
+    self.client_buttons = {
+      'chromium': self.ui.chromiumButton,
+      'chrome': self.ui.chromeButton,
+      'firefox': self.ui.firefoxButton,
+      'anything': self.ui.anythingButton
+    }
+    self.clients = []
 
   def reload(self):
-    self.ui.clientView.clear()
+    #self.ui.clientView.clear()
     self.reload_table_data()
 
   def reload_table_data(self):
@@ -43,8 +71,35 @@ class ClientsPage(QWidget):
   def select_client(self, selected, deselected):
     selected_id = selected.indexes()[0].data()
     client = Client.find(selected_id)
-    self.ui.clientView.set_client(client)
+    #self.ui.clientView.set_client(client)
 
   @Slot()
   def new_client_click(self):
     self.new_client_modal.show()
+
+  @Slot()
+  def launch_client(self, client_type):
+    launch_commands = {
+      'chromium': CHROMIUM_COMMAND,
+      'chrome': CHROME_COMMAND,
+      'firefox': FIREFOX_COMMAND,
+      'anything': ANYTHING_COMMAND,
+      'terminal': 'TODO',
+    }
+    command = launch_commands[client_type]
+    print(f'Launching {client_type} with command: {command}')
+    self.backend.send_command(command)
+
+  def showEvent(self, event):
+    self.backend.get_available_clients()
+
+  def set_clients(self, clients):
+    self.clients = clients
+
+    for client in clients:
+      button = self.client_buttons[client['name']]
+      button.setEnabled(True)
+
+    # Update the anything button port
+    # anything_client_info = self.get_client_info('anything')
+    # self.ui.anythingButton.setText(f'Anything (Port {anything_client_info["proxyPort"]})')
