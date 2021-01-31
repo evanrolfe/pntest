@@ -5,14 +5,9 @@ from operator import itemgetter, attrgetter
 class ClientsTableModel(QAbstractTableModel):
   def __init__(self,clients, parent = None):
     QAbstractTableModel.__init__(self, parent)
-    self.headers = ['ID', 'Type', 'Name', 'Status']
+    self.headers = ['ID', 'Type', 'Name', 'Status', 'Proxy Port', 'Browser Port']
     self.clients = clients
 
-  # def add_request(self, request):
-  #   rowIndex = 0
-  #   self.beginInsertRows(QModelIndex(), rowIndex, rowIndex)
-  #   self.client_data.clients.insert(0, request)
-  #   self.endInsertRows()
   def set_clients(self, clients):
     self.clients = clients
     self.dataChanged.emit(QModelIndex(), QModelIndex())
@@ -54,29 +49,12 @@ class ClientsTableModel(QAbstractTableModel):
         return client.title
       elif (index.column() == 3):
         return client.open_text()
+      elif (index.column() == 4):
+        return client.proxy_port
+      elif (index.column() == 5):
+        return client.browser_port
 
   @Slot(result="QVariantList")
   def roleNameArray(self):
     return self.headers
 
-  # def sort(self, column, order):
-  #   self.sortOrder = order
-  #   self.sortColumn = column
-
-  #   if (order == Qt.AscendingOrder):
-  #     print(f"Sorting column {column} ASC")
-  #   elif (order == Qt.DescendingOrder):
-  #     print(f"Sorting column {column} DESC")
-
-  #   reverse = (order == Qt.DescendingOrder)
-
-  #   if (column == 0):
-  #     self.client_data.clients = sorted(self.client_data.clients,key=itemgetter('id'), reverse=reverse)
-  #   elif (column == 1):
-  #     self.client_data.clients = sorted(self.client_data.clients,key=itemgetter('client_id'), reverse=reverse)
-  #   elif (column == 2):
-  #     self.client_data.clients = sorted(self.client_data.clients,key=itemgetter('method', 'id'), reverse=reverse)
-  #   elif (column == 3):
-  #     self.client_data.clients = sorted(self.client_data.clients,key=itemgetter('url', 'id'), reverse=reverse)
-
-  #   self.dataChanged.emit(QModelIndex(), QModelIndex())

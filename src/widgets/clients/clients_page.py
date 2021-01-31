@@ -101,5 +101,15 @@ class ClientsPage(QWidget):
       button.setEnabled(True)
 
     # Update the anything button port
-    # anything_client_info = self.get_client_info('anything')
-    # self.ui.anythingButton.setText(f'Anything (Port {anything_client_info["proxyPort"]})')
+    anything_client_info = self.get_client_info('anything')
+    self.ui.anythingButton.setText(f'Anything (Port {anything_client_info["proxyPort"]})')
+
+  def get_client_info(self, browser_type):
+    client_infos = [c for c in self.clients if c['type'] == browser_type]
+
+    if len(client_infos) == 0:
+      client_info = {'version': 'N/A', 'proxyPort': 'N/A', 'browserPort': 'N/A', 'command': 'N/A'}
+    else:
+      client_info = client_infos[0]
+
+    return client_info
