@@ -1,3 +1,3 @@
-[pep8]
+[flake8]
 exclude = .git,__pycache__,_compiled,build,dist,include,venv
-max-line-length = 60
+max-line-length = 120
