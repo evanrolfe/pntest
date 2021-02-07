@@ -1,0 +1,9 @@
+[pep8]
+ignore = E101,E111,E121
+exclude = .git,__pycache__,_compiled,build,dist,include,venv
+max-line-length = 60
+
+[flake8]
+ignore = E101,E111,E121
+exclude = .git,__pycache__,_compiled,build,dist,include,venv
+max-line-length = 60
