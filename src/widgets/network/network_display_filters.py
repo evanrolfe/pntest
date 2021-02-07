@@ -9,7 +9,3 @@ class NetworkDisplayFilters(QtWidgets.QDialog):
         self.ui = Ui_NetworkDisplayFilters()
         self.ui.setupUi(self)
         self.setModal(True)
-
-    # def showEvent(self, event):
-        # print("NewClientModal - showEvent")
-        # self.backend.get_available_clients()

@@ -29,6 +29,9 @@ pyside2-uic src/views/editor/request_headers_form.ui > src/views/_compiled/edito
 pyside2-uic src/views/shared/request_view.ui > src/views/_compiled/shared/ui_request_view.py
 pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
 
+# Mainwindow:
+pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
+
 # HACK: pyside2-uic does not import the QWebEngineView so we have to add this line manually:
 # BE CAREFUL when changing this file as this line will easily break!
 line=`sed "15q;d" src/views/_compiled/shared/ui_request_view.py`
@@ -38,7 +41,3 @@ fi
 
 sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/shared/ui_request_view.py
 # /HACK
-
-# Mainwindow:
-pyside2-uic src/views/new_client_modal.ui > src/views/_compiled/ui_new_client_modal.py
-pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
