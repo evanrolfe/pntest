@@ -1,7 +1,6 @@
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
+from PySide2 import QtSql
 
 from models.request import Request
-
 
 class RequestData:
     SEARCHABLE_COLUMNS = ['id', 'method', 'host', 'path']
@@ -20,7 +19,7 @@ class RequestData:
         # for each id individually inside a loop
         question_marks = ', '.join(['?' for _ in range(len(request_ids))])
 
-        query = QSqlQuery()
+        query = QtSql.QSqlQuery()
         query.prepare(f"DELETE FROM requests WHERE id IN ({question_marks})")
 
         for i, request_id in enumerate(request_ids):
@@ -28,7 +27,7 @@ class RequestData:
 
         result = query.exec_()
 
-        if (result == False):
+        if result is False:
             print("THERE WAS AN ERROR WITH THE SQL QUERY!")
 
         self.requests = list(
@@ -55,7 +54,7 @@ class RequestData:
         else:
             query_str = "SELECT * FROM requests ORDER BY id DESC"
 
-        query = QSqlQuery(query_str)
+        query = QtSql.QSqlQuery(query_str)
 
         while query.next():
             request = self.request_from_query_result(query)
@@ -64,7 +63,7 @@ class RequestData:
         print(f'found {len(self.requests)} requests with query:\n{query_str}')
 
     def load_request(self, request_id):
-        query = QSqlQuery()
+        query = QtSql.QSqlQuery()
         query.prepare("SELECT * FROM requests WHERE id=:id")
         query.bindValue(":id", request_id)
         query.exec_()

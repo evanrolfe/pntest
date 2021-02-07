@@ -3,7 +3,6 @@ from orator import Model
 
 from widgets.editor.request_headers_form import RequestHeadersForm
 
-
 class EditorRequest(Model):
     __table__ = 'editor_requests'
     # Default values:
@@ -34,7 +33,7 @@ class EditorRequest(Model):
         self.delete()
 
     def get_request_headers(self):
-        if self.request_headers == None:
+        if self.request_headers is None:
             return None
 
         return json.loads(self.request_headers)

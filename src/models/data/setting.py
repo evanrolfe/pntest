@@ -1,6 +1,5 @@
 from orator import Model
 
-
 class Setting(Model):
     @classmethod
     def create_defaults(cls):

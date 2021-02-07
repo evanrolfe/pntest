@@ -1,8 +1,4 @@
-import re
-
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QTreeWidgetItem
-
+from PySide2 import QtWidgets
 
 class EditorTreeItem(object):
     def __init__(self, label, editor_item=None, is_dir=False, parent=None):
@@ -30,13 +26,13 @@ class EditorTreeItem(object):
         return len(self.childItems)
 
     def childNumber(self):
-        if self.parent != None:
+        if self.parent is not None:
             return self.parent.childItems.index(self)
 
         return 0
 
     def childIndicatorPolicy(self):
-        return QTreeWidgetItem.ShowIndicator
+        return QtWidgets.QTreeWidgetItem.ShowIndicator
 
     def columnCount(self):
         return 1
@@ -49,7 +45,7 @@ class EditorTreeItem(object):
         self.childItems.append(child_item)
         child_item.parent = self
 
-        if self.editor_item != None:
+        if self.editor_item is not None:
             child_item.editor_item.parent_id = self.editor_item.id
             child_item.editor_item.save()
         else:

@@ -1,8 +1,8 @@
 from orator import Model
-from PySide2.QtGui import QIcon
+from PySide2 import QtGui
+
 from models.data.editor_request import EditorRequest
 from models.request_data import RequestData
-
 
 class EditorItem(Model):
     __table__ = 'editor_items'
@@ -23,7 +23,7 @@ class EditorItem(Model):
 
     def delete_everything(self):
         self.delete_resursive()
-        if self.item() != None:
+        if self.item() is not None:
             self.item().delete()
 
     def delete_resursive(self):
@@ -39,7 +39,7 @@ class EditorItem(Model):
     def save(self, *args, **kwargs):
         item_id = getattr(self, 'item_id', None)
 
-        if self.item_type == 'request' and item_id == None:
+        if self.item_type == 'request' and item_id is None:
             request = EditorRequest()
             request.save()
             print(f'Created request id {request.id}')
@@ -78,4 +78,4 @@ class EditorItem(Model):
             if method not in icon_methods:
                 method = 'other'
 
-            return QIcon(f":/icons/dark/methods/{method}.png")
+            return QtGui.QIcon(f":/icons/dark/methods/{method}.png")

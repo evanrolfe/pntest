@@ -3,7 +3,6 @@ import inflection
 
 from orator import Model, accessor
 
-
 class CaptureFilter(Model):
     DEFAULT_CAPTURE_FILTERS = {
         'hostList': [],
@@ -53,7 +52,7 @@ class CaptureFilter(Model):
     def parsed_filters(self, value=None):
         parsed_filters = json.loads(self.filters)
 
-        if (value == None):
+        if value is None:
             return parsed_filters
         else:
             return parsed_filters[value]

@@ -1,13 +1,10 @@
-from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt, QObject, Slot, Signal
-
-from operator import itemgetter, attrgetter
+from PySide2 import QtCore
 
 from lib.backend import Backend
 
-
-class RequestsTableModel(QAbstractTableModel):
+class RequestsTableModel(QtCore.QAbstractTableModel):
     def __init__(self, request_data, parent=None):
-        QAbstractTableModel.__init__(self, parent)
+        QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Source', 'Type', 'Method',
                         'Host', 'Path', 'Status', 'Modified']
         self.request_data = request_data
@@ -19,7 +16,7 @@ class RequestsTableModel(QAbstractTableModel):
 
     def add_request(self, request):
         rowIndex = 0
-        self.beginInsertRows(QModelIndex(), rowIndex, rowIndex)
+        self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)
         self.request_data.requests.insert(0, request)
         self.endInsertRows()
 
@@ -28,25 +25,25 @@ class RequestsTableModel(QAbstractTableModel):
 
         rowIndex = self.request_data.get_index_of(request.id)
         start_index = self.index(rowIndex, 0)
-        end_index = self.index(rowIndex, len(self.headers)-1)
+        end_index = self.index(rowIndex, len(self.headers) - 1)
         self.dataChanged.emit(start_index, end_index)
 
     def delete_requests(self, request_ids):
         row_index = self.request_data.get_index_of(request_ids[0])
         row_index2 = self.request_data.get_index_of(request_ids[-1])
 
-        self.beginRemoveRows(QModelIndex(), row_index, row_index2)
+        self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
         self.request_data.delete_requests(request_ids)
         self.endRemoveRows()
 
     def roleNames(self):
         roles = {}
         for i, header in enumerate(self.headers):
-            roles[Qt.UserRole + i + 1] = header.encode()
+            roles[QtCore.Qt.UserRole + i + 1] = header.encode()
         return roles
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.headers[section]
 
         return None
@@ -58,7 +55,7 @@ class RequestsTableModel(QAbstractTableModel):
         return len(self.request_data.requests)
 
     def data(self, index, role):
-        if role == Qt.DisplayRole:
+        if role == QtCore.Qt.DisplayRole:
             if not index.isValid():
                 return None
 
@@ -80,7 +77,7 @@ class RequestsTableModel(QAbstractTableModel):
 
             return row_values[index.column()]
 
-    @Slot(result="QVariantList")
+    @QtCore.Slot(result="QVariantList")
     def roleNameArray(self):
         return self.headers
 
@@ -88,12 +85,12 @@ class RequestsTableModel(QAbstractTableModel):
         self.sortOrder = order
         self.sortColumn = column
 
-        if (order == Qt.AscendingOrder):
+        if (order == QtCore.Qt.AscendingOrder):
             print(f"Sorting column {column} ASC")
-        elif (order == Qt.DescendingOrder):
+        elif (order == QtCore.Qt.DescendingOrder):
             print(f"Sorting column {column} DESC")
 
-        reverse = (order == Qt.DescendingOrder)
+        reverse = (order == QtCore.Qt.DescendingOrder)
 
         if (column == 0):
             self.request_data.requests = sorted(
@@ -117,7 +114,7 @@ class RequestsTableModel(QAbstractTableModel):
             self.request_data.requests = sorted(
                 self.request_data.requests, key=self.response_status_sort_key, reverse=reverse)
 
-        self.dataChanged.emit(QModelIndex(), QModelIndex())
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
 
     def response_status_sort_key(self, request):
         if (request.response_status == ''):

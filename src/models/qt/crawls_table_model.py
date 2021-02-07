@@ -1,27 +1,24 @@
-from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt, QObject, Slot, Signal
+from PySide2 import QtCore
 
-from operator import itemgetter, attrgetter
-
-
-class CrawlsTableModel(QAbstractTableModel):
+class CrawlsTableModel(QtCore.QAbstractTableModel):
     def __init__(self, crawls, parent=None):
-        QAbstractTableModel.__init__(self, parent)
+        QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Source', 'Status', 'Started', 'Finished']
         self.crawls = crawls
 
     def set_crawls(self, crawls):
         self.crawls = crawls
-        self.dataChanged.emit(QModelIndex(), QModelIndex())
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
 
     def roleNames(self):
         roles = {}
         for i, header in enumerate(self.headers):
-            roles[Qt.UserRole + i + 1] = header.encode()
+            roles[QtCore.Qt.UserRole + i + 1] = header.encode()
         return roles
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.headers[section]
 
         return None
@@ -33,7 +30,7 @@ class CrawlsTableModel(QAbstractTableModel):
         return len(self.crawls)
 
     def data(self, index, role):
-        if role == Qt.DisplayRole:
+        if role == QtCore.Qt.DisplayRole:
             if not index.isValid():
                 return None
 
@@ -53,7 +50,7 @@ class CrawlsTableModel(QAbstractTableModel):
             elif (index.column() == 4):
                 return crawl.started_at
 
-    @Slot(result="QVariantList")
+    @QtCore.Slot(result="QVariantList")
     def roleNameArray(self):
         return self.headers
 
@@ -61,12 +58,12 @@ class CrawlsTableModel(QAbstractTableModel):
     #   self.sortOrder = order
     #   self.sortColumn = column
 
-    #   if (order == Qt.AscendingOrder):
+    #   if (order == QtCore.Qt.AscendingOrder):
     #     print(f"Sorting column {column} ASC")
-    #   elif (order == Qt.DescendingOrder):
+    #   elif (order == QtCore.Qt.DescendingOrder):
     #     print(f"Sorting column {column} DESC")
 
-    #   reverse = (order == Qt.DescendingOrder)
+    #   reverse = (order == QtCore.Qt.DescendingOrder)
 
     #   if (column == 0):
     #     self.crawl_data.crawls = sorted(self.crawl_data.crawls,key=itemgetter('id'), reverse=reverse)
@@ -77,4 +74,4 @@ class CrawlsTableModel(QAbstractTableModel):
     #   elif (column == 3):
     #     self.crawl_data.crawls = sorted(self.crawl_data.crawls,key=itemgetter('url', 'id'), reverse=reverse)
 
-    #   self.dataChanged.emit(QModelIndex(), QModelIndex())
+    #   self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
