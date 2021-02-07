@@ -1,14 +1,9 @@
-import sys
-from PySide2.QtWidgets import QLineEdit, QPushButton, QApplication, QVBoxLayout, QDialog
-from PySide2.QtCore import Slot
-from PySide2.QtGui import QIcon
+from PySide2 import QtCore, QtWidgets
 
 from views._compiled.network.ui_network_capture_filters import Ui_NetworkCaptureFilters
 from models.data.capture_filter import CaptureFilter
 
-from lib.backend import Backend
-
-class NetworkCaptureFilters(QDialog):
+class NetworkCaptureFilters(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(NetworkCaptureFilters, self).__init__(parent)
 
@@ -39,7 +34,7 @@ class NetworkCaptureFilters(QDialog):
         self.ui.hostsText.setPlainText("\n".join(self.capture_filters.host_list))
         self.ui.pathsText.setPlainText("\n".join(self.capture_filters.path_list))
 
-    @Slot()
+    @QtCore.Slot()
     def save(self):
         # self.backend.send_command(self.launch_command)
         host_setting_index = self.ui.hostSettingDropdown.currentIndex()
@@ -59,11 +54,11 @@ class NetworkCaptureFilters(QDialog):
         self.capture_filters.save()
         self.close()
 
-    @Slot()
+    @QtCore.Slot()
     def host_setting_changed(self, index):
         self.ui.hostsText.setDisabled((index == 0))
 
-    @Slot()
+    @QtCore.Slot()
     def path_setting_changed(self, index):
         self.ui.pathsText.setDisabled((index == 0))
 
