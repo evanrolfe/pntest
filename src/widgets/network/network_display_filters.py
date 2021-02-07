@@ -7,7 +7,6 @@ from views._compiled.network.ui_network_display_filters import Ui_NetworkDisplay
 
 from lib.backend import Backend
 
-
 class NetworkDisplayFilters(QDialog):
     def __init__(self, parent=None):
         super(NetworkDisplayFilters, self).__init__(parent)

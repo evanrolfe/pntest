@@ -122,8 +122,7 @@ class NetworkRequestsTable(QWidget):
         menu = QMenu()
 
         if (len(self.selected_request_ids) > 1):
-            action = QAction(
-                f"Delete {len(self.selected_request_ids)} selected requests")
+            action = QAction(f"Delete {len(self.selected_request_ids)} selected requests")
             menu.addAction(action)
             action.triggered.connect(
                 lambda: self.delete_requests.emit(self.selected_request_ids))
@@ -131,13 +130,11 @@ class NetworkRequestsTable(QWidget):
             if request.is_editable():
                 send_action = QAction("Send to editor")
                 menu.addAction(send_action)
-                send_action.triggered.connect(
-                    lambda: self.send_request_to_editor.emit(request))
+                send_action.triggered.connect(lambda: self.send_request_to_editor.emit(request))
 
             action = QAction("Delete request")
             menu.addAction(action)
-            action.triggered.connect(
-                lambda: self.delete_requests.emit([request.id]))
+            action.triggered.connect(lambda: self.delete_requests.emit([request.id]))
 
         menu.exec_(self.sender().mapToGlobal(position))
 

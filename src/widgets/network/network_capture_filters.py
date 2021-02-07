@@ -8,7 +8,6 @@ from models.data.capture_filter import CaptureFilter
 
 from lib.backend import Backend
 
-
 class NetworkCaptureFilters(QDialog):
     def __init__(self, parent=None):
         super(NetworkCaptureFilters, self).__init__(parent)
@@ -19,10 +18,8 @@ class NetworkCaptureFilters(QDialog):
 
         self.ui.cancelButton.clicked.connect(self.close)
         self.ui.saveButton.clicked.connect(self.save)
-        self.ui.hostSettingDropdown.currentIndexChanged.connect(
-            self.host_setting_changed)
-        self.ui.pathSettingDropdown.currentIndexChanged.connect(
-            self.path_setting_changed)
+        self.ui.hostSettingDropdown.currentIndexChanged.connect(self.host_setting_changed)
+        self.ui.pathSettingDropdown.currentIndexChanged.connect(self.path_setting_changed)
 
         self.load_capture_filters()
 
@@ -39,10 +36,8 @@ class NetworkCaptureFilters(QDialog):
         path_index = self.setting_to_index(self.capture_filters.path_setting)
         self.ui.pathSettingDropdown.setCurrentIndex(path_index)
 
-        self.ui.hostsText.setPlainText(
-            "\n".join(self.capture_filters.host_list))
-        self.ui.pathsText.setPlainText(
-            "\n".join(self.capture_filters.path_list))
+        self.ui.hostsText.setPlainText("\n".join(self.capture_filters.host_list))
+        self.ui.pathsText.setPlainText("\n".join(self.capture_filters.path_list))
 
     @Slot()
     def save(self):

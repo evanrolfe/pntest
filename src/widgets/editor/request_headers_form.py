@@ -47,8 +47,7 @@ class RequestHeadersForm(QtWidgets.QWidget):
         if headers is None:
             self.headers = self.DEFAULT_HEADERS[:]
         else:
-            self.headers = [[True, key, value]
-                            for key, value in headers.items()]
+            self.headers = [[True, key, value] for key, value in headers.items()]
 
     @QtCore.Slot()
     def show_generated_headers(self, state):

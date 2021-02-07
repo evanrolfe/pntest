@@ -35,8 +35,7 @@ class StyleheetLoader:
         theme_str = stream.readAll()
 
         matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)  # noqa W605
-        var_strings = matches[1].replace(
-            '\n', '').replace(' ', '').split(';')[:-1]
+        var_strings = matches[1].replace('\n', '').replace(' ', '').split(';')[:-1]
 
         var_map = {}
         for str in var_strings:

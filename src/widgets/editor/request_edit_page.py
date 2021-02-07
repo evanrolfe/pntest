@@ -44,13 +44,11 @@ class RequestEditPage(QtWidgets.QWidget):
         # Form inputs:
         self.ui.urlInput.returnPressed.connect(self.send_request_async)
         self.ui.urlInput.textChanged.connect(self.form_field_changed)
-        self.ui.methodInput.currentIndexChanged.connect(
-            self.form_field_changed)
+        self.ui.methodInput.currentIndexChanged.connect(self.form_field_changed)
 
         # self.show_loader()
         self.threadpool = QtCore.QThreadPool()
-        self.ui.loaderWidget.ui.cancelButton.clicked.connect(
-            self.cancel_request)
+        self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
         # Keyboard shortcuts:
         self.connect(

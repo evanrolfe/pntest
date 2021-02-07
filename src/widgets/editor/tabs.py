@@ -22,11 +22,10 @@ class Tabs(QtWidgets.QTabWidget):
         if existing_tab_index is None:
             request_edit_page = RequestEditPage(editor_item)
             request_edit_page.form_input_changed.connect(
-                lambda modified: self.editor_item_form_changed(editor_item, modified))
-            request_edit_page.request_saved.connect(
-                lambda: self.reload_icon(editor_item))
-            self.insertTab(self.count(), request_edit_page,
-                           editor_item.icon(), editor_item.name)
+                lambda modified: self.editor_item_form_changed(editor_item, modified)
+            )
+            request_edit_page.request_saved.connect(lambda: self.reload_icon(editor_item))
+            self.insertTab(self.count(), request_edit_page, editor_item.icon(), editor_item.name)
             self.setCurrentIndex(self.count() - 1)
         else:
             self.setCurrentIndex(existing_tab_index)
@@ -76,8 +75,7 @@ class Tabs(QtWidgets.QTabWidget):
             self.setTabText(index, tab_text[0:-1])
 
     def get_index_for_editor_item(self, editor_item):
-        editor_items = [self.widget(
-            i).editor_item for i in range(0, self.count())]
+        editor_items = [self.widget(i).editor_item for i in range(0, self.count())]
 
         try:
             return editor_items.index(editor_item)

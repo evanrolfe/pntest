@@ -12,15 +12,11 @@ class EditorPage(QtWidgets.QWidget):
         self.ui.setupUi(self)
         self.restore_layout_state()
 
-        self.ui.itemExplorer.item_double_clicked.connect(
-            self.ui.editorTabs.open_item)
+        self.ui.itemExplorer.item_double_clicked.connect(self.ui.editorTabs.open_item)
         self.ui.itemExplorer.item_created.connect(self.ui.editorTabs.open_item)
-        self.ui.itemExplorer.item_deleted.connect(
-            self.ui.editorTabs.close_item)
-        self.ui.itemExplorer.item_renamed.connect(
-            self.ui.editorTabs.change_item)
-        self.ui.editorTabs.item_changed.connect(
-            self.ui.itemExplorer.reload_item)
+        self.ui.itemExplorer.item_deleted.connect(self.ui.editorTabs.close_item)
+        self.ui.itemExplorer.item_renamed.connect(self.ui.editorTabs.change_item)
+        self.ui.editorTabs.item_changed.connect(self.ui.itemExplorer.reload_item)
         self.ui.editorTabs.setObjectName('editorTabs')
 
     def reload(self):
@@ -42,6 +38,5 @@ class EditorPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def send_request_to_editor(self, request):
         editor_item = EditorItem.create_from_network_request(request)
-        print(
-            f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')
+        print(f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')
         self.ui.itemExplorer.new_editor_item_created(editor_item)

@@ -88,8 +88,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         tree_item = self.tree_model.getItem(index)
 
         new_request_action = QtWidgets.QAction("New Request")
-        new_request_action.triggered.connect(
-            lambda: self.new_request_clicked(index))
+        new_request_action.triggered.connect(lambda: self.new_request_clicked(index))
 
         new_dir_action = QtWidgets.QAction("New Folder")
         new_dir_action.triggered.connect(lambda: self.new_dir_clicked(index))
@@ -177,8 +176,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         tree_items = [self.tree_model.getItem(i) for i in indexes]
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('PNTest')
-        message_box.setText(
-            f'Are you sure you want to delete these {len(indexes)} items?')
+        message_box.setText(f'Are you sure you want to delete these {len(indexes)} items?')
         message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
         message_box.setDefaultButton(QtWidgets.QMessageBox.Yes)
         response = message_box.exec_()
@@ -206,8 +204,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         child_tree_item = EditorTreeItem.from_editor_item(child_editor_item)
         self.tree_model.insertChild(child_tree_item, parent_index)
 
-        child_index = self.tree_model.index(
-            child_tree_item.childNumber(), 0, parent_index)
+        child_index = self.tree_model.index(child_tree_item.childNumber(), 0, parent_index)
         self.selectionModel().setCurrentIndex(
             child_index,
             QtCore.QItemSelectionModel.ClearAndSelect
