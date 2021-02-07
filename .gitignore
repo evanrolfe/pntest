@@ -8,3 +8,4 @@ dist
 include/pntest-core
 include/node_sqlite3.node
 production.log
+test/tmp.db
