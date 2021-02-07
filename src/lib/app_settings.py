@@ -1,5 +1,4 @@
-from PySide2.QtCore import QSettings
-
+from PySide2 import QtCore
 
 class AppSettings:
     # Singleton method stuff:
@@ -8,15 +7,15 @@ class AppSettings:
     @staticmethod
     def get_instance():
         # Static access method.
-        if AppSettings.__instance == None:
+        if AppSettings.__instance is None:
             AppSettings()
         return AppSettings.__instance
 
     def __init__(self):
-        self.qsettings = QSettings()
+        self.qsettings = QtCore.QSettings()
 
         # Virtually private constructor.
-        if AppSettings.__instance != None:
+        if AppSettings.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
             AppSettings.__instance = self

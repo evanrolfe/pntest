@@ -1,3 +1,4 @@
 [pep8]
+ignore = E302,F541
 exclude = .git,__pycache__,_compiled,build,dist,include,venv
 max-line-length = 60

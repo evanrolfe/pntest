@@ -1,16 +1,13 @@
 import sys
 import traceback
+from PySide2 import QtCore
 
-from PySide2.QtCore import Slot, Signal, QObject, QRunnable
+class WorkerSignals(QtCore.QObject):
+    finished = QtCore.Signal()
+    error = QtCore.Signal(tuple)
+    result = QtCore.Signal(object)
 
-
-class WorkerSignals(QObject):
-    finished = Signal()
-    error = Signal(tuple)
-    result = Signal(object)
-
-
-class BackgroundWorker(QRunnable):
+class BackgroundWorker(QtCore.QRunnable):
     def __init__(self, fn, *args, **kwargs):
         super(BackgroundWorker, self).__init__()
 
@@ -24,7 +21,7 @@ class BackgroundWorker(QRunnable):
     def kill(self):
         self.alive = False
 
-    @Slot()
+    @QtCore.Slot()
     def run(self):
         # Retrieve args/kwargs here; and fire processing using them
         try:
@@ -33,7 +30,7 @@ class BackgroundWorker(QRunnable):
             # Hacky way of allow us to "cancel" a worker
             if not self.alive:
                 return
-        except:
+        except:  # noqa: E722
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:

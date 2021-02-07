@@ -1,8 +1,7 @@
 import os
 import re
 
-from PySide2.QtCore import QFile, QTextStream, Qt
-
+from PySide2 import QtCore
 
 class StyleheetLoader:
     def __init__(self, style_dir_path):
@@ -15,9 +14,9 @@ class StyleheetLoader:
             theme_path = os.path.join(self.style_dir_path, 'dark_theme.qss')
             style_path = os.path.join(self.style_dir_path, 'dark.qss')
 
-        file = QFile(style_path)
-        file.open(QFile.ReadOnly | QFile.Text)
-        stream = QTextStream(file)
+        file = QtCore.QFile(style_path)
+        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        stream = QtCore.QTextStream(file)
 
         stylesheet = stream.readAll()
         theme_vars = self.get_theme_vars(theme_path)
@@ -30,9 +29,9 @@ class StyleheetLoader:
         return stylesheet
 
     def get_theme_vars(self, theme_path):
-        file = QFile(theme_path)
-        file.open(QFile.ReadOnly | QFile.Text)
-        stream = QTextStream(file)
+        file = QtCore.QFile(theme_path)
+        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        stream = QtCore.QTextStream(file)
         theme_str = stream.readAll()
 
         matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)

@@ -2,7 +2,6 @@ from requests import Request, Session
 
 from widgets.editor.request_headers_form import RequestHeadersForm
 
-
 class HttpRequest:
     def __init__(self, method, url, headers, body):
         self.method = method

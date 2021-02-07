@@ -1,13 +1,9 @@
 import json
-import time
-
-from PySide2.QtCore import QProcess, Slot, QByteArray
-from PySide2.QtWidgets import QMessageBox
+from PySide2 import QtCore, QtWidgets
 
 from models.request import Request
 
 LIST_AVAILABLE_CLIENTS_COMMAND = b'{"command": "listAvailableClientTypes"}'
-
 
 class Backend:
     # Singleton method stuff:
@@ -16,7 +12,7 @@ class Backend:
     @staticmethod
     def get_instance():
         # Static access method.
-        if Backend.__instance == None:
+        if Backend.__instance is None:
             Backend()
         return Backend.__instance
 
@@ -36,7 +32,7 @@ class Backend:
         }
 
         # Virtually private constructor.
-        if Backend.__instance != None:
+        if Backend.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
             Backend.__instance = self
@@ -49,19 +45,12 @@ class Backend:
 
     def start(self):
         print("Starting the backend...")
-        #loop = asyncio.get_event_loop()
-        #future = loop.create_future()
-        #self.register_callback('backendLoaded', lambda: loop.call_soon(print('!!!!!!!!!!!!!!! done'), future, 'backendLoaded'))
-
-        self.backend_proc = QProcess()
+        self.backend_proc = QtCore.QProcess()
         self.backend_proc.start(
             f'{self.backend_path} --appPath={self.app_path} --dbPath={self.db_path} --dataPath={self.data_path}')
         self.backend_proc.readyReadStandardOutput.connect(
             self.std_out_received)
         self.backend_proc.readyReadStandardError.connect(self.std_err_received)
-
-        # result = await future
-        #print(f'----------> the result is: {result}')
 
     def kill(self):
         print("Stopping the backend...")
@@ -80,7 +69,7 @@ class Backend:
 
     def send_command(self, command):
         print(command)
-        command_bytes = QByteArray(command + b'\n')
+        command_bytes = QtCore.QByteArray(command + b'\n')
         self.backend_proc.write(command_bytes)
 
     def std_err_received(self):
@@ -89,7 +78,7 @@ class Backend:
         self._show_error_box(line)
 
     def _show_error_box(self, message):
-        message_box = QMessageBox()
+        message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('Error')
         message_box.setText(message)
         message_box.exec_()

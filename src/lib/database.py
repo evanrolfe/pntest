@@ -1,8 +1,8 @@
 import re
 import os
-
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
+from PySide2 import QtSql
 from orator import DatabaseManager, Model
+
 from models.data.capture_filter import CaptureFilter
 from models.data.setting import Setting
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
@@ -18,7 +18,7 @@ class Database:
     @staticmethod
     def get_instance():
         # Static access method.
-        if Database.__instance == None:
+        if Database.__instance is None:
             Database()
         return Database.__instance
 
@@ -35,7 +35,7 @@ class Database:
         Model.set_connection_resolver(self.orator_db)
 
         # Virtually private constructor.
-        if Database.__instance != None:
+        if Database.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
             Database.__instance = self
@@ -47,18 +47,18 @@ class Database:
             os.remove(self.db_path)
 
     def load_or_create(self):
-        self.db = QSqlDatabase.addDatabase('QSQLITE')
+        self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
         self.db.setDatabaseName(self.db_path)
         db_result = self.db.open()
 
-        if db_result == True:
+        if db_result is True:
             print(f'[Frontend] Loaded database from {self.db_path}')
         else:
             print(
                 f'[Frontend] ERROR could not load database from {self.db_path}')
 
         db_tables = []
-        query = QSqlQuery("SELECT name FROM sqlite_master WHERE type='table'")
+        query = QtSql.QSqlQuery("SELECT name FROM sqlite_master WHERE type='table'")
         query.exec_()
         while query.next():
             db_tables.append(query.value(0))
@@ -84,11 +84,11 @@ class Database:
         queries = list(filter(None, queries))  # Remove empty strings
 
         for query_str in queries:
-            query = QSqlQuery()
+            query = QtSql.QSqlQuery()
             query.prepare(query_str)
             result = query.exec_()
 
-            if (result == False):
+            if result is False:
                 print(query_str)
                 print(query.lastError())
 
