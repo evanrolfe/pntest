@@ -10,68 +10,77 @@ from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
 from models.request_data import RequestData
 
+
 class NetworkPageWidget(QWidget):
-  send_request_to_editor = Signal(object)
+    send_request_to_editor = Signal(object)
 
-  def __init__(self, *args, **kwargs):
-    super(NetworkPageWidget, self).__init__(*args, **kwargs)
-    self.ui = Ui_NetworkPageWidget()
-    self.ui.setupUi(self)
+    def __init__(self, *args, **kwargs):
+        super(NetworkPageWidget, self).__init__(*args, **kwargs)
+        self.ui = Ui_NetworkPageWidget()
+        self.ui.setupUi(self)
 
-    # Setup the request model
-    self.request_data = RequestData()
-    self.request_data.load_requests()
-    self.requests_table_model = RequestsTableModel(self.request_data)
-    self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
+        # Setup the request model
+        self.request_data = RequestData()
+        self.request_data.load_requests()
+        self.requests_table_model = RequestsTableModel(self.request_data)
+        self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
-    self.ui.requestsTableWidget.request_selected.connect(self.select_request)
-    self.ui.requestsTableWidget.delete_requests.connect(self.delete_requests)
-    self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
-    self.ui.requestsTableWidget.send_request_to_editor.connect(self.send_request_to_editor)
+        self.ui.requestsTableWidget.request_selected.connect(
+            self.select_request)
+        self.ui.requestsTableWidget.delete_requests.connect(
+            self.delete_requests)
+        self.ui.requestsTableWidget.search_text_changed.connect(
+            self.search_requests)
+        self.ui.requestsTableWidget.send_request_to_editor.connect(
+            self.send_request_to_editor)
 
-    self.restore_layout_state()
+        self.restore_layout_state()
 
-  def reload(self):
-    self.ui.requestViewWidget.clear_request()
-    self.request_data = RequestData()
-    self.request_data.load_requests()
-    self.requests_table_model = RequestsTableModel(self.request_data)
-    self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
-    print('NetworkPage: reloaded!')
+    def reload(self):
+        self.ui.requestViewWidget.clear_request()
+        self.request_data = RequestData()
+        self.request_data.load_requests()
+        self.requests_table_model = RequestsTableModel(self.request_data)
+        self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
+        print('NetworkPage: reloaded!')
 
-  def restore_layout_state(self):
-    settings = AppSettings.get_instance()
-    splitterState = settings.get("NetworkPageWidget.requestsTableAndViewSplitterState", None)
-    splitterState2 = settings.get("NetworkPageWidget.requestsViewSplitterState", None)
+    def restore_layout_state(self):
+        settings = AppSettings.get_instance()
+        splitterState = settings.get(
+            "NetworkPageWidget.requestsTableAndViewSplitterState", None)
+        splitterState2 = settings.get(
+            "NetworkPageWidget.requestsViewSplitterState", None)
 
-    self.ui.requestsTableAndViewSplitter.restoreState(splitterState)
-    self.ui.requestViewWidget.ui.splitter.restoreState(splitterState2)
+        self.ui.requestsTableAndViewSplitter.restoreState(splitterState)
+        self.ui.requestViewWidget.ui.splitter.restoreState(splitterState2)
 
-  def save_layout_state(self):
-    splitter_state = self.ui.requestsTableAndViewSplitter.saveState()
-    splitter_state2 = self.ui.requestViewWidget.ui.splitter.saveState()
+    def save_layout_state(self):
+        splitter_state = self.ui.requestsTableAndViewSplitter.saveState()
+        splitter_state2 = self.ui.requestViewWidget.ui.splitter.saveState()
 
-    settings = AppSettings.get_instance()
-    settings.save("NetworkPageWidget.requestsTableAndViewSplitterState", splitter_state)
-    settings.save("NetworkPageWidget.requestsViewSplitterState", splitter_state2)
+        settings = AppSettings.get_instance()
+        settings.save(
+            "NetworkPageWidget.requestsTableAndViewSplitterState", splitter_state)
+        settings.save(
+            "NetworkPageWidget.requestsViewSplitterState", splitter_state2)
 
-  @Slot()
-  def select_request(self, selected, deselected):
-    if (len(selected.indexes()) > 0):
-      selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
-      selected_id = selected_id_cols[0].data()
-      #print(f"SELECTING ID: {selected_id}")
-      request = self.request_data.load_request(selected_id)
-      self.ui.requestViewWidget.set_request(request)
+    @Slot()
+    def select_request(self, selected, deselected):
+        if (len(selected.indexes()) > 0):
+            selected_id_cols = list(
+                filter(lambda i: i.column() == 0, selected.indexes()))
+            selected_id = selected_id_cols[0].data()
+            #print(f"SELECTING ID: {selected_id}")
+            request = self.request_data.load_request(selected_id)
+            self.ui.requestViewWidget.set_request(request)
 
-  @Slot()
-  def delete_requests(self, request_ids):
-    self.requests_table_model.delete_requests(request_ids)
+    @Slot()
+    def delete_requests(self, request_ids):
+        self.requests_table_model.delete_requests(request_ids)
 
-  @Slot()
-  def search_requests(self, search_text):
-    print(f'Searching requests! {search_text}')
-    self.request_data.set_filter_param('search', search_text)
-    self.request_data.load_requests()
-    self.requests_table_model.refresh()
-
+    @Slot()
+    def search_requests(self, search_text):
+        print(f'Searching requests! {search_text}')
+        self.request_data.set_filter_param('search', search_text)
+        self.request_data.load_requests()
+        self.requests_table_model.refresh()
