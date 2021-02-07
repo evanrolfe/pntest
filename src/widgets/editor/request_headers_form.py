@@ -1,12 +1,9 @@
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView
-from PySide2.QtCore import QFile, Slot, Qt
-from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtWidgets, QtCore
 
 from views._compiled.editor.ui_request_headers_form import Ui_RequestHeadersForm
 from models.qt.editor_request_headers_table_model import EditorRequestHeadersTableModel
 
-
-class RequestHeadersForm(QWidget):
+class RequestHeadersForm(QtWidgets.QWidget):
     CALCULATED_TEXT = '<calculated when request is sent>'
     DEFAULT_HEADERS = [
         [True, 'Content-Length', CALCULATED_TEXT],
@@ -27,14 +24,14 @@ class RequestHeadersForm(QWidget):
 
         self.table_model = EditorRequestHeadersTableModel(self.headers)
         self.ui.headersTable.setModel(self.table_model)
-        self.ui.headersTable.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
 
         horizontalHeader = self.ui.headersTable.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
-        horizontalHeader.setSectionResizeMode(QHeaderView.Interactive)
+        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
 
         verticalHeader = self.ui.headersTable.verticalHeader()
-        verticalHeader.setSectionResizeMode(QHeaderView.Fixed)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
@@ -47,15 +44,15 @@ class RequestHeadersForm(QWidget):
     def load_headers(self):
         headers = self.editor_item.item().get_request_headers()
 
-        if headers == None:
+        if headers is None:
             self.headers = self.DEFAULT_HEADERS[:]
         else:
             self.headers = [[True, key, value]
                             for key, value in headers.items()]
 
-    @Slot()
+    @QtCore.Slot()
     def show_generated_headers(self, state):
-        if state == Qt.Checked:
+        if state == QtCore.Qt.Checked:
             self.ui.headersTable.showRow(0)
             self.ui.headersTable.showRow(1)
         else:

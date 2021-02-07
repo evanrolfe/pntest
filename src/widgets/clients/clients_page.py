@@ -1,24 +1,17 @@
-import sys
-
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView
-from PySide2.QtCore import QFile, Slot
-from PySide2.QtGui import QIcon
-from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.clients.ui_clients_page import Ui_ClientsPage
 
 from lib.backend import Backend
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
-from widgets.new_client_modal import NewClientModal
 
 CHROMIUM_COMMAND = b'{"command": "createClient", "type": "chromium"}'
 CHROME_COMMAND = b'{"command": "createClient", "type": "chrome"}'
 FIREFOX_COMMAND = b'{"command": "createClient", "type": "firefox"}'
 ANYTHING_COMMAND = b'{"command": "createClient", "type": "anything"}'
 
-
-class ClientsPage(QWidget):
+class ClientsPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(ClientsPage, self).__init__(*args, **kwargs)
         self.ui = Ui_ClientsPage()
@@ -28,7 +21,6 @@ class ClientsPage(QWidget):
         self.clients_table_model = ClientsTableModel(clients)
 
         self.ui.clientsTable.setTableModel(self.clients_table_model)
-        self.ui.clientsTable.client_selected.connect(self.select_client)
 
         # Reload when the clients have changed:
         self.backend = Backend.get_instance()
@@ -36,11 +28,10 @@ class ClientsPage(QWidget):
             'clientsChanged', self.reload_table_data)
 
         # Add Icons:
-        self.ui.chromiumButton.setIcon(QIcon(':/icons/icons8-chromium.svg'))
-        self.ui.chromeButton.setIcon(QIcon(':/icons/icons8-chrome.svg'))
-        self.ui.firefoxButton.setIcon(QIcon(':/icons/icons8-firefox.svg'))
-        self.ui.anythingButton.setIcon(
-            QIcon(':/icons/icons8-question-mark.png'))
+        self.ui.chromiumButton.setIcon(QtGui.QIcon(':/icons/icons8-chromium.svg'))
+        self.ui.chromeButton.setIcon(QtGui.QIcon(':/icons/icons8-chrome.svg'))
+        self.ui.firefoxButton.setIcon(QtGui.QIcon(':/icons/icons8-firefox.svg'))
+        self.ui.anythingButton.setIcon(QtGui.QIcon(':/icons/icons8-question-mark.png'))
 
         # Connect client buttons:
         self.ui.chromiumButton.clicked.connect(
@@ -75,17 +66,11 @@ class ClientsPage(QWidget):
         clients = Client.all()
         self.clients_table_model.set_clients(clients)
 
-    @Slot()
-    def select_client(self, selected, deselected):
-        selected_id = selected.indexes()[0].data()
-        client = Client.find(selected_id)
-        # self.ui.clientView.set_client(client)
-
-    @Slot()
+    @QtCore.Slot()
     def new_client_click(self):
         self.new_client_modal.show()
 
-    @Slot()
+    @QtCore.Slot()
     def launch_client(self, client_type):
         launch_commands = {
             'chromium': CHROMIUM_COMMAND,

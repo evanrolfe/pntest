@@ -1,14 +1,10 @@
-import sys
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView, QMenu, QAction
-from PySide2.QtCore import QFile, Slot, Qt, Signal, QItemSelection
-from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtWidgets, QtCore
 
 from views._compiled.crawls.ui_crawls_table import Ui_CrawlsTable
 from lib.backend import Backend
 
-
-class CrawlsTable(QWidget):
-    crawl_selected = Signal(QItemSelection, QItemSelection)
+class CrawlsTable(QtWidgets.QWidget):
+    crawl_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
 
     def __init__(self, *args, **kwargs):
         super(CrawlsTable, self).__init__(*args, **kwargs)
@@ -17,8 +13,8 @@ class CrawlsTable(QWidget):
 
         horizontalHeader = self.ui.crawlsTable.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
-        horizontalHeader.setSectionResizeMode(QHeaderView.Interactive)
-        horizontalHeader.setSortIndicator(0, Qt.DescendingOrder)
+        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        horizontalHeader.setSortIndicator(0, QtCore.Qt.DescendingOrder)
         self.ui.crawlsTable.setSortingEnabled(True)
 
         self.ui.crawlsTable.setColumnWidth(0, 50)
@@ -27,15 +23,15 @@ class CrawlsTable(QWidget):
         self.ui.crawlsTable.setColumnWidth(3, 60)
 
         verticalHeader = self.ui.crawlsTable.verticalHeader()
-        verticalHeader.setSectionResizeMode(QHeaderView.Fixed)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
         # Set row selection behaviour:
-        self.ui.crawlsTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.ui.crawlsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         # Set right-click behaviour:
-        self.ui.crawlsTable.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.crawlsTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # self.ui.crawlsTable.customContextMenuRequested.connect(self.right_clicked)
 
         self.backend = Backend.get_instance()

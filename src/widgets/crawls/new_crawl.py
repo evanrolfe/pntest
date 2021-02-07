@@ -1,8 +1,5 @@
-import sys
 import json
-from PySide2.QtWidgets import QLineEdit, QPushButton, QApplication, QVBoxLayout, QDialog
-from PySide2.QtCore import Slot, Signal
-from PySide2.QtGui import QIcon
+from PySide2 import QtWidgets, QtCore
 
 from views._compiled.crawls.ui_new_crawl import Ui_NewCrawl
 
@@ -10,9 +7,8 @@ from lib.backend import Backend
 from models.data.client import Client
 from models.data.crawl import Crawl
 
-
-class NewCrawl(QDialog):
-    crawl_saved = Signal()
+class NewCrawl(QtWidgets.QDialog):
+    crawl_saved = QtCore.Signal()
 
     def __init__(self, parent=None):
         super(NewCrawl, self).__init__(parent)
@@ -38,7 +34,7 @@ class NewCrawl(QDialog):
         for client in clients:
             self.ui.clientsDropdown.addItem(client.title, client.id)
 
-    @Slot()
+    @QtCore.Slot()
     def start(self):
         client_id = self.ui.clientsDropdown.itemData(
             self.ui.clientsDropdown.currentIndex())

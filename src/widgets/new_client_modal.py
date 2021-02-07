@@ -1,7 +1,4 @@
-import sys
-from PySide2.QtWidgets import QLineEdit, QPushButton, QApplication, QVBoxLayout, QDialog
-from PySide2.QtCore import Slot
-from PySide2.QtGui import QIcon
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.ui_new_client_modal import Ui_NewClientModal
 
@@ -12,8 +9,7 @@ CHROME_COMMAND = b'{"command": "createClient", "type": "chrome"}'
 FIREFOX_COMMAND = b'{"command": "createClient", "type": "firefox"}'
 ANYTHING_COMMAND = b'{"command": "createClient", "type": "anything"}'
 
-
-class NewClientModal(QDialog):
+class NewClientModal(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(NewClientModal, self).__init__(parent)
 
@@ -33,25 +29,20 @@ class NewClientModal(QDialog):
         ]
 
         # Add Icons:
-        self.ui.chromiumButton.setIcon(QIcon(':/icons/icons8-chromium.svg'))
-        self.ui.chromeButton.setIcon(QIcon(':/icons/icons8-chrome.svg'))
-        self.ui.firefoxButton.setIcon(QIcon(':/icons/icons8-firefox.svg'))
-        self.ui.anythingButton.setIcon(
-            QIcon(':/icons/icons8-question-mark.png'))
+        self.ui.chromiumButton.setIcon(QtGui.QIcon(':/icons/icons8-chromium.svg'))
+        self.ui.chromeButton.setIcon(QtGui.QIcon(':/icons/icons8-chrome.svg'))
+        self.ui.firefoxButton.setIcon(QtGui.QIcon(':/icons/icons8-firefox.svg'))
+        self.ui.anythingButton.setIcon(QtGui.QIcon(':/icons/icons8-question-mark.png'))
 
         # Set Checkable
         for button in self.client_buttons:
             button.setCheckable(True)
 
         # Connect buttons
-        self.ui.chromiumButton.clicked.connect(
-            self.make_button_clicked('chromium'))
-        self.ui.chromeButton.clicked.connect(
-            self.make_button_clicked('chrome'))
-        self.ui.firefoxButton.clicked.connect(
-            self.make_button_clicked('firefox'))
-        self.ui.anythingButton.clicked.connect(
-            self.make_button_clicked('anything'))
+        self.ui.chromiumButton.clicked.connect(self.make_button_clicked('chromium'))
+        self.ui.chromeButton.clicked.connect(self.make_button_clicked('chrome'))
+        self.ui.firefoxButton.clicked.connect(self.make_button_clicked('firefox'))
+        self.ui.anythingButton.clicked.connect(self.make_button_clicked('anything'))
         self.ui.cancelButton.clicked.connect(self.close)
         self.ui.launchButton.clicked.connect(self.launch_client)
 
@@ -86,14 +77,13 @@ class NewClientModal(QDialog):
 
         # Update the anything button port
         anything_client_info = self.get_client_info('anything')
-        self.ui.anythingButton.setText(
-            f'Anything (Port {anything_client_info["proxyPort"]})')
+        self.ui.anythingButton.setText(f'Anything (Port {anything_client_info["proxyPort"]})')
 
         # Refresh the current client description:
         self.refresh_current_description()
 
     def make_button_clicked(self, browser_type):
-        @Slot()
+        @QtCore.Slot()
         def button_clicked():
             # Uncheck all buttons:
             for _browser_type, button in self.client_buttons.items():
@@ -123,7 +113,7 @@ class NewClientModal(QDialog):
 
         return button_clicked
 
-    @Slot()
+    @QtCore.Slot()
     def launch_client(self):
         self.backend.send_command(self.launch_command)
         self.close()
@@ -190,8 +180,7 @@ class NewClientModal(QDialog):
         client_infos = [c for c in self.clients if c['type'] == browser_type]
 
         if len(client_infos) == 0:
-            client_info = {'version': 'N/A', 'proxyPort': 'N/A',
-                           'browserPort': 'N/A', 'command': 'N/A'}
+            client_info = {'version': 'N/A', 'proxyPort': 'N/A', 'browserPort': 'N/A', 'command': 'N/A'}
         else:
             client_info = client_infos[0]
 

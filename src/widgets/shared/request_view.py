@@ -1,17 +1,8 @@
-import sys
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView
-from PySide2.QtCore import QFile, Qt
-from PySide2.QtGui import QPalette, QColor
-from PySide2.QtUiTools import QUiLoader
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
-from PySide2.QtWebEngineWidgets import QWebEngineView
+from PySide2 import QtWidgets
 
 from views._compiled.shared.ui_request_view import Ui_RequestView
 
-from widgets.code_editor.html_highlighter import HtmlHighlighter
-
-
-class RequestView(QWidget):
+class RequestView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(RequestView, self).__init__(*args, **kwargs)
         self.ui = Ui_RequestView()
@@ -21,7 +12,7 @@ class RequestView(QWidget):
         self.ui.headerTabs.setTabEnabled(1, False)
         self.ui.headerTabs.setTabEnabled(3, False)
 
-        #self.highlighter = HtmlHighlighter(self.ui.responseBodyRawText.document())
+        # self.highlighter = HtmlHighlighter(self.ui.responseBodyRawText.document())
         # self.ui.bodyTab.setCurrentWidget(self.ui.responseBodyWebview)
 
     def clear_request(self):
@@ -53,7 +44,7 @@ class RequestView(QWidget):
             request.response_body_for_preview(), baseUrl=request.url())
 
         # Request modified tab:
-        if (request.request_modified == True):
+        if request.request_modified is True:
             self.ui.headerTabs.setTabEnabled(1, True)
             self.ui.requestHeadersModifiedText.setPlainText(
                 request.request_headers_modified_parsed())
@@ -61,7 +52,7 @@ class RequestView(QWidget):
             self.ui.headerTabs.setTabEnabled(1, False)
 
         # Response modified tab:
-        if (request.response_modified == True):
+        if request.response_modified is True:
             self.ui.headerTabs.setTabEnabled(3, True)
             self.ui.bodyTabs.setTabEnabled(1, True)
             self.ui.responseHeadersModifiedText.setPlainText(

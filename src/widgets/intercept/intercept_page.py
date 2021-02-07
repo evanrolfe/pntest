@@ -1,15 +1,10 @@
-import sys
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView
-from PySide2.QtCore import QFile, Slot
-from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtWidgets, QtCore
 
 from views._compiled.intercept.ui_intercept_page import Ui_InterceptPage
-
 from lib.backend import Backend
 from models.data.setting import Setting
 
-
-class InterceptPage(QWidget):
+class InterceptPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(InterceptPage, self).__init__(*args, **kwargs)
         self.ui = Ui_InterceptPage()
@@ -70,21 +65,21 @@ class InterceptPage(QWidget):
         self.ui.forwardInterceptButton.setEnabled(enabled)
         self.ui.dropButton.setEnabled(enabled)
 
-    @Slot()
+    @QtCore.Slot()
     def forward_button_clicked(self):
         self.get_data_from_form()
 
         self.backend.forward_request(self.intercepted_request)
         self.__clear_request()
 
-    @Slot()
+    @QtCore.Slot()
     def forward_intercept_button_clicked(self):
         self.get_data_from_form()
 
         self.backend.forward_intercept_request(self.intercepted_request)
         self.__clear_request()
 
-    @Slot()
+    @QtCore.Slot()
     def enabled_button_clicked(self):
         new_value = not self.intercept_enabled
         self.backend.change_setting('interceptEnabled', new_value)
@@ -92,19 +87,16 @@ class InterceptPage(QWidget):
 
     def get_data_from_form(self):
         # If intercepted_request is a response:
-        if (self.intercepted_request.get('rawResponse') != None):
-            self.intercepted_request['rawResponse'] = self.ui.headersText.toPlainText(
-            )
-            self.intercepted_request['rawResponseBody'] = self.ui.bodyText.toPlainText(
-            )
+        if self.intercepted_request.get('rawResponse') is not None:
+            self.intercepted_request['rawResponse'] = self.ui.headersText.toPlainText()
+            self.intercepted_request['rawResponseBody'] = self.ui.bodyText.toPlainText()
         else:
-            self.intercepted_request['rawRequest'] = self.ui.headersText.toPlainText(
-            )
+            self.intercepted_request['rawRequest'] = self.ui.headersText.toPlainText()
 
     def set_enabled(self, intercept_enabled):
         self.intercept_enabled = intercept_enabled
 
-        if (intercept_enabled == True):
+        if intercept_enabled is True:
             self.ui.enabledButton.setText('Disable Intercept')
         else:
             self.ui.enabledButton.setText('Enable Intercept')

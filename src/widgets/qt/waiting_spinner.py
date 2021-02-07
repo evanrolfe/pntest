@@ -27,20 +27,17 @@ SOFTWARE.
 
 import math
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide2 import QtWidgets, QtCore, QtGui
 
-
-class QtWaitingSpinner(QWidget):
-    def __init__(self, parent, centerOnParent=True, disableParentWhenSpinning=False, modality=Qt.NonModal):
+class QtWaitingSpinner(QtWidgets.QWidget):
+    def __init__(self, parent, centerOnParent=True, disableParentWhenSpinning=False, modality=QtCore.Qt.NonModal):
         super().__init__(parent)
 
         self._centerOnParent = centerOnParent
         self._disableParentWhenSpinning = disableParentWhenSpinning
 
         # WAS IN initialize()
-        self._color = QColor(Qt.black)
+        self._color = QtGui.QColor(QtCore.Qt.black)
         self._roundness = 100.0
         self._minimumTrailOpacity = 3.14159265358979323846
         self._trailFadePercentage = 80.0
@@ -52,7 +49,7 @@ class QtWaitingSpinner(QWidget):
         self._currentCounter = 0
         self._isSpinning = False
 
-        self._timer = QTimer(self)
+        self._timer = QtCore.QTimer(self)
         self._timer.timeout.connect(self.rotate)
         self.updateSize()
         self.updateTimer()
@@ -60,18 +57,18 @@ class QtWaitingSpinner(QWidget):
         # END initialize()
 
         self.setWindowModality(modality)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
     def paintEvent(self, QPaintEvent):
         self.updatePosition()
-        painter = QPainter(self)
-        painter.fillRect(self.rect(), Qt.transparent)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter = QtGui.QPainter(self)
+        painter.fillRect(self.rect(), QtCore.Qt.transparent)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing, True)
 
         if self._currentCounter >= self._numberOfLines:
             self._currentCounter = 0
 
-        painter.setPen(Qt.NoPen)
+        painter.setPen(QtCore.Qt.NoPen)
         for i in range(0, self._numberOfLines):
             painter.save()
             painter.translate(self._innerRadius + self._lineLength,
@@ -84,8 +81,11 @@ class QtWaitingSpinner(QWidget):
             color = self.currentLineColor(distance, self._numberOfLines, self._trailFadePercentage,
                                           self._minimumTrailOpacity, self._color)
             painter.setBrush(color)
-            painter.drawRoundedRect(QRect(0, -self._lineWidth / 2, self._lineLength, self._lineWidth), self._roundness,
-                                    self._roundness, Qt.RelativeSize)
+            painter.drawRoundedRect(
+                QtCore.QRect(0, -self._lineWidth / 2, self._lineLength, self._lineWidth),
+                self._roundness,
+                self._roundness, QtCore.Qt.RelativeSize
+            )
             painter.restore()
 
     def start(self):
@@ -161,8 +161,8 @@ class QtWaitingSpinner(QWidget):
     def setRoundness(self, roundness):
         self._roundness = max(0.0, min(100.0, roundness))
 
-    def setColor(self, color=Qt.black):
-        self._color = QColor(color)
+    def setColor(self, color=QtCore.Qt.black):
+        self._color = QtGui.QColor(color)
 
     def setRevolutionsPerSecond(self, revolutionsPerSecond):
         self._revolutionsPerSecond = revolutionsPerSecond
@@ -200,7 +200,7 @@ class QtWaitingSpinner(QWidget):
         return distance
 
     def currentLineColor(self, countDistance, totalNrOfLines, trailFadePerc, minOpacity, colorinput):
-        color = QColor(colorinput)
+        color = QtGui.QColor(colorinput)
         if countDistance == 0:
             return color
         minAlphaF = minOpacity / 100.0

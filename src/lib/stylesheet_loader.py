@@ -34,7 +34,7 @@ class StyleheetLoader:
         stream = QtCore.QTextStream(file)
         theme_str = stream.readAll()
 
-        matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)
+        matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)  # noqa W605
         var_strings = matches[1].replace(
             '\n', '').replace(' ', '').split(';')[:-1]
 

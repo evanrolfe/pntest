@@ -1,18 +1,10 @@
-import sys
-from PySide2 import QtCore
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView, QMenu, QAction, QItemDelegate, QMessageBox
-from PySide2.QtCore import QFile, Slot, Qt, QItemSelectionModel
+from PySide2 import QtCore, QtWidgets
 
 from views._compiled.editor.ui_editor_page import Ui_EditorPage
-
 from lib.app_settings import AppSettings
-from lib.backend import Backend
 from models.data.editor_item import EditorItem
-from models.qt.editor_tree_model import EditorTreeModel
-from models.qt.editor_tree_item import EditorTreeItem
 
-
-class EditorPage(QWidget):
+class EditorPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(EditorPage, self).__init__(*args, **kwargs)
 
@@ -47,7 +39,7 @@ class EditorPage(QWidget):
 
         # self.ui.requestGroupView.save_layout_state()
 
-    @Slot()
+    @QtCore.Slot()
     def send_request_to_editor(self, request):
         editor_item = EditorItem.create_from_network_request(request)
         print(

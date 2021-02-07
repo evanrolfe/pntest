@@ -1,18 +1,15 @@
-from PySide2.QtWidgets import QTreeView, QAbstractItemView, QMenu, QMessageBox, QAction, QStyledItemDelegate
-from PySide2.QtCore import QFile, Signal, Slot, Qt, QItemSelectionModel, QModelIndex, QSize
-from PySide2.QtGui import QBrush, QColor, QIcon
+from PySide2 import QtWidgets, QtCore
 
 from models.data.editor_item import EditorItem
 from models.qt.editor_tree_model import EditorTreeModel
 from models.qt.editor_tree_item import EditorTreeItem
 
-
-class ItemExplorer(QTreeView):
-    item_created = Signal(EditorItem)
-    item_deleted = Signal(EditorItem)
-    item_renamed = Signal(EditorItem)
-    item_clicked = Signal(EditorItem)
-    item_double_clicked = Signal(EditorItem)
+class ItemExplorer(QtWidgets.QTreeView):
+    item_created = QtCore.Signal(EditorItem)
+    item_deleted = QtCore.Signal(EditorItem)
+    item_renamed = QtCore.Signal(EditorItem)
+    item_clicked = QtCore.Signal(EditorItem)
+    item_double_clicked = QtCore.Signal(EditorItem)
 
     def __init__(self, *args, **kwargs):
         super(ItemExplorer, self).__init__(*args, **kwargs)
@@ -20,14 +17,14 @@ class ItemExplorer(QTreeView):
         self.reload_data()
 
         self.setModel(self.tree_model)
-        self.setDragDropMode(QAbstractItemView.InternalMove)
-        self.setSelectionMode(QAbstractItemView.ContiguousSelection)
-        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ContiguousSelection)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.setDragDropOverwriteMode(True)
-        self.setIconSize(QSize(25, 15))
+        self.setIconSize(QtCore.QSize(25, 15))
 
         self.customContextMenuRequested.connect(self.right_click)
         self.doubleClicked.connect(self.double_click)
@@ -43,19 +40,19 @@ class ItemExplorer(QTreeView):
         self.setModel(self.tree_model)
         print(f'ItemExplorer: reloading with {len(editor_items)} items')
 
-    @Slot()
+    @QtCore.Slot()
     def reload_item(self, editor_item):
         print(f'ItemExplorer: reloading editor item: {editor_item.name}')
         self.tree_model.layoutChanged.emit()
 
-    @Slot()
+    @QtCore.Slot()
     def change_selection(self, index):
         self.selectionModel().setCurrentIndex(
             index,
-            QItemSelectionModel.ClearAndSelect
+            QtCore.QItemSelectionModel.ClearAndSelect
         )
 
-    @Slot()
+    @QtCore.Slot()
     def right_click(self, position):
         index = self.indexAt(position)
 
@@ -66,55 +63,55 @@ class ItemExplorer(QTreeView):
         else:
             self.show_single_selection_context_menu(index, position)
 
-    @Slot()
+    @QtCore.Slot()
     def double_click(self, index):
         item = self.tree_model.getItem(index)
         if not item.is_dir:
             self.item_double_clicked.emit(item.editor_item)
 
-    @Slot()
+    @QtCore.Slot()
     def click(self, index):
         item = self.tree_model.getItem(index)
         if not item.is_dir:
             self.item_clicked.emit(item.editor_item)
 
     def show_multi_selection_context_menu(self, indexes, position):
-        delete_action = QAction(f"Delete {len(indexes)} items")
+        delete_action = QtWidgets.QAction(f"Delete {len(indexes)} items")
         delete_action.triggered.connect(
             lambda: self.multi_delete_clicked(indexes))
 
-        menu = QMenu(self)
+        menu = QtWidgets.QMenu(self)
         menu.addAction(delete_action)
         menu.exec_(self.viewport().mapToGlobal(position))
 
     def show_single_selection_context_menu(self, index, position):
         tree_item = self.tree_model.getItem(index)
 
-        new_request_action = QAction("New Request")
+        new_request_action = QtWidgets.QAction("New Request")
         new_request_action.triggered.connect(
             lambda: self.new_request_clicked(index))
 
-        new_dir_action = QAction("New Folder")
+        new_dir_action = QtWidgets.QAction("New Folder")
         new_dir_action.triggered.connect(lambda: self.new_dir_clicked(index))
 
-        rename_action = QAction("Rename")
+        rename_action = QtWidgets.QAction("Rename")
         rename_action.triggered.connect(lambda: self.edit(index))
 
-        paste_action = QAction("Paste")
+        paste_action = QtWidgets.QAction("Paste")
         paste_action.triggered.connect(lambda: self.paste_clicked(index))
 
-        copy_action = QAction("Copy")
+        copy_action = QtWidgets.QAction("Copy")
         copy_action.triggered.connect(lambda: self.copy_clicked(index))
 
-        delete_action = QAction("Delete")
+        delete_action = QtWidgets.QAction("Delete")
         delete_action.triggered.connect(lambda: self.delete_clicked(index))
 
         # TODO: Refactor all these if statements:
-        menu = QMenu(self)
+        menu = QtWidgets.QMenu(self)
         if tree_item.is_dir:
             menu.addAction(new_request_action)
             menu.addAction(new_dir_action)
-            if self.copied_editor_item != None:
+            if self.copied_editor_item is not None:
                 menu.addAction(paste_action)
         else:
             menu.addAction(copy_action)
@@ -126,10 +123,10 @@ class ItemExplorer(QTreeView):
         menu.exec_(self.viewport().mapToGlobal(position))
 
     def new_editor_item_created(self, editor_item):
-        self.insertChild(editor_item, QModelIndex())
+        self.insertChild(editor_item, QtCore.QModelIndex())
         self.item_created.emit(editor_item)
 
-    @Slot()
+    @QtCore.Slot()
     def new_request_clicked(self, parent_index):
         child_editor_item = EditorItem()
         child_editor_item.name = 'new request'
@@ -138,7 +135,7 @@ class ItemExplorer(QTreeView):
         self.insertChild(child_editor_item, parent_index)
         self.item_created.emit(child_editor_item)
 
-    @Slot()
+    @QtCore.Slot()
     def new_dir_clicked(self, parent_index):
         child_editor_item = EditorItem()
         child_editor_item.name = 'new folder'
@@ -146,18 +143,17 @@ class ItemExplorer(QTreeView):
 
         self.insertChild(child_editor_item, parent_index)
 
-    @Slot()
+    @QtCore.Slot()
     def copy_clicked(self, parent_index):
         tree_item = self.tree_model.getItem(parent_index)
         self.copied_editor_item = tree_item.editor_item.duplicate()
 
-    @Slot()
+    @QtCore.Slot()
     def paste_clicked(self, parent_index):
-        tree_item = self.tree_model.getItem(parent_index)
         self.insertChild(self.copied_editor_item, parent_index)
         self.item_created.emit(self.copied_editor_item)
 
-    @Slot()
+    @QtCore.Slot()
     def delete_clicked(self, index):
         tree_item = self.tree_model.getItem(index)
 
@@ -166,35 +162,35 @@ class ItemExplorer(QTreeView):
         else:
             message = 'Are you sure you want to delete this request?'
 
-        message_box = QMessageBox()
+        message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('PNTest')
         message_box.setText(message)
-        message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
-        message_box.setDefaultButton(QMessageBox.Yes)
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.Yes)
         response = message_box.exec_()
 
-        if response == QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.Yes:
             self.tree_model.removeRows(index.row(), 1, index.parent(), True)
             self.item_deleted.emit(tree_item)
 
     def multi_delete_clicked(self, indexes):
         tree_items = [self.tree_model.getItem(i) for i in indexes]
-        message_box = QMessageBox()
+        message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('PNTest')
         message_box.setText(
             f'Are you sure you want to delete these {len(indexes)} items?')
-        message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
-        message_box.setDefaultButton(QMessageBox.Yes)
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.Yes)
         response = message_box.exec_()
 
-        if response == QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.Yes:
             self.selectionModel().clearSelection()
 
             rows = sorted([i.row() for i in indexes])
             diff = rows[-1] - rows[0]
 
             self.tree_model.removeRows(
-                rows[0], diff+1, indexes[0].parent(), True)
+                rows[0], diff + 1, indexes[0].parent(), True)
             for item in tree_items:
                 self.item_deleted.emit(item)
 
@@ -202,7 +198,7 @@ class ItemExplorer(QTreeView):
     def insertChild(self, child_editor_item, parent_index):
         parent_tree_item = self.tree_model.getItem(parent_index)
 
-        if parent_tree_item.editor_item != None:
+        if parent_tree_item.editor_item is not None:
             child_editor_item.parent_id = parent_tree_item.editor_item.id
 
         child_editor_item.save()
@@ -214,6 +210,6 @@ class ItemExplorer(QTreeView):
             child_tree_item.childNumber(), 0, parent_index)
         self.selectionModel().setCurrentIndex(
             child_index,
-            QItemSelectionModel.ClearAndSelect
+            QtCore.QItemSelectionModel.ClearAndSelect
         )
         self.edit(child_index)

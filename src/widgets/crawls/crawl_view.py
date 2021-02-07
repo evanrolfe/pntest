@@ -1,13 +1,8 @@
-import sys
-
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView
-from PySide2.QtCore import QFile, Slot
-from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtWidgets
 
 from views._compiled.crawls.ui_crawl_view import Ui_CrawlView
 
-
-class CrawlView(QWidget):
+class CrawlView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(CrawlView, self).__init__(*args, **kwargs)
         self.ui = Ui_CrawlView()

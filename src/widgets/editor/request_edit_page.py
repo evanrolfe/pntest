@@ -1,24 +1,16 @@
-import sys
-import time
-import traceback
+from PySide2 import QtWidgets, QtCore, QtGui
 
-from PySide2.QtWidgets import QApplication, QWidget, QLabel, QHeaderView, QAbstractItemView, QPushButton, QMessageBox, QShortcut
-from PySide2.QtCore import Qt, QFile, Slot, SIGNAL, Signal, QObject, QRunnable, QThreadPool
-from PySide2.QtGui import QKeySequence
-from PySide2.QtUiTools import QUiLoader
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 from widgets.editor.request_headers_form import RequestHeadersForm
 from widgets.editor.request_body_form import RequestBodyForm
 
 from lib.app_settings import AppSettings
-from lib.backend import Backend
 from lib.background_worker import BackgroundWorker
 from lib.http_request import HttpRequest
 
-
-class RequestEditPage(QWidget):
-    form_input_changed = Signal(bool)
-    request_saved = Signal()
+class RequestEditPage(QtWidgets.QWidget):
+    form_input_changed = QtCore.Signal(bool)
+    request_saved = QtCore.Signal()
 
     METHODS = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD']
 
@@ -45,7 +37,7 @@ class RequestEditPage(QWidget):
         self.show_request()
         self.request_is_modified = False
 
-        save_response_button = QPushButton('Save Response')
+        save_response_button = QtWidgets.QPushButton('Save Response')
         save_response_button.setContentsMargins(10, 10, 10, 10)
         self.ui.responseTabs.setCornerWidget(save_response_button)
 
@@ -56,16 +48,20 @@ class RequestEditPage(QWidget):
             self.form_field_changed)
 
         # self.show_loader()
-        self.threadpool = QThreadPool()
+        self.threadpool = QtCore.QThreadPool()
         self.ui.loaderWidget.ui.cancelButton.clicked.connect(
             self.cancel_request)
 
         # Keyboard shortcuts:
-        self.connect(QShortcut(QKeySequence(Qt.CTRL + Qt.Key_S),
-                               self), SIGNAL('activated()'), self.save_request)
-        # TODO: self.connect(QShortcut(QKeySequence(Qt.Key_Enter), self), SIGNAL('activated()'), self.send_request_async)
+        self.connect(
+            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_S), self),
+            QtCore.SIGNAL('activated()'),
+            self.save_request
+        )
+        # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
+        #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
-    @Slot()
+    @QtCore.Slot()
     def show_loader(self):
         print('showing the loader')
         self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
@@ -85,7 +81,7 @@ class RequestEditPage(QWidget):
         self.ui.requestTabs.insertTab(0, self.request_headers_form, 'Headers')
         self.ui.requestTabs.insertTab(1, self.request_body_form, 'Body')
 
-    @Slot()
+    @QtCore.Slot()
     def save_request(self):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
@@ -101,7 +97,7 @@ class RequestEditPage(QWidget):
         self.request_saved.emit()
         print(f'saving {method} {url} to request {self.request.id}')
 
-    @Slot()
+    @QtCore.Slot()
     def response_received(self, response):
         # Display response headers and body
         self.ui.responseBodyText.setPlainText(response.text)
@@ -112,18 +108,18 @@ class RequestEditPage(QWidget):
 
         self.ui.responseHeadersText.setPlainText(headers_text)
 
-    @Slot()
+    @QtCore.Slot()
     def request_error(self, error):
         exctype, value, traceback = error
 
-        message_box = QMessageBox()
+        message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('Error')
         message_box.setText(str(value))
         message_box.exec_()
 
     # TODO: Close the request:
     # https://stackoverflow.com/questions/10115126/python-requests-close-http-connection
-    @Slot()
+    @QtCore.Slot()
     def send_request_async(self):
         print('Sending the request!')
         self.show_loader()
@@ -143,12 +139,12 @@ class RequestEditPage(QWidget):
 
         self.threadpool.start(self.worker)
 
-    @Slot()
+    @QtCore.Slot()
     def cancel_request(self):
         self.worker.kill()
         self.hide_loader()
 
-    @Slot()
+    @QtCore.Slot()
     def form_field_changed(self):
         request_on_form = {
             'method': self.ui.methodInput.currentText(),
@@ -166,7 +162,7 @@ class RequestEditPage(QWidget):
         self.ui.fuzzRequestsTable.setVisible(False)
         self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
 
-    @Slot()
+    @QtCore.Slot()
     def toggle_fuzz_table(self):
         visible = not self.ui.fuzzRequestsTable.isVisible()
         self.ui.fuzzRequestsTable.setVisible(visible)
@@ -194,7 +190,7 @@ class RequestEditPage(QWidget):
         self.settings.save("RequestEditPage.splitter2", splitter_state2)
 
     def set_method_on_form(self, method):
-        if method == None:
+        if method is None:
             index = 0
         else:
             index = self.METHODS.index(method)

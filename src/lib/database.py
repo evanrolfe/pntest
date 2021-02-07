@@ -10,7 +10,6 @@ from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 # TODO: This class uses two database managers (Orator.DatabaesManager and QSqlDatabase), get rid of
 # the unecessary dependency on QSqlDatabase and do everything through Orator
 
-
 class Database:
     # Singleton method stuff:
     __instance = None
