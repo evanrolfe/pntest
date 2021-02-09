@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Clients Page:
 pyside2-uic src/views/clients/clients_page.ui > src/views/_compiled/clients/ui_clients_page.py
 pyside2-uic src/views/clients/clients_table.ui > src/views/_compiled/clients/ui_clients_table.py

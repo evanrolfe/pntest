@@ -19,7 +19,7 @@ $ git clone git@github.com:evanrolfe/pntest.git
 $ git clone git@github.com:evanrolfe/pntest-core.git
 $ cd pntest-core
 $ npm install
-$ ./scripts/build.sh
+$ bin/build
 $ cp dist/pntest-core ../pntest/include/pntest-core
 $ cp dist/node_sqlite3.node ../pntest/include/node_sqlite3.node
 ```
@@ -40,12 +40,12 @@ $ python src
 
 Compile Qt assets to python with:
 ```bash
-$ ./scripts/compile_assets.sh
+$ bin/compile_assets
 ```
 
 Compile Qt UI files to python with:
 ```bash
-$ ./scripts/compile_views.sh
+$ bin/compile_views
 ```
 
 Run the linter with `flake8`.
@@ -56,7 +56,7 @@ Todo.
 
 ## Build
 ```
-$ ./scripts/build.sh
+$ bin/build
 ```
 Which outputs a binary to `dist/pntest`.
 
