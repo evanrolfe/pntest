@@ -31,6 +31,8 @@ class TestEditorRequest:
         assert headers['host'] == '<calculated when request is sent>'
         assert headers['content-length'] == '<calculated when request is sent>'
 
+    # TODO: I think we can delete the editor_request.parent_id and its related methods as that is
+    # handled by the EditorItem model
     def test_children(self, database, cleanup_database):
         editor_request1 = factory(EditorRequest).create()
         editor_request2 = factory(EditorRequest).make()

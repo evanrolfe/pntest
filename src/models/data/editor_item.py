@@ -7,7 +7,7 @@ from models.request_data import RequestData
 class EditorItem(Model):
     __table__ = 'editor_items'
 
-    # NOTE: This only works for requests
+    # NOTE: This only works for type=request
     def duplicate(self):
         editor_request = self.item().duplicate()
         editor_request.save()
@@ -71,8 +71,7 @@ class EditorItem(Model):
 
     def icon(self):
         if self.item_type == 'request':
-            icon_methods = ['get', 'put', 'patch',
-                            'delete', 'post', 'options', 'head']
+            icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
 
             method = self.item().method.lower()
             if method not in icon_methods:
