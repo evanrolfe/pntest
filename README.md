@@ -1,6 +1,6 @@
 # PnTest
 
-An HTTP (and Websockets) proxy for performing penetration tests against web applications, with advanced capabilities for handling single-page-applications. This repo contains the frontend GUI application based on python3.6 and PySide2.
+An HTTP (and Websockets) proxy for performing penetration tests against web applications, with advanced capabilities for handling single-page-applications. This repo contains the frontend GUI application based on Python 3.9 and PySide2.
 
 ![](./screenshot.png)
 
@@ -27,7 +27,7 @@ $ cp dist/node_sqlite3.node ../pntest/include/node_sqlite3.node
 Setup pntest virtual environment:
 ```bash
 $ cd pntest
-$ virtualenv -p /usr/bin/python3.6 venv
+$ virtualenv -p /usr/bin/python3.9 venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
 ```
@@ -51,8 +51,10 @@ $ bin/compile_views
 Run the linter with `flake8`.
 
 ## Test
-
-Todo.
+Run the test suite with:
+```
+$ bin/test
+```
 
 ## Build
 ```

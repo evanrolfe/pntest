@@ -19,7 +19,7 @@ setuptools.setup(
       "License :: OSI Approved :: MIT License",
       "Operating System :: OS Independent",
   ],
-  python_requires = '>=3.6',
+  python_requires = '>=3.9',
   entry_points={
     "gui_scripts": [
       "pntest = __main__:main",

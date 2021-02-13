@@ -33,7 +33,7 @@ sys.excepthook = excepthook
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
-    app_path = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
+    app_path = pathlib.Path(__file__).parent.parent.absolute()
     src_path = os.path.join(app_path, 'src')
     backend_path = resource_path(app_path, BACKEND_PATH_RELATIVE)
     data_path = resource_path(app_path, 'include')

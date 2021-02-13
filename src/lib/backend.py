@@ -45,11 +45,11 @@ class Backend:
 
     def start(self):
         print("Starting the backend...")
+        cmd = f'{self.backend_path} --appPath={self.app_path} --dbPath={self.db_path} --dataPath={self.data_path}'
+        print(cmd)
         self.backend_proc = QtCore.QProcess()
-        self.backend_proc.start(
-            f'{self.backend_path} --appPath={self.app_path} --dbPath={self.db_path} --dataPath={self.data_path}')
-        self.backend_proc.readyReadStandardOutput.connect(
-            self.std_out_received)
+        self.backend_proc.start(cmd)
+        self.backend_proc.readyReadStandardOutput.connect(self.std_out_received)
         self.backend_proc.readyReadStandardError.connect(self.std_err_received)
 
     def kill(self):
