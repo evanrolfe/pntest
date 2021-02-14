@@ -40,5 +40,5 @@ class CrawlsPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def select_crawl(self, selected, deselected):
         selected_id = selected.indexes()[0].data()
-        crawl = self.crawl_data.load_crawl(selected_id)
+        crawl = Crawl.find(selected_id)
         self.ui.crawlView.set_crawl(crawl)
