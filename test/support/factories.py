@@ -63,3 +63,31 @@ def network_request_factory(faker):
         'request_payload': None,
         'request_type': 'http',
     }
+
+@factory.define_as(NetworkRequest, 'with_response')
+def network_request_factory_with_response(faker):
+    return {
+        'client_id': 1,
+        'method': 'GET',
+        'host': 'example.com',
+        'path': '/',
+        'encrypted': 0,
+        'http_version': '1.1',
+        'request_headers': '{"host": "example.com", "content-length": 123, "accept": "*/*", "accept-encoding": "gzip, deflate", "connection": "keep-alive"}', # noqa
+        'request_payload': None,
+        'request_type': 'http',
+        'response_body_rendered': '<h1>Hello world</h1>',
+        'response_http_version': '1.1',
+        'response_status': 200,
+        'response_status_message': 'OK',
+        'response_headers': '{"server":"nginx","date":"Sun, 31 Jan 2021 11:48:32 GMT","content-type":"text/html","content-length":"20","via":"1.1 google","age":"7074","cache-control":"public, must-revalidate, max-age=0, s-maxage=86400"}', # noqa
+        'response_body': '<h1>Hello world</h1>',
+        'response_body_length': 0,
+        'response_modified': 0,
+    }
+    #   modified_response_status INTEGER,
+    #   modified_response_status_message TEXT,
+    #   modified_response_headers TEXT,
+    #   modified_response_body TEXT,
+    #   modified_response_body_length INTEGER,
+    #   modified_response_http_version TEXT,

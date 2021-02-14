@@ -40,8 +40,7 @@ class RequestView(QtWidgets.QWidget):
         self.ui.responseBodyParsedText.setPlainText(
             request.response_body_rendered)
 
-        self.ui.responseBodyPreview.setHtml(
-            request.response_body_for_preview(), baseUrl=request.url())
+        self.ui.responseBodyPreview.setHtml(request.response_body_for_preview(), baseUrl=request.url())
 
         # Request modified tab:
         if request.request_modified is True:

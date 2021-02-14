@@ -20,7 +20,7 @@ class Ui_NetworkPageWidget(object):
     def setupUi(self, NetworkPageWidget):
         if not NetworkPageWidget.objectName():
             NetworkPageWidget.setObjectName(u"NetworkPageWidget")
-        NetworkPageWidget.resize(897, 581)
+        NetworkPageWidget.resize(1400, 700)
         self.verticalLayout = QVBoxLayout(NetworkPageWidget)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
