@@ -1,42 +1,14 @@
 from PySide2 import QtSql
 
-from models.request import Request
+from models.data.network_request import NetworkRequest
 
+# TODO: Move this logic into the NetworkRequest model and remove the use of QtSql
 class RequestData:
     SEARCHABLE_COLUMNS = ['id', 'method', 'host', 'path']
 
     def __init__(self):
         self.requests = []
         self.filter_params = {}
-
-    def update_request(self, new_request):
-        for i, request in enumerate(self.requests):
-            if request.id == new_request.id:
-                self.requests[i] = new_request
-
-    def delete_requests(self, request_ids):
-        # HACK: Using bindValue with a list of ids did not work so we have to call bindValue
-        # for each id individually inside a loop
-        question_marks = ', '.join(['?' for _ in range(len(request_ids))])
-
-        query = QtSql.QSqlQuery()
-        query.prepare(f"DELETE FROM requests WHERE id IN ({question_marks})")
-
-        for i, request_id in enumerate(request_ids):
-            query.bindValue(i, request_id)
-
-        result = query.exec_()
-
-        if result is False:
-            print("THERE WAS AN ERROR WITH THE SQL QUERY!")
-
-        self.requests = list(
-            filter(lambda r: r.id not in request_ids, self.requests))
-
-    def get_index_of(self, request_id):
-        for i, r in enumerate(self.requests):
-            if r.id == request_id:
-                return i
 
     def set_filter_param(self, key, value):
         self.filter_params[key] = value
@@ -62,52 +34,39 @@ class RequestData:
 
         print(f'found {len(self.requests)} requests with query:\n{query_str}')
 
-    def load_request(self, request_id):
-        query = QtSql.QSqlQuery()
-        query.prepare("SELECT * FROM requests WHERE id=:id")
-        query.bindValue(":id", request_id)
-        query.exec_()
-        query.next()
-
-        return self.request_from_query_result(query)
-
     def request_from_query_result(self, query):
-        attrs = {
-            'id': query.value('id'),
-            'client_id': query.value('client_id'),
-            'method': query.value('method'),
-            'host': query.value('host'),
-            'path': query.value('path'),
-            'encrypted': query.value('encrypted'),
-            'http_version': query.value('http_version'),
-            'request_headers': query.value('request_headers'),
-            'request_payload': query.value('request_payload'),
-            'request_type': query.value('request_type'),
+        request = NetworkRequest()
+        request.id = query.value('id')
+        request.client_id = query.value('client_id')
+        request.method = query.value('method')
+        request.host = query.value('host')
+        request.path = query.value('path')
+        request.encrypted = query.value('encrypted')
+        request.http_version = query.value('http_version')
+        request.request_headers = query.value('request_headers')
+        request.request_payload = query.value('request_payload')
+        request.request_type = query.value('request_type')
+        request.request_modified = query.value('request_modified')
+        request.modified_method = query.value('modified_method')
+        request.modified_url = query.value('modified_url')
+        request.modified_host = query.value('modified_host')
+        request.modified_http_version = query.value('modified_http_version')
+        request.modified_path = query.value('modified_path')
+        request.modified_ext = query.value('modified_ext')
+        request.modified_request_headers = query.value('modified_request_headers')
+        request.modified_request_payload = query.value('modified_request_payload')
+        request.response_headers = query.value('response_headers')
+        request.response_status = query.value('response_status')
+        request.response_status_message = query.value('response_status_message')
+        request.response_http_version = query.value('response_http_version')
+        request.response_body = query.value('response_body')
+        request.response_body_rendered = query.value('response_body_rendered')
+        request.response_modified = query.value('response_modified')
+        request.modified_response_status = query.value('modified_response_status')
+        request.modified_response_status_message = query.value('modified_response_status_message')
+        request.modified_response_http_version = query.value('modified_response_http_version')
+        request.modified_response_headers = query.value('modified_response_headers')
+        request.modified_response_body = query.value('modified_response_body')
+        request.modified_response_body_length = query.value('modified_response_body_length')
 
-            'request_modified': query.value('request_modified'),
-            'modified_method': query.value('modified_method'),
-            'modified_url': query.value('modified_url'),
-            'modified_host': query.value('modified_host'),
-            'modified_http_version': query.value('modified_http_version'),
-            'modified_path': query.value('modified_path'),
-            'modified_ext': query.value('modified_ext'),
-            'modified_request_headers': query.value('modified_request_headers'),
-            'modified_request_payload': query.value('modified_request_payload'),
-
-            'response_headers': query.value('response_headers'),
-            'response_status': query.value('response_status'),
-            'response_status_message': query.value('response_status_message'),
-            'response_http_version': query.value('response_http_version'),
-            'response_body': query.value('response_body'),
-            'response_body_rendered': query.value('response_body_rendered'),
-
-            'response_modified': query.value('response_modified'),
-            'modified_response_status': query.value('modified_response_status'),
-            'modified_response_status_message': query.value('modified_response_status_message'),
-            'modified_response_http_version': query.value('modified_response_http_version'),
-            'modified_response_headers': query.value('modified_response_headers'),
-            'modified_response_body': query.value('modified_response_body'),
-            'modified_response_body_length': query.value('modified_response_body_length'),
-        }
-
-        return Request(attrs)
+        return request

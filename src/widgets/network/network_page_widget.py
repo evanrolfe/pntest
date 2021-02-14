@@ -5,6 +5,7 @@ from views._compiled.network.ui_network_page_widget import Ui_NetworkPageWidget
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
 from models.request_data import RequestData
+from models.data.network_request import NetworkRequest
 
 class NetworkPageWidget(QtWidgets.QWidget):
     send_request_to_editor = QtCore.Signal(object)
@@ -15,9 +16,8 @@ class NetworkPageWidget(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Setup the request model
-        self.request_data = RequestData()
-        self.request_data.load_requests()
-        self.requests_table_model = RequestsTableModel(self.request_data)
+        requests = NetworkRequest.all()
+        self.requests_table_model = RequestsTableModel(requests)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
         self.ui.requestsTableWidget.request_selected.connect(self.select_request)
@@ -29,9 +29,8 @@ class NetworkPageWidget(QtWidgets.QWidget):
 
     def reload(self):
         self.ui.requestViewWidget.clear_request()
-        self.request_data = RequestData()
-        self.request_data.load_requests()
-        self.requests_table_model = RequestsTableModel(self.request_data)
+        requests = NetworkRequest.all()
+        self.requests_table_model = RequestsTableModel(requests)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
     def restore_layout_state(self):
@@ -55,7 +54,7 @@ class NetworkPageWidget(QtWidgets.QWidget):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
             selected_id = selected_id_cols[0].data()
-            request = self.request_data.load_request(selected_id)
+            request = NetworkRequest.find(selected_id)
             self.ui.requestViewWidget.set_request(request)
 
     @QtCore.Slot()
@@ -64,6 +63,11 @@ class NetworkPageWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def search_requests(self, search_text):
+        # requests = NetworkRequest.search({'search': search_text})
+        # self.requests_table_model.requests = requests
+        # self.requests_table_model.refresh()
+        self.request_data = RequestData()
         self.request_data.set_filter_param('search', search_text)
         self.request_data.load_requests()
+        self.requests_table_model.requests = self.request_data.requests
         self.requests_table_model.refresh()

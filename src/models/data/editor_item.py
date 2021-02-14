@@ -2,7 +2,7 @@ from orator import Model
 from PySide2 import QtGui
 
 from models.data.editor_request import EditorRequest
-from models.request_data import RequestData
+from models.data.network_request import NetworkRequest
 
 class EditorItem(Model):
     __table__ = 'editor_items'
@@ -50,8 +50,7 @@ class EditorItem(Model):
     @classmethod
     def create_from_network_request(cls, network_request):
         # Reload the request from the database:
-        request_data = RequestData()
-        network_request = request_data.load_request(network_request.id)
+        network_request = NetworkRequest.find(network_request.id)
 
         editor_request = EditorRequest()
         editor_request.method = network_request.method

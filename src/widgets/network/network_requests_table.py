@@ -102,7 +102,7 @@ class NetworkRequestsTable(QtWidgets.QWidget):
     @QtCore.Slot()
     def right_clicked(self, position):
         index = self.ui.requestsTable.indexAt(position)
-        request = self.table_model.request_data.requests[index.row()]
+        request = self.table_model.requests[index.row()]
 
         menu = QtWidgets.QMenu()
 
