@@ -1,39 +1,8 @@
-from orator.orm import Factory
 from models.data.editor_item import EditorItem
 from models.data.editor_request import EditorRequest
 from models.data.network_request import NetworkRequest
 
-factory = Factory()
-
-# TODO: Move these factories into their own files
-@factory.define_as(EditorItem, 'request')
-def editor_item_factory_request(faker):
-    return {
-        'name': 'Login request',
-        'item_type': 'request',
-        'item_id': 1
-    }
-
-@factory.define_as(EditorItem, 'dir')
-def editor_item_factory_dir(faker):
-    return {
-        'name': 'My requests',
-        'item_type': 'dir'
-    }
-
-@factory.define(NetworkRequest)
-def network_request_factory(faker):
-    return {
-        'client_id': 1,
-        'method': 'GET',
-        'host': 'example.com',
-        'path': '/',
-        'encrypted': 0,
-        'http_version': '1.1',
-        'request_headers': '{"host": "example.com", "content-length": 123, "accept": "*/*", "accept-encoding": "gzip, deflate", "connection": "keep-alive"}', # noqa
-        'request_payload': None,
-        'request_type': 'http',
-    }
+from support.factories import factory
 
 class TestEditorItem:
     def test_delete_everything(self, database, cleanup_database):

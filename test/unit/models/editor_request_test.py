@@ -1,17 +1,6 @@
-from orator.orm import Factory
 from models.data.editor_request import EditorRequest
 
-factory = Factory()
-
-@factory.define(EditorRequest)
-def editor_request_factory(faker):
-    return {
-        'method': 'GET',
-        'url': 'http://example.com',
-        'request_headers': '{"host": "example.com", "content-length": 123, "accept": "*/*", "accept-encoding": "gzip, deflate", "connection": "keep-alive"}', # noqa
-        'request_payload': None
-    }
-
+from support.factories import factory
 
 class TestEditorRequest:
     def test_get_request_headers(self, database):
