@@ -1,3 +1,9 @@
 #!/bin/bash
 
-PYTHONPATH="./src:./test" pytest -s test
+if [ -z "$1" ]; then
+    test_path="./test"
+else
+    test_path=$1
+fi
+
+PYTHONPATH="./src:./test" pytest -s $test_path
