@@ -1,13 +1,13 @@
 from PySide2 import QtCore, QtWidgets
 
-from views._compiled.network.ui_network_capture_filters import Ui_NetworkCaptureFilters
+from views._compiled.network.http.ui_capture_filters import Ui_CaptureFilters
 from models.data.capture_filter import CaptureFilter
 
-class NetworkCaptureFilters(QtWidgets.QDialog):
+class CaptureFilters(QtWidgets.QDialog):
     def __init__(self, parent=None):
-        super(NetworkCaptureFilters, self).__init__(parent)
+        super(CaptureFilters, self).__init__(parent)
 
-        self.ui = Ui_NetworkCaptureFilters()
+        self.ui = Ui_CaptureFilters()
         self.ui.setupUi(self)
         self.setModal(True)
 

@@ -6,14 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>897</width>
-    <height>581</height>
+    <width>1400</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="crawlerToolbar" native="true">
      <property name="sizePolicy">
@@ -25,21 +40,21 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>20</height>
+       <height>40</height>
       </size>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
-       <number>0</number>
+       <number>10</number>
       </property>
       <property name="topMargin">
-       <number>0</number>
+       <number>5</number>
       </property>
       <property name="rightMargin">
-       <number>0</number>
+       <number>10</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>5</number>
       </property>
       <item>
        <widget class="QLabel" name="label">
@@ -92,7 +107,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="NetworkRequestsTable" name="requestsTableWidget" native="true">
+     <widget class="RequestsTable" name="requestsTableWidget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -120,9 +135,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>NetworkRequestsTable</class>
+   <class>RequestsTable</class>
    <extends>QWidget</extends>
-   <header>widgets.network.network_requests_table.h</header>
+   <header>widgets.network.http.requests_table.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

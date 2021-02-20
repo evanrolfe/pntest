@@ -12,11 +12,10 @@ pyside2-uic src/views/crawls/crawl_view.ui > src/views/_compiled/crawls/ui_crawl
 pyside2-uic src/views/crawls/new_crawl.ui > src/views/_compiled/crawls/ui_new_crawl.py
 
 # Network Page:
-pyside2-uic src/views/network/network_page_widget.ui > src/views/_compiled/network/ui_network_page_widget.py
-pyside2-uic src/views/network/network_requests_table_tabs.ui > src/views/_compiled/network/ui_network_requests_table_tabs.py
-pyside2-uic src/views/network/network_requests_table.ui > src/views/_compiled/network/ui_network_requests_table.py
-pyside2-uic src/views/network/network_display_filters.ui > src/views/_compiled/network/ui_network_display_filters.py
-pyside2-uic src/views/network/network_capture_filters.ui > src/views/_compiled/network/ui_network_capture_filters.py
+pyside2-uic src/views/network/http_page.ui > src/views/_compiled/network/ui_http_page.py
+pyside2-uic src/views/network/http/requests_table.ui > src/views/_compiled/network/http/ui_requests_table.py
+pyside2-uic src/views/network/http/display_filters.ui > src/views/_compiled/network/http/ui_display_filters.py
+pyside2-uic src/views/network/http/capture_filters.ui > src/views/_compiled/network/http/ui_capture_filters.py
 
 # Intercept Page:
 pyside2-uic src/views/intercept/intercept_page.ui > src/views/_compiled/intercept/ui_intercept_page.py

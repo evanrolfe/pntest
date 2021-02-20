@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'network_capture_filters.ui'
+## Form generated from reading UI file 'capture_filters.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -13,16 +13,16 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
-class Ui_NetworkCaptureFilters(object):
-    def setupUi(self, NetworkCaptureFilters):
-        if not NetworkCaptureFilters.objectName():
-            NetworkCaptureFilters.setObjectName(u"NetworkCaptureFilters")
-        NetworkCaptureFilters.resize(485, 313)
-        self.verticalLayout = QVBoxLayout(NetworkCaptureFilters)
+class Ui_CaptureFilters(object):
+    def setupUi(self, CaptureFilters):
+        if not CaptureFilters.objectName():
+            CaptureFilters.setObjectName(u"CaptureFilters")
+        CaptureFilters.resize(485, 313)
+        self.verticalLayout = QVBoxLayout(CaptureFilters)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label_3 = QLabel(NetworkCaptureFilters)
+        self.label_3 = QLabel(CaptureFilters)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
@@ -32,7 +32,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_5)
 
-        self.hostSettingDropdown = QComboBox(NetworkCaptureFilters)
+        self.hostSettingDropdown = QComboBox(CaptureFilters)
         self.hostSettingDropdown.addItem("")
         self.hostSettingDropdown.addItem("")
         self.hostSettingDropdown.addItem("")
@@ -51,7 +51,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label = QLabel(NetworkCaptureFilters)
+        self.label = QLabel(CaptureFilters)
         self.label.setObjectName(u"label")
         self.label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
@@ -61,7 +61,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_3)
 
-        self.hostsText = QPlainTextEdit(NetworkCaptureFilters)
+        self.hostsText = QPlainTextEdit(CaptureFilters)
         self.hostsText.setObjectName(u"hostsText")
 
         self.horizontalLayout_2.addWidget(self.hostsText)
@@ -75,7 +75,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label_4 = QLabel(NetworkCaptureFilters)
+        self.label_4 = QLabel(CaptureFilters)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
@@ -85,7 +85,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_4)
 
-        self.pathSettingDropdown = QComboBox(NetworkCaptureFilters)
+        self.pathSettingDropdown = QComboBox(CaptureFilters)
         self.pathSettingDropdown.addItem("")
         self.pathSettingDropdown.addItem("")
         self.pathSettingDropdown.addItem("")
@@ -101,7 +101,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_2 = QLabel(NetworkCaptureFilters)
+        self.label_2 = QLabel(CaptureFilters)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
@@ -111,7 +111,7 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_2)
 
-        self.pathsText = QPlainTextEdit(NetworkCaptureFilters)
+        self.pathsText = QPlainTextEdit(CaptureFilters)
         self.pathsText.setObjectName(u"pathsText")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -134,13 +134,13 @@ class Ui_NetworkCaptureFilters(object):
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer)
 
-        self.cancelButton = QPushButton(NetworkCaptureFilters)
+        self.cancelButton = QPushButton(CaptureFilters)
         self.cancelButton.setObjectName(u"cancelButton")
         self.cancelButton.setAutoDefault(False)
 
         self.horizontalLayout_5.addWidget(self.cancelButton)
 
-        self.saveButton = QPushButton(NetworkCaptureFilters)
+        self.saveButton = QPushButton(CaptureFilters)
         self.saveButton.setObjectName(u"saveButton")
 
         self.horizontalLayout_5.addWidget(self.saveButton)
@@ -149,26 +149,26 @@ class Ui_NetworkCaptureFilters(object):
         self.verticalLayout.addLayout(self.horizontalLayout_5)
 
 
-        self.retranslateUi(NetworkCaptureFilters)
+        self.retranslateUi(CaptureFilters)
 
-        QMetaObject.connectSlotsByName(NetworkCaptureFilters)
+        QMetaObject.connectSlotsByName(CaptureFilters)
     # setupUi
 
-    def retranslateUi(self, NetworkCaptureFilters):
-        NetworkCaptureFilters.setWindowTitle(QCoreApplication.translate("NetworkCaptureFilters", u"Edit Capture Filters", None))
-        self.label_3.setText(QCoreApplication.translate("NetworkCaptureFilters", u"Host Filter:", None))
-        self.hostSettingDropdown.setItemText(0, QCoreApplication.translate("NetworkCaptureFilters", u"Disabled", None))
-        self.hostSettingDropdown.setItemText(1, QCoreApplication.translate("NetworkCaptureFilters", u"Only include hosts:", None))
-        self.hostSettingDropdown.setItemText(2, QCoreApplication.translate("NetworkCaptureFilters", u"Exclude hosts:", None))
+    def retranslateUi(self, CaptureFilters):
+        CaptureFilters.setWindowTitle(QCoreApplication.translate("CaptureFilters", u"Edit Capture Filters", None))
+        self.label_3.setText(QCoreApplication.translate("CaptureFilters", u"Host Filter:", None))
+        self.hostSettingDropdown.setItemText(0, QCoreApplication.translate("CaptureFilters", u"Disabled", None))
+        self.hostSettingDropdown.setItemText(1, QCoreApplication.translate("CaptureFilters", u"Only include hosts:", None))
+        self.hostSettingDropdown.setItemText(2, QCoreApplication.translate("CaptureFilters", u"Exclude hosts:", None))
 
-        self.label.setText(QCoreApplication.translate("NetworkCaptureFilters", u"Hosts (one per line):", None))
-        self.label_4.setText(QCoreApplication.translate("NetworkCaptureFilters", u"Path Filter:", None))
-        self.pathSettingDropdown.setItemText(0, QCoreApplication.translate("NetworkCaptureFilters", u"Disabled", None))
-        self.pathSettingDropdown.setItemText(1, QCoreApplication.translate("NetworkCaptureFilters", u"Only include paths containing:", None))
-        self.pathSettingDropdown.setItemText(2, QCoreApplication.translate("NetworkCaptureFilters", u"Exclude paths containing:", None))
+        self.label.setText(QCoreApplication.translate("CaptureFilters", u"Hosts (one per line):", None))
+        self.label_4.setText(QCoreApplication.translate("CaptureFilters", u"Path Filter:", None))
+        self.pathSettingDropdown.setItemText(0, QCoreApplication.translate("CaptureFilters", u"Disabled", None))
+        self.pathSettingDropdown.setItemText(1, QCoreApplication.translate("CaptureFilters", u"Only include paths containing:", None))
+        self.pathSettingDropdown.setItemText(2, QCoreApplication.translate("CaptureFilters", u"Exclude paths containing:", None))
 
-        self.label_2.setText(QCoreApplication.translate("NetworkCaptureFilters", u"Paths (one per line):", None))
-        self.cancelButton.setText(QCoreApplication.translate("NetworkCaptureFilters", u"Cancel", None))
-        self.saveButton.setText(QCoreApplication.translate("NetworkCaptureFilters", u"Save", None))
+        self.label_2.setText(QCoreApplication.translate("CaptureFilters", u"Paths (one per line):", None))
+        self.cancelButton.setText(QCoreApplication.translate("CaptureFilters", u"Cancel", None))
+        self.saveButton.setText(QCoreApplication.translate("CaptureFilters", u"Save", None))
     # retranslateUi
 

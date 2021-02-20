@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'network_requests_table.ui'
+## Form generated from reading UI file 'requests_table.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -15,17 +15,17 @@ from PySide2.QtWidgets import *
 from widgets.qt.hoverable_q_table_view import HoverableQTableView
 
 
-class Ui_NetworkRequestsTable(object):
-    def setupUi(self, NetworkRequestsTable):
-        if not NetworkRequestsTable.objectName():
-            NetworkRequestsTable.setObjectName(u"NetworkRequestsTable")
-        NetworkRequestsTable.resize(509, 702)
+class Ui_RequestsTable(object):
+    def setupUi(self, RequestsTable):
+        if not RequestsTable.objectName():
+            RequestsTable.setObjectName(u"RequestsTable")
+        RequestsTable.resize(509, 702)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(NetworkRequestsTable.sizePolicy().hasHeightForWidth())
-        NetworkRequestsTable.setSizePolicy(sizePolicy)
-        self.verticalLayout_3 = QVBoxLayout(NetworkRequestsTable)
+        sizePolicy.setHeightForWidth(RequestsTable.sizePolicy().hasHeightForWidth())
+        RequestsTable.setSizePolicy(sizePolicy)
+        self.verticalLayout_3 = QVBoxLayout(RequestsTable)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -35,7 +35,7 @@ class Ui_NetworkRequestsTable(object):
         self.horizontalLayout_2.setContentsMargins(10, 10, 10, 10)
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.searchBox = QLineEdit(NetworkRequestsTable)
+        self.searchBox = QLineEdit(RequestsTable)
         self.searchBox.setObjectName(u"searchBox")
 
         self.verticalLayout_2.addWidget(self.searchBox)
@@ -47,12 +47,12 @@ class Ui_NetworkRequestsTable(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.displayFiltersButton = QPushButton(NetworkRequestsTable)
+        self.displayFiltersButton = QPushButton(RequestsTable)
         self.displayFiltersButton.setObjectName(u"displayFiltersButton")
 
         self.horizontalLayout.addWidget(self.displayFiltersButton)
 
-        self.captureFiltersButton = QPushButton(NetworkRequestsTable)
+        self.captureFiltersButton = QPushButton(RequestsTable)
         self.captureFiltersButton.setObjectName(u"captureFiltersButton")
 
         self.horizontalLayout.addWidget(self.captureFiltersButton)
@@ -66,21 +66,21 @@ class Ui_NetworkRequestsTable(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
 
-        self.requestsTable = HoverableQTableView(NetworkRequestsTable)
+        self.requestsTable = HoverableQTableView(RequestsTable)
         self.requestsTable.setObjectName(u"requestsTable")
 
         self.verticalLayout_3.addWidget(self.requestsTable)
 
 
-        self.retranslateUi(NetworkRequestsTable)
+        self.retranslateUi(RequestsTable)
 
-        QMetaObject.connectSlotsByName(NetworkRequestsTable)
+        QMetaObject.connectSlotsByName(RequestsTable)
     # setupUi
 
-    def retranslateUi(self, NetworkRequestsTable):
-        NetworkRequestsTable.setWindowTitle(QCoreApplication.translate("NetworkRequestsTable", u"Form", None))
-        self.searchBox.setPlaceholderText(QCoreApplication.translate("NetworkRequestsTable", u"Search", None))
-        self.displayFiltersButton.setText(QCoreApplication.translate("NetworkRequestsTable", u"Display", None))
-        self.captureFiltersButton.setText(QCoreApplication.translate("NetworkRequestsTable", u"Capture", None))
+    def retranslateUi(self, RequestsTable):
+        RequestsTable.setWindowTitle(QCoreApplication.translate("RequestsTable", u"Form", None))
+        self.searchBox.setPlaceholderText(QCoreApplication.translate("RequestsTable", u"Search", None))
+        self.displayFiltersButton.setText(QCoreApplication.translate("RequestsTable", u"Display", None))
+        self.captureFiltersButton.setText(QCoreApplication.translate("RequestsTable", u"Capture", None))
     # retranslateUi
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'network_page_widget.ui'
+## Form generated from reading UI file 'http_page.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -12,20 +12,20 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from widgets.network.network_requests_table import NetworkRequestsTable
+from widgets.network.http.requests_table import RequestsTable
 from widgets.shared.request_view import RequestView
 
 
-class Ui_NetworkPageWidget(object):
-    def setupUi(self, NetworkPageWidget):
-        if not NetworkPageWidget.objectName():
-            NetworkPageWidget.setObjectName(u"NetworkPageWidget")
-        NetworkPageWidget.resize(1400, 700)
-        self.verticalLayout = QVBoxLayout(NetworkPageWidget)
+class Ui_HttpPage(object):
+    def setupUi(self, HttpPage):
+        if not HttpPage.objectName():
+            HttpPage.setObjectName(u"HttpPage")
+        HttpPage.resize(1400, 700)
+        self.verticalLayout = QVBoxLayout(HttpPage)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.crawlerToolbar = QWidget(NetworkPageWidget)
+        self.crawlerToolbar = QWidget(HttpPage)
         self.crawlerToolbar.setObjectName(u"crawlerToolbar")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -59,10 +59,10 @@ class Ui_NetworkPageWidget(object):
 
         self.verticalLayout.addWidget(self.crawlerToolbar)
 
-        self.requestsTableAndViewSplitter = QSplitter(NetworkPageWidget)
+        self.requestsTableAndViewSplitter = QSplitter(HttpPage)
         self.requestsTableAndViewSplitter.setObjectName(u"requestsTableAndViewSplitter")
         self.requestsTableAndViewSplitter.setOrientation(Qt.Horizontal)
-        self.requestsTableWidget = NetworkRequestsTable(self.requestsTableAndViewSplitter)
+        self.requestsTableWidget = RequestsTable(self.requestsTableAndViewSplitter)
         self.requestsTableWidget.setObjectName(u"requestsTableWidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -80,14 +80,14 @@ class Ui_NetworkPageWidget(object):
         self.verticalLayout.addWidget(self.requestsTableAndViewSplitter)
 
 
-        self.retranslateUi(NetworkPageWidget)
+        self.retranslateUi(HttpPage)
 
-        QMetaObject.connectSlotsByName(NetworkPageWidget)
+        QMetaObject.connectSlotsByName(HttpPage)
     # setupUi
 
-    def retranslateUi(self, NetworkPageWidget):
-        NetworkPageWidget.setWindowTitle(QCoreApplication.translate("NetworkPageWidget", u"Form", None))
-        self.label.setText(QCoreApplication.translate("NetworkPageWidget", u"NETWORK", None))
-        self.newClientButton.setText(QCoreApplication.translate("NetworkPageWidget", u"HTTP", None))
+    def retranslateUi(self, HttpPage):
+        HttpPage.setWindowTitle(QCoreApplication.translate("HttpPage", u"Form", None))
+        self.label.setText(QCoreApplication.translate("HttpPage", u"NETWORK", None))
+        self.newClientButton.setText(QCoreApplication.translate("HttpPage", u"HTTP", None))
     # retranslateUi
 

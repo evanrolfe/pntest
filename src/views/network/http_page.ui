@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NetworkPageWidget</class>
- <widget class="QWidget" name="NetworkPageWidget">
+ <class>HttpPage</class>
+ <widget class="QWidget" name="HttpPage">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -107,7 +107,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="NetworkRequestsTable" name="requestsTableWidget" native="true">
+     <widget class="RequestsTable" name="requestsTableWidget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -135,9 +135,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>NetworkRequestsTable</class>
+   <class>RequestsTable</class>
    <extends>QWidget</extends>
-   <header>widgets.network.network_requests_table.h</header>
+   <header>widgets.network.http.requests_table.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

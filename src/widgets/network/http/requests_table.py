@@ -1,8 +1,8 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 
-from views._compiled.network.ui_network_requests_table import Ui_NetworkRequestsTable
-from widgets.network.network_display_filters import NetworkDisplayFilters
-from widgets.network.network_capture_filters import NetworkCaptureFilters
+from views._compiled.network.http.ui_requests_table import Ui_RequestsTable
+from widgets.network.http.display_filters import DisplayFilters
+from widgets.network.http.capture_filters import CaptureFilters
 
 class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
     def __init__(self, parent=None):
@@ -25,15 +25,15 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
         options.backgroundBrush = QtGui.QBrush(QtGui.QColor('#000000'))
         QtWidgets.QStyledItemDelegate.paint(self, painter, options, index)
 
-class NetworkRequestsTable(QtWidgets.QWidget):
+class RequestsTable(QtWidgets.QWidget):
     request_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
     delete_requests = QtCore.Signal(list)
     search_text_changed = QtCore.Signal(str)
     send_request_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        super(NetworkRequestsTable, self).__init__(*args, **kwargs)
-        self.ui = Ui_NetworkRequestsTable()
+        super(RequestsTable, self).__init__(*args, **kwargs)
+        self.ui = Ui_RequestsTable()
         self.ui.setupUi(self)
 
         horizontalHeader = self.ui.requestsTable.horizontalHeader()
@@ -63,8 +63,8 @@ class NetworkRequestsTable(QtWidgets.QWidget):
         self.ui.searchBox.textEdited.connect(self.search_text_edited)
 
         # Display & Capture Filters:
-        self.network_display_filters = NetworkDisplayFilters(self)
-        self.network_capture_filters = NetworkCaptureFilters(self)
+        self.network_display_filters = DisplayFilters(self)
+        self.network_capture_filters = CaptureFilters(self)
         self.ui.displayFiltersButton.clicked.connect(lambda: self.network_display_filters.show())
         self.ui.captureFiltersButton.clicked.connect(lambda: self.network_capture_filters.show())
 

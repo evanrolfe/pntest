@@ -1,18 +1,18 @@
 from PySide2 import QtCore, QtWidgets
 
-from views._compiled.network.ui_network_page_widget import Ui_NetworkPageWidget
+from views._compiled.network.ui_http_page import Ui_HttpPage
 
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
 from models.request_data import RequestData
 from models.data.network_request import NetworkRequest
 
-class NetworkPageWidget(QtWidgets.QWidget):
+class HttpPage(QtWidgets.QWidget):
     send_request_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        super(NetworkPageWidget, self).__init__(*args, **kwargs)
-        self.ui = Ui_NetworkPageWidget()
+        super(HttpPage, self).__init__(*args, **kwargs)
+        self.ui = Ui_HttpPage()
         self.ui.setupUi(self)
 
         # Setup the request model
@@ -35,8 +35,8 @@ class NetworkPageWidget(QtWidgets.QWidget):
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
-        splitterState = settings.get("NetworkPageWidget.requestsTableAndViewSplitterState", None)
-        splitterState2 = settings.get("NetworkPageWidget.requestsViewSplitterState", None)
+        splitterState = settings.get("HttpPage.requestsTableAndViewSplitterState", None)
+        splitterState2 = settings.get("HttpPage.requestsViewSplitterState", None)
 
         self.ui.requestsTableAndViewSplitter.restoreState(splitterState)
         self.ui.requestViewWidget.ui.splitter.restoreState(splitterState2)
@@ -46,8 +46,8 @@ class NetworkPageWidget(QtWidgets.QWidget):
         splitter_state2 = self.ui.requestViewWidget.ui.splitter.saveState()
 
         settings = AppSettings.get_instance()
-        settings.save("NetworkPageWidget.requestsTableAndViewSplitterState", splitter_state)
-        settings.save("NetworkPageWidget.requestsViewSplitterState", splitter_state2)
+        settings.save("HttpPage.requestsTableAndViewSplitterState", splitter_state)
+        settings.save("HttpPage.requestsViewSplitterState", splitter_state2)
 
     @QtCore.Slot()
     def select_request(self, selected, deselected):

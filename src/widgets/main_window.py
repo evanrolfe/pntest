@@ -10,7 +10,7 @@ from views._compiled.ui_main_window import Ui_MainWindow
 from lib.app_settings import AppSettings
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
-from widgets.network.network_page_widget import NetworkPageWidget
+from widgets.network.network_page import NetworkPage
 from widgets.intercept.intercept_page import InterceptPage
 from widgets.clients.clients_page import ClientsPage
 from widgets.crawls.crawls_page import CrawlsPage
@@ -36,7 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.toolBar.setVisible(False)
 
         # Setup pages:
-        self.network_page_widget = NetworkPageWidget()
+        self.network_page_widget = NetworkPage()
         self.intercept_page = InterceptPage()
         self.clients_page = ClientsPage()
         self.crawls_page = CrawlsPage()
@@ -57,16 +57,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup_sidebar()
 
         # Shortcut for closing app
-
-        self.network_page_widget.send_request_to_editor.connect(
-            self.editor_page.send_request_to_editor)
-        self.network_page_widget.send_request_to_editor.connect(
-            self.show_editor_page)
+        self.network_page_widget.send_request_to_editor.connect(self.editor_page.send_request_to_editor)
+        self.network_page_widget.send_request_to_editor.connect(self.show_editor_page)
 
         # Menubar:
         self.setup_menu_actions()
         self.restore_layout_state()
-        self.show_editor_page()
+        # self.show_editor_page()
 
     def set_backend(self, backend):
         self.backend = backend
