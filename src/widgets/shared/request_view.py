@@ -29,24 +29,32 @@ class RequestView(QtWidgets.QWidget):
         self.ui.bodyTabs.setTabEnabled(1, False)
 
     def set_request(self, request):
-        self.ui.requestHeadersText.setPlainText(
-            request.request_headers_parsed())
-        self.ui.responseHeadersText.setPlainText(
-            request.response_headers_parsed())
+        self.ui.requestHeadersText.setPlainText(request.request_headers_parsed())
+        self.ui.responseHeadersText.setPlainText(request.response_headers_parsed())
 
-        self.ui.responseBodyRawText.setPlainText(request.response_body)
-        self.ui.responseBodyModifiedText.setPlainText(
-            request.modified_response_body)
-        self.ui.responseBodyParsedText.setPlainText(
-            request.response_body_rendered)
+        try:
+            if request.response_body is not None:
+                self.ui.responseBodyRawText.setPlainText(request.response_body)
 
-        self.ui.responseBodyPreview.setHtml(request.response_body_for_preview(), baseUrl=request.url())
+            if request.modified_response_body is not None:
+                self.ui.responseBodyModifiedText.setPlainText(request.modified_response_body)
+
+            if request.response_body_rendered is not None:
+                self.ui.responseBodyParsedText.setPlainText(request.response_body_rendered)
+
+            self.ui.responseBodyPreview.setHtml(request.response_body_for_preview(), baseUrl=request.url())
+
+        except ValueError:
+            print(f'Warning: could not render response_body for request {request.id}')
+            self.ui.responseBodyRawText.setPlainText('')
+            self.ui.responseBodyModifiedText.setPlainText('')
+            self.ui.responseBodyParsedText.setPlainText('')
+            self.ui.responseBodyPreview.setHtml('', baseUrl=request.url())
 
         # Request modified tab:
         if request.request_modified is True:
             self.ui.headerTabs.setTabEnabled(1, True)
-            self.ui.requestHeadersModifiedText.setPlainText(
-                request.request_headers_modified_parsed())
+            self.ui.requestHeadersModifiedText.setPlainText(request.request_headers_modified_parsed())
         else:
             self.ui.headerTabs.setTabEnabled(1, False)
 
@@ -54,8 +62,8 @@ class RequestView(QtWidgets.QWidget):
         if request.response_modified is True:
             self.ui.headerTabs.setTabEnabled(3, True)
             self.ui.bodyTabs.setTabEnabled(1, True)
-            self.ui.responseHeadersModifiedText.setPlainText(
-                request.response_headers_modified_parsed())
+            self.ui.responseHeadersModifiedText.setPlainText(request.response_headers_modified_parsed())
         else:
             self.ui.headerTabs.setTabEnabled(3, False)
             self.ui.bodyTabs.setTabEnabled(1, False)
+

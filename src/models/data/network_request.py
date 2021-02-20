@@ -58,8 +58,7 @@ class NetworkRequest(Model):
         http_response = f'HTTP/{self.modified_response_http_version}'
         http_response += f' {self.modified_response_status}'
         http_response += f' {self.modified_response_status_message}\n'
-        http_response += self.__parse_headers_json(
-            self.modified_response_headers)
+        http_response += self.__parse_headers_json(self.modified_response_headers)
 
         return http_response
 
@@ -70,6 +69,9 @@ class NetworkRequest(Model):
             return self.response_body_rendered
 
     def __parse_headers_json(self, headers_json):
+        if headers_json is None:
+            return ''
+
         try:
             output = ''
             headers = json.loads(headers_json)
