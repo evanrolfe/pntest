@@ -13,14 +13,15 @@ class NetworkPage(QtWidgets.QWidget):
         self.ws_page = WsPage()
 
         self.stacked_widget = QtWidgets.QStackedWidget()
-        self.stacked_widget.addWidget(self.ws_page)
         self.stacked_widget.addWidget(self.http_page)
+        self.stacked_widget.addWidget(self.ws_page)
 
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.stacked_widget)
 
         # Connect signals
+        self.http_page.send_request_to_editor.connect(self.send_request_to_editor)
         self.ws_page.toggle_page.connect(self.set_page_http)
         self.http_page.toggle_page.connect(self.set_page_ws)
 

@@ -36,19 +36,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.toolBar.setVisible(False)
 
         # Setup pages:
-        self.network_page_widget = NetworkPage()
+        self.network_page = NetworkPage()
         self.intercept_page = InterceptPage()
         self.clients_page = ClientsPage()
         self.crawls_page = CrawlsPage()
         self.editor_page = EditorPage()
 
         # Setup stacked widget:
-        self.ui.stackedWidget.addWidget(self.network_page_widget)
+        self.ui.stackedWidget.addWidget(self.network_page)
         self.ui.stackedWidget.addWidget(self.intercept_page)
         self.ui.stackedWidget.addWidget(self.clients_page)
         self.ui.stackedWidget.addWidget(self.crawls_page)
         self.ui.stackedWidget.addWidget(self.editor_page)
-        self.ui.stackedWidget.setCurrentWidget(self.network_page_widget)
+        self.ui.stackedWidget.setCurrentWidget(self.network_page)
 
         # Set padding on widgets:
         self.ui.centralWidget.layout().setContentsMargins(0, 0, 0, 0)
@@ -57,8 +57,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup_sidebar()
 
         # Shortcut for closing app
-        self.network_page_widget.send_request_to_editor.connect(self.editor_page.send_request_to_editor)
-        self.network_page_widget.send_request_to_editor.connect(self.show_editor_page)
+        self.network_page.send_request_to_editor.connect(self.editor_page.send_request_to_editor)
+        self.network_page.send_request_to_editor.connect(self.show_editor_page)
 
         # Menubar:
         self.setup_menu_actions()
@@ -97,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def about_to_quit(self):
         self.save_layout_state()
-        self.network_page_widget.save_layout_state()
+        self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
         self.backend.kill()
 
@@ -159,7 +159,7 @@ class MainWindow(QtWidgets.QMainWindow):
         item_value = item.data(QtCore.Qt.UserRole)
 
         if item_value == 'network':
-            self.ui.stackedWidget.setCurrentWidget(self.network_page_widget)
+            self.ui.stackedWidget.setCurrentWidget(self.network_page)
         elif item_value == 'intercept':
             self.ui.stackedWidget.setCurrentWidget(self.intercept_page)
         elif item_value == 'clients':
@@ -170,7 +170,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 
     def reload(self):
-        self.network_page_widget.reload()
+        self.network_page.reload()
         self.editor_page.reload()
         self.clients_page.reload()
 

@@ -3,16 +3,16 @@ from PySide2 import QtCore
 
 from support.factories import factory
 
-from widgets.network.network_page_widget import NetworkPageWidget
+from widgets.network.http_page import HttpPage
 from models.data.network_request import NetworkRequest
 
-class TestNetworkPage:
+class TestNetworkPageHttp:
     @mock.patch("lib.backend.Backend.get_instance", mock.MagicMock())
     def test_crawls_page(self, database, qtbot):
         factory(NetworkRequest, 'with_response').create()
         factory(NetworkRequest, 'with_response').create()
 
-        widget = NetworkPageWidget()
+        widget = HttpPage()
         qtbot.addWidget(widget)
         qtbot.waitForWindowShown(widget)
 
