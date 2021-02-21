@@ -8,6 +8,7 @@ from models.request_data import RequestData
 from models.data.network_request import NetworkRequest
 
 class HttpPage(QtWidgets.QWidget):
+    toggle_page = QtCore.Signal()
     send_request_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
@@ -16,7 +17,7 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Setup the request model
-        requests = NetworkRequest.all()
+        requests = NetworkRequest.order_by('id', 'desc').get()
         self.requests_table_model = RequestsTableModel(requests)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
@@ -25,11 +26,13 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
         self.ui.requestsTableWidget.send_request_to_editor.connect(self.send_request_to_editor)
 
+        self.ui.toggleButton.clicked.connect(self.toggle_page)
+
         self.restore_layout_state()
 
     def reload(self):
         self.ui.requestViewWidget.clear_request()
-        requests = NetworkRequest.all()
+        requests = NetworkRequest.order_by('id', 'desc').get()
         self.requests_table_model = RequestsTableModel(requests)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 

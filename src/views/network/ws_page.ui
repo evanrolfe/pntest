@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HttpPage</class>
- <widget class="QWidget" name="HttpPage">
+ <class>WsPage</class>
+ <widget class="QWidget" name="WsPage">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -66,7 +66,7 @@
          </font>
         </property>
         <property name="text">
-         <string>NETWORK - HTTP</string>
+         <string>NETWORK - WEBSOCKETS</string>
         </property>
        </widget>
       </item>
@@ -95,7 +95,7 @@
          </size>
         </property>
         <property name="text">
-         <string>HTTP</string>
+         <string>WS</string>
         </property>
        </widget>
       </item>
@@ -107,7 +107,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="RequestsTable" name="requestsTableWidget" native="true">
+     <widget class="MessagesTable" name="messagesTable" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -121,7 +121,7 @@
        </size>
       </property>
      </widget>
-     <widget class="RequestView" name="requestViewWidget" native="true">
+     <widget class="MessageView" name="messageViewWidget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -135,15 +135,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>RequestsTable</class>
+   <class>MessagesTable</class>
    <extends>QWidget</extends>
-   <header>widgets.network.http.requests_table.h</header>
+   <header>widgets.network.ws.messages_table.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RequestView</class>
+   <class>MessageView</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.request_view.h</header>
+   <header>widgets.network.ws.message_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

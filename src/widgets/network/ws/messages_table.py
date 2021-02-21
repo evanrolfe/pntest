@@ -1,87 +1,80 @@
 from PySide2 import QtCore, QtWidgets
 
-from views._compiled.network.http.ui_requests_table import Ui_RequestsTable
+from views._compiled.network.ws.ui_messages_table import Ui_MessagesTable
 from widgets.network.http.display_filters import DisplayFilters
-from widgets.network.http.capture_filters import CaptureFilters
 from widgets.qt.row_style_delegate import RowStyleDelegate
 
-class RequestsTable(QtWidgets.QWidget):
+class MessagesTable(QtWidgets.QWidget):
     request_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
     delete_requests = QtCore.Signal(list)
     search_text_changed = QtCore.Signal(str)
     send_request_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        super(RequestsTable, self).__init__(*args, **kwargs)
-        self.ui = Ui_RequestsTable()
+        super(MessagesTable, self).__init__(*args, **kwargs)
+        self.ui = Ui_MessagesTable()
         self.ui.setupUi(self)
 
-        horizontalHeader = self.ui.requestsTable.horizontalHeader()
+        horizontalHeader = self.ui.messagesTable.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
         horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
         horizontalHeader.setSortIndicator(0, QtCore.Qt.DescendingOrder)
         horizontalHeader.setHighlightSections(False)
         # horizontalHeader.setCursor(QtCore.Qt.PointingHandCursor)
 
-        verticalHeader = self.ui.requestsTable.verticalHeader()
+        verticalHeader = self.ui.messagesTable.verticalHeader()
         verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
-        self.ui.requestsTable.setSortingEnabled(True)
-        self.ui.requestsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.ui.requestsTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.ui.messagesTable.setSortingEnabled(True)
+        self.ui.messagesTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.ui.messagesTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 
         # Enable row hover styling:
-        delegate = RowStyleDelegate(self.ui.requestsTable)
-        self.ui.requestsTable.setMouseTracking(True)
-        self.ui.requestsTable.setItemDelegate(delegate)
-        # self.ui.requestsTable.viewport().update()
-        self.ui.requestsTable.hover_index_changed.connect(delegate.highlight_index)
+        delegate = RowStyleDelegate(self.ui.messagesTable)
+        self.ui.messagesTable.setMouseTracking(True)
+        self.ui.messagesTable.setItemDelegate(delegate)
+        # self.ui.messagesTable.viewport().update()
+        self.ui.messagesTable.hover_index_changed.connect(delegate.highlight_index)
 
         # Search box:
         self.ui.searchBox.textEdited.connect(self.search_text_edited)
 
         # Display & Capture Filters:
         self.network_display_filters = DisplayFilters(self)
-        self.network_capture_filters = CaptureFilters(self)
         self.ui.displayFiltersButton.clicked.connect(lambda: self.network_display_filters.show())
-        self.ui.captureFiltersButton.clicked.connect(lambda: self.network_capture_filters.show())
 
         # Set row selection behaviour:
-        self.ui.requestsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.messagesTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         # Set right-click behaviour:
-        self.ui.requestsTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.ui.requestsTable.customContextMenuRequested.connect(
+        self.ui.messagesTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.ui.messagesTable.customContextMenuRequested.connect(
             self.right_clicked)
         self.selected_request_ids = []
 
     def setTableModel(self, model):
         self.table_model = model
-        self.ui.requestsTable.setModel(model)
+        self.ui.messagesTable.setModel(model)
 
         # Request Selected Signal:
-        self.ui.requestsTable.selectionModel().selectionChanged.connect(self.request_selected)
-        self.ui.requestsTable.selectionModel().selectionChanged.connect(self.set_selected_requests)
+        self.ui.messagesTable.selectionModel().selectionChanged.connect(self.request_selected)
+        self.ui.messagesTable.selectionModel().selectionChanged.connect(self.set_selected_requests)
 
-        self.ui.requestsTable.setColumnWidth(0, 50)
-        self.ui.requestsTable.setColumnWidth(1, 80)
-        self.ui.requestsTable.setColumnWidth(2, 80)
-        self.ui.requestsTable.setColumnWidth(3, 80)
-        self.ui.requestsTable.setColumnWidth(4, 150)
-        self.ui.requestsTable.setColumnWidth(5, 300)
-        self.ui.requestsTable.setColumnWidth(6, 50)
-        self.ui.requestsTable.setColumnWidth(7, 70)
+        self.ui.messagesTable.setColumnWidth(0, 50)
+        self.ui.messagesTable.setColumnWidth(1, 80)
+        self.ui.messagesTable.setColumnWidth(2, 80)
+        self.ui.messagesTable.setColumnWidth(3, 80)
 
     @QtCore.Slot()
     def set_selected_requests(self, selected, deselected):
-        selected_q_indexes = self.ui.requestsTable.selectionModel().selectedRows()
+        selected_q_indexes = self.ui.messagesTable.selectionModel().selectedRows()
         self.selected_request_ids = list(map(lambda index: index.data(), selected_q_indexes))
 
     @QtCore.Slot()
     def right_clicked(self, position):
-        index = self.ui.requestsTable.indexAt(position)
+        index = self.ui.messagesTable.indexAt(position)
         request = self.table_model.requests[index.row()]
 
         menu = QtWidgets.QMenu()
@@ -91,10 +84,10 @@ class RequestsTable(QtWidgets.QWidget):
             menu.addAction(action)
             action.triggered.connect(lambda: self.delete_requests.emit(self.selected_request_ids))
         else:
-            if request.is_editable():
-                send_action = QtWidgets.QAction("Send to editor")
-                menu.addAction(send_action)
-                send_action.triggered.connect(lambda: self.send_request_to_editor.emit(request))
+            # if request.is_editable():
+            #     send_action = QtWidgets.QAction("Send to editor")
+            #     menu.addAction(send_action)
+            #     send_action.triggered.connect(lambda: self.send_request_to_editor.emit(request))
 
             action = QtWidgets.QAction("Delete request")
             menu.addAction(action)

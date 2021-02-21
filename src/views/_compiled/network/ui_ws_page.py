@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'http_page.ui'
+## Form generated from reading UI file 'ws_page.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -12,20 +12,20 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from widgets.network.http.requests_table import RequestsTable
-from widgets.shared.request_view import RequestView
+from widgets.network.ws.messages_table import MessagesTable
+from widgets.network.ws.message_view import MessageView
 
 
-class Ui_HttpPage(object):
-    def setupUi(self, HttpPage):
-        if not HttpPage.objectName():
-            HttpPage.setObjectName(u"HttpPage")
-        HttpPage.resize(1400, 700)
-        self.verticalLayout = QVBoxLayout(HttpPage)
+class Ui_WsPage(object):
+    def setupUi(self, WsPage):
+        if not WsPage.objectName():
+            WsPage.setObjectName(u"WsPage")
+        WsPage.resize(1400, 700)
+        self.verticalLayout = QVBoxLayout(WsPage)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.crawlerToolbar = QWidget(HttpPage)
+        self.crawlerToolbar = QWidget(WsPage)
         self.crawlerToolbar.setObjectName(u"crawlerToolbar")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -59,10 +59,10 @@ class Ui_HttpPage(object):
 
         self.verticalLayout.addWidget(self.crawlerToolbar)
 
-        self.requestsTableAndViewSplitter = QSplitter(HttpPage)
+        self.requestsTableAndViewSplitter = QSplitter(WsPage)
         self.requestsTableAndViewSplitter.setObjectName(u"requestsTableAndViewSplitter")
         self.requestsTableAndViewSplitter.setOrientation(Qt.Horizontal)
-        self.requestsTableWidget = RequestsTable(self.requestsTableAndViewSplitter)
+        self.requestsTableWidget = MessagesTable(self.requestsTableAndViewSplitter)
         self.requestsTableWidget.setObjectName(u"requestsTableWidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -71,23 +71,23 @@ class Ui_HttpPage(object):
         self.requestsTableWidget.setSizePolicy(sizePolicy1)
         self.requestsTableWidget.setMinimumSize(QSize(740, 0))
         self.requestsTableAndViewSplitter.addWidget(self.requestsTableWidget)
-        self.requestViewWidget = RequestView(self.requestsTableAndViewSplitter)
-        self.requestViewWidget.setObjectName(u"requestViewWidget")
-        sizePolicy1.setHeightForWidth(self.requestViewWidget.sizePolicy().hasHeightForWidth())
-        self.requestViewWidget.setSizePolicy(sizePolicy1)
-        self.requestsTableAndViewSplitter.addWidget(self.requestViewWidget)
+        self.messageViewWidget = MessageView(self.requestsTableAndViewSplitter)
+        self.messageViewWidget.setObjectName(u"messageViewWidget")
+        sizePolicy1.setHeightForWidth(self.messageViewWidget.sizePolicy().hasHeightForWidth())
+        self.messageViewWidget.setSizePolicy(sizePolicy1)
+        self.requestsTableAndViewSplitter.addWidget(self.messageViewWidget)
 
         self.verticalLayout.addWidget(self.requestsTableAndViewSplitter)
 
 
-        self.retranslateUi(HttpPage)
+        self.retranslateUi(WsPage)
 
-        QMetaObject.connectSlotsByName(HttpPage)
+        QMetaObject.connectSlotsByName(WsPage)
     # setupUi
 
-    def retranslateUi(self, HttpPage):
-        HttpPage.setWindowTitle(QCoreApplication.translate("HttpPage", u"Form", None))
-        self.label.setText(QCoreApplication.translate("HttpPage", u"NETWORK - HTTP", None))
-        self.toggleButton.setText(QCoreApplication.translate("HttpPage", u"HTTP", None))
+    def retranslateUi(self, WsPage):
+        WsPage.setWindowTitle(QCoreApplication.translate("WsPage", u"Form", None))
+        self.label.setText(QCoreApplication.translate("WsPage", u"NETWORK - WEBSOCKETS", None))
+        self.toggleButton.setText(QCoreApplication.translate("WsPage", u"WS", None))
     # retranslateUi
 
