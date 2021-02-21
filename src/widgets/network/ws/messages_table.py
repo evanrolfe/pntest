@@ -5,10 +5,10 @@ from widgets.network.http.display_filters import DisplayFilters
 from widgets.qt.row_style_delegate import RowStyleDelegate
 
 class MessagesTable(QtWidgets.QWidget):
-    request_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
-    delete_requests = QtCore.Signal(list)
+    row_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
+    delete_rows = QtCore.Signal(list)
     search_text_changed = QtCore.Signal(str)
-    send_request_to_editor = QtCore.Signal(object)
+    send_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         super(MessagesTable, self).__init__(*args, **kwargs)
@@ -52,15 +52,15 @@ class MessagesTable(QtWidgets.QWidget):
         self.ui.messagesTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.ui.messagesTable.customContextMenuRequested.connect(
             self.right_clicked)
-        self.selected_request_ids = []
+        self.selected_message_ids = []
 
     def setTableModel(self, model):
         self.table_model = model
         self.ui.messagesTable.setModel(model)
 
         # Request Selected Signal:
-        self.ui.messagesTable.selectionModel().selectionChanged.connect(self.request_selected)
-        self.ui.messagesTable.selectionModel().selectionChanged.connect(self.set_selected_requests)
+        self.ui.messagesTable.selectionModel().selectionChanged.connect(self.row_selected)
+        self.ui.messagesTable.selectionModel().selectionChanged.connect(self.set_selected_messages)
 
         self.ui.messagesTable.setColumnWidth(0, 50)
         self.ui.messagesTable.setColumnWidth(1, 80)
@@ -68,36 +68,32 @@ class MessagesTable(QtWidgets.QWidget):
         self.ui.messagesTable.setColumnWidth(3, 80)
 
     @QtCore.Slot()
-    def set_selected_requests(self, selected, deselected):
+    def set_selected_messages(self, selected, deselected):
         selected_q_indexes = self.ui.messagesTable.selectionModel().selectedRows()
-        self.selected_request_ids = list(map(lambda index: index.data(), selected_q_indexes))
+        self.selected_message_ids = list(map(lambda index: index.data(), selected_q_indexes))
 
     @QtCore.Slot()
     def right_clicked(self, position):
         index = self.ui.messagesTable.indexAt(position)
-        request = self.table_model.requests[index.row()]
+        message = self.table_model.messages[index.row()]
 
         menu = QtWidgets.QMenu()
 
-        if (len(self.selected_request_ids) > 1):
-            action = QtWidgets.QAction(f"Delete {len(self.selected_request_ids)} selected requests")
+        if (len(self.selected_message_ids) > 1):
+            action = QtWidgets.QAction(f"Delete {len(self.selected_message_ids)} selected messages")
             menu.addAction(action)
-            action.triggered.connect(lambda: self.delete_requests.emit(self.selected_request_ids))
+            action.triggered.connect(lambda: self.delete_rows.emit(self.selected_message_ids))
         else:
-            # if request.is_editable():
+            # if message.is_editable():
             #     send_action = QtWidgets.QAction("Send to editor")
             #     menu.addAction(send_action)
-            #     send_action.triggered.connect(lambda: self.send_request_to_editor.emit(request))
+            #     send_action.triggered.connect(lambda: self.send_to_editor.emit(message))
 
-            action = QtWidgets.QAction("Delete request")
+            action = QtWidgets.QAction("Delete message")
             menu.addAction(action)
-            action.triggered.connect(lambda: self.delete_requests.emit([request.id]))
+            action.triggered.connect(lambda: self.delete_rows.emit([message.id]))
 
         menu.exec_(self.sender().mapToGlobal(position))
-
-    @QtCore.Slot()
-    def display_filters_clicked(self):
-        print("You clicked me!")
 
     @QtCore.Slot()
     def search_text_edited(self, new_text):

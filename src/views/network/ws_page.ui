@@ -103,7 +103,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QSplitter" name="requestsTableAndViewSplitter">
+    <widget class="QSplitter" name="messagesTableAndViewSplitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

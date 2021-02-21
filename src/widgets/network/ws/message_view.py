@@ -11,8 +11,8 @@ class MessageView(QtWidgets.QWidget):
         # Disable modified tabs to start with:
         self.ui.messageTabs.setTabEnabled(1, False)
 
-    def clear_request(self):
+    def clear_message(self):
         self.ui.messageText.setPlainText('')
 
-    def set_request(self, request):
-        self.ui.messageText.setPlainText(f'Request: {request.id}')
+    def set_message(self, message):
+        self.ui.messageText.setPlainText(message.body)

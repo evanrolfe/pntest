@@ -31,14 +31,14 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
     #     end_index = self.index(rowIndex, len(self.headers) - 1)
     #     self.dataChanged.emit(start_index, end_index)
 
-    # def delete_messages(self, request_ids):
-    #     row_index = self.get_index_of(request_ids[0])
-    #     row_index2 = self.get_index_of(request_ids[-1])
+    def delete_messages(self, message_ids):
+        row_index = self.get_index_of(message_ids[0])
+        row_index2 = self.get_index_of(message_ids[-1])
 
-    #     self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-    #     NetworkRequest.destroy(*request_ids)
-    #     self.messages = list(filter(lambda r: r.id not in request_ids, self.messages))
-    #     self.endRemoveRows()
+        self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
+        WebsocketMessage.destroy(*message_ids)
+        self.messages = list(filter(lambda r: r.id not in message_ids, self.messages))
+        self.endRemoveRows()
 
     def roleNames(self):
         roles = {}
@@ -66,13 +66,13 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
             if index.row() > len(self.messages):
                 return None
 
-            request = self.messages[index.row()]
+            message = self.messages[index.row()]
 
             row_values = [
-                request.id,
-                request.request_id,
-                request.direction,
-                format_timestamp(request.created_at)
+                message.id,
+                message.request_id,
+                message.direction,
+                format_timestamp(message.created_at)
             ]
 
             return row_values[index.column()]

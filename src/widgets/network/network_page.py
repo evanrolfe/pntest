@@ -29,3 +29,7 @@ class NetworkPage(QtWidgets.QWidget):
 
     def set_page_ws(self):
         self.stacked_widget.setCurrentWidget(self.ws_page)
+
+    def save_layout_state(self):
+        self.http_page.save_layout_state()
+        self.ws_page.save_layout_state()

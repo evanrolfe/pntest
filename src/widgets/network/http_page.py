@@ -62,7 +62,20 @@ class HttpPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def delete_requests(self, request_ids):
-        self.requests_table_model.delete_requests(request_ids)
+        if len(request_ids) > 1:
+            message = f'Are you sure you want to delete {len(request_ids)} requests?'
+        else:
+            message = 'Are you sure you want to delete this request?'
+
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('PNTest')
+        message_box.setText(message)
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.Yes)
+        response = message_box.exec_()
+
+        if response == QtWidgets.QMessageBox.Yes:
+            self.requests_table_model.delete_requests(request_ids)
 
     @QtCore.Slot()
     def search_requests(self, search_text):
