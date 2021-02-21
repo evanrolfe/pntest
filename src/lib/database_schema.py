@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
   request_id INTEGER,
   direction TEXT,
   body TEXT,
+  body_modified TEXT,
   created_at INTEGER,
   updated_at INTEGER
 );

@@ -1,7 +1,9 @@
 import json
 from PySide2 import QtCore, QtWidgets
+import pendulum
 
 from models.request import Request
+from models.data.websocket_message import WebsocketMessage
 
 LIST_AVAILABLE_CLIENTS_COMMAND = b'{"command": "listAvailableClientTypes"}'
 
@@ -24,6 +26,7 @@ class Backend:
         self.callbacks = {
             'newRequest': [],
             'updatedRequest': [],
+            'newWebsocketMessage': [],
             'clientsAvailable': [],
             'clientsChanged': [],
             'requestIntercepted': [],
@@ -98,10 +101,20 @@ class Backend:
                     callback(request)
 
             elif (obj['type'] == 'updatedRequest'):
-                print(obj)
                 for callback in self.callbacks['updatedRequest']:
                     request = Request(obj['request'])
                     callback(request)
+
+            elif (obj['type'] == 'newWebsocketMessage'):
+                # TODO: Move this logic to the model
+                ws_message = WebsocketMessage()
+                ws_message.id = obj['message']['id']
+                ws_message.direction = obj['message']['direction']
+                ws_message.request_id = obj['message']['request_id']
+                ws_message.created_at = pendulum.from_timestamp(obj['message']['created_at'])
+
+                for callback in self.callbacks['newWebsocketMessage']:
+                    callback(ws_message)
 
             elif (obj['type'] == 'clientsAvailable'):
                 for callback in self.callbacks['clientsAvailable']:

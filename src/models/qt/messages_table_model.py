@@ -11,15 +11,15 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
         self.messages = list(messages)
 
         # Register callback with the backend:
-        # self.backend = Backend.get_instance()
-        # self.backend.register_callback('newRequest', self.add_request)
+        self.backend = Backend.get_instance()
+        self.backend.register_callback('newWebsocketMessage', self.add_message)
         # self.backend.register_callback('updatedRequest', self.update_request)
 
-    # def add_request(self, request):
-    #     rowIndex = 0
-    #     self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)
-    #     self.messages.insert(0, request)
-    #     self.endInsertRows()
+    def add_message(self, message):
+        rowIndex = 0
+        self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)
+        self.messages.insert(0, message)
+        self.endInsertRows()
 
     # def update_request(self, request):
     #     for i, r in enumerate(self.messages):
