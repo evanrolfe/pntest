@@ -88,6 +88,6 @@ class Ui_HttpPage(object):
     def retranslateUi(self, HttpPage):
         HttpPage.setWindowTitle(QCoreApplication.translate("HttpPage", u"Form", None))
         self.label.setText(QCoreApplication.translate("HttpPage", u"NETWORK - HTTP", None))
-        self.toggleButton.setText(QCoreApplication.translate("HttpPage", u"HTTP", None))
+        self.toggleButton.setText(QCoreApplication.translate("HttpPage", u"WEBSOCKET", None))
     # retranslateUi
 

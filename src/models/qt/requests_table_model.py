@@ -6,8 +6,7 @@ from models.data.network_request import NetworkRequest
 class RequestsTableModel(QtCore.QAbstractTableModel):
     def __init__(self, requests, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        self.headers = ['ID', 'Source', 'Type', 'Method',
-                        'Host', 'Path', 'Status', 'Modified']
+        self.headers = ['ID', 'Source', 'Type', 'Method', 'Host', 'Path', 'Status', 'Modified']
         self.requests = list(requests)
 
         # Register callback with the backend:
@@ -97,14 +96,11 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         reverse = (order == QtCore.Qt.DescendingOrder)
 
         if (column == 0):
-            self.requests = sorted(
-                self.requests, key=lambda r: r.id, reverse=reverse)
+            self.requests = sorted(self.requests, key=lambda r: r.id, reverse=reverse)
         elif (column == 1):
-            self.requests = sorted(
-                self.requests, key=lambda r: int(r.client_id or 0), reverse=reverse)
+            self.requests = sorted(self.requests, key=lambda r: int(r.client_id or 0), reverse=reverse)
         elif (column == 2):
-            self.requests = sorted(
-                self.requests, key=lambda r: r.request_type, reverse=reverse)
+            self.requests = sorted(self.requests, key=lambda r: r.request_type, reverse=reverse)
         elif (column == 3):
             self.requests = sorted(self.requests, key=lambda r: [r.method, r.id], reverse=reverse)
         elif (column == 4):
@@ -112,8 +108,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         elif (column == 5):
             self.requests = sorted(self.requests, key=lambda r: [r.path, r.id], reverse=reverse)
         elif (column == 6):
-            self.requests = sorted(
-                self.requests, key=self.response_status_sort_key, reverse=reverse)
+            self.requests = sorted(self.requests, key=self.response_status_sort_key, reverse=reverse)
 
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
 

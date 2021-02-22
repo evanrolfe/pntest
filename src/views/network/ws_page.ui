@@ -95,7 +95,7 @@
          </size>
         </property>
         <property name="text">
-         <string>WS</string>
+         <string>HTTP</string>
         </property>
        </widget>
       </item>

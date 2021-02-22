@@ -7,7 +7,7 @@ from models.data.websocket_message import WebsocketMessage
 class MessagesTableModel(QtCore.QAbstractTableModel):
     def __init__(self, messages, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        self.headers = ['ID', 'Request', 'Direction', 'Time']
+        self.headers = ['ID', 'Request', 'Direction', 'Time', 'Modified']
         self.messages = list(messages)
 
         # Register callback with the backend:
@@ -72,7 +72,8 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
                 message.id,
                 message.request_id,
                 message.direction,
-                format_timestamp(message.created_at)
+                format_timestamp(message.created_at),
+                message.modified()
             ]
 
             return row_values[index.column()]

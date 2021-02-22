@@ -88,6 +88,6 @@ class Ui_WsPage(object):
     def retranslateUi(self, WsPage):
         WsPage.setWindowTitle(QCoreApplication.translate("WsPage", u"Form", None))
         self.label.setText(QCoreApplication.translate("WsPage", u"NETWORK - WEBSOCKETS", None))
-        self.toggleButton.setText(QCoreApplication.translate("WsPage", u"WS", None))
+        self.toggleButton.setText(QCoreApplication.translate("WsPage", u"HTTP", None))
     # retranslateUi
 
