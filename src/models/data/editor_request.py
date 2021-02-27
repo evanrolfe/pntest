@@ -1,7 +1,7 @@
 import json
 from orator import Model
 
-from widgets.editor.request_headers_form import RequestHeadersForm
+from widgets.shared.request_headers_form import RequestHeadersForm
 
 class EditorRequest(Model):
     __table__ = 'editor_requests'

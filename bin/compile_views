@@ -30,11 +30,11 @@ pyside2-uic src/views/intercept/intercept_page.ui > src/views/_compiled/intercep
 pyside2-uic src/views/editor/request_edit_page.ui > src/views/_compiled/editor/ui_request_edit_page.py
 pyside2-uic src/views/editor/editor_page.ui > src/views/_compiled/editor/ui_editor_page.py
 pyside2-uic src/views/editor/request_body_form.ui > src/views/_compiled/editor/ui_request_body_form.py
-pyside2-uic src/views/editor/request_headers_form.ui > src/views/_compiled/editor/ui_request_headers_form.py
 
 # Shared:
 pyside2-uic src/views/shared/request_view.ui > src/views/_compiled/shared/ui_request_view.py
 pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
+pyside2-uic src/views/shared/request_headers_form.ui > src/views/_compiled/shared/ui_request_headers_form.py
 
 # Mainwindow:
 pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py

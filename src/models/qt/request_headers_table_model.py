@@ -1,6 +1,6 @@
 from PySide2 import QtCore
 
-class EditorRequestHeadersTableModel(QtCore.QAbstractTableModel):
+class RequestHeadersTableModel(QtCore.QAbstractTableModel):
     BLANK_ROW = [False, '', '']
 
     def __init__(self, headers, parent=None):

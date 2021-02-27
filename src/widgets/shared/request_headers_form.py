@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets, QtCore
 
-from views._compiled.editor.ui_request_headers_form import Ui_RequestHeadersForm
-from models.qt.editor_request_headers_table_model import EditorRequestHeadersTableModel
+from views._compiled.shared.ui_request_headers_form import Ui_RequestHeadersForm
+from models.qt.request_headers_table_model import RequestHeadersTableModel
 
 class RequestHeadersForm(QtWidgets.QWidget):
     CALCULATED_TEXT = '<calculated when request is sent>'
@@ -22,7 +22,7 @@ class RequestHeadersForm(QtWidgets.QWidget):
         self.ui.setupUi(self)
         self.load_headers()
 
-        self.table_model = EditorRequestHeadersTableModel(self.headers)
+        self.table_model = RequestHeadersTableModel(self.headers)
         self.ui.headersTable.setModel(self.table_model)
         self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
 

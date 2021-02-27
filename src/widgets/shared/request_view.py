@@ -66,4 +66,3 @@ class RequestView(QtWidgets.QWidget):
         else:
             self.ui.headerTabs.setTabEnabled(3, False)
             self.ui.bodyTabs.setTabEnabled(1, False)
-
