@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
 
-from views._compiled.editor.ui_request_body_form import Ui_RequestBodyForm
+from views._compiled.shared.ui_request_body_form import Ui_RequestBodyForm
 
 class RequestBodyForm(QtWidgets.QWidget):
     def __init__(self, editor_item, *args, **kwargs):

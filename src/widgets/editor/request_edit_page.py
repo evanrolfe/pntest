@@ -2,7 +2,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 from widgets.shared.request_headers_form import RequestHeadersForm
-from widgets.editor.request_body_form import RequestBodyForm
+from widgets.shared.request_body_form import RequestBodyForm
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
