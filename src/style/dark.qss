@@ -306,6 +306,13 @@ QComboBox::drop-down {
   image: url(":/icons/dark/icons8-sort-down-18.png");
 }
 
+#modifiedDropdown {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    font-size: 10px;
+}
+
 /*------------------------------------------------------------------------------*
  * TextArea & LineEdit
  *------------------------------------------------------------------------------*/
@@ -331,4 +338,9 @@ QLineEdit:hover {
 QLineEdit:focus {
   border: 1 solid $bg-input;
   background-color: $bg-dark;
+}
+
+#headerLine {
+    border-width: 0;
+    background-color: $bg-dark;
 }

@@ -73,8 +73,11 @@ class RequestEditPage(QtWidgets.QWidget):
         self.set_method_on_form(self.request.method)
 
         # Request Headers and body
-        self.request_headers_form = RequestHeadersForm(self.editor_item)
-        self.request_body_form = RequestBodyForm(self.editor_item)
+        headers = self.editor_item.item().get_request_headers()
+        self.request_headers_form = RequestHeadersForm(None, headers)
+
+        request_body = self.editor_item.item().request_payload
+        self.request_body_form = RequestBodyForm(request_body)
 
         self.ui.requestTabs.insertTab(0, self.request_headers_form, 'Headers')
         self.ui.requestTabs.insertTab(1, self.request_body_form, 'Body')

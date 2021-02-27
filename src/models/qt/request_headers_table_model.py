@@ -5,7 +5,7 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, headers, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        self.row_headers = ['', 'Key', 'Value']
+        self.row_headers = ['', 'Header', 'Value']
         self.headers = headers
         self.insert_blank_row()
 
@@ -15,6 +15,11 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
         # Pass array by value
         self.headers.append(self.BLANK_ROW[:])
         self.endInsertRows()
+
+    def set_headers(self, headers):
+        self.headers = headers
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+        self.layoutChanged.emit()
 
     def get_headers(self):
         header_arrays = [h[1:3] for h in self.headers if h[0] is True]

@@ -14,15 +14,16 @@ class RequestHeadersForm(QtWidgets.QWidget):
         [True, 'User-Agent', 'pntest/0.1'],
     ]
 
-    def __init__(self, editor_item, *args, **kwargs):
+    def __init__(self, header_line, headers, *args, **kwargs):
         super(RequestHeadersForm, self).__init__(*args, **kwargs)
-        self.editor_item = editor_item
 
         self.ui = Ui_RequestHeadersForm()
         self.ui.setupUi(self)
-        self.load_headers()
 
-        self.table_model = RequestHeadersTableModel(self.headers)
+        self.table_model = RequestHeadersTableModel([])
+        self.set_header_line(header_line)
+        self.set_headers(headers)
+
         self.ui.headersTable.setModel(self.table_model)
         self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
 
@@ -41,13 +42,19 @@ class RequestHeadersForm(QtWidgets.QWidget):
         # self.ui.showGeneratedHeaders.setTristate(False)
         # self.ui.showGeneratedHeaders.stateChanged.connect(self.show_generated_headers)
 
-    def load_headers(self):
-        headers = self.editor_item.item().get_request_headers()
-
-        if headers is None:
-            self.headers = self.DEFAULT_HEADERS[:]
+    def set_header_line(self, header_line):
+        if header_line is not None:
+            self.ui.headerLine.setText(header_line)
         else:
-            self.headers = [[True, key, value] for key, value in headers.items()]
+            self.ui.headerLine.setVisible(False)
+
+    def set_headers(self, headers):
+        if headers is None:
+            headers = self.DEFAULT_HEADERS[:]
+        else:
+            headers = [[True, key, value] for key, value in headers.items()]
+
+        self.table_model.set_headers(headers)
 
     @QtCore.Slot()
     def show_generated_headers(self, state):

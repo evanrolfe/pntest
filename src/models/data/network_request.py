@@ -27,6 +27,15 @@ class NetworkRequest(Model):
     def has_response(self):
         return (self.response_status != '')
 
+    def get_request_headers(self):
+        if self.request_headers is None:
+            return None
+
+        return json.loads(self.request_headers)
+
+    def get_request_header_line(self):
+        return f'{self.method} {self.path} HTTP/{self.http_version}'
+
     def request_headers_parsed(self):
         http_message = f'{self.method} {self.path} HTTP/{self.http_version}\n'
         http_message += self.__parse_headers_json(self.request_headers)

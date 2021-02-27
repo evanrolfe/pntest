@@ -22,6 +22,11 @@ class Ui_RequestHeadersForm(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.headerLine = QLineEdit(RequestHeadersForm)
+        self.headerLine.setObjectName(u"headerLine")
+
+        self.verticalLayout.addWidget(self.headerLine)
+
         self.headersTable = QTableView(RequestHeadersForm)
         self.headersTable.setObjectName(u"headersTable")
 
