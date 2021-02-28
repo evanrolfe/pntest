@@ -5,12 +5,12 @@
 */
 
 .cm-s-material-darker.CodeMirror {
-  background-color: #212121;
+  background-color: #1E1E1E;
   color: #EEFFFF;
 }
 
 .cm-s-material-darker .CodeMirror-gutters {
-  background: #212121;
+  background: #1E1E1E;
   color: #545454;
   border: none;
 }
