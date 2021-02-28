@@ -29,9 +29,13 @@ class RequestView(QtWidgets.QWidget):
         # Request:
         self.ui.requestHeaders.set_header_line(request.get_request_header_line())
         self.ui.requestHeaders.set_headers(request.get_request_headers())
+
         self.ui.requestPayload.set_value(request.request_payload or '')
 
         # Response:
+        self.ui.responseHeaders.set_header_line(request.get_response_header_line())
+        self.ui.responseHeaders.set_headers(request.get_response_headers())
+
         self.ui.responseRaw.set_value(request.response_body or '')
         self.ui.responseRendered.set_value(request.response_body_rendered or '')
         self.ui.responseBodyPreview.setHtml(request.response_body_for_preview(), baseUrl=request.url())

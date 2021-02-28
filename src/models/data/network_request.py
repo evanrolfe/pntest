@@ -30,11 +30,21 @@ class NetworkRequest(Model):
     def get_request_headers(self):
         if self.request_headers is None:
             return None
-
         return json.loads(self.request_headers)
 
     def get_request_header_line(self):
         return f'{self.method} {self.path} HTTP/{self.http_version}'
+
+    def get_response_headers(self):
+        if self.response_headers is None:
+            return None
+        return json.loads(self.response_headers)
+
+    def get_response_header_line(self):
+        if self.response_status is None:
+            return 'No response'
+        else:
+            return f'HTTP/{self.response_http_version} {self.response_status} {self.response_status_message}\n'
 
     def request_headers_parsed(self):
         http_message = f'{self.method} {self.path} HTTP/{self.http_version}\n'
