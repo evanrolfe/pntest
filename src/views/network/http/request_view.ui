@@ -44,6 +44,50 @@
       <property name="documentMode">
        <bool>false</bool>
       </property>
+      <widget class="QWidget" name="requestHeadersTab">
+       <attribute name="title">
+        <string>Request</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6_body">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="HeadersForm" name="requestHeaders" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="requestPayloadTab">
+       <attribute name="title">
+        <string>Payload</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_7_body">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="CodeEditor" name="requestPayload" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
      <widget class="QTabWidget" name="bodyTabs">
       <property name="sizePolicy">
@@ -103,7 +147,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPlainTextEdit" name="responseBodyParsedText"/>
+         <widget class="CodeEditor" name="responseRendered"/>
         </item>
        </layout>
       </widget>
@@ -147,6 +191,11 @@
    <class>CodeEditor</class>
    <extends>QWidget</extends>
    <header>widgets.shared.code_editor.h</header>
+  </customwidget>
+  <customwidget>
+   <class>HeadersForm</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.headers_form.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

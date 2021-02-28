@@ -14,15 +14,15 @@ class HeadersForm(QtWidgets.QWidget):
         [True, 'User-Agent', 'pntest/0.1'],
     ]
 
-    def __init__(self, header_line, headers, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(HeadersForm, self).__init__(*args, **kwargs)
 
         self.ui = Ui_HeadersForm()
         self.ui.setupUi(self)
 
         self.table_model = RequestHeadersTableModel([])
-        self.set_header_line(header_line)
-        self.set_headers(headers)
+        self.set_header_line('')
+        self.set_headers({})
 
         self.ui.headersTable.setModel(self.table_model)
         self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)

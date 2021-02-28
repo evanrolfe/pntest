@@ -74,7 +74,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         # Request Headers and body
         headers = self.editor_item.item().get_request_headers()
-        self.request_headers_form = HeadersForm(None, headers)
+        self.request_headers_form = HeadersForm()
 
         request_body = self.editor_item.item().request_payload
         self.request_body_form = RequestBodyForm(request_body)
