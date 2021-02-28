@@ -1,7 +1,7 @@
 import json
 from orator import Model
 
-from widgets.shared.request_headers_form import RequestHeadersForm
+from widgets.shared.headers_form import HeadersForm
 
 class EditorRequest(Model):
     __table__ = 'editor_requests'
@@ -42,7 +42,7 @@ class EditorRequest(Model):
         self.request_headers = json.dumps(headers_dict)
 
     def overwrite_calculated_headers(self):
-        calc_text = RequestHeadersForm.CALCULATED_TEXT
+        calc_text = HeadersForm.CALCULATED_TEXT
         headers = self.get_request_headers()
 
         if headers.get('host'):

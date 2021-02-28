@@ -1,6 +1,6 @@
 from requests import Request, Session
 
-from widgets.shared.request_headers_form import RequestHeadersForm
+from widgets.shared.headers_form import HeadersForm
 
 class HttpRequest:
     def __init__(self, method, url, headers, body):
@@ -23,7 +23,7 @@ class HttpRequest:
         parsed_headers = {}
 
         for key, value in self.headers.items():
-            if value != RequestHeadersForm.CALCULATED_TEXT:
+            if value != HeadersForm.CALCULATED_TEXT:
                 parsed_headers[key] = value
 
         return parsed_headers

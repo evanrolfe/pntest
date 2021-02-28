@@ -1,8 +1,8 @@
-from PySide2 import QtCore, QtWidgets, QtWebChannel
+from PySide2 import QtWidgets
 
 from views._compiled.network.http.ui_request_view import Ui_RequestView
 from widgets.shared.request_body_form import RequestBodyForm
-from widgets.shared.request_headers_form import RequestHeadersForm
+from widgets.shared.headers_form import HeadersForm
 
 class RequestView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -10,7 +10,7 @@ class RequestView(QtWidgets.QWidget):
         self.ui = Ui_RequestView()
         self.ui.setupUi(self)
 
-        self.request_headers_form = RequestHeadersForm('', {})
+        self.request_headers_form = HeadersForm('', {})
         self.request_body_form = RequestBodyForm('')
 
         show_modified_dropwon = QtWidgets.QComboBox()
@@ -34,7 +34,7 @@ class RequestView(QtWidgets.QWidget):
 
     def set_request(self, request):
         # Request Headers and body
-        # self.request_headers_form = RequestHeadersForm(self.editor_item)
+        # self.request_headers_form = HeadersForm(self.editor_item)
         self.ui.responseRaw.set_value(request.response_body)
 
         self.request_headers_form.set_header_line(request.get_request_header_line())

@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets, QtCore, QtGui
 
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
-from widgets.shared.request_headers_form import RequestHeadersForm
+from widgets.shared.headers_form import HeadersForm
 from widgets.shared.request_body_form import RequestBodyForm
 
 from lib.app_settings import AppSettings
@@ -74,7 +74,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         # Request Headers and body
         headers = self.editor_item.item().get_request_headers()
-        self.request_headers_form = RequestHeadersForm(None, headers)
+        self.request_headers_form = HeadersForm(None, headers)
 
         request_body = self.editor_item.item().request_payload
         self.request_body_form = RequestBodyForm(request_body)

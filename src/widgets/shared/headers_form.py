@@ -1,9 +1,9 @@
 from PySide2 import QtWidgets, QtCore
 
-from views._compiled.shared.ui_request_headers_form import Ui_RequestHeadersForm
+from views._compiled.shared.ui_headers_form import Ui_HeadersForm
 from models.qt.request_headers_table_model import RequestHeadersTableModel
 
-class RequestHeadersForm(QtWidgets.QWidget):
+class HeadersForm(QtWidgets.QWidget):
     CALCULATED_TEXT = '<calculated when request is sent>'
     DEFAULT_HEADERS = [
         [True, 'Content-Length', CALCULATED_TEXT],
@@ -15,9 +15,9 @@ class RequestHeadersForm(QtWidgets.QWidget):
     ]
 
     def __init__(self, header_line, headers, *args, **kwargs):
-        super(RequestHeadersForm, self).__init__(*args, **kwargs)
+        super(HeadersForm, self).__init__(*args, **kwargs)
 
-        self.ui = Ui_RequestHeadersForm()
+        self.ui = Ui_HeadersForm()
         self.ui.setupUi(self)
 
         self.table_model = RequestHeadersTableModel([])

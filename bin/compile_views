@@ -31,7 +31,7 @@ pyside2-uic src/views/editor/editor_page.ui > src/views/_compiled/editor/ui_edit
 
 # Shared:
 pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
-pyside2-uic src/views/shared/request_headers_form.ui > src/views/_compiled/shared/ui_request_headers_form.py
+pyside2-uic src/views/shared/headers_form.ui > src/views/_compiled/shared/ui_headers_form.py
 pyside2-uic src/views/shared/request_body_form.ui > src/views/_compiled/shared/ui_request_body_form.py
 pyside2-uic src/views/shared/code_editor.ui > src/views/_compiled/shared/ui_code_editor.py
 
