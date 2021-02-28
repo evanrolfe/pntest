@@ -53,11 +53,16 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Response</string>
+       </attribute>
+      </widget>
       <widget class="QWidget" name="responseBodyRawTab">
        <attribute name="title">
-        <string>Raw</string>
+        <string>Body</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4_body">
         <property name="leftMargin">
@@ -73,38 +78,13 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QWebEngineView" name="responseBodyRawCode" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="responseBodyModifiedTab">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <attribute name="title">
-        <string>(Modified)</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3_body">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QPlainTextEdit" name="responseBodyModifiedText"/>
+         <widget class="CodeEditor" name="responseRaw" native="true"/>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="responseBodyParsedTab">
        <attribute name="title">
-        <string>Parsed</string>
+        <string>Rendered</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_body">
         <property name="spacing">
@@ -162,6 +142,11 @@
    <class>QWebEngineView</class>
    <extends>QWidget</extends>
    <header>qwebengineview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CodeEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.code_editor.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

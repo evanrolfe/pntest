@@ -13,6 +13,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from PySide2.QtWebEngineWidgets import QWebEngineView
+from widgets.shared.code_editor import CodeEditor
 
 
 class Ui_RequestView(object):
@@ -42,29 +43,20 @@ class Ui_RequestView(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.bodyTabs.sizePolicy().hasHeightForWidth())
         self.bodyTabs.setSizePolicy(sizePolicy1)
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.bodyTabs.addTab(self.tab, "")
         self.responseBodyRawTab = QWidget()
         self.responseBodyRawTab.setObjectName(u"responseBodyRawTab")
         self.verticalLayout_4_body = QVBoxLayout(self.responseBodyRawTab)
         self.verticalLayout_4_body.setObjectName(u"verticalLayout_4_body")
         self.verticalLayout_4_body.setContentsMargins(0, 0, 0, 0)
-        self.responseBodyRawCode = QWebEngineView(self.responseBodyRawTab)
-        self.responseBodyRawCode.setObjectName(u"responseBodyRawCode")
+        self.responseRaw = CodeEditor(self.responseBodyRawTab)
+        self.responseRaw.setObjectName(u"responseRaw")
 
-        self.verticalLayout_4_body.addWidget(self.responseBodyRawCode)
+        self.verticalLayout_4_body.addWidget(self.responseRaw)
 
         self.bodyTabs.addTab(self.responseBodyRawTab, "")
-        self.responseBodyModifiedTab = QWidget()
-        self.responseBodyModifiedTab.setObjectName(u"responseBodyModifiedTab")
-        self.responseBodyModifiedTab.setEnabled(True)
-        self.verticalLayout_3_body = QVBoxLayout(self.responseBodyModifiedTab)
-        self.verticalLayout_3_body.setObjectName(u"verticalLayout_3_body")
-        self.verticalLayout_3_body.setContentsMargins(0, 0, 0, 0)
-        self.responseBodyModifiedText = QPlainTextEdit(self.responseBodyModifiedTab)
-        self.responseBodyModifiedText.setObjectName(u"responseBodyModifiedText")
-
-        self.verticalLayout_3_body.addWidget(self.responseBodyModifiedText)
-
-        self.bodyTabs.addTab(self.responseBodyModifiedTab, "")
         self.responseBodyParsedTab = QWidget()
         self.responseBodyParsedTab.setObjectName(u"responseBodyParsedTab")
         self.verticalLayout_body = QVBoxLayout(self.responseBodyParsedTab)
@@ -97,7 +89,7 @@ class Ui_RequestView(object):
         self.retranslateUi(RequestView)
 
         self.requestTabs.setCurrentIndex(-1)
-        self.bodyTabs.setCurrentIndex(2)
+        self.bodyTabs.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RequestView)
@@ -105,9 +97,9 @@ class Ui_RequestView(object):
 
     def retranslateUi(self, RequestView):
         RequestView.setWindowTitle(QCoreApplication.translate("RequestView", u"Form", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyRawTab), QCoreApplication.translate("RequestView", u"Raw", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyModifiedTab), QCoreApplication.translate("RequestView", u"(Modified)", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyParsedTab), QCoreApplication.translate("RequestView", u"Parsed", None))
+        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.tab), QCoreApplication.translate("RequestView", u"Response", None))
+        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyRawTab), QCoreApplication.translate("RequestView", u"Body", None))
+        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyParsedTab), QCoreApplication.translate("RequestView", u"Rendered", None))
         self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyPreviewTab), QCoreApplication.translate("RequestView", u"Preview", None))
     # retranslateUi
 

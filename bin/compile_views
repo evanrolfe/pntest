@@ -33,6 +33,7 @@ pyside2-uic src/views/editor/editor_page.ui > src/views/_compiled/editor/ui_edit
 pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
 pyside2-uic src/views/shared/request_headers_form.ui > src/views/_compiled/shared/ui_request_headers_form.py
 pyside2-uic src/views/shared/request_body_form.ui > src/views/_compiled/shared/ui_request_body_form.py
+pyside2-uic src/views/shared/code_editor.ui > src/views/_compiled/shared/ui_code_editor.py
 
 # Mainwindow:
 pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
@@ -43,6 +44,11 @@ line=`sed "15q;d" src/views/_compiled/network/http/ui_request_view.py`
 if ! [[ $line =~ "qwebengineview" ]]; then
   echo "WARNING: src/views/_compiled/network/http/ui_request_view.py does not contain qwebengineview on line 15 as expected.";
 fi
-
 sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/network/http/ui_request_view.py
+
+line=`sed "15q;d" src/views/_compiled/shared/ui_code_editor.py`
+if ! [[ $line =~ "qwebengineview" ]]; then
+  echo "WARNING: src/views/_compiled/shared/ui_code_editor.py does not contain qwebengineview on line 15 as expected.";
+fi
+sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/shared/ui_code_editor.py
 # /HACK

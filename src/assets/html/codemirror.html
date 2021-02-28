@@ -24,18 +24,14 @@
           lineNumbers: true,
           theme: 'material',
         });
-        editor.setOption('mode', 'htmlmixed')
 
-            var updateattribute=function(text)
-            {
-                editor.setValue(text)
-            }
+        editor.setOption('mode', 'htmlmixed')
 
         new QWebChannel(qt.webChannelTransport, function (channel) {
             // now you retrieve your object
-            var requestView = channel.objects.RequestView;
-            requestView.set_code.connect(updateattribute)
-            requestView.hello()
+            var codeEditorPython = channel.objects.codeEditorPython;
+            codeEditorPython.set_code.connect((value) => { editor.setValue(value) })
+            //codeEditorPython.hello()
         });
       });
     </script>
