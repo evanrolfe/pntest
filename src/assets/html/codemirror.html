@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="codemirror/lib/dialog.css">
-    <link rel="stylesheet" href="codemirror/theme/material.css">
+    <link rel="stylesheet" href="codemirror/theme/material-darker.css">
     <script src="codemirror/lib/codemirror.js"></script>
     <script src="codemirror/lib/search.js"></script>
     <script src="codemirror/lib/searchcursor.js"></script>
@@ -22,7 +22,7 @@
         var myTextarea = document.getElementById('codeEditor')
         editor = CodeMirror.fromTextArea(myTextarea, {
           lineNumbers: true,
-          theme: 'material',
+          theme: 'material-darker',
         });
 
         editor.setOption('mode', 'htmlmixed')

@@ -66,3 +66,9 @@ class EditorRequest(Model):
             headers['content-length'] = calc_text
 
         self.set_request_headers(headers)
+
+    def response_body_for_preview(self):
+        return self.response_body
+
+    # def url(self):
+    #     return self.url
