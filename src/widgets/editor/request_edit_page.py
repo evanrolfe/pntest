@@ -1,8 +1,6 @@
 from PySide2 import QtWidgets, QtCore, QtGui
 
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
-from widgets.shared.headers_form import HeadersForm
-from widgets.shared.request_body_form import RequestBodyForm
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
@@ -37,9 +35,9 @@ class RequestEditPage(QtWidgets.QWidget):
         self.show_request()
         self.request_is_modified = False
 
-        save_response_button = QtWidgets.QPushButton('Save Response')
-        save_response_button.setContentsMargins(10, 10, 10, 10)
-        self.ui.responseTabs.setCornerWidget(save_response_button)
+        # save_response_button = QtWidgets.QPushButton('Save Response')
+        # save_response_button.setContentsMargins(10, 10, 10, 10)
+        # self.ui.responseTabs.setCornerWidget(save_response_button)
 
         # Form inputs:
         self.ui.urlInput.returnPressed.connect(self.send_request_async)
@@ -48,7 +46,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         # self.show_loader()
         self.threadpool = QtCore.QThreadPool()
-        self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
+        # self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
         # Keyboard shortcuts:
         self.connect(
@@ -62,35 +60,28 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def show_loader(self):
         print('showing the loader')
-        self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
+        # self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
 
     def hide_loader(self):
         print('hiding the loader')
-        self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
+        # self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
 
     def show_request(self):
         self.ui.urlInput.setText(self.request.url)
         self.set_method_on_form(self.request.method)
 
-        # Request Headers and body
-        headers = self.editor_item.item().get_request_headers()
-        self.request_headers_form = HeadersForm()
-
-        request_body = self.editor_item.item().request_payload
-        self.request_body_form = RequestBodyForm(request_body)
-
-        self.ui.requestTabs.insertTab(0, self.request_headers_form, 'Headers')
-        self.ui.requestTabs.insertTab(1, self.request_body_form, 'Body')
+        self.ui.requestViewWidget.set_request(self.request)
 
     @QtCore.Slot()
     def save_request(self):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        headers = self.request_headers_form.get_headers()
+        # TODO: RequestView should broker acess to this value
+        headers = self.ui.requestViewWidget.ui.requestHeaders.get_headers()
 
         self.request.url = url
         self.request.method = method
-        self.request.request_payload = self.request_body_form.get_body()
+        self.request.request_payload = self.ui.requestViewWidget.ui.requestPayload.get_value()
         self.request.set_request_headers(headers)
         self.request.save()
 
@@ -101,13 +92,15 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def response_received(self, response):
         # Display response headers and body
-        self.ui.responseBodyText.setPlainText(response.text)
+        self.ui.requestViewWidget.ui.responseRaw.set_value(response.text)
 
-        headers_text = ""
-        for key, value in response.headers.items():
-            headers_text += f"{key}: {value}\n"
+        self.ui.requestViewWidget.ui.responseHeaders.set_header_line(f'HTTP/1.1 {response.status_code} {response.reason}')
+        self.ui.requestViewWidget.ui.responseHeaders.set_headers(response.headers)
+        # headers_text = ""
+        # for key, value in response.headers.items():
+        #     headers_text += f"{key}: {value}\n"
 
-        self.ui.responseHeadersText.setPlainText(headers_text)
+        # self.ui.responseHeadersText.setPlainText(headers_text)
 
     @QtCore.Slot()
     def request_error(self, error):
@@ -127,8 +120,8 @@ class RequestEditPage(QtWidgets.QWidget):
 
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        headers = self.request_headers_form.get_headers()
-        body = self.request_body_form.get_body()
+        headers = self.ui.requestViewWidget.ui.requestHeaders.get_headers()
+        body = self.ui.requestViewWidget.ui.requestPayload.get_value()
         http_request = HttpRequest(method, url, headers, body)
 
         # Pass the function to execute
@@ -177,18 +170,20 @@ class RequestEditPage(QtWidgets.QWidget):
             self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
 
     def restore_layout_state(self):
-        splitter_state = self.settings.get("RequestEditPage.splitter", None)
-        splitter_state2 = self.settings.get("RequestEditPage.splitter2", None)
+        return None
+        # splitter_state = self.settings.get("RequestEditPage.splitter", None)
+        # splitter_state2 = self.settings.get("RequestEditPage.splitter2", None)
 
-        self.ui.requestEditSplitter.restoreState(splitter_state)
-        self.ui.splitter2.restoreState(splitter_state2)
+        # self.ui.requestEditSplitter.restoreState(splitter_state)
+        # self.ui.splitter2.restoreState(splitter_state2)
 
     def save_layout_state(self):
-        splitter_state = self.ui.requestEditSplitter.saveState()
-        splitter_state2 = self.ui.splitter2.saveState()
+        return None
+        # splitter_state = self.ui.requestEditSplitter.saveState()
+        # splitter_state2 = self.ui.splitter2.saveState()
 
-        self.settings.save("RequestEditPage.splitter", splitter_state)
-        self.settings.save("RequestEditPage.splitter2", splitter_state2)
+        # self.settings.save("RequestEditPage.splitter", splitter_state)
+        # self.settings.save("RequestEditPage.splitter2", splitter_state2)
 
     def set_method_on_form(self, method):
         if method is None:

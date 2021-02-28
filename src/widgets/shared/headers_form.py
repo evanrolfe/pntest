@@ -50,7 +50,8 @@ class HeadersForm(QtWidgets.QWidget):
 
     def set_headers(self, headers):
         if headers is None:
-            headers = self.DEFAULT_HEADERS[:]
+            # headers = self.DEFAULT_HEADERS[:]
+            headers = []
         else:
             headers = [[True, key, value] for key, value in headers.items()]
 

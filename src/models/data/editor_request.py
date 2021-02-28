@@ -35,8 +35,22 @@ class EditorRequest(Model):
     def get_request_headers(self):
         if self.request_headers is None:
             return None
-
         return json.loads(self.request_headers)
+
+    def get_request_header_line(self):
+        # TODO: Return the path here:
+        return f'{self.method} TODO HTTP/{self.response_http_version}'
+
+    def get_response_headers(self):
+        if self.response_headers is None:
+            return None
+        return json.loads(self.response_headers)
+
+    def get_response_header_line(self):
+        if self.response_status is None:
+            return 'No response'
+        else:
+            return f'HTTP/{self.response_http_version} {self.response_status} {self.response_status_message}\n'
 
     def set_request_headers(self, headers_dict):
         self.request_headers = json.dumps(headers_dict)

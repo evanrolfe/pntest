@@ -19,3 +19,6 @@ class CodeEditor(QtWidgets.QWidget):
 
     def set_value(self, value):
         self.set_code.emit(value)
+
+    def get_value(self):
+        return 'TODO!'
