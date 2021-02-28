@@ -13,7 +13,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from widgets.network.http.requests_table import RequestsTable
-from widgets.network.http.request_view import RequestView
+from widgets.shared.request_view import RequestView
 
 
 class Ui_HttpPage(object):

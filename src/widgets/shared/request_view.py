@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
 
-from views._compiled.network.http.ui_request_view import Ui_RequestView
+from views._compiled.shared.ui_request_view import Ui_RequestView
 
 class RequestView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
