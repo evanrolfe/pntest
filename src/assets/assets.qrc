@@ -48,5 +48,18 @@
     <file>icons/dark/methods/options.png</file>
     <file>icons/dark/methods/head.png</file>
     <file>icons/dark/methods/other.png</file>
+
+    <file>html/codemirror.html</file>
+    <file>html/codemirror/lib/codemirror.css</file>
+    <file>html/codemirror/lib/dialog.css</file>
+    <file>html/codemirror/theme/material.css</file>
+    <file>html/codemirror/lib/codemirror.js</file>
+    <file>html/codemirror/lib/search.js</file>
+    <file>html/codemirror/lib/searchcursor.js</file>
+    <file>html/codemirror/lib/dialog.js</file>
+    <file>html/codemirror/mode/xml/xml.js</file>
+    <file>html/codemirror/mode/javascript/javascript.js</file>
+    <file>html/codemirror/mode/css/css.js</file>
+    <file>html/codemirror/mode/htmlmixed/htmlmixed.js</file>
   </qresource>
 </RCC>

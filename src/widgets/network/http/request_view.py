@@ -1,10 +1,12 @@
-from PySide2 import QtWidgets
+from PySide2 import QtCore, QtWidgets, QtWebChannel
 
 from views._compiled.network.http.ui_request_view import Ui_RequestView
 from widgets.shared.request_body_form import RequestBodyForm
 from widgets.shared.request_headers_form import RequestHeadersForm
 
 class RequestView(QtWidgets.QWidget):
+    set_code = QtCore.Signal(str)
+
     def __init__(self, *args, **kwargs):
         super(RequestView, self).__init__(*args, **kwargs)
         self.ui = Ui_RequestView()
@@ -22,15 +24,22 @@ class RequestView(QtWidgets.QWidget):
         # Disable modified tabs to start with:
         # self.ui.headerTabs.setTabEnabled(1, False)
         # self.ui.headerTabs.setTabEnabled(3, False)
+        url = QtCore.QUrl('qrc:/html/codemirror.html')
+        self.ui.responseBodyRawCode.setUrl(url)
 
-        # self.highlighter = HtmlHighlighter(self.ui.responseBodyRawText.document())
-        # self.ui.bodyTab.setCurrentWidget(self.ui.responseBodyWebview)
+        channel = QtWebChannel.QWebChannel(self)
+        self.ui.responseBodyRawCode.page().setWebChannel(channel)
+        channel.registerObject('RequestView', self)
+
+    @QtCore.Slot()
+    def hello(self):
+        print("----------------------> HELLO FROM JS!!")
 
     def clear_request(self):
         # self.ui.requestHeadersText.setPlainText('')
         self.ui.responseHeadersText.setPlainText('')
 
-        self.ui.responseBodyRawText.setPlainText('')
+        self.ui.responseBodyRawCode.setHtml('')
         self.ui.responseBodyModifiedText.setPlainText('')
         self.ui.responseBodyParsedText.setPlainText('')
 
@@ -42,6 +51,8 @@ class RequestView(QtWidgets.QWidget):
     def set_request(self, request):
         # Request Headers and body
         # self.request_headers_form = RequestHeadersForm(self.editor_item)
+        self.set_code.emit(request.response_body)
+
         self.request_headers_form.set_header_line(request.get_request_header_line())
         self.request_headers_form.set_headers(request.get_request_headers())
         self.request_body_form.set_body(request.request_payload)
@@ -50,8 +61,9 @@ class RequestView(QtWidgets.QWidget):
         self.ui.requestTabs.insertTab(1, self.request_body_form, 'Body')
 
         try:
-            if request.response_body is not None:
-                self.ui.responseBodyRawText.setPlainText(request.response_body)
+#            if request.response_body is not None:
+                # self.ui.responseBodyRawCode.page().runJavaScript('setCode("hello world")') # .CodeMirror.setValue("hello world")
+                # self.ui.responseBodyRawCode.setHtml(request.response_body)
 
             if request.modified_response_body is not None:
                 self.ui.responseBodyModifiedText.setPlainText(request.modified_response_body)
@@ -63,7 +75,7 @@ class RequestView(QtWidgets.QWidget):
 
         except ValueError:
             print(f'Warning: could not render response_body for request {request.id}')
-            self.ui.responseBodyRawText.setPlainText('')
+            self.ui.responseBodyRawCode.setHtml('')
             self.ui.responseBodyModifiedText.setPlainText('')
             self.ui.responseBodyParsedText.setPlainText('')
             self.ui.responseBodyPreview.setHtml('', baseUrl=request.url())

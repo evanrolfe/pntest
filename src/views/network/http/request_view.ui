@@ -73,7 +73,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPlainTextEdit" name="responseBodyRawText"/>
+         <widget class="QWebEngineView" name="responseBodyRawCode" native="true"/>
         </item>
        </layout>
       </widget>

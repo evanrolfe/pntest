@@ -47,10 +47,10 @@ class Ui_RequestView(object):
         self.verticalLayout_4_body = QVBoxLayout(self.responseBodyRawTab)
         self.verticalLayout_4_body.setObjectName(u"verticalLayout_4_body")
         self.verticalLayout_4_body.setContentsMargins(0, 0, 0, 0)
-        self.responseBodyRawText = QPlainTextEdit(self.responseBodyRawTab)
-        self.responseBodyRawText.setObjectName(u"responseBodyRawText")
+        self.responseBodyRawCode = QWebEngineView(self.responseBodyRawTab)
+        self.responseBodyRawCode.setObjectName(u"responseBodyRawCode")
 
-        self.verticalLayout_4_body.addWidget(self.responseBodyRawText)
+        self.verticalLayout_4_body.addWidget(self.responseBodyRawCode)
 
         self.bodyTabs.addTab(self.responseBodyRawTab, "")
         self.responseBodyModifiedTab = QWidget()
