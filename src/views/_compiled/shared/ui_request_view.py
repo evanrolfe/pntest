@@ -15,6 +15,7 @@ from PySide2.QtWidgets import *
 from PySide2.QtWebEngineWidgets import QWebEngineView
 from widgets.shared.code_editor import CodeEditor
 from widgets.shared.headers_form import HeadersForm
+from widgets.shared.loader import Loader
 
 
 class Ui_RequestView(object):
@@ -59,7 +60,9 @@ class Ui_RequestView(object):
 
         self.requestTabs.addTab(self.requestPayloadTab, "")
         self.splitter.addWidget(self.requestTabs)
-        self.responseTabs = QTabWidget(self.splitter)
+        self.stackedWidget = QStackedWidget(self.splitter)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.responseTabs = QTabWidget()
         self.responseTabs.setObjectName(u"responseTabs")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy1.setHorizontalStretch(0)
@@ -112,7 +115,11 @@ class Ui_RequestView(object):
         self.verticalLayout_5_body.addWidget(self.responseBodyPreview)
 
         self.responseTabs.addTab(self.responseBodyPreviewTab, "")
-        self.splitter.addWidget(self.responseTabs)
+        self.stackedWidget.addWidget(self.responseTabs)
+        self.loaderWidget = Loader()
+        self.loaderWidget.setObjectName(u"loaderWidget")
+        self.stackedWidget.addWidget(self.loaderWidget)
+        self.splitter.addWidget(self.stackedWidget)
 
         self.verticalLayout_2.addWidget(self.splitter)
 

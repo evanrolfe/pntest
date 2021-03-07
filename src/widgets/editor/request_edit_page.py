@@ -28,7 +28,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.restore_layout_state()
 
         self.ui.toggleFuzzTableButton.clicked.connect(self.toggle_fuzz_table)
-        self.ui.sendButton.clicked.connect(self.show_loader)
+        self.ui.sendButton.clicked.connect(self.ui.requestViewWidget.show_loader)
         self.ui.sendButton.clicked.connect(self.send_request_async)
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
@@ -46,7 +46,6 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.urlInput.textChanged.connect(self.form_field_changed)
         self.ui.methodInput.currentIndexChanged.connect(self.form_field_changed)
 
-        # self.show_loader()
         self.threadpool = QtCore.QThreadPool()
         # self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
@@ -58,15 +57,6 @@ class RequestEditPage(QtWidgets.QWidget):
         )
         # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
-
-    @QtCore.Slot()
-    def show_loader(self):
-        print('showing the loader')
-        # self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
-
-    def hide_loader(self):
-        print('hiding the loader')
-        # self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
 
     def show_request(self):
         self.ui.urlInput.setText(self.request.url)
@@ -113,29 +103,27 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def send_request_async(self):
         print('Sending the request!')
-        self.show_loader()
+        self.ui.requestViewWidget.show_loader()
 
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
         headers = self.ui.requestViewWidget.get_request_headers()
         payload = self.ui.requestViewWidget.get_request_payload()
         http_request = HttpRequest(method, url, headers, payload)
-        print('===============================================================')
-        print(payload)
-        print('===============================================================')
+
         # Pass the function to execute
         # Any other args, kwargs are passed to the run function
         self.worker = BackgroundWorker(lambda: http_request.send())
         self.worker.signals.result.connect(self.response_received)
         self.worker.signals.error.connect(self.request_error)
-        self.worker.signals.finished.connect(self.hide_loader)
+        self.worker.signals.finished.connect(self.ui.requestViewWidget.hide_loader)
 
         self.threadpool.start(self.worker)
 
     @QtCore.Slot()
     def cancel_request(self):
         self.worker.kill()
-        self.hide_loader()
+        self.ui.requestViewWidget.hide_loader()
 
     @QtCore.Slot()
     def form_field_changed(self):

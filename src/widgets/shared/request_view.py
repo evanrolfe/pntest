@@ -86,3 +86,11 @@ class RequestView(QtWidgets.QWidget):
             self.ui.responseRendered.set_value(request.response_body_rendered or '')
 
         self.ui.responseBodyPreview.setHtml(request.response_body_for_preview(), baseUrl=request.get_url())
+
+    @QtCore.Slot()
+    def show_loader(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
+
+    @QtCore.Slot()
+    def hide_loader(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)

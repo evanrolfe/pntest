@@ -89,110 +89,113 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QTabWidget" name="responseTabs">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="responseHeadersTab">
-       <attribute name="title">
-        <string>Response</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_8_body">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="HeadersForm" name="responseHeaders" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="responseBodyRawTab">
-       <attribute name="title">
-        <string>Body</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4_body">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="CodeEditor" name="responseRaw" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="responseBodyRenderedTab">
-       <attribute name="title">
-        <string>Rendered</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_body">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="CodeEditor" name="responseRendered"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="responseBodyPreviewTab">
-       <property name="enabled">
-        <bool>true</bool>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QTabWidget" name="responseTabs">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <attribute name="title">
-        <string>Preview</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5_body">
-        <property name="leftMargin">
-         <number>0</number>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="responseHeadersTab">
+        <attribute name="title">
+         <string>Response</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_8_body">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="HeadersForm" name="responseHeaders" native="true"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="responseBodyRawTab">
+        <attribute name="title">
+         <string>Body</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4_body">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="CodeEditor" name="responseRaw" native="true"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="responseBodyRenderedTab">
+        <attribute name="title">
+         <string>Rendered</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_body">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="CodeEditor" name="responseRendered"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="responseBodyPreviewTab">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QWebEngineView" name="responseBodyPreview" native="true"/>
-        </item>
-       </layout>
+        <attribute name="title">
+         <string>Preview</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_5_body">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWebEngineView" name="responseBodyPreview" native="true"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
+      <widget class="Loader" name="loaderWidget"/>
      </widget>
     </widget>
    </item>
@@ -213,6 +216,12 @@
    <class>HeadersForm</class>
    <extends>QWidget</extends>
    <header>widgets.shared.headers_form.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Loader</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.loader.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
