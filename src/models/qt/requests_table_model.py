@@ -75,7 +75,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
                 request.host,
                 request.path,
                 request.response_status,
-                request.modified()
+                request.modified_str()
             ]
 
             return row_values[index.column()]
