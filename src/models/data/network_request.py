@@ -12,7 +12,7 @@ class NetworkRequest(Model):
     def is_editable(self):
         return (self.method is not None and self.method != '')
 
-    def url(self):
+    def get_url(self):
         if self.encrypted:
             return f'https://{self.host}{self.path}'
         else:

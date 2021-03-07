@@ -89,7 +89,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QTabWidget" name="bodyTabs">
+     <widget class="QTabWidget" name="responseTabs">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -143,7 +143,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="responseBodyParsedTab">
+      <widget class="QWidget" name="responseBodyRenderedTab">
        <attribute name="title">
         <string>Rendered</string>
        </attribute>

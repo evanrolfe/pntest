@@ -59,13 +59,13 @@ class Ui_RequestView(object):
 
         self.requestTabs.addTab(self.requestPayloadTab, "")
         self.splitter.addWidget(self.requestTabs)
-        self.bodyTabs = QTabWidget(self.splitter)
-        self.bodyTabs.setObjectName(u"bodyTabs")
+        self.responseTabs = QTabWidget(self.splitter)
+        self.responseTabs.setObjectName(u"responseTabs")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.bodyTabs.sizePolicy().hasHeightForWidth())
-        self.bodyTabs.setSizePolicy(sizePolicy1)
+        sizePolicy1.setHeightForWidth(self.responseTabs.sizePolicy().hasHeightForWidth())
+        self.responseTabs.setSizePolicy(sizePolicy1)
         self.responseHeadersTab = QWidget()
         self.responseHeadersTab.setObjectName(u"responseHeadersTab")
         self.verticalLayout_8_body = QVBoxLayout(self.responseHeadersTab)
@@ -76,7 +76,7 @@ class Ui_RequestView(object):
 
         self.verticalLayout_8_body.addWidget(self.responseHeaders)
 
-        self.bodyTabs.addTab(self.responseHeadersTab, "")
+        self.responseTabs.addTab(self.responseHeadersTab, "")
         self.responseBodyRawTab = QWidget()
         self.responseBodyRawTab.setObjectName(u"responseBodyRawTab")
         self.verticalLayout_4_body = QVBoxLayout(self.responseBodyRawTab)
@@ -87,19 +87,19 @@ class Ui_RequestView(object):
 
         self.verticalLayout_4_body.addWidget(self.responseRaw)
 
-        self.bodyTabs.addTab(self.responseBodyRawTab, "")
-        self.responseBodyParsedTab = QWidget()
-        self.responseBodyParsedTab.setObjectName(u"responseBodyParsedTab")
-        self.verticalLayout_body = QVBoxLayout(self.responseBodyParsedTab)
+        self.responseTabs.addTab(self.responseBodyRawTab, "")
+        self.responseBodyRenderedTab = QWidget()
+        self.responseBodyRenderedTab.setObjectName(u"responseBodyRenderedTab")
+        self.verticalLayout_body = QVBoxLayout(self.responseBodyRenderedTab)
         self.verticalLayout_body.setSpacing(0)
         self.verticalLayout_body.setObjectName(u"verticalLayout_body")
         self.verticalLayout_body.setContentsMargins(0, 0, 0, 0)
-        self.responseRendered = CodeEditor(self.responseBodyParsedTab)
+        self.responseRendered = CodeEditor(self.responseBodyRenderedTab)
         self.responseRendered.setObjectName(u"responseRendered")
 
         self.verticalLayout_body.addWidget(self.responseRendered)
 
-        self.bodyTabs.addTab(self.responseBodyParsedTab, "")
+        self.responseTabs.addTab(self.responseBodyRenderedTab, "")
         self.responseBodyPreviewTab = QWidget()
         self.responseBodyPreviewTab.setObjectName(u"responseBodyPreviewTab")
         self.responseBodyPreviewTab.setEnabled(True)
@@ -111,8 +111,8 @@ class Ui_RequestView(object):
 
         self.verticalLayout_5_body.addWidget(self.responseBodyPreview)
 
-        self.bodyTabs.addTab(self.responseBodyPreviewTab, "")
-        self.splitter.addWidget(self.bodyTabs)
+        self.responseTabs.addTab(self.responseBodyPreviewTab, "")
+        self.splitter.addWidget(self.responseTabs)
 
         self.verticalLayout_2.addWidget(self.splitter)
 
@@ -120,7 +120,7 @@ class Ui_RequestView(object):
         self.retranslateUi(RequestView)
 
         self.requestTabs.setCurrentIndex(-1)
-        self.bodyTabs.setCurrentIndex(0)
+        self.responseTabs.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RequestView)
@@ -130,9 +130,9 @@ class Ui_RequestView(object):
         RequestView.setWindowTitle(QCoreApplication.translate("RequestView", u"Form", None))
         self.requestTabs.setTabText(self.requestTabs.indexOf(self.requestHeadersTab), QCoreApplication.translate("RequestView", u"Request", None))
         self.requestTabs.setTabText(self.requestTabs.indexOf(self.requestPayloadTab), QCoreApplication.translate("RequestView", u"Payload", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseHeadersTab), QCoreApplication.translate("RequestView", u"Response", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyRawTab), QCoreApplication.translate("RequestView", u"Body", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyParsedTab), QCoreApplication.translate("RequestView", u"Rendered", None))
-        self.bodyTabs.setTabText(self.bodyTabs.indexOf(self.responseBodyPreviewTab), QCoreApplication.translate("RequestView", u"Preview", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseHeadersTab), QCoreApplication.translate("RequestView", u"Response", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRawTab), QCoreApplication.translate("RequestView", u"Body", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRenderedTab), QCoreApplication.translate("RequestView", u"Rendered", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyPreviewTab), QCoreApplication.translate("RequestView", u"Preview", None))
     # retranslateUi
 

@@ -32,6 +32,8 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.sendButton.clicked.connect(self.send_request_async)
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
+        self.ui.requestViewWidget.set_show_rendered(False)
+
         self.show_request()
         self.request_is_modified = False
 
@@ -76,12 +78,11 @@ class RequestEditPage(QtWidgets.QWidget):
     def save_request(self):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        # TODO: RequestView should broker acess to this value
-        headers = self.ui.requestViewWidget.ui.requestHeaders.get_headers()
+        headers = self.ui.requestViewWidget.get_request_headers()
 
         self.request.url = url
         self.request.method = method
-        self.request.request_payload = self.ui.requestViewWidget.ui.requestPayload.get_value()
+        self.request.request_payload = self.ui.requestViewWidget.get_request_payload()
         self.request.set_request_headers(headers)
         self.request.save()
 
@@ -92,15 +93,11 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def response_received(self, response):
         # Display response headers and body
-        self.ui.requestViewWidget.ui.responseRaw.set_value(response.text)
-
-        self.ui.requestViewWidget.ui.responseHeaders.set_header_line(f'HTTP/1.1 {response.status_code} {response.reason}')
-        self.ui.requestViewWidget.ui.responseHeaders.set_headers(response.headers)
-        # headers_text = ""
-        # for key, value in response.headers.items():
-        #     headers_text += f"{key}: {value}\n"
-
-        # self.ui.responseHeadersText.setPlainText(headers_text)
+        self.request.response_body = response.text
+        self.request.response_status = response.status_code
+        self.request.response_status_message = response.reason
+        self.request.set_response_headers(dict(response.headers))
+        self.ui.requestViewWidget.set_response(self.request)
 
     @QtCore.Slot()
     def request_error(self, error):
@@ -120,10 +117,12 @@ class RequestEditPage(QtWidgets.QWidget):
 
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        headers = self.ui.requestViewWidget.ui.requestHeaders.get_headers()
-        body = self.ui.requestViewWidget.ui.requestPayload.get_value()
-        http_request = HttpRequest(method, url, headers, body)
-
+        headers = self.ui.requestViewWidget.get_request_headers()
+        payload = self.ui.requestViewWidget.get_request_payload()
+        http_request = HttpRequest(method, url, headers, payload)
+        print('===============================================================')
+        print(payload)
+        print('===============================================================')
         # Pass the function to execute
         # Any other args, kwargs are passed to the run function
         self.worker = BackgroundWorker(lambda: http_request.send())

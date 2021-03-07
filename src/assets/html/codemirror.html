@@ -19,6 +19,7 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', (event) => {
+        console.log('CodeMirror: DOM loaded')
         var myTextarea = document.getElementById('codeEditor')
         editor = CodeMirror.fromTextArea(myTextarea, {
           lineNumbers: true,
@@ -31,7 +32,12 @@
             // now you retrieve your object
             var codeEditorPython = channel.objects.codeEditorPython;
             codeEditorPython.set_code.connect((value) => { editor.setValue(value) })
-            //codeEditorPython.hello()
+
+            // We need to call this here because sometimes the set_code signal is emitted before
+            // the DOM has been loaded and the connection established
+            codeEditorPython.emit_set_code()
+
+            editor.on('change', (value) => { codeEditorPython.code_changed(editor.getValue()) })
         });
       });
     </script>

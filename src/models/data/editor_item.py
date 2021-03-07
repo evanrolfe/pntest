@@ -54,7 +54,7 @@ class EditorItem(Model):
 
         editor_request = EditorRequest()
         editor_request.method = network_request.method
-        editor_request.url = network_request.url()
+        editor_request.url = network_request.get_url()
         editor_request.request_headers = network_request.request_headers
         editor_request.request_payload = network_request.request_payload
         editor_request.overwrite_calculated_headers()

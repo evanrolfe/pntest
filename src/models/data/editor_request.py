@@ -55,6 +55,9 @@ class EditorRequest(Model):
     def set_request_headers(self, headers_dict):
         self.request_headers = json.dumps(headers_dict)
 
+    def set_response_headers(self, headers_dict):
+        self.response_headers = json.dumps(headers_dict)
+
     def overwrite_calculated_headers(self):
         calc_text = HeadersForm.CALCULATED_TEXT
         headers = self.get_request_headers()
@@ -70,5 +73,5 @@ class EditorRequest(Model):
     def response_body_for_preview(self):
         return self.response_body
 
-    # def url(self):
-    #     return self.url
+    def get_url(self):
+        return self.url

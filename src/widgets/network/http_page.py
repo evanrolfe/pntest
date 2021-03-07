@@ -27,6 +27,7 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.requestsTableWidget.send_request_to_editor.connect(self.send_request_to_editor)
 
         self.ui.toggleButton.clicked.connect(self.toggle_page)
+        self.ui.requestViewWidget.set_show_rendered(True)
 
         self.restore_layout_state()
 
