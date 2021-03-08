@@ -50,7 +50,7 @@ class EditorRequest(Model):
         if self.response_status is None:
             return 'No response'
         else:
-            return f'HTTP/{self.response_http_version} {self.response_status} {self.response_status_message}\n'
+            return f'HTTP/{self.response_http_version} {self.response_status} {self.response_status_message}'
 
     def set_request_headers(self, headers_dict):
         self.request_headers = json.dumps(headers_dict)

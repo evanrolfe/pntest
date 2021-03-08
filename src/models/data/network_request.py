@@ -94,7 +94,7 @@ class NetworkRequest(Model):
         if self.response_status is None:
             return 'No response'
         else:
-            return f'HTTP/{self.response_http_version} {self.response_status} {self.response_status_message}\n'
+            return f'HTTP/{self.response_http_version} {self.response_status} {self.response_status_message}'
 
     def request_headers_parsed(self):
         http_message = f'{self.method} {self.path} HTTP/{self.http_version}\n'

@@ -22,13 +22,19 @@ class TestNetworkPageHttp:
         rect = table.visualRect(index)
         qtbot.mouseClick(table.viewport(), QtCore.Qt.LeftButton, pos=rect.center())
 
-        # Check the text boxes have the right values:
-        request_headers = widget.ui.requestViewWidget.ui.requestHeadersText.toPlainText()
-        assert 'GET / HTTP/1.1' in request_headers
-        assert 'host: example.com' in request_headers
-
-        response_headers = widget.ui.requestViewWidget.ui.responseHeadersText.toPlainText()
-        assert 'HTTP/1.1 200 OK' in response_headers
-        assert 'content-length: 20' in response_headers
-
+        # Requests Table:
         assert table.model().rowCount(0) == 2
+
+        # RequestView/Request:
+        request_headers = widget.ui.requestViewWidget.get_request_headers()
+        request_header_line = widget.ui.requestViewWidget.ui.requestHeaders.ui.headerLine
+        assert 'example.com' == request_headers['host']
+        assert 'GET / HTTP/1.1' == request_header_line.text()
+
+        # RequestView/Response
+        response_headers = widget.ui.requestViewWidget.ui.responseHeaders.get_headers()
+        response_header_line = widget.ui.requestViewWidget.ui.responseHeaders.ui.headerLine
+        assert 'HTTP/1.1 200 OK' == response_header_line.text()
+        assert '20' in response_headers['content-length']
+
+
