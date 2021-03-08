@@ -20,7 +20,6 @@ orator==0.9.9
 packaging==20.9
 pastel==0.1.1
 pendulum==1.5.1
-pkg-resources==0.0.0
 pluggy==0.13.1
 py==1.10.0
 pyaml==16.12.2
