@@ -49,7 +49,7 @@ class Request:
         else:
             return f'http://{self.host}{self.path}'
 
-    def modified(self):
+    def modified_str(self):
         if self.request_modified is True or self.response_modified is True:
             return 'Yes'
         else:
