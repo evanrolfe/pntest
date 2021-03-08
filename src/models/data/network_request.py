@@ -29,21 +29,39 @@ class NetworkRequest(Model):
         new_request.response_body_rendered = self.response_body_rendered
         new_request.response_remote_address = self.response_remote_address
 
-        new_request.method = self.modified_method
-        new_request.url = self.modified_url
-        new_request.host = self.modified_host
-        new_request.http_version = self.modified_http_version
-        new_request.path = self.modified_path
-        new_request.ext = self.modified_ext
-        new_request.request_headers = self.modified_request_headers
-        new_request.request_payload = self.modified_request_payload
+        if self.request_modified:
+            new_request.method = self.modified_method
+            new_request.url = self.modified_url
+            new_request.host = self.modified_host
+            new_request.http_version = self.modified_http_version
+            new_request.path = self.modified_path
+            new_request.ext = self.modified_ext
+            new_request.request_headers = self.modified_request_headers
+            new_request.request_payload = self.modified_request_payload
+        else:
+            new_request.method = self.method
+            new_request.url = self.url
+            new_request.host = self.host
+            new_request.http_version = self.http_version
+            new_request.path = self.path
+            new_request.ext = self.ext
+            new_request.request_headers = self.request_headers
+            new_request.request_payload = self.request_payload
 
-        new_request.response_status = self.modified_response_status
-        new_request.response_status_message = self.modified_response_status_message
-        new_request.response_headers = self.modified_response_headers
-        new_request.response_body = self.modified_response_body
-        new_request.response_body_length = self.modified_response_body_length
-        new_request.response_http_version = self.modified_response_http_version
+        if self.response_modified:
+            new_request.response_status = self.modified_response_status
+            new_request.response_status_message = self.modified_response_status_message
+            new_request.response_headers = self.modified_response_headers
+            new_request.response_body = self.modified_response_body
+            new_request.response_body_length = self.modified_response_body_length
+            new_request.response_http_version = self.modified_response_http_version
+        else:
+            new_request.response_status = self.response_status
+            new_request.response_status_message = self.response_status_message
+            new_request.response_headers = self.response_headers
+            new_request.response_body = self.response_body
+            new_request.response_body_length = self.response_body_length
+            new_request.response_http_version = self.response_http_version
 
         return new_request
 
