@@ -11,8 +11,9 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
+      - run: sudo apt install libnss3 libxcomposite-dev libxrandr2 libxi6 libxtst6 libasound2
       - run:
-          command: bin/test
+          command: PYTHONPATH="./src:./test" python -m pytest -s ./test
           name: Test
 
 workflows:
