@@ -1,10 +1,8 @@
 import sys
 import pathlib
 import os
-import atexit
 from PySide2 import QtCore, QtWidgets
 
-from lib.proxy_events_service import ProxyEventsWorker
 from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader

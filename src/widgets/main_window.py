@@ -74,8 +74,6 @@ class MainWindow(QtWidgets.QMainWindow):
         proxy_events_signals.request.connect(lambda flow: print(f'Received Request Signal: {flow}'))
         proxy_events_signals.response.connect(lambda flow: print(f'Received Response signal: {flow}'))
 
-
-
     def set_process_manager(self, process_manager):
         self.process_manager = process_manager
 

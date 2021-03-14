@@ -1,6 +1,4 @@
-import signal
-import sys
-from mitmproxy import addons, exceptions, master, options
+from mitmproxy import addons, master, options
 from mitmproxy.addons import termlog, keepserving, readfile
 import asyncio
 
