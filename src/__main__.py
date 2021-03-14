@@ -1,5 +1,4 @@
 import sys
-import traceback
 import pathlib
 import os
 from PySide2 import QtCore, QtWidgets
@@ -13,22 +12,10 @@ THEME = 'dark'
 BACKEND_PATH_RELATIVE = 'include/pntest-core'
 
 # Get absolute path to resource, works for dev and for PyInstaller
-
 def resource_path(app_path, relative_path):
     default = app_path
     base_path = getattr(sys, '_MEIPASS', default)
     return os.path.join(base_path, relative_path)
-
-def excepthook(type, value, tb):
-    # TODO: Only close the backend if the exception is fatal
-    # backend = Backend.get_instance()
-    # backend.kill()
-
-    print("----------------------------------------------------------")
-    traceback_details = '\n'.join(traceback.extract_tb(tb).format())
-    print(f"Type: {type}\nValue: {value}\nTraceback: {traceback_details}")
-
-sys.excepthook = excepthook
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
