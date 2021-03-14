@@ -33,6 +33,24 @@ class ProxyEventsWorker(QtCore.QObject):
     @QtCore.Slot()
     def run(self):
         print('\n\nRpyc server starting..')
-        server = ThreadedServer(self.service, port=18861, protocol_config={'allow_public_attrs': True})
-        server.start()
+        self.server = ThreadedServer(self.service, port=18861, protocol_config={'allow_public_attrs': True})
+        self.server.start()
 
+    def stop(self):
+        self.server.close()
+
+class ProxyEventsManager():
+    def __init__(self, parent=None):
+        self.thread = QtCore.QThread(parent)
+        self.proxy_events = ProxyEventsWorker()
+        self.proxy_events.moveToThread(self.thread)
+        self.thread.started.connect(self.proxy_events.run)
+
+    def start(self):
+        self.thread.start()
+
+    def stop(self):
+        print("Stopping ProxyEventsWorker...")
+        self.proxy_events.stop()
+        self.thread.quit()
+        self.thread.wait()

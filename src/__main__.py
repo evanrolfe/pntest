@@ -1,9 +1,10 @@
 import sys
 import pathlib
 import os
+import atexit
 from PySide2 import QtCore, QtWidgets
 
-from lib.proxy_events_service import ProxyEventsWorker, ProxyEventsSignals
+from lib.proxy_events_service import ProxyEventsWorker
 from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -63,17 +64,7 @@ def main():
     stylesheet = style_loader.load_theme(THEME)
     app.setStyleSheet(stylesheet)
 
-    # process_manager.launch_browser()
-    # process_manager.launch_proxy(8080)
-
-    thread = QtCore.QThread(main_window)
-    proxy_events = ProxyEventsWorker()
-    proxy_events.moveToThread(thread)
-    thread.started.connect(proxy_events.run)
-    thread.start()
-
-    proxy_events.service.signals.request.connect(lambda flow: print(f'Received Request Signal: {flow}'))
-    proxy_events.service.signals.response.connect(lambda flow: print(f'Received Response signal: {flow}'))
+    process_manager.launch_proxy(8080)
 
     sys.exit(app.exec_())
 

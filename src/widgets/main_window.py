@@ -7,6 +7,7 @@ from PySide2 import QtXml # noqa F401
 
 from views._compiled.ui_main_window import Ui_MainWindow
 
+from lib.proxy_events_service import ProxyEventsManager
 from lib.app_settings import AppSettings
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -65,6 +66,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.restore_layout_state()
         # self.show_editor_page()
 
+        # ProxyEvents
+        self.proxy_events_manager = ProxyEventsManager(self)
+        self.proxy_events_manager.start()
+
+        proxy_events_signals = self.proxy_events_manager.proxy_events.service.signals
+        proxy_events_signals.request.connect(lambda flow: print(f'Received Request Signal: {flow}'))
+        proxy_events_signals.response.connect(lambda flow: print(f'Received Response signal: {flow}'))
+
+
+
     def set_process_manager(self, process_manager):
         self.process_manager = process_manager
 
@@ -96,6 +107,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def about_to_quit(self):
+        self.proxy_events_manager.stop()
+
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
