@@ -1,7 +1,7 @@
 from PySide2 import QtCore
 
 from lib.utils import format_timestamp
-from lib.backend import Backend
+# from lib.backend import Backend
 from models.data.websocket_message import WebsocketMessage
 
 class MessagesTableModel(QtCore.QAbstractTableModel):
@@ -11,8 +11,8 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
         self.messages = list(messages)
 
         # Register callback with the backend:
-        self.backend = Backend.get_instance()
-        self.backend.register_callback('newWebsocketMessage', self.add_message)
+        # self.backend = Backend.get_instance()
+        # self.backend.register_callback('newWebsocketMessage', self.add_message)
         # self.backend.register_callback('updatedRequest', self.update_request)
 
     def add_message(self, message):

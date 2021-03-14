@@ -4,7 +4,7 @@ import pathlib
 import os
 from PySide2 import QtCore, QtWidgets
 
-from lib.backend import Backend
+from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from widgets.main_window import MainWindow
@@ -57,12 +57,9 @@ def main():
         database.delete_existing_db()
         database.load_or_create()
 
-    backend = Backend(app_path, data_path, tmp_db_path, backend_path)
-    backend.register_callback('backendLoaded', lambda: print('Backend Loaded!'))
-    backend.start()
-
+    process_manager = ProcessManager()
     main_window = MainWindow()
-    main_window.set_backend(backend)
+    main_window.set_process_manager(process_manager)
     main_window.show()
 
     app.aboutToQuit.connect(main_window.about_to_quit)
@@ -77,6 +74,9 @@ def main():
     style_loader = StyleheetLoader(style_dir_path)
     stylesheet = style_loader.load_theme(THEME)
     app.setStyleSheet(stylesheet)
+
+    # process_manager.launch_browser()
+    process_manager.launch_proxy(8080)
 
     sys.exit(app.exec_())
 

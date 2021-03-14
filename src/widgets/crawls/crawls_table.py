@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets, QtCore
 
 from views._compiled.crawls.ui_crawls_table import Ui_CrawlsTable
-from lib.backend import Backend
+# from lib.backend import Backend
 
 class CrawlsTable(QtWidgets.QWidget):
     crawl_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
@@ -34,7 +34,7 @@ class CrawlsTable(QtWidgets.QWidget):
         self.ui.crawlsTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # self.ui.crawlsTable.customContextMenuRequested.connect(self.right_clicked)
 
-        self.backend = Backend.get_instance()
+        # self.backend = Backend.get_instance()
 
     def setTableModel(self, model):
         self.table_model = model

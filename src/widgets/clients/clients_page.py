@@ -2,7 +2,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.clients.ui_clients_page import Ui_ClientsPage
 
-from lib.backend import Backend
+# from lib.backend import Backend
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
 
@@ -23,9 +23,9 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.clientsTable.setTableModel(self.clients_table_model)
 
         # Reload when the clients have changed:
-        self.backend = Backend.get_instance()
-        self.backend.register_callback(
-            'clientsChanged', self.reload_table_data)
+        # self.backend = Backend.get_instance()
+        # self.backend.register_callback('clientsChanged', self.reload_table_data)
+        # self.backend.register_callback('clientsAvailable', self.set_clients)
 
         # Add Icons:
         self.ui.chromiumButton.setIcon(QtGui.QIcon(':/icons/icons8-chromium.svg'))
@@ -44,10 +44,6 @@ class ClientsPage(QtWidgets.QWidget):
             lambda: self.launch_client('anything'))
         self.ui.terminalButton.clicked.connect(
             lambda: self.launch_client('terminal'))
-
-        # Register callback with the backend:
-        self.backend = Backend.get_instance()
-        self.backend.register_callback('clientsAvailable', self.set_clients)
 
         # Disable clients not available
         self.client_buttons = {

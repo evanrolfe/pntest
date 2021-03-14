@@ -65,8 +65,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.restore_layout_state()
         # self.show_editor_page()
 
-    def set_backend(self, backend):
-        self.backend = backend
+    def set_process_manager(self, process_manager):
+        self.process_manager = process_manager
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
@@ -99,7 +99,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
-        self.backend.kill()
 
     def exit(self):
         QtWidgets.QApplication.quit()

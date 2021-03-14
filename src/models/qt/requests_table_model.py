@@ -1,6 +1,6 @@
 from PySide2 import QtCore
 
-from lib.backend import Backend
+# from lib.backend import Backend
 from models.data.network_request import NetworkRequest
 
 class RequestsTableModel(QtCore.QAbstractTableModel):
@@ -10,9 +10,9 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         self.requests = list(requests)
 
         # Register callback with the backend:
-        self.backend = Backend.get_instance()
-        self.backend.register_callback('newRequest', self.add_request)
-        self.backend.register_callback('updatedRequest', self.update_request)
+        # self.backend = Backend.get_instance()
+        # self.backend.register_callback('newRequest', self.add_request)
+        # self.backend.register_callback('updatedRequest', self.update_request)
 
     def add_request(self, request):
         rowIndex = 0

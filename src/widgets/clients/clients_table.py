@@ -1,7 +1,7 @@
 from PySide2 import QtCore, QtWidgets
 
 from views._compiled.clients.ui_clients_table import Ui_ClientsTable
-from lib.backend import Backend
+# from lib.backend import Backend
 
 class ClientsTable(QtWidgets.QWidget):
     client_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
@@ -35,7 +35,7 @@ class ClientsTable(QtWidgets.QWidget):
         self.ui.clientsTable.customContextMenuRequested.connect(
             self.right_clicked)
 
-        self.backend = Backend.get_instance()
+        # self.backend = Backend.get_instance()
 
     def setTableModel(self, model):
         self.table_model = model

@@ -3,7 +3,7 @@ from PySide2 import QtWidgets, QtCore
 
 from views._compiled.crawls.ui_new_crawl import Ui_NewCrawl
 
-from lib.backend import Backend
+# from lib.backend import Backend
 from models.data.client import Client
 from models.data.crawl import Crawl
 
@@ -17,7 +17,7 @@ class NewCrawl(QtWidgets.QDialog):
         self.ui.setupUi(self)
         self.setModal(True)
 
-        self.backend = Backend.get_instance()
+        # self.backend = Backend.get_instance()
 
         self.ui.cancelButton.clicked.connect(self.close)
         self.ui.saveButton.clicked.connect(self.start)

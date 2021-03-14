@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets, QtCore
 
 from views._compiled.intercept.ui_intercept_page import Ui_InterceptPage
-from lib.backend import Backend
+# from lib.backend import Backend
 from models.data.setting import Setting
 
 class InterceptPage(QtWidgets.QWidget):
@@ -13,11 +13,9 @@ class InterceptPage(QtWidgets.QWidget):
         self.__set_buttons_enabled(False)
 
         # Register callback with the backend:
-        self.backend = Backend.get_instance()
-        self.backend.register_callback(
-            'requestIntercepted', self.request_intercepted)
-        self.backend.register_callback(
-            'responseIntercepted', self.response_intercepted)
+        # self.backend = Backend.get_instance()
+        # self.backend.register_callback('requestIntercepted', self.request_intercepted)
+        # self.backend.register_callback('responseIntercepted', self.response_intercepted)
 
         # Connect buttons:
         self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
