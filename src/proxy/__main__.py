@@ -1,33 +1,62 @@
-import rpyc
+# import rpyc
 import asyncio
+import zmq.asyncio
 import threading
-import simplejson as json
+# import simplejson as json
 
 from proxy import Proxy
 
-class ProxyEvents:
-    def __init__(self, rpc_client):
-        self.rcp_client = rpc_client
+#
+# Intercept PoC: start the proxy with: python src/proxy then make a few requests i.e.
+# curl http://wonderbill.com --proxy http://127.0.0.1:8080
+# curl http://ais.at --proxy http://127.0.0.1:8080
+#
+# then hit the "open file" menu button to forward a request
+#
 
+class ProxyEvents:
     def set_proxy(self, proxy):
         self.proxy = proxy
+        self.intercepted_flows = []
+
+    def set_socket(self, socket):
+        self.socket = socket
+
+    def resume_flow(self):
+        print('[Proxy] resuming')
+        flow = self.intercepted_flows.pop(0)
+        flow.resume()
 
     def request(self, flow):
-        print('request')
-        self.rcp_client.root.signals.emit_request(json.dumps(flow.get_state()))
+        self.socket.send_string(f'Intercepted request: {flow.request.method}  {flow.request.url}')
+        flow.intercept()
+        self.intercepted_flows.append(flow)
 
     def response(self, flow):
         print('response')
-        self.rcp_client.root.signals.emit_response(json.dumps(flow.get_state()))
 
-print('Connecting to ProxyEvents service...')
-rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
+proxy_events = ProxyEvents()
+# rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
 
 print('Proxy server starting..')
-proxy_events = ProxyEvents(rpc_client)
 proxy = Proxy(proxy_events, 8080)
-
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
 proxy_thread.start()
+
+print('connecting ZMQ...')
+queue = asyncio.Queue()
+context = zmq.Context()
+socket = context.socket(zmq.PAIR)
+socket.connect("tcp://localhost:%s" % 5556)
+socket.send_string('hello, this is the proxy here!')
+proxy_events.set_socket(socket)
+
+while True:
+    msg = socket.recv().decode("utf-8")
+    print(f'Received: {msg}')
+    if msg == 'resume':
+        proxy_events.resume_flow()
+        socket.send_string('ok')
+
 proxy_thread.join()
