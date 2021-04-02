@@ -187,8 +187,8 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def open_project(self):
         print('Resuming request...')
-        #proxy_events_signals = self.proxy_events_manager.proxy_events.service.signals
-        #proxy_events_signals.resume_request()
+        # proxy_events_signals = self.proxy_events_manager.proxy_events.service.signals
+        # proxy_events_signals.resume_request()
         self.proxy_events_manager.resume_request()
         # file = QtWidgets.QFileDialog.getOpenFileName(
         #     self,

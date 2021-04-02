@@ -2,8 +2,6 @@ from mitmproxy import addons, master, options
 from mitmproxy.addons import termlog, keepserving, readfile
 import asyncio
 
-from PySide2 import QtCore
-
 class ErrorCheck:
     def __init__(self):
         self.has_errored = False
@@ -12,7 +10,7 @@ class ErrorCheck:
         if e.level == "error":
             self.has_errored = True
 
-class Proxy(QtCore.QRunnable):
+class Proxy():
     def __init__(self, proxy_events, listen_port):
         self.opts = options.Options()
         self.opts.listen_port = listen_port

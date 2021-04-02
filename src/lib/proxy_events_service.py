@@ -9,23 +9,23 @@ class ProxyEventsWorker(QtCore.QObject):
     def run(self):
         print('\n\nRpyc server starting..')
         port = "5556"
-        context = zmq.Context()
-        self.socket = context.socket(zmq.PAIR)
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PAIR)
         self.socket.bind("tcp://*:%s" % port)
-        self.run_loop = True
 
         print('ProxyEventsWorker loop starting...')
-        while self.run_loop:
+        while True:
             print('Running loop..')
             #  Wait for next request from client
-            message = self.socket.recv(flags=zmq.NOBLOCK)
+            message = self.socket.recv()
             print("Received message: %s" % message)
 
         print('ProxyEventsWorker loop done.')
 
     def stop(self):
         print('ProxyEventsWorker stopping...')
-        self.run_loop = False
+        self.socket.close()
+        self.context.term()
 
 class ProxyEventsManager():
     def __init__(self, parent=None):
@@ -42,8 +42,6 @@ class ProxyEventsManager():
 
         print('sending resume message')
         socket.send_string("resume")
-        msg = socket.recv()
-        print(msg)
 
     def stop(self):
         print("Stopping ProxyEventsWorker...")
