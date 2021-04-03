@@ -7,7 +7,7 @@ from PySide2 import QtXml # noqa F401
 
 from views._compiled.ui_main_window import Ui_MainWindow
 
-from lib.proxy_events_service import ProxyEventsManager
+from lib.proxy_events_manager import ProxyEventsManager
 from lib.app_settings import AppSettings
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader

@@ -1,4 +1,4 @@
-NUM_TABLES = 10
+NUM_TABLES = 12
 SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS requests(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   client_id INTEGER,
@@ -129,5 +129,49 @@ CREATE TABLE IF NOT EXISTS crawls(
   created_at INTEGER,
   started_at INTEGER,
   finished_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS http_requests(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    http_version TEXT NOT NULL,
+    headers TEXT NOT NULL,
+    content TEXT,
+    trailers TEXT,
+    timestamp_start REAL NOT NULL,
+    timestamp_end REAL,
+    host TEXT NOT NULL,
+    port INTEGER NOT NULL,
+    method TEXT NOT NULL,
+    scheme TEXT NOT NULL,
+    authority TEXT,
+    path TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS http_responses(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    http_version TEXT NOT NULL,
+    headers TEXT NOT NULL,
+    content TEXT,
+    timestamp_start REAL NOT NULL,
+    timestamp_end REAL,
+    status_code INTEGER NOT NULL,
+    reason TEXT,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS http_flows(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT NOT NULL,
+    client_id INTEGER,
+    type TEXT NOT NULL,
+    request_id INTEGER,
+    original_request_id,
+    response_id INTEGER,
+    original_response_id,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER
 );
 """

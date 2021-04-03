@@ -2,7 +2,7 @@
 import asyncio
 import zmq.asyncio
 import threading
-# import simplejson as json
+import simplejson as json
 
 from proxy import Proxy
 
@@ -28,12 +28,18 @@ class ProxyEvents:
         flow.resume()
 
     def request(self, flow):
-        self.socket.send_string(f'Intercepted request: {flow.request.method}  {flow.request.url}')
+        print('[Proxy] request')
+        request_state = flow.request.get_state()
+        request_state['flow_uuid'] = flow.id
+        self.socket.send_string(f'REQUEST:{json.dumps(request_state)}')
         # flow.intercept()
         # self.intercepted_flows.append(flow)
 
     def response(self, flow):
-        print('response')
+        print('[Proxy] response received')
+        response_state = flow.response.get_state()
+        response_state['flow_uuid'] = flow.id
+        self.socket.send_string(f'RESPONSE:{json.dumps(response_state)}')
 
 proxy_events = ProxyEvents()
 # rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
