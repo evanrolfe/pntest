@@ -22,3 +22,14 @@ class HttpRequest(Model):
         request.path = state['path']
 
         return request
+
+    def get_headers(self):
+        if self.headers is None:
+            return None
+        return json.loads(self.headers)
+
+    def get_header_line(self):
+        return f'{self.method} {self.path} {self.http_version}'
+
+    def get_url(self):
+        return f'{self.scheme}://{self.host}{self.path}'

@@ -34,8 +34,8 @@ class HttpPage(QtWidgets.QWidget):
 
     def reload(self):
         self.ui.requestViewWidget.clear_request()
-        requests = NetworkRequest.find_for_table()
-        self.requests_table_model = RequestsTableModel(requests)
+        http_flows = NetworkRequest.find_for_table()
+        self.requests_table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
     def restore_layout_state(self):
@@ -59,8 +59,8 @@ class HttpPage(QtWidgets.QWidget):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
             selected_id = selected_id_cols[0].data()
-            request = NetworkRequest.find(selected_id)
-            self.ui.requestViewWidget.set_request(request)
+            flow = HttpFlow.find(selected_id)
+            self.ui.requestViewWidget.set_flow(flow)
 
     @QtCore.Slot()
     def delete_requests(self, request_ids):

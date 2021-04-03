@@ -18,3 +18,14 @@ class HttpResponse(Model):
         response.reason = state['reason']
 
         return response
+
+    def get_headers(self):
+        if self.headers is None:
+            return None
+        return json.loads(self.headers)
+
+    def get_header_line(self):
+        return f'{self.http_version} {self.status_code} {self.reason}'
+
+    def content_for_preview(self):
+        return self.content
