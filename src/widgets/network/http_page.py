@@ -4,8 +4,8 @@ from views._compiled.network.ui_http_page import Ui_HttpPage
 
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
-from models.request_data import RequestData
 from models.data.network_request import NetworkRequest
+from models.data.http_flow import HttpFlow
 
 class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.Signal()
@@ -17,8 +17,8 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Setup the request model
-        requests = NetworkRequest.order_by('id', 'desc').get()
-        self.requests_table_model = RequestsTableModel(requests)
+        http_flows = HttpFlow.find_for_table()
+        self.requests_table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
         self.ui.requestsTableWidget.request_selected.connect(self.select_request)
@@ -34,7 +34,7 @@ class HttpPage(QtWidgets.QWidget):
 
     def reload(self):
         self.ui.requestViewWidget.clear_request()
-        requests = NetworkRequest.order_by('id', 'desc').get()
+        requests = NetworkRequest.find_for_table()
         self.requests_table_model = RequestsTableModel(requests)
         self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
 
@@ -81,11 +81,12 @@ class HttpPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def search_requests(self, search_text):
+        return True
         # requests = NetworkRequest.search({'search': search_text})
         # self.requests_table_model.requests = requests
         # self.requests_table_model.refresh()
-        self.request_data = RequestData()
-        self.request_data.set_filter_param('search', search_text)
-        self.request_data.load_requests()
-        self.requests_table_model.requests = self.request_data.requests
-        self.requests_table_model.refresh()
+        # self.request_data = RequestData()
+        # self.request_data.set_filter_param('search', search_text)
+        # self.request_data.load_requests()
+        # self.requests_table_model.requests = self.request_data.requests
+        # self.requests_table_model.refresh()

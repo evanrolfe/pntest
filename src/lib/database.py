@@ -1,5 +1,6 @@
 import re
 import os
+import logging
 from PySide2 import QtSql
 from orator import DatabaseManager, Model
 
@@ -9,6 +10,12 @@ from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 
 # TODO: This class uses two database managers (Orator.DatabaesManager and QSqlDatabase), get rid of
 # the unecessary dependency on QSqlDatabase and do everything through Orator
+
+# Enable query logging from ORM:
+logger = logging.getLogger('orator.connection.queries')
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+logger.addHandler(handler)
 
 class Database:
     # Singleton method stuff:
@@ -27,7 +34,8 @@ class Database:
         config = {
             'default': {
                 'driver': 'sqlite',
-                'database': db_path
+                'database': db_path,
+                'log_queries': True
             }
         }
         self.orator_db = DatabaseManager(config)
@@ -63,7 +71,7 @@ class Database:
             db_tables.append(query.value(0))
 
         if (len(db_tables) != NUM_TABLES):
-            print(f'[Frontend] database not up-to-date, importing the schema...')
+            print(f'[Frontend] database not up-to-date ({len(db_tables)} tables), importing the schema...')
             self.import_schema()
 
     def load_orator_db(self):
