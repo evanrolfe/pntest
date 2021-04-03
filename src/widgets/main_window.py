@@ -186,23 +186,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def open_project(self):
-        print('Resuming request...')
-        # proxy_events_signals = self.proxy_events_manager.proxy_events.service.signals
-        # proxy_events_signals.resume_request()
-        self.proxy_events_manager.resume_request()
-        # file = QtWidgets.QFileDialog.getOpenFileName(
-        #     self,
-        #     "Open Project",
-        #     "~/",
-        #     "PnTest Project Files (*.pnt *.db)"
-        # )
-        # db_path = file[0]
-        # print(f'Opening {db_path}')
-        # database = Database.get_instance()
-        # database.reload_with_new_database(db_path)
-        # self.backend.reload_with_new_database(db_path)
+        # print('Resuming request...')
+        # self.proxy_events_manager.resume_request()
+        file = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Open Project",
+            "~/",
+            "PnTest Project Files (*.pnt *.db)"
+        )
+        db_path = file[0]
+        print(f'Opening {db_path}')
+        database = Database.get_instance()
+        database.reload_with_new_database(db_path)
+        self.backend.reload_with_new_database(db_path)
 
-        # self.reload()
+        self.reload()
 
     @QtCore.Slot()
     def save_project_as(self):

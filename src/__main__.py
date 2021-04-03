@@ -62,7 +62,8 @@ def main():
     stylesheet = style_loader.load_theme(THEME)
     app.setStyleSheet(stylesheet)
 
-    # process_manager.launch_proxy(8080)
+    # Start a proxy:
+    process_manager.launch_proxy(8080)
 
     sys.exit(app.exec_())
 

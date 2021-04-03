@@ -29,8 +29,8 @@ class ProxyEvents:
 
     def request(self, flow):
         self.socket.send_string(f'Intercepted request: {flow.request.method}  {flow.request.url}')
-        flow.intercept()
-        self.intercepted_flows.append(flow)
+        # flow.intercept()
+        # self.intercepted_flows.append(flow)
 
     def response(self, flow):
         print('response')
@@ -49,7 +49,7 @@ queue = asyncio.Queue()
 context = zmq.Context()
 socket = context.socket(zmq.PAIR)
 socket.connect("tcp://localhost:%s" % 5556)
-socket.send_string('hello, this is the proxy here!')
+socket.send_string('[Proxy] connected')
 proxy_events.set_socket(socket)
 
 while True:
