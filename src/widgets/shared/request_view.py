@@ -82,20 +82,24 @@ class RequestView(QtWidgets.QWidget):
         self.set_response(flow)
 
     def set_request(self, flow):
-        if self.show_modified_request:
+        if self.show_modified_request and flow.request_modified():
             request = flow.request
-        else:
+        elif not self.show_modified_request and flow.request_modified():
             request = flow.original_request
+        else:
+            request = flow.request
 
         self.ui.requestHeaders.set_header_line(request.get_header_line())
         self.ui.requestHeaders.set_headers(request.get_headers())
         self.ui.requestPayload.set_value(request.content or '')
 
     def set_response(self, flow):
-        if self.show_modified_response:
+        if self.show_modified_response and flow.response_modified():
             response = flow.response
-        else:
+        elif not self.show_modified_response and flow.response_modified():
             response = flow.original_response
+        else:
+            response = flow.response
 
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
@@ -106,13 +110,11 @@ class RequestView(QtWidgets.QWidget):
         self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
 
     def set_modified_dropdown(self, flow):
-        if self.request_modified_dropdown:
-            if flow.request_modified():
-                self.request_modified_dropdown.setEnabled(True)
-                self.request_modified_dropdown.setCurrentIndex(0)
-            else:
-                self.request_modified_dropdown.setEnabled(False)
-                self.request_modified_dropdown.setCurrentIndex(1)
+        self.request_modified_dropdown.setCurrentIndex(0)
+        self.request_modified_dropdown.setVisible(flow.request_modified())
+
+        self.response_modified_dropdown.setCurrentIndex(0)
+        self.response_modified_dropdown.setVisible(flow.response_modified())
 
     @QtCore.Slot()
     def show_loader(self):
