@@ -3,7 +3,6 @@ import asyncio
 import zmq.asyncio
 import threading
 import simplejson as json
-
 from proxy import Proxy
 
 #
@@ -29,9 +28,11 @@ class ProxyEvents:
 
     def request(self, flow):
         print('[Proxy] request')
+        # Convert bytes to strings:
         request_state = flow.request.get_state()
         request_state['flow_uuid'] = flow.id
-        self.socket.send_string(f'REQUEST:{json.dumps(request_state)}')
+        request_state['type'] = 'request'
+        self.send_message(request_state)
         # flow.intercept()
         # self.intercepted_flows.append(flow)
 
@@ -39,7 +40,13 @@ class ProxyEvents:
         print('[Proxy] response received')
         response_state = flow.response.get_state()
         response_state['flow_uuid'] = flow.id
-        self.socket.send_string(f'RESPONSE:{json.dumps(response_state)}')
+        response_state['type'] = 'response'
+        response_state['content'] = flow.response.text
+        self.send_message(response_state)
+
+    def send_message(self, message):
+        self.socket.send_string(json.dumps(message))
+        self.socket.recv_string()
 
 proxy_events = ProxyEvents()
 # rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
@@ -50,19 +57,18 @@ loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
 proxy_thread.start()
 
-print('connecting ZMQ...')
+print('connecting ZMQ Server...')
 queue = asyncio.Queue()
 context = zmq.Context()
-socket = context.socket(zmq.PAIR)
+socket = context.socket(zmq.REQ)
 socket.connect("tcp://localhost:%s" % 5556)
-socket.send_string('[Proxy] connected')
 proxy_events.set_socket(socket)
 
-while True:
-    msg = socket.recv().decode("utf-8")
-    print(f'Received: {msg}')
-    if msg == 'resume':
-        proxy_events.resume_flow()
-        socket.send_string('ok')
+# while True:
+#     msg = socket.recv().decode("utf-8")
+#     print(f'Received: {msg}')
+#     if msg == 'resume':
+#         proxy_events.resume_flow()
+#         socket.send_string('ok')
 
 proxy_thread.join()

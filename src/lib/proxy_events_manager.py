@@ -1,6 +1,6 @@
 from PySide2 import QtCore
 import zmq
-import json
+import simplejson as json
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
@@ -14,14 +14,14 @@ class ProxyEventsWorker(QtCore.QObject):
         print('\n\nRpyc server starting..')
         port = "5556"
         self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.PAIR)
+        self.socket = self.context.socket(zmq.REP)
         self.socket.bind("tcp://*:%s" % port)
 
         print('ProxyEventsWorker loop starting...')
         while True:
-            message_bytes = self.socket.recv()
-            message = message_bytes.decode("utf-8")
+            message = self.socket.recv_string()
             self.handle_message(message)
+            self.socket.send_string(json.dumps({'message': 'ok'}))
 
     def stop(self):
         print('ProxyEventsWorker stopping...')
@@ -29,16 +29,11 @@ class ProxyEventsWorker(QtCore.QObject):
         self.context.term()
 
     def handle_message(self, message):
-        if(message[0:8] == 'REQUEST:'):
-            request_json = message[8:]
-            request = json.loads(request_json)
-            self.request_intercepted(request)
-        elif (message[0:9] == 'RESPONSE:'):
-            response_json = message[9:]
-            response = json.loads(response_json)
-            self.response_intercepted(response)
-        else:
-            print("Received message: %s" % message)
+        obj = json.loads(message)
+        if (obj['type'] == 'request'):
+            self.request_intercepted(obj)
+        elif (obj['type'] == 'response'):
+            self.response_intercepted(obj)
 
     def request_intercepted(self, request_state):
         http_request = HttpRequest.from_state(request_state)
