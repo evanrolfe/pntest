@@ -27,11 +27,11 @@ def main():
     tmp_db_path = resource_path(app_path, 'pntest-tmp.db')
     style_dir_path = resource_path(src_path, 'style')
 
-    print(f'[Frontend] App path: {app_path}')
-    print(f'[Frontend] Backend path: {backend_path}')
-    print(f'[Frontend] Data path: {data_path}')
-    print(f'[Frontend] DB path: {tmp_db_path}')
-    print(f'[Frontend] style dir path: {style_dir_path}')
+    print(f'[Gui] App path: {app_path}')
+    print(f'[Gui] Backend path: {backend_path}')
+    print(f'[Gui] Data path: {data_path}')
+    print(f'[Gui] DB path: {tmp_db_path}')
+    print(f'[Gui] style dir path: {style_dir_path}')
 
     # Load DB from the CLI if argument given
     try:

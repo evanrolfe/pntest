@@ -69,10 +69,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # ProxyEvents
         self.proxy_events_manager = ProxyEventsManager(self)
         self.proxy_events_manager.start()
-
-        # proxy_events_signals = self.proxy_events_manager.proxy_events.service.signals
-        # proxy_events_signals.request.connect(lambda flow: print(f'Received Request Signal: {flow}'))
-        # proxy_events_signals.response.connect(lambda flow: print(f'Received Response signal: {flow}'))
+        self.proxy_events_manager.signals.flow_created.connect(self.network_page.http_page.flow_created)
+        self.proxy_events_manager.signals.flow_updated.connect(self.network_page.http_page.flow_updated)
 
     def set_process_manager(self, process_manager):
         self.process_manager = process_manager

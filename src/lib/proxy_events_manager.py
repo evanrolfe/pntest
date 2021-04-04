@@ -5,9 +5,14 @@ from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
 
+class ProxySignals(QtCore.QObject):
+    flow_created = QtCore.Signal(HttpFlow)
+    flow_updated = QtCore.Signal(HttpFlow)
+
 class ProxyEventsWorker(QtCore.QObject):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.signals = ProxySignals()
 
     @QtCore.Slot()
     def run(self):
@@ -45,6 +50,8 @@ class ProxyEventsWorker(QtCore.QObject):
         http_flow.type = 'proxy'
         http_flow.save()
 
+        self.signals.flow_created.emit(http_flow)
+
     def response_intercepted(self, response_state):
         http_response = HttpResponse.from_state(response_state)
         http_response.save()
@@ -53,11 +60,14 @@ class ProxyEventsWorker(QtCore.QObject):
         http_flow.response_id = http_response.id
         http_flow.save()
 
+        self.signals.flow_updated.emit(http_flow)
+
 class ProxyEventsManager():
     def __init__(self, parent=None):
         self.thread = QtCore.QThread(parent)
         self.proxy_events = ProxyEventsWorker()
         self.proxy_events.moveToThread(self.thread)
+        self.signals = self.proxy_events.signals
         self.thread.started.connect(self.proxy_events.run)
 
     def start(self):
@@ -74,3 +84,4 @@ class ProxyEventsManager():
         self.proxy_events.stop()
         self.thread.quit()
         self.thread.wait()
+
