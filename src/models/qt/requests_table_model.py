@@ -96,29 +96,29 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         reverse = (order == QtCore.Qt.DescendingOrder)
 
         if (column == 0):
-            self.flows = sorted(self.flows, key=lambda r: r.id, reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: flow.id, reverse=reverse)
         elif (column == 1):
-            self.flows = sorted(self.flows, key=lambda r: int(r.client_id or 0), reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: int(flow.client_id or 0), reverse=reverse)
         elif (column == 2):
-            self.flows = sorted(self.flows, key=lambda r: r.request_type, reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: flow.request.scheme, reverse=reverse)
         elif (column == 3):
-            self.flows = sorted(self.flows, key=lambda r: [r.method, r.id], reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: [flow.request.method, flow.id], reverse=reverse)
         elif (column == 4):
-            self.flows = sorted(self.flows, key=lambda r: [r.host, r.id], reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: [flow.request.host, flow.id], reverse=reverse)
         elif (column == 5):
-            self.flows = sorted(self.flows, key=lambda r: [r.path, r.id], reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: [flow.request.path, flow.id], reverse=reverse)
         elif (column == 6):
             self.flows = sorted(self.flows, key=self.response_status_sort_key, reverse=reverse)
 
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
 
-    def response_status_sort_key(self, request):
-        if (request.response_status == ''):
+    def response_status_sort_key(self, flow):
+        if not flow.response:
             status = 0
         else:
-            status = int(request.response_status)
+            status = flow.response.status_code
 
-        return [status, request.id]
+        return [status, flow.id]
 
     def refresh(self):
         self.layoutChanged.emit()
