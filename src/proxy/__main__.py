@@ -6,15 +6,12 @@ import threading
 import simplejson as json
 from proxy import Proxy
 
-#
-# Intercept PoC: start the proxy with: python src/proxy then make a few requests i.e.
-# curl http://wonderbill.com --proxy http://127.0.0.1:8080
-# curl http://ais.at --proxy http://127.0.0.1:8080
-#
-# then hit the "open file" menu button to forward a request
-#
+PROXY_ZMQ_PORT = 5556
 
 class ProxyEvents:
+    def __init__(self, client_id):
+        self.client_id = client_id
+
     def set_proxy(self, proxy):
         self.proxy = proxy
         self.intercepted_flows = []
@@ -37,6 +34,7 @@ class ProxyEvents:
         request_state = flow.request.get_state()
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
+        request_state['client_id'] = self.client_id
         self.send_message(request_state)
         # flow.intercept()
         # self.intercepted_flows.append(flow)
@@ -64,11 +62,11 @@ class ProxyEvents:
         print('-------> websocket_message')
         self.send_message(message_state)
 
-proxy_events = ProxyEvents()
-# rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
-
-print('Proxy server starting..')
 port_num = int(argv[1])
+client_id = int(argv[2])
+print(f'Proxy server starting, port {port_num}, client_id {client_id}..')
+
+proxy_events = ProxyEvents(client_id)
 proxy = Proxy(proxy_events, port_num)
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
@@ -78,7 +76,7 @@ print('connecting ZMQ Server...')
 queue = asyncio.Queue()
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:%s" % 5556)
+socket.connect("tcp://localhost:%s" % PROXY_ZMQ_PORT)
 proxy_events.set_socket(socket)
 
 proxy_thread.join()

@@ -46,7 +46,7 @@ class HttpFlow(Model):
 
         return [
             self.id,
-            '',  # TODO: self.client_id,
+            self.client_id,
             self.request.scheme,
             self.request.method,
             self.request.host,

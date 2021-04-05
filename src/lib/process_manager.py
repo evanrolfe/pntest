@@ -73,7 +73,7 @@ class ProcessManager(QtCore.QObject):
         self.processes.append({'client': client, 'type': 'browser', 'process': process})
 
     def launch_proxy(self, client):
-        proxy_command = f'{sys.executable} {self.src_path}/proxy {client.proxy_port}'
+        proxy_command = f'{sys.executable} {self.src_path}/proxy {client.proxy_port} {client.id}'
 
         process = subprocess.Popen(
             proxy_command.split(' '),
