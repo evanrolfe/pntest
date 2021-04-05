@@ -44,7 +44,7 @@ def main():
         database.delete_existing_db()
         database.load_or_create()
 
-    process_manager = ProcessManager()
+    process_manager = ProcessManager(src_path)
     main_window = MainWindow()
     main_window.set_process_manager(process_manager)
     main_window.show()
@@ -61,9 +61,6 @@ def main():
     style_loader = StyleheetLoader(style_dir_path)
     stylesheet = style_loader.load_theme(THEME)
     app.setStyleSheet(stylesheet)
-
-    # Start a proxy:
-    process_manager.launch_proxy(8080)
 
     sys.exit(app.exec_())
 

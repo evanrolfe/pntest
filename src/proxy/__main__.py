@@ -1,5 +1,6 @@
 # import rpyc
 import asyncio
+from sys import argv
 import zmq.asyncio
 import threading
 import simplejson as json
@@ -67,7 +68,8 @@ proxy_events = ProxyEvents()
 # rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
 
 print('Proxy server starting..')
-proxy = Proxy(proxy_events, 8080)
+port_num = int(argv[1])
+proxy = Proxy(proxy_events, port_num)
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
 proxy_thread.start()

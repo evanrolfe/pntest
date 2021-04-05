@@ -6,6 +6,8 @@ from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
 
+PROXY_ZMQ_PORT = 5556
+
 class ProxySignals(QtCore.QObject):
     flow_created = QtCore.Signal(HttpFlow)
     flow_updated = QtCore.Signal(HttpFlow)
@@ -19,10 +21,9 @@ class ProxyEventsWorker(QtCore.QObject):
     @QtCore.Slot()
     def run(self):
         print('\n\nRpyc server starting..')
-        port = "5556"
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
-        self.socket.bind("tcp://*:%s" % port)
+        self.socket.bind("tcp://*:%s" % PROXY_ZMQ_PORT)
 
         print('ProxyEventsWorker loop starting...')
         while True:
@@ -75,7 +76,7 @@ class ProxyEventsWorker(QtCore.QObject):
 
         self.signals.websocket_message_created.emit(websocket_message)
 
-class ProxyEventsManager():
+class ProxyHandler():
     def __init__(self, parent=None):
         self.thread = QtCore.QThread(parent)
         self.proxy_events = ProxyEventsWorker()
