@@ -11,11 +11,13 @@ from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 # TODO: This class uses two database managers (Orator.DatabaesManager and QSqlDatabase), get rid of
 # the unecessary dependency on QSqlDatabase and do everything through Orator
 
-# Enable query logging from ORM:
-# logger = logging.getLogger('orator.connection.queries')
-# logger.setLevel(logging.DEBUG)
-# handler = logging.StreamHandler()
-# logger.addHandler(handler)
+ENABLE_QUERY_LOGGING = False
+
+if ENABLE_QUERY_LOGGING:
+    logger = logging.getLogger('orator.connection.queries')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
 
 class Database:
     # Singleton method stuff:

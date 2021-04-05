@@ -109,12 +109,14 @@ class RequestView(QtWidgets.QWidget):
         self.ui.responseRaw.set_value(response.content or '')
         # if self.show_rendered:
         #     self.ui.responseRendered.set_value(response_body_rendered or '')
+        headers = flow.response.get_headers()
+        content_type = headers.get('Content-Type', '')
+        # mime_type = content_type.split(';')[0]
 
-        mime_type = getattr(flow.response.get_headers(), 'content-type', None)
-        if mime_type and 'html' in mime_type:
+        if 'html' in content_type:
             self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
-        elif mime_type:
-            self.ui.responseBodyPreview.setContent(response.content_for_preview(), mime_type)
+        else:
+            self.ui.responseBodyPreview.setHtml('')
 
     def set_modified_dropdown(self, flow):
         self.request_modified_dropdown.setCurrentIndex(0)

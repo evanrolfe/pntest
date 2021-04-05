@@ -61,7 +61,6 @@ class ProxyEvents:
             'content': message.content
         }
         print('-------> websocket_message')
-        #print(message_state)
         self.send_message(message_state)
 
 proxy_events = ProxyEvents()
