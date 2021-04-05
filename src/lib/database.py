@@ -12,10 +12,10 @@ from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 # the unecessary dependency on QSqlDatabase and do everything through Orator
 
 # Enable query logging from ORM:
-logger = logging.getLogger('orator.connection.queries')
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-logger.addHandler(handler)
+# logger = logging.getLogger('orator.connection.queries')
+# logger.setLevel(logging.DEBUG)
+# handler = logging.StreamHandler()
+# logger.addHandler(handler)
 
 class Database:
     # Singleton method stuff:

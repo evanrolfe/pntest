@@ -16,10 +16,13 @@ class MessageView(QtWidgets.QWidget):
         self.ui.messageTabs.setTabEnabled(1, False)
 
     def set_message(self, message):
-        self.ui.messageText.setPlainText(message.body)
-        if message.body_modified is not None:
-            self.ui.messageModifiedText.setPlainText(message.body_modified)
-            self.ui.messageTabs.setTabEnabled(1, True)
-        else:
-            self.ui.messageModifiedText.setPlainText('')
-            self.ui.messageTabs.setTabEnabled(1, False)
+        self.ui.messageText.setPlainText(message.content)
+        self.ui.messageTabs.setTabEnabled(1, False)
+
+        # TODO: Handle modified messages:
+        # if message.content_original is not None:
+        #     self.ui.messageModifiedText.setPlainText(message.content_modified)
+        #     self.ui.messageTabs.setTabEnabled(1, True)
+        # else:
+        #     self.ui.messageModifiedText.setPlainText('')
+        #     self.ui.messageTabs.setTabEnabled(1, False)

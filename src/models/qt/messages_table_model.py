@@ -70,7 +70,7 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
 
             row_values = [
                 message.id,
-                message.request_id,
+                message.http_flow_id,
                 message.direction,
                 format_timestamp(message.created_at),
                 message.modified()
@@ -96,7 +96,7 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
         if (column == 0):
             self.messages = sorted(self.messages, key=lambda r: r.id, reverse=reverse)
         elif (column == 1):
-            self.messages = sorted(self.messages, key=lambda r: int(r.request_id or 0), reverse=reverse)
+            self.messages = sorted(self.messages, key=lambda r: int(r.http_flow_id or 0), reverse=reverse)
         elif (column == 2):
             self.messages = sorted(self.messages, key=lambda r: r.direction, reverse=reverse)
         elif (column == 3):
@@ -107,7 +107,7 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
     def refresh(self):
         self.layoutChanged.emit()
 
-    def get_index_of(self, request_id):
+    def get_index_of(self, http_flow_id):
         for i, r in enumerate(self.messages):
-            if r.id == request_id:
+            if r.id == http_flow_id:
                 return i

@@ -4,10 +4,12 @@ import simplejson as json
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
+from models.data.websocket_message import WebsocketMessage
 
 class ProxySignals(QtCore.QObject):
     flow_created = QtCore.Signal(HttpFlow)
     flow_updated = QtCore.Signal(HttpFlow)
+    websocket_message_created = QtCore.Signal(WebsocketMessage)
 
 class ProxyEventsWorker(QtCore.QObject):
     def __init__(self, parent=None):
@@ -39,6 +41,8 @@ class ProxyEventsWorker(QtCore.QObject):
             self.request_intercepted(obj)
         elif (obj['type'] == 'response'):
             self.response_intercepted(obj)
+        elif (obj['type'] == 'websocket_message'):
+            self.websocket_message_intercepted(obj)
 
     def request_intercepted(self, request_state):
         http_request = HttpRequest.from_state(request_state)
@@ -62,6 +66,15 @@ class ProxyEventsWorker(QtCore.QObject):
 
         self.signals.flow_updated.emit(http_flow)
 
+    def websocket_message_intercepted(self, message_state):
+        http_flow = HttpFlow.where('uuid', '=', message_state['flow_uuid']).first()
+
+        websocket_message = WebsocketMessage.from_state(message_state)
+        websocket_message.http_flow_id = http_flow.id
+        websocket_message.save()
+
+        self.signals.websocket_message_created.emit(websocket_message)
+
 class ProxyEventsManager():
     def __init__(self, parent=None):
         self.thread = QtCore.QThread(parent)
@@ -84,4 +97,3 @@ class ProxyEventsManager():
         self.proxy_events.stop()
         self.thread.quit()
         self.thread.wait()
-

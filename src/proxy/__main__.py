@@ -21,6 +21,10 @@ class ProxyEvents:
     def set_socket(self, socket):
         self.socket = socket
 
+    def send_message(self, message):
+        self.socket.send_string(json.dumps(message))
+        self.socket.recv_string()
+
     def resume_flow(self):
         print('[Proxy] resuming')
         flow = self.intercepted_flows.pop(0)
@@ -44,9 +48,21 @@ class ProxyEvents:
         response_state['content'] = flow.response.text
         self.send_message(response_state)
 
-    def send_message(self, message):
-        self.socket.send_string(json.dumps(message))
-        self.socket.recv_string()
+    def websocket_start(self, flow):
+        print('-------> websocket_start')
+
+    def websocket_message(self, flow):
+        message = flow.websocket.messages[-1]
+        direction = 'outgoing' if message.from_client else 'incoming'
+        message_state = {
+            'type': 'websocket_message',
+            'flow_uuid': flow.id,
+            'direction': direction,
+            'content': message.content
+        }
+        print('-------> websocket_message')
+        #print(message_state)
+        self.send_message(message_state)
 
 proxy_events = ProxyEvents()
 # rpc_client = rpyc.connect("localhost", 18861, config={"allow_all_attrs": True})
@@ -63,12 +79,5 @@ context = zmq.Context()
 socket = context.socket(zmq.REQ)
 socket.connect("tcp://localhost:%s" % 5556)
 proxy_events.set_socket(socket)
-
-# while True:
-#     msg = socket.recv().decode("utf-8")
-#     print(f'Received: {msg}')
-#     if msg == 'resume':
-#         proxy_events.resume_flow()
-#         socket.send_string('ok')
 
 proxy_thread.join()

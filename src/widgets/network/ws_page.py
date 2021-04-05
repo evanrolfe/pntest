@@ -5,7 +5,6 @@ from views._compiled.network.ui_ws_page import Ui_WsPage
 from lib.app_settings import AppSettings
 from models.qt.messages_table_model import MessagesTableModel
 from models.data.websocket_message import WebsocketMessage
-from models.data.network_request import NetworkRequest
 
 class WsPage(QtWidgets.QWidget):
     toggle_page = QtCore.Signal()
@@ -76,6 +75,10 @@ class WsPage(QtWidgets.QWidget):
 
         if response == QtWidgets.QMessageBox.Yes:
             self.table_model.delete_messages(message_ids)
+
+    @QtCore.Slot()
+    def websocket_message_created(self, websocket_message):
+        self.table_model.add_message(websocket_message)
 
     # @QtCore.Slot()
     # def search_requests(self, search_text):

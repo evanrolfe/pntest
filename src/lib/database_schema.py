@@ -77,16 +77,6 @@ CREATE TABLE IF NOT EXISTS editor_requests(
   updated_at INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS websocket_messages(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  request_id INTEGER,
-  direction TEXT,
-  body TEXT,
-  body_modified TEXT,
-  created_at INTEGER,
-  updated_at INTEGER
-);
-
 CREATE TABLE IF NOT EXISTS capture_filters(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   filters TEXT NOT NULL,
@@ -173,5 +163,15 @@ CREATE TABLE IF NOT EXISTS http_flows(
     original_response_id,
     created_at INTEGER NOT NULL,
     updated_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS websocket_messages(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  http_flow_id INTEGER NOT NULL,
+  direction TEXT NOT NULL,
+  content TEXT NOT NULL,
+  content_original TEXT,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER
 );
 """

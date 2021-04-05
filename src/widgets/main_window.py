@@ -6,8 +6,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2 import QtXml # noqa F401
 
 from views._compiled.ui_main_window import Ui_MainWindow
-
-from lib.proxy_events_manager import ProxyEventsManager
 from lib.app_settings import AppSettings
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -66,14 +64,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.restore_layout_state()
         # self.show_editor_page()
 
-        # ProxyEvents
-        self.proxy_events_manager = ProxyEventsManager(self)
-        self.proxy_events_manager.start()
-        self.proxy_events_manager.signals.flow_created.connect(self.network_page.http_page.flow_created)
-        self.proxy_events_manager.signals.flow_updated.connect(self.network_page.http_page.flow_updated)
-
     def set_process_manager(self, process_manager):
         self.process_manager = process_manager
+
+        self.process_manager.flow_created.connect(self.network_page.http_page.flow_created)
+        self.process_manager.flow_updated.connect(self.network_page.http_page.flow_updated)
+        self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
@@ -103,8 +99,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def about_to_quit(self):
-        self.proxy_events_manager.stop()
-
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
@@ -124,39 +118,33 @@ class MainWindow(QtWidgets.QMainWindow):
         # icon_size = QSize(52, 35)
 
         # Network Item
-        network_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-cloud-backup-restore-50.png"), None)
+        network_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-cloud-backup-restore-50.png"), None)
         network_item.setData(QtCore.Qt.UserRole, 'network')
         # network_item.setSizeHint(icon_size)
         self.ui.sideBar.addItem(network_item)
 
         # Intercept Item
-        intercept_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-rich-text-converter-50.png"), None)
+        intercept_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-rich-text-converter-50.png"), None)
         intercept_item.setData(QtCore.Qt.UserRole, 'intercept')
         self.ui.sideBar.addItem(intercept_item)
 
         # Clients Item
-        clients_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-browse-page-50.png"), None)
+        clients_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-browse-page-50.png"), None)
         clients_item.setData(QtCore.Qt.UserRole, 'clients')
         self.ui.sideBar.addItem(clients_item)
 
         # Requests Item
-        requests_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-compose-50.png"), None)
+        requests_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-compose-50.png"), None)
         requests_item.setData(QtCore.Qt.UserRole, 'requests')
         self.ui.sideBar.addItem(QtWidgets.QListWidgetItem(requests_item))
 
         # Crawler Item
-        crawler_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-spiderweb-50.png"), None)
+        crawler_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-spiderweb-50.png"), None)
         crawler_item.setData(QtCore.Qt.UserRole, 'crawler')
         self.ui.sideBar.addItem(crawler_item)
 
         # Extensions Item
-        extensions_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-plus-math-50.png"), None)
+        extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-plus-math-50.png"), None)
         extensions_item.setData(QtCore.Qt.UserRole, 'extensions')
         self.ui.sideBar.addItem(extensions_item)
 
