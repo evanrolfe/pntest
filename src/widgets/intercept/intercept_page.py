@@ -12,11 +12,6 @@ class InterceptPage(QtWidgets.QWidget):
 
         self.__set_buttons_enabled(False)
 
-        # Register callback with the backend:
-        # self.backend = Backend.get_instance()
-        # self.backend.register_callback('requestIntercepted', self.request_intercepted)
-        # self.backend.register_callback('responseIntercepted', self.response_intercepted)
-
         # Connect buttons:
         self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
         self.ui.forwardInterceptButton.clicked.connect(self.forward_intercept_button_clicked)
@@ -43,8 +38,9 @@ class InterceptPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def forward_button_clicked(self):
         print(f'Forwarding flow {self.intercepted_flow.uuid} and client_id={self.intercepted_flow.client_id}')
-        self.intercept_queue.forward_flow(self.intercepted_flow)
+        # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
         self.__clear_request()
+        self.intercept_queue.forward_flow(self.intercepted_flow)
 
     def response_intercepted(self, request):
         self.intercepted_request = request

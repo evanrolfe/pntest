@@ -20,9 +20,7 @@ class InterceptQueue(QtCore.QObject):
     @QtCore.Slot()
     def flow_intercepted(self, flow):
         self.queue.append(flow)
-        print(f'[InterceptQueue] received intercepted flow {flow.uuid}, queue is now:')
-        # import code; code.interact(local=dict(globals(), **locals()))
-        self.print_queue()
+        print(f'[InterceptQueue] received intercepted flow {flow.uuid}')
 
         if not self.awaiting_decision:
             self.request_decision(flow)
@@ -35,10 +33,12 @@ class InterceptQueue(QtCore.QObject):
         self.process_manager.forward_intercepted_flow(flow)
         self.queue.pop(0)
         self.awaiting_decision = False
-        self.print_queue()
-        # TODO: This should request the next thing in the queue!
 
-    def print_queue(self):
+        if len(self.queue) > 0:
+            next_flow = self.queue[0]
+            self.request_decision(next_flow)
+
+    def __print_queue(self):
         print(f'[InterceptQueue] queue is now:')
         queue_uuids = [f.uuid for f in self.queue]
         print(json.dumps(queue_uuids))
