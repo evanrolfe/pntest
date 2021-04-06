@@ -1,5 +1,8 @@
 import simplejson as json
 
+INTERCPT_REQUESTS = True
+INTERCPT_RESPONSES = False
+
 class ProxyEvents:
     def __init__(self, client_id):
         self.client_id = client_id
@@ -13,12 +16,15 @@ class ProxyEvents:
 
     def send_message(self, message):
         self.socket.send_string(json.dumps(message))
-        self.socket.recv_string()
 
-    def resume_flow(self):
-        print('[Proxy] resuming')
+    def forward_flow(self, flow_uuid):
+        print(f'[Proxy] forwarding flow {flow_uuid}')
         flow = self.intercepted_flows.pop(0)
         flow.resume()
+
+    def intercept_flow(self, flow):
+        flow.intercept()
+        self.intercepted_flows.append(flow)
 
     def request(self, flow):
         print('[Proxy] request')
@@ -27,9 +33,11 @@ class ProxyEvents:
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
+        request_state['intercepted'] = INTERCPT_REQUESTS
         self.send_message(request_state)
-        # flow.intercept()
-        # self.intercepted_flows.append(flow)
+
+        if request_state['intercepted']:
+            self.intercept_flow(flow)
 
     def response(self, flow):
         print('[Proxy] response received')
@@ -37,6 +45,7 @@ class ProxyEvents:
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
         response_state['content'] = flow.response.text
+        response_state['intercepted'] = INTERCPT_RESPONSES
         self.send_message(response_state)
 
     def websocket_start(self, flow):

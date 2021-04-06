@@ -14,6 +14,7 @@ PROXY_COMMAND = f'{sys.executable} /home/evan/Code/pntest/src/proxy'
 class ProcessManager(QtCore.QObject):
     flow_created = QtCore.Signal(HttpFlow)
     flow_updated = QtCore.Signal(HttpFlow)
+    flow_intercepted = QtCore.Signal(HttpFlow)
     websocket_message_created = QtCore.Signal(WebsocketMessage)
 
     # Singleton method stuff:
@@ -45,6 +46,7 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.start()
         self.proxy_handler.signals.flow_created.connect(self.flow_created)
         self.proxy_handler.signals.flow_updated.connect(self.flow_updated)
+        self.proxy_handler.signals.flow_intercepted.connect(self.flow_intercepted)
         self.proxy_handler.signals.websocket_message_created.connect(self.websocket_message_created)
 
         atexit.register(self.on_exit)
@@ -80,3 +82,6 @@ class ProcessManager(QtCore.QObject):
             preexec_fn=os.setsid
         )
         self.processes.append({'client': client, 'type': 'proxy', 'process': process})
+
+    def forward_intercepted_flow(self, flow):
+        self.proxy_handler.forward_intercepted_flow(flow)

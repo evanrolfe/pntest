@@ -18,7 +18,6 @@ def start_polling(socket):
     while True:
         try:
             socket.send_string(json.dumps({'type': 'poll'}))
-            socket.recv_string()
             time.sleep(1)
         except zmq.error.Again as ex:
             print(ex)
@@ -40,14 +39,24 @@ proxy_thread.start()
 print('connecting ZMQ Server...')
 queue = asyncio.Queue()
 context = zmq.Context()
-socket = context.socket(zmq.REQ)
+socket = context.socket(zmq.DEALER)
+socket.setsockopt_string(zmq.IDENTITY, str(client_id))
 socket.connect("tcp://localhost:%s" % PROXY_ZMQ_PORT)
 proxy_events.set_socket(socket)
 
+# 3. Listen to messages from the Router
+while True:
+    message_raw = socket.recv_string()
+    print(f'Received message: {message_raw}')
+    message = json.loads(message_raw)
+
+    if message['type'] == 'forward':
+        proxy_events.forward_flow(message['flow_uuid'])
+
 # 3. Poll the ZMQ server regularly to ensure the program hasn't stopped running
-poll_socket = context.socket(zmq.REQ)
-poll_socket.RCVTIMEO = 1000
-poll_socket.connect("tcp://localhost:%s" % PROXY_ZMQ_PORT)
-start_polling(poll_socket)
+# poll_socket = context.socket(zmq.REQ)
+# poll_socket.RCVTIMEO = 1000
+# poll_socket.connect("tcp://localhost:%s" % PROXY_ZMQ_PORT)
+# start_polling(poll_socket)
 
 proxy_thread.join()

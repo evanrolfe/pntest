@@ -1,8 +1,8 @@
 from PySide2 import QtWidgets, QtCore
 
 from views._compiled.intercept.ui_intercept_page import Ui_InterceptPage
-# from lib.backend import Backend
-from models.data.setting import Setting
+from lib.intercept_queue import InterceptQueue
+# from models.data.setting import Setting
 
 class InterceptPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -19,25 +19,32 @@ class InterceptPage(QtWidgets.QWidget):
 
         # Connect buttons:
         self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
-        self.ui.forwardInterceptButton.clicked.connect(
-            self.forward_intercept_button_clicked)
+        self.ui.forwardInterceptButton.clicked.connect(self.forward_intercept_button_clicked)
         self.ui.enabledButton.clicked.connect(self.enabled_button_clicked)
 
         # Set enabled/disabled:
         # self.ui.enabledButton.setCheckable(True)
-        intercept_enabled = Setting.intercept_enabled()
-        self.set_enabled(intercept_enabled)
+        # intercept_enabled = Setting.intercept_enabled()
+        self.set_enabled(True)
+        self.__set_buttons_enabled(True)
         # self.ui.enabledButton.setDown(intercept_enabled)
 
-    def request_intercepted(self, request):
-        self.intercepted_request = request
+        self.intercept_queue = InterceptQueue()
+        self.intercept_queue.decision_required.connect(self.decision_required)
 
-        self.ui.interceptTitle.setText(
-            f"Intercepted Request: {request['method']} {request['path']}")
-
-        self.ui.headersText.setPlainText(request['rawRequest'])
-
+    @QtCore.Slot()
+    def decision_required(self, flow):
+        print(f'[InterceptPage] flow id {flow.id} intercepted!')
+        self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
+        self.ui.headersText.setPlainText(flow.request.headers)
         self.__set_buttons_enabled(True)
+        self.intercepted_flow = flow
+
+    @QtCore.Slot()
+    def forward_button_clicked(self):
+        print(f'Forwarding flow {self.intercepted_flow.uuid} and client_id={self.intercepted_flow.client_id}')
+        self.intercept_queue.forward_flow(self.intercepted_flow)
+        self.__clear_request()
 
     def response_intercepted(self, request):
         self.intercepted_request = request
@@ -62,13 +69,6 @@ class InterceptPage(QtWidgets.QWidget):
         self.ui.forwardButton.setEnabled(enabled)
         self.ui.forwardInterceptButton.setEnabled(enabled)
         self.ui.dropButton.setEnabled(enabled)
-
-    @QtCore.Slot()
-    def forward_button_clicked(self):
-        self.get_data_from_form()
-
-        self.backend.forward_request(self.intercepted_request)
-        self.__clear_request()
 
     @QtCore.Slot()
     def forward_intercept_button_clicked(self):

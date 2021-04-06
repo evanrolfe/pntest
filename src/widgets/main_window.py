@@ -62,11 +62,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # Menubar:
         self.setup_menu_actions()
         self.restore_layout_state()
-        # self.show_editor_page()
 
+    # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
     def set_process_manager(self, process_manager):
         self.process_manager = process_manager
 
+        # TODO: We could probably use the singleton get_instance() and set these in the page's constructors
+        # Network Page:
         self.process_manager.flow_created.connect(self.network_page.http_page.flow_created)
         self.process_manager.flow_updated.connect(self.network_page.http_page.flow_updated)
         self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
