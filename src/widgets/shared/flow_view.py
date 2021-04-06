@@ -1,15 +1,15 @@
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 
-from views._compiled.shared.ui_request_view import Ui_RequestView
+from views._compiled.shared.ui_flow_view import Ui_FlowView
 
 # TODO: Rename this to FlowView
 # TODO: Split this into two components, one for request, one for response
 
-class RequestView(QtWidgets.QWidget):
+class FlowView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
-        super(RequestView, self).__init__(*args, **kwargs)
-        self.ui = Ui_RequestView()
+        super(FlowView, self).__init__(*args, **kwargs)
+        self.ui = Ui_FlowView()
         self.ui.setupUi(self)
         self.request_modified_dropdown = None
         self.response_modified_dropdown = None

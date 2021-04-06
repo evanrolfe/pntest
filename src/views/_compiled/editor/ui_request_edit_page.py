@@ -12,7 +12,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from widgets.shared.request_view import RequestView
+from widgets.shared.flow_view import FlowView
 
 
 class Ui_RequestEditPage(object):
@@ -79,7 +79,7 @@ class Ui_RequestEditPage(object):
         self.layout2 = QHBoxLayout()
         self.layout2.setObjectName(u"layout2")
         self.layout2.setContentsMargins(0, 0, 0, 0)
-        self.requestViewWidget = RequestView(RequestEditPage)
+        self.requestViewWidget = FlowView(RequestEditPage)
         self.requestViewWidget.setObjectName(u"requestViewWidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)

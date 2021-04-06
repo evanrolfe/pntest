@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RequestView</class>
- <widget class="QWidget" name="RequestView">
+ <class>FlowView</class>
+ <widget class="QWidget" name="FlowView">
   <property name="geometry">
    <rect>
     <x>0</x>

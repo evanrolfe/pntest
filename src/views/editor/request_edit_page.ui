@@ -117,7 +117,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="RequestView" name="requestViewWidget" native="true">
+        <widget class="FlowView" name="requestViewWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -134,9 +134,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>RequestView</class>
+   <class>FlowView</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.request_view.h</header>
+   <header>widgets.shared.flow_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
