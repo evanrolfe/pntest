@@ -83,5 +83,5 @@ class ProcessManager(QtCore.QObject):
         )
         self.processes.append({'client': client, 'type': 'proxy', 'process': process})
 
-    def forward_intercepted_flow(self, flow):
-        self.proxy_handler.forward_intercepted_flow(flow)
+    def forward_intercepted_flow(self, flow, intercept_response):
+        self.proxy_handler.forward_intercepted_flow(flow, intercept_response)

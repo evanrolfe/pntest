@@ -17,8 +17,11 @@ class ProxyEvents:
     def send_message(self, message):
         self.socket.send_string(json.dumps(message))
 
-    def forward_flow(self, modified_flow):
-        print(f'[Proxy] forwarding flow {modified_flow["uuid"]}')
+    def forward_flow(self, message):
+        type = message['type']
+        modified_flow = message['flow']
+
+        print(f'[Proxy] {type} flow {modified_flow["uuid"]}')
         flow = self.intercepted_flows.pop(0)
 
         # Overwrite the MitmProxy flow with the values of the Pntest Flow:
@@ -33,6 +36,7 @@ class ProxyEvents:
             flow.request.port = modified_flow['request']['port']
             flow.request.headers = self.convert_headers_for_mitm(modified_flow['request']['headers'])
             flow.request.content = modified_flow['request']['content'].encode()
+            flow.intercept_response = (message['type'] == 'forward_and_intercept')
 
         flow.resume()
 
@@ -58,6 +62,7 @@ class ProxyEvents:
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
         request_state['intercepted'] = INTERCPT_REQUESTS
+
         self.send_message(request_state)
 
         if request_state['intercepted']:
@@ -69,10 +74,10 @@ class ProxyEvents:
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
         response_state['content'] = flow.response.text
-        response_state['intercepted'] = INTERCPT_RESPONSES
+        response_state['intercepted'] = flow.intercept_response
         self.send_message(response_state)
 
-        if response_state['intercepted']:
+        if flow.intercept_response:
             self.intercept_flow(flow)
 
     def websocket_start(self, flow):

@@ -29,8 +29,8 @@ class InterceptQueue(QtCore.QObject):
         self.awaiting_decision = True
         self.decision_required.emit(flow)
 
-    def forward_flow(self, flow):
-        self.process_manager.forward_intercepted_flow(flow)
+    def forward_flow(self, flow, intercept_response):
+        self.process_manager.forward_intercepted_flow(flow, intercept_response)
         self.queue.pop(0)
         self.awaiting_decision = False
 

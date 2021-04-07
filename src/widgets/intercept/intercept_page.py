@@ -47,23 +47,11 @@ class InterceptPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def forward_button_clicked(self):
-        header_line_arr = self.ui.headers.get_header_line().split(' ')
-        modified_headers = self.ui.headers.get_headers()
-        modified_content = self.ui.bodyText.toPlainText()
+        self.__forward_flow(False)
 
-        if self.intercepted_flow.has_response():
-            modified_status_code = int(header_line_arr[0])
-            self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
-        else:
-            modified_method = header_line_arr[0]
-            modified_path = header_line_arr[1]
-            self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
-
-        # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
-        self.__clear_request()
-
-        reloaded_flow = self.intercepted_flow.reload()
-        self.intercept_queue.forward_flow(reloaded_flow)
+    @QtCore.Slot()
+    def forward_intercept_button_clicked(self):
+        self.__forward_flow(True)
 
     def __clear_request(self):
         self.intercepted_request = None
@@ -90,13 +78,28 @@ class InterceptPage(QtWidgets.QWidget):
     # ===========================================================================
     # TODO:
     # ===========================================================================
-    @QtCore.Slot()
-    def forward_intercept_button_clicked(self):
-        # TODO
-        self.__clear_request()
 
     @QtCore.Slot()
     def enabled_button_clicked(self):
         new_value = not self.intercept_enabled
         print(new_value)
         # TODO
+
+    def __forward_flow(self, intercept_response):
+        header_line_arr = self.ui.headers.get_header_line().split(' ')
+        modified_headers = self.ui.headers.get_headers()
+        modified_content = self.ui.bodyText.toPlainText()
+
+        if self.intercepted_flow.has_response():
+            modified_status_code = int(header_line_arr[0])
+            self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
+        else:
+            modified_method = header_line_arr[0]
+            modified_path = header_line_arr[1]
+            self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
+
+        # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
+        self.__clear_request()
+
+        reloaded_flow = self.intercepted_flow.reload()
+        self.intercept_queue.forward_flow(reloaded_flow, intercept_response)
