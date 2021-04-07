@@ -30,12 +30,17 @@ class InterceptQueue(QtCore.QObject):
         self.decision_required.emit(flow)
 
     def forward_flow(self, flow, intercept_response):
-        self.process_manager.forward_intercepted_flow(flow, intercept_response)
+        self.process_manager.forward_flow(flow, intercept_response)
         self.__pop_queue_and_await_next_decision()
 
     def drop_flow(self, flow):
         self.process_manager.drop_flow(flow)
         self.__pop_queue_and_await_next_decision()
+
+    def forward_all(self):
+        client_ids = list(set([f.client_id for f in self.queue]))
+        self.process_manager.forward_all(client_ids)
+        self.queue = []
 
     # Private Methods
 

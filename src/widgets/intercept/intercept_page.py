@@ -56,6 +56,13 @@ class InterceptPage(QtWidgets.QWidget):
         self.__clear_request()
         self.intercept_queue.drop_flow(self.intercepted_flow)
 
+    @QtCore.Slot()
+    def enabled_button_clicked(self):
+        # new_value = not self.intercept_enabled
+        print('[InterceptPage] forwarding all requests')
+        self.__clear_request()
+        self.intercept_queue.forward_all()
+
     def __clear_request(self):
         self.intercepted_request = None
         self.ui.interceptTitle.setText("Intercepted Request:")
@@ -78,15 +85,7 @@ class InterceptPage(QtWidgets.QWidget):
             self.ui.enabledButton.setText('Enable Intercept')
             self.__clear_request()
 
-    # ===========================================================================
-    # TODO:
-    # ===========================================================================
-
-    @QtCore.Slot()
-    def enabled_button_clicked(self):
-        new_value = not self.intercept_enabled
-        print(new_value)
-        # TODO
+    # Private methods
 
     def __forward_flow(self, intercept_response):
         header_line_arr = self.ui.headers.get_header_line().split(' ')

@@ -40,6 +40,12 @@ class ProxyEvents:
 
         flow.resume()
 
+    def forward_all(self):
+        for flow in self.intercepted_flows:
+            print(f'[Proxy] forwarding flow {flow.id}')
+            flow.intercept_response = False
+            flow.resume()
+
     def drop_flow(self, message):
         type = message['type']
         modified_flow = message['flow']
