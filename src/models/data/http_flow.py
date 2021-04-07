@@ -38,6 +38,9 @@ class HttpFlow(Model):
     def modified(self):
         return self.request_modified() or self.response_modified()
 
+    def has_response(self):
+        return hasattr(self, 'response_id')
+
     def values_for_table(self):
         if getattr(self, 'response_id', None):
             status_code = self.response.status_code
@@ -73,6 +76,7 @@ class HttpFlow(Model):
             if port:
                 original_state['port'] = port
 
+        # TODO: What if the user types in host header lowercase?
         # if modified_headers.get('host'):
         #     original_state['host'] = modified_headers['host']
 
@@ -81,6 +85,21 @@ class HttpFlow(Model):
 
         self.original_request_id = original_request.id
         self.request_id = new_request.id
+        self.save()
+
+    def modify_response(self, modified_status_code, modified_headers, modified_content):
+        original_response = self.response().first()
+        original_state = original_response.get_state()
+
+        original_state['status_code'] = modified_status_code
+        original_state['headers'] = modified_headers
+        original_state['content'] = modified_content
+
+        new_response = HttpResponse.from_state(original_state)
+        new_response.save()
+
+        self.original_response_id = original_response.id
+        self.response_id = new_response.id
         self.save()
 
     def reload(self):

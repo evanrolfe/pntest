@@ -19,6 +19,11 @@ class HttpResponse(Model):
 
         return response
 
+    def get_state(self):
+        attributes = self.serialize()
+        attributes['headers'] = json.loads(attributes['headers'])
+        return attributes
+
     def get_headers(self):
         if self.headers is None:
             return None
@@ -26,6 +31,9 @@ class HttpResponse(Model):
 
     def get_header_line(self):
         return f'{self.http_version} {self.status_code} {self.reason}'
+
+    def get_header_line_no_http_version(self):
+        return f'{self.status_code} {self.reason}'
 
     def content_for_preview(self):
         return self.content

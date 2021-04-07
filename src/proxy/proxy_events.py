@@ -1,7 +1,7 @@
 import simplejson as json
-
+from mitmproxy.http import Headers
 INTERCPT_REQUESTS = True
-INTERCPT_RESPONSES = False
+INTERCPT_RESPONSES = True
 
 class ProxyEvents:
     def __init__(self, client_id):
@@ -21,13 +21,30 @@ class ProxyEvents:
         print(f'[Proxy] forwarding flow {modified_flow["uuid"]}')
         flow = self.intercepted_flows.pop(0)
 
-        flow.request.path = modified_flow['request']['path']
-        flow.request.method = modified_flow['request']['method']
-        flow.request.host = modified_flow['request']['host']
-        flow.request.port = modified_flow['request']['port']
-        flow.request.content = modified_flow['request']['content'].encode()
+        # Overwrite the MitmProxy flow with the values of the Pntest Flow:
+        if flow.response:
+            flow.response.status_code = modified_flow['response']['status_code']
+            flow.response.headers = self.convert_headers_for_mitm(modified_flow['response']['headers'])
+            flow.response.content = modified_flow['response']['content'].encode()
+        else:
+            flow.request.path = modified_flow['request']['path']
+            flow.request.method = modified_flow['request']['method']
+            flow.request.host = modified_flow['request']['host']
+            flow.request.port = modified_flow['request']['port']
+            flow.request.headers = self.convert_headers_for_mitm(modified_flow['request']['headers'])
+            flow.request.content = modified_flow['request']['content'].encode()
 
         flow.resume()
+
+    def convert_headers_for_mitm(self, headers):
+        headers_obj = json.loads(headers)
+        headers_list = []
+
+        for key, value in headers_obj.items():
+            header = (key.encode(), value.encode())
+            headers_list.append(header)
+
+        return Headers(headers_list)
 
     def intercept_flow(self, flow):
         flow.intercept()
@@ -47,13 +64,16 @@ class ProxyEvents:
             self.intercept_flow(flow)
 
     def response(self, flow):
-        print('[Proxy] response received')
+        print('[Proxy] response')
         response_state = flow.response.get_state()
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
         response_state['content'] = flow.response.text
         response_state['intercepted'] = INTERCPT_RESPONSES
         self.send_message(response_state)
+
+        if response_state['intercepted']:
+            self.intercept_flow(flow)
 
     def websocket_start(self, flow):
         print('-------> websocket_start')

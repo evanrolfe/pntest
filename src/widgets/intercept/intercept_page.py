@@ -34,22 +34,33 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
 
-        self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
-        self.ui.headers.set_headers(flow.request.get_headers())
-        self.ui.headers.set_header_line(flow.request.get_method_path())
-        self.ui.bodyText.setPlainText(flow.request.content)
+        if self.intercepted_flow.has_response():
+            self.ui.interceptTitle.setText(f"Intercepted Response: {flow.request.method} {flow.request.get_url()}")
+            self.ui.headers.set_headers(flow.response.get_headers())
+            self.ui.headers.set_header_line(flow.response.get_header_line_no_http_version())
+            self.ui.bodyText.setPlainText(flow.response.content)
+        else:
+            self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
+            self.ui.headers.set_headers(flow.request.get_headers())
+            self.ui.headers.set_header_line(flow.request.get_method_path())
+            self.ui.bodyText.setPlainText(flow.request.content)
 
     @QtCore.Slot()
     def forward_button_clicked(self):
         header_line_arr = self.ui.headers.get_header_line().split(' ')
         modified_headers = self.ui.headers.get_headers()
-        modified_method = header_line_arr[0]
-        modified_path = header_line_arr[1]
         modified_content = self.ui.bodyText.toPlainText()
+
+        if self.intercepted_flow.has_response():
+            modified_status_code = int(header_line_arr[0])
+            self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
+        else:
+            modified_method = header_line_arr[0]
+            modified_path = header_line_arr[1]
+            self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
 
         # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
         self.__clear_request()
-        self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
 
         reloaded_flow = self.intercepted_flow.reload()
         self.intercept_queue.forward_flow(reloaded_flow)
@@ -67,42 +78,6 @@ class InterceptPage(QtWidgets.QWidget):
         self.ui.forwardInterceptButton.setEnabled(enabled)
         self.ui.dropButton.setEnabled(enabled)
 
-    # ===========================================================================
-    # OLD STUFF:
-    # ===========================================================================
-    def response_intercepted(self, request):
-        self.intercepted_request = request
-
-        self.ui.interceptTitle.setText(
-            f"Intercepted Response: {request['method']} {request['path']}")
-
-        self.ui.headersText.setPlainText(request['rawResponse'])
-        self.ui.bodyText.setPlainText(request['responseBody'])
-
-        self.__set_buttons_enabled(True)
-        self.ui.forwardInterceptButton.setEnabled(False)
-
-    @QtCore.Slot()
-    def forward_intercept_button_clicked(self):
-        self.get_data_from_form()
-
-        self.backend.forward_intercept_request(self.intercepted_request)
-        self.__clear_request()
-
-    @QtCore.Slot()
-    def enabled_button_clicked(self):
-        new_value = not self.intercept_enabled
-        self.backend.change_setting('interceptEnabled', new_value)
-        self.set_enabled(new_value)
-
-    def get_data_from_form(self):
-        # If intercepted_request is a response:
-        if self.intercepted_request.get('rawResponse') is not None:
-            self.intercepted_request['rawResponse'] = self.ui.headersText.toPlainText()
-            self.intercepted_request['rawResponseBody'] = self.ui.bodyText.toPlainText()
-        else:
-            self.intercepted_request['rawRequest'] = self.ui.headersText.toPlainText()
-
     def set_enabled(self, intercept_enabled):
         self.intercept_enabled = intercept_enabled
 
@@ -111,3 +86,17 @@ class InterceptPage(QtWidgets.QWidget):
         else:
             self.ui.enabledButton.setText('Enable Intercept')
             self.__clear_request()
+
+    # ===========================================================================
+    # TODO:
+    # ===========================================================================
+    @QtCore.Slot()
+    def forward_intercept_button_clicked(self):
+        # TODO
+        self.__clear_request()
+
+    @QtCore.Slot()
+    def enabled_button_clicked(self):
+        new_value = not self.intercept_enabled
+        print(new_value)
+        # TODO

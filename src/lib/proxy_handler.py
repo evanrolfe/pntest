@@ -73,6 +73,9 @@ class ProxyZmqServer(QtCore.QObject):
 
         self.signals.flow_updated.emit(http_flow)
 
+        if response_state['intercepted']:
+            self.signals.flow_intercepted.emit(http_flow)
+
     def websocket_message(self, message_state):
         http_flow = HttpFlow.where('uuid', '=', message_state['flow_uuid']).first()
 
