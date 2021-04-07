@@ -42,7 +42,7 @@ class InterceptPage(QtWidgets.QWidget):
         else:
             self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
             self.ui.headers.set_headers(flow.request.get_headers())
-            self.ui.headers.set_header_line(flow.request.get_method_path())
+            self.ui.headers.set_header_line(flow.request.get_header_line_no_http_version())
             self.ui.bodyText.setPlainText(flow.request.content)
 
     @QtCore.Slot()

@@ -33,7 +33,7 @@ class HttpRequest(Model):
             return None
         return json.loads(self.headers)
 
-    def get_method_path(self):
+    def get_header_line_no_http_version(self):
         return f'{self.method} {self.path}'
 
     def get_header_line(self):
