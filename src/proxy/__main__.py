@@ -52,6 +52,8 @@ while True:
 
     if message['type'] in ['forward', 'forward_and_intercept']:
         proxy_events.forward_flow(message)
+    elif message['type'] == 'drop':
+        proxy_events.drop_flow(message)
 
 # 3. Poll the ZMQ server regularly to ensure the program hasn't stopped running
 # poll_socket = context.socket(zmq.REQ)

@@ -86,14 +86,16 @@ class ProxyZmqServer(QtCore.QObject):
         self.signals.websocket_message_created.emit(websocket_message)
 
     def forward_intercepted_flow(self, flow, intercept_response):
-        print(f"[ProxyZmqServer] forwarding request on proxy {flow.client_id}")
-
         if intercept_response:
             type = 'forward_and_intercept'
         else:
             type = 'forward'
 
         message = {'type': type, 'flow': flow.serialize()}
+        self.socket.send_multipart([str(flow.client_id).encode(), json.dumps(message).encode()])
+
+    def drop_flow(self, flow):
+        message = {'type': 'drop', 'flow': flow.serialize()}
         self.socket.send_multipart([str(flow.client_id).encode(), json.dumps(message).encode()])
 
 class ProxyHandler():
@@ -115,3 +117,6 @@ class ProxyHandler():
 
     def forward_intercepted_flow(self, flow, intercept_response):
         self.zmq_server.forward_intercepted_flow(flow, intercept_response)
+
+    def drop_flow(self, flow):
+        self.zmq_server.drop_flow(flow)

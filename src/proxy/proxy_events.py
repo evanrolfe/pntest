@@ -40,6 +40,14 @@ class ProxyEvents:
 
         flow.resume()
 
+    def drop_flow(self, message):
+        type = message['type']
+        modified_flow = message['flow']
+
+        print(f'[Proxy] {type} flow {modified_flow["uuid"]}')
+        flow = self.intercepted_flows.pop(0)
+        flow.kill()
+
     def convert_headers_for_mitm(self, headers):
         headers_obj = json.loads(headers)
         headers_list = []

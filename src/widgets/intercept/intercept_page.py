@@ -15,6 +15,7 @@ class InterceptPage(QtWidgets.QWidget):
         self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
         self.ui.forwardInterceptButton.clicked.connect(self.forward_intercept_button_clicked)
         self.ui.enabledButton.clicked.connect(self.enabled_button_clicked)
+        self.ui.dropButton.clicked.connect(self.drop_button_clicked)
 
         # Set enabled/disabled:
         # self.ui.enabledButton.setCheckable(True)
@@ -25,9 +26,6 @@ class InterceptPage(QtWidgets.QWidget):
 
         self.intercept_queue = InterceptQueue()
         self.intercept_queue.decision_required.connect(self.decision_required)
-
-        # self.intercepted_flow = HttpFlow.find(93)
-        # self.decision_required(self.intercepted_flow)
 
     @QtCore.Slot()
     def decision_required(self, flow):
@@ -52,6 +50,11 @@ class InterceptPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def forward_intercept_button_clicked(self):
         self.__forward_flow(True)
+
+    @QtCore.Slot()
+    def drop_button_clicked(self):
+        self.__clear_request()
+        self.intercept_queue.drop_flow(self.intercepted_flow)
 
     def __clear_request(self):
         self.intercepted_request = None

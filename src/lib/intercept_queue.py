@@ -31,6 +31,15 @@ class InterceptQueue(QtCore.QObject):
 
     def forward_flow(self, flow, intercept_response):
         self.process_manager.forward_intercepted_flow(flow, intercept_response)
+        self.__pop_queue_and_await_next_decision()
+
+    def drop_flow(self, flow):
+        self.process_manager.drop_flow(flow)
+        self.__pop_queue_and_await_next_decision()
+
+    # Private Methods
+
+    def __pop_queue_and_await_next_decision(self):
         self.queue.pop(0)
         self.awaiting_decision = False
 

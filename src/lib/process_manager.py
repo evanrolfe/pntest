@@ -85,3 +85,6 @@ class ProcessManager(QtCore.QObject):
 
     def forward_intercepted_flow(self, flow, intercept_response):
         self.proxy_handler.forward_intercepted_flow(flow, intercept_response)
+
+    def drop_flow(self, flow):
+        self.proxy_handler.drop_flow(flow)
