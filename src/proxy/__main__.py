@@ -46,12 +46,12 @@ proxy_events.set_socket(socket)
 
 # 3. Listen to messages from the Router
 while True:
-    message_raw = socket.recv_string()
-    print(f'Received message: {message_raw}')
+    message_raw = socket.recv()
     message = json.loads(message_raw)
+    print(f'Received message: {message["type"]}')
 
     if message['type'] == 'forward':
-        proxy_events.forward_flow(message['flow_uuid'])
+        proxy_events.forward_flow(message['flow'])
 
 # 3. Poll the ZMQ server regularly to ensure the program hasn't stopped running
 # poll_socket = context.socket(zmq.REQ)

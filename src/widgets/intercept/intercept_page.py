@@ -2,7 +2,6 @@ from PySide2 import QtWidgets, QtCore
 
 from views._compiled.intercept.ui_intercept_page import Ui_InterceptPage
 from lib.intercept_queue import InterceptQueue
-# from models.data.setting import Setting
 
 class InterceptPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -27,21 +26,50 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercept_queue = InterceptQueue()
         self.intercept_queue.decision_required.connect(self.decision_required)
 
+        # self.intercepted_flow = HttpFlow.find(93)
+        # self.decision_required(self.intercepted_flow)
+
     @QtCore.Slot()
     def decision_required(self, flow):
-        print(f'[InterceptPage] flow id {flow.id} intercepted!')
-        self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
-        self.ui.headersText.setPlainText(flow.request.headers)
-        self.__set_buttons_enabled(True)
         self.intercepted_flow = flow
+        self.__set_buttons_enabled(True)
+
+        self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
+        self.ui.headers.set_headers(flow.request.get_headers())
+        self.ui.headers.set_header_line(flow.request.get_method_path())
+        self.ui.bodyText.setPlainText(flow.request.content)
 
     @QtCore.Slot()
     def forward_button_clicked(self):
-        print(f'Forwarding flow {self.intercepted_flow.uuid} and client_id={self.intercepted_flow.client_id}')
+        header_line_arr = self.ui.headers.get_header_line().split(' ')
+        modified_headers = self.ui.headers.get_headers()
+        modified_method = header_line_arr[0]
+        modified_path = header_line_arr[1]
+        modified_content = self.ui.bodyText.toPlainText()
+
         # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
         self.__clear_request()
-        self.intercept_queue.forward_flow(self.intercepted_flow)
+        self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
 
+        reloaded_flow = self.intercepted_flow.reload()
+        self.intercept_queue.forward_flow(reloaded_flow)
+
+    def __clear_request(self):
+        self.intercepted_request = None
+        self.ui.interceptTitle.setText("Intercepted Request:")
+        self.ui.headers.set_headers(None)
+        self.ui.headers.set_header_line('')
+        self.ui.bodyText.setPlainText("")
+        self.__set_buttons_enabled(False)
+
+    def __set_buttons_enabled(self, enabled):
+        self.ui.forwardButton.setEnabled(enabled)
+        self.ui.forwardInterceptButton.setEnabled(enabled)
+        self.ui.dropButton.setEnabled(enabled)
+
+    # ===========================================================================
+    # OLD STUFF:
+    # ===========================================================================
     def response_intercepted(self, request):
         self.intercepted_request = request
 
@@ -53,18 +81,6 @@ class InterceptPage(QtWidgets.QWidget):
 
         self.__set_buttons_enabled(True)
         self.ui.forwardInterceptButton.setEnabled(False)
-
-    def __clear_request(self):
-        self.intercepted_request = None
-        self.ui.interceptTitle.setText("Intercepted Request:")
-        self.ui.headersText.setPlainText("")
-        self.ui.bodyText.setPlainText("")
-        self.__set_buttons_enabled(False)
-
-    def __set_buttons_enabled(self, enabled):
-        self.ui.forwardButton.setEnabled(enabled)
-        self.ui.forwardInterceptButton.setEnabled(enabled)
-        self.ui.dropButton.setEnabled(enabled)
 
     @QtCore.Slot()
     def forward_intercept_button_clicked(self):

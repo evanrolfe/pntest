@@ -66,5 +66,8 @@ class HeadersForm(QtWidgets.QWidget):
             self.ui.headersTable.hideRow(0)
             self.ui.headersTable.hideRow(1)
 
+    def get_header_line(self):
+        return self.ui.headerLine.text()
+
     def get_headers(self):
         return self.table_model.get_headers()

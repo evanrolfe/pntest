@@ -23,13 +23,26 @@ class HttpRequest(Model):
 
         return request
 
+    def get_state(self):
+        attributes = self.serialize()
+        attributes['headers'] = json.loads(attributes['headers'])
+        return attributes
+
     def get_headers(self):
         if self.headers is None:
             return None
         return json.loads(self.headers)
 
+    def get_method_path(self):
+        return f'{self.method} {self.path}'
+
     def get_header_line(self):
         return f'{self.method} {self.path} {self.http_version}'
 
     def get_url(self):
-        return f'{self.scheme}://{self.host}{self.path}'
+        if self.port not in [80, 443]:
+            port = ':' + str(self.port)
+        else:
+            port = ''
+
+        return f'{self.scheme}://{self.host}{port}{self.path}'

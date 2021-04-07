@@ -17,9 +17,16 @@ class ProxyEvents:
     def send_message(self, message):
         self.socket.send_string(json.dumps(message))
 
-    def forward_flow(self, flow_uuid):
-        print(f'[Proxy] forwarding flow {flow_uuid}')
+    def forward_flow(self, modified_flow):
+        print(f'[Proxy] forwarding flow {modified_flow["uuid"]}')
         flow = self.intercepted_flows.pop(0)
+
+        flow.request.path = modified_flow['request']['path']
+        flow.request.method = modified_flow['request']['method']
+        flow.request.host = modified_flow['request']['host']
+        flow.request.port = modified_flow['request']['port']
+        flow.request.content = modified_flow['request']['content'].encode()
+
         flow.resume()
 
     def intercept_flow(self, flow):

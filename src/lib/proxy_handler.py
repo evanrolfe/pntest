@@ -84,7 +84,7 @@ class ProxyZmqServer(QtCore.QObject):
 
     def forward_intercepted_flow(self, flow):
         print(f"[ProxyZmqServer] forwarding request on proxy {flow.client_id}")
-        message = {'type': 'forward', 'flow_uuid': flow.uuid}
+        message = {'type': 'forward', 'flow': flow.serialize()}
         self.socket.send_multipart([str(flow.client_id).encode(), json.dumps(message).encode()])
 
 class ProxyHandler():
