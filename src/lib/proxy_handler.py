@@ -18,6 +18,7 @@ class ProxyZmqServer(QtCore.QObject):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.signals = ProxySignals()
+        self.client_ids = set()
 
     @QtCore.Slot()
     def run(self):
@@ -26,12 +27,25 @@ class ProxyZmqServer(QtCore.QObject):
         self.socket = self.context.socket(zmq.ROUTER)
         self.socket.bind("tcp://*:%s" % PROXY_ZMQ_PORT)
 
+        poll = zmq.Poller()
+        poll.register(self.socket, zmq.POLLIN)
+
         print('[ProxyZmqServer] loop starting...')
         while True:
-            identity = self.socket.recv()
-            message = self.socket.recv_string()
-            print(f'[ProxyZmqServer] Received {message} from {identity}')
-            self.handle_message(message)
+            sockets = dict(poll.poll(1000))
+
+            if sockets:
+                identity = self.socket.recv()
+                message = self.socket.recv_string()
+                print(f'[ProxyZmqServer] Received {message} from {identity}')
+
+                self.client_ids.add(int(identity))
+                self.handle_message(message)
+            else:
+                # print(f'[ProxyZmqServer] polling client_ids {list(self.client_ids)}')
+                for client_id in list(self.client_ids):
+                    message = {'type': 'poll'}
+                    self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
 
     def stop(self):
         print('[ProxyZmqServer] stopping...')
