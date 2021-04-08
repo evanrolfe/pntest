@@ -1,5 +1,6 @@
-from PySide2 import QtCore
+from PySide2 import QtCore, QtWidgets
 import zmq
+import sys
 import simplejson as json
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
@@ -32,20 +33,24 @@ class ProxyZmqServer(QtCore.QObject):
 
         print('[ProxyZmqServer] loop starting...')
         while True:
-            sockets = dict(poll.poll(1000))
-
-            if sockets:
+            try:
                 identity = self.socket.recv()
                 message = self.socket.recv_string()
-                print(f'[ProxyZmqServer] Received {message} from {identity}')
-
+                # print(f'[ProxyZmqServer] Received {message} from {identity}')
                 self.client_ids.add(int(identity))
                 self.handle_message(message)
-            else:
-                # print(f'[ProxyZmqServer] polling client_ids {list(self.client_ids)}')
-                for client_id in list(self.client_ids):
-                    message = {'type': 'poll'}
-                    self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
+            except:  # noqa
+                exctype, value = sys.exc_info()[:2]
+                self.__show_error_box(f'{exctype}: {value}')
+                pass
+            # sockets = dict(poll.poll(1000))
+            # if sockets:
+            # else:
+            #     # print(f'[ProxyZmqServer] polling client_ids {list(self.client_ids)}')
+            #     print('[ProxyZmqServer] polling')
+            #     for client_id in list(self.client_ids):
+            #         message = {'type': 'poll'}
+            #         self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
 
     def stop(self):
         print('[ProxyZmqServer] stopping...')
@@ -55,10 +60,13 @@ class ProxyZmqServer(QtCore.QObject):
     def handle_message(self, message):
         obj = json.loads(message)
         if (obj['type'] == 'request'):
+            print(f'[ProxyZmqServer] Received http request')
             self.request(obj)
         elif (obj['type'] == 'response'):
+            print(f'[ProxyZmqServer] Received http response')
             self.response(obj)
         elif (obj['type'] == 'websocket_message'):
+            print(f'[ProxyZmqServer] Received websocket message')
             self.websocket_message(obj)
 
     def request(self, request_state):
@@ -125,6 +133,14 @@ class ProxyZmqServer(QtCore.QObject):
         message = {'type': 'enable_intercept', 'value': enabled}
         for client_id in list(self.client_ids):
             self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
+
+    def __show_error_box(self, message):
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('ProxyZmqServer: Error')
+        message_box.setText(message)
+        message_box.exec_()
+
+        print(message)
 
 class ProxyHandler():
     def __init__(self, parent=None):

@@ -29,7 +29,7 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
 
-        if self.intercepted_flow.intercept_websocket_message:
+        if hasattr(self.intercepted_flow, 'intercept_websocket_message'):
             self.ui.interceptTitle.setText(
                 f"Intercepted Websocket Message: {flow.request.method} {flow.request.get_url()}"
             )
@@ -78,7 +78,7 @@ class InterceptPage(QtWidgets.QWidget):
         modified_headers = self.ui.headers.get_headers()
         modified_content = self.ui.bodyText.toPlainText()
 
-        if self.intercepted_flow.intercept_websocket_message:
+        if hasattr(self.intercepted_flow, 'intercept_websocket_message'):
             print('Forwarding websocket!')
             self.intercepted_flow.modify_latest_websocket_message(modified_content)
 
