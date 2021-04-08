@@ -29,13 +29,22 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
 
-        if self.intercepted_flow.has_response():
-            self.ui.interceptTitle.setText(f"Intercepted Response: {flow.request.method} {flow.request.get_url()}")
+        if self.intercepted_flow.intercept_websocket_message:
+            self.ui.interceptTitle.setText(
+                f"Intercepted Websocket Message: {flow.request.method} {flow.request.get_url()}"
+            )
+            self.ui.headers.set_headers(None)
+            self.ui.headers.set_header_line('')
+            self.ui.bodyText.setPlainText(flow.websocket_messages[-1].content)
+
+        elif self.intercepted_flow.has_response():
+            self.ui.interceptTitle.setText(f"Intercepted HTTP Response: {flow.request.method} {flow.request.get_url()}")
             self.ui.headers.set_headers(flow.response.get_headers())
             self.ui.headers.set_header_line(flow.response.get_header_line_no_http_version())
             self.ui.bodyText.setPlainText(flow.response.content)
+
         else:
-            self.ui.interceptTitle.setText(f"Intercepted Request: {flow.request.method} {flow.request.get_url()}")
+            self.ui.interceptTitle.setText(f"Intercepted HTTP Request: {flow.request.method} {flow.request.get_url()}")
             self.ui.headers.set_headers(flow.request.get_headers())
             self.ui.headers.set_header_line(flow.request.get_header_line_no_http_version())
             self.ui.bodyText.setPlainText(flow.request.content)
@@ -69,9 +78,14 @@ class InterceptPage(QtWidgets.QWidget):
         modified_headers = self.ui.headers.get_headers()
         modified_content = self.ui.bodyText.toPlainText()
 
-        if self.intercepted_flow.has_response():
+        if self.intercepted_flow.intercept_websocket_message:
+            print('Forwarding websocket!')
+            self.intercepted_flow.modify_latest_websocket_message(modified_content)
+
+        elif self.intercepted_flow.has_response():
             modified_status_code = int(header_line_arr[0])
             self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
+
         else:
             modified_method = header_line_arr[0]
             modified_path = header_line_arr[1]

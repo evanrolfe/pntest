@@ -19,8 +19,8 @@ class InterceptQueue(QtCore.QObject):
 
     @QtCore.Slot()
     def flow_intercepted(self, flow):
-        self.queue.append(flow)
         print(f'[InterceptQueue] received intercepted flow {flow.uuid}')
+        self.queue.append(flow)
 
         if not self.awaiting_decision:
             self.request_decision(flow)

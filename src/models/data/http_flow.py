@@ -1,7 +1,8 @@
 from orator import Model
-from orator.orm import has_one
+from orator.orm import has_one, has_many
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
+from models.data.websocket_message import WebsocketMessage
 
 class HttpFlow(Model):
     __table__ = 'http_flows'
@@ -26,6 +27,10 @@ class HttpFlow(Model):
     @has_one('id', 'original_response_id')
     def original_response(self):
         return HttpResponse
+
+    @has_many('http_flow_id', 'id')
+    def websocket_messages(self):
+        return WebsocketMessage
 
     def request_modified(self):
         original_request_id = getattr(self, 'original_request_id', None)
@@ -62,13 +67,20 @@ class HttpFlow(Model):
         original_request = self.request().first()
         original_state = original_request.get_state()
 
-        # TODO: Check if the request has actually been modified
+        request_unchanged = (
+            original_state['method'] == modified_method and
+            original_state['path'] == modified_path and
+            original_state['headers'] == modified_headers and
+            original_state['content'] == modified_content
+        )
+
+        if request_unchanged:
+            return
+
         original_state['method'] = modified_method
         original_state['path'] = modified_path
         original_state['headers'] = modified_headers
-
-        if modified_content != '':
-            original_state['content'] = modified_content
+        original_state['content'] = modified_content
 
         if modified_headers.get('Host'):
             host, port = self.get_host_and_port(modified_headers['Host'])
@@ -91,6 +103,15 @@ class HttpFlow(Model):
         original_response = self.response().first()
         original_state = original_response.get_state()
 
+        response_unchanged = (
+            original_state['status_code'] == modified_status_code and
+            original_state['headers'] == modified_headers and
+            original_state['content'] == modified_content
+        )
+
+        if response_unchanged:
+            return
+
         original_state['status_code'] = modified_status_code
         original_state['headers'] = modified_headers
         original_state['content'] = modified_content
@@ -102,8 +123,19 @@ class HttpFlow(Model):
         self.response_id = new_response.id
         self.save()
 
+    def modify_latest_websocket_message(self, modified_content):
+        websocket_messages = self.websocket_messages().get()
+        websocket_message = websocket_messages[-1]
+
+        if websocket_message.content == modified_content:
+            return
+
+        websocket_message.content_original = websocket_message.content
+        websocket_message.content = modified_content
+        websocket_message.save()
+
     def reload(self):
-        return HttpFlow.with_('request', 'response').find(self.id)
+        return HttpFlow.with_('request', 'response', 'websocket_messages').find(self.id)
 
     def get_host_and_port(self, host):
         if ':' in host:

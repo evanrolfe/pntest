@@ -31,7 +31,7 @@ lazy-object-proxy==1.5.2
 ldap3==2.8.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
-mitmproxy @ https://github.com/mitmproxy/mitmproxy/archive/master.zip
+mitmproxy @ https://github.com/mitmproxy/mitmproxy/archive/refs/heads/main.zip
 msgpack==1.0.2
 orator==0.9.9
 packaging==20.9
@@ -40,6 +40,7 @@ pastel==0.1.1
 pendulum==1.5.1
 pkg-resources==0.0.0
 pluggy==0.13.1
+plumbum==1.7.0
 protobuf==3.14.0
 publicsuffix2==2.20191221
 py==1.10.0
@@ -60,6 +61,7 @@ python-dateutil==2.8.1
 pytz==2020.5
 pytzdata==2020.1
 PyYAML==5.3.1
+pyzmq==22.0.3
 qasync==0.13.0
 requests==2.25.1
 ruamel.yaml==0.16.13
