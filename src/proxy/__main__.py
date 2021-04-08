@@ -55,6 +55,8 @@ while True:
             proxy_events.drop_flow(message)
         elif message['type'] == 'forward_all':
             proxy_events.forward_all()
+        elif message['type'] == 'enable_intercept':
+            proxy_events.set_intercept_enabled(message['value'])
         elif message['type'] == 'poll':
             # print(f'Received poll at {datetime.datetime.now().time()}')
             last_poll_at = int(time.time())

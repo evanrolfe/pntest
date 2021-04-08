@@ -1,22 +1,21 @@
 import simplejson as json
 from mitmproxy.http import Headers
-INTERCPT_REQUESTS = True
-INTERCPT_RESPONSES = True
 
 class ProxyEvents:
     def __init__(self, client_id):
         self.client_id = client_id
+        self.intercept_enabled = False
+        self.intercepted_flows = []
 
     def set_proxy(self, proxy):
         self.proxy = proxy
-        self.intercepted_flows = []
 
     def set_socket(self, socket):
         self.socket = socket
 
-    def send_message(self, message):
-        self.socket.send_string(json.dumps(message))
-
+    # ---------------------------------------------------------------------------
+    # Actions:
+    # ---------------------------------------------------------------------------
     def forward_flow(self, message):
         type = message['type']
         modified_flow = message['flow']
@@ -27,14 +26,14 @@ class ProxyEvents:
         # Overwrite the MitmProxy flow with the values of the Pntest Flow:
         if flow.response:
             flow.response.status_code = modified_flow['response']['status_code']
-            flow.response.headers = self.convert_headers_for_mitm(modified_flow['response']['headers'])
+            flow.response.headers = self.__convert_headers_for_mitm(modified_flow['response']['headers'])
             flow.response.content = modified_flow['response']['content'].encode()
         else:
             flow.request.path = modified_flow['request']['path']
             flow.request.method = modified_flow['request']['method']
             flow.request.host = modified_flow['request']['host']
             flow.request.port = modified_flow['request']['port']
-            flow.request.headers = self.convert_headers_for_mitm(modified_flow['request']['headers'])
+            flow.request.headers = self.__convert_headers_for_mitm(modified_flow['request']['headers'])
             flow.request.content = modified_flow['request']['content'].encode()
             flow.intercept_response = (message['type'] == 'forward_and_intercept')
 
@@ -54,20 +53,16 @@ class ProxyEvents:
         flow = self.intercepted_flows.pop(0)
         flow.kill()
 
-    def convert_headers_for_mitm(self, headers):
-        headers_obj = json.loads(headers)
-        headers_list = []
-
-        for key, value in headers_obj.items():
-            header = (key.encode(), value.encode())
-            headers_list.append(header)
-
-        return Headers(headers_list)
-
     def intercept_flow(self, flow):
         flow.intercept()
         self.intercepted_flows.append(flow)
 
+    def set_intercept_enabled(self, enabled):
+        self.intercept_enabled = enabled
+
+    # ---------------------------------------------------------------------------
+    # MitmProxy Events:
+    # ---------------------------------------------------------------------------
     def request(self, flow):
         print('[Proxy] request')
         # Convert bytes to strings:
@@ -75,27 +70,26 @@ class ProxyEvents:
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
-        request_state['intercepted'] = INTERCPT_REQUESTS
+        request_state['intercepted'] = self.__should_intercept_request(flow)
 
-        self.send_message(request_state)
+        self.__send_message(request_state)
 
         if request_state['intercepted']:
             self.intercept_flow(flow)
 
     def response(self, flow):
         print('[Proxy] response')
+        intercept_response = getattr(flow, 'intercept_response', False)
+
         response_state = flow.response.get_state()
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
         response_state['content'] = flow.response.text
-        response_state['intercepted'] = flow.intercept_response
-        self.send_message(response_state)
+        response_state['intercepted'] = intercept_response
+        self.__send_message(response_state)
 
-        if flow.intercept_response:
+        if intercept_response:
             self.intercept_flow(flow)
-
-    def websocket_start(self, flow):
-        print('-------> websocket_start')
 
     def websocket_message(self, flow):
         message = flow.websocket.messages[-1]
@@ -106,5 +100,23 @@ class ProxyEvents:
             'direction': direction,
             'content': message.content
         }
-        print('-------> websocket_message')
-        self.send_message(message_state)
+        self.__send_message(message_state)
+
+    # ---------------------------------------------------------------------------
+    # Private methods:
+    # ---------------------------------------------------------------------------
+    def __should_intercept_request(self, flow):
+        return self.intercept_enabled
+
+    def __convert_headers_for_mitm(self, headers):
+        headers_obj = json.loads(headers)
+        headers_list = []
+
+        for key, value in headers_obj.items():
+            header = (key.encode(), value.encode())
+            headers_list.append(header)
+
+        return Headers(headers_list)
+
+    def __send_message(self, message):
+        self.socket.send_string(json.dumps(message))

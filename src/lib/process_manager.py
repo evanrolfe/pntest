@@ -86,8 +86,11 @@ class ProcessManager(QtCore.QObject):
     def forward_flow(self, flow, intercept_response):
         self.proxy_handler.forward_flow(flow, intercept_response)
 
-    def forward_all(self, client_ids):
-        self.proxy_handler.forward_all(client_ids)
+    def forward_all(self):
+        self.proxy_handler.forward_all()
 
     def drop_flow(self, flow):
         self.proxy_handler.drop_flow(flow)
+
+    def set_enabled(self, enabled):
+        self.proxy_handler.set_enabled(enabled)

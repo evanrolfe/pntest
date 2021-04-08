@@ -9,8 +9,6 @@ class InterceptPage(QtWidgets.QWidget):
         self.ui = Ui_InterceptPage()
         self.ui.setupUi(self)
 
-        self.__set_buttons_enabled(False)
-
         # Connect buttons:
         self.ui.forwardButton.clicked.connect(self.forward_button_clicked)
         self.ui.forwardInterceptButton.clicked.connect(self.forward_intercept_button_clicked)
@@ -19,9 +17,8 @@ class InterceptPage(QtWidgets.QWidget):
 
         # Set enabled/disabled:
         # self.ui.enabledButton.setCheckable(True)
-        # intercept_enabled = Setting.intercept_enabled()
-        self.set_enabled(True)
-        self.__set_buttons_enabled(True)
+        self.__set_enabled(False)
+        self.__set_buttons_enabled(False)
         # self.ui.enabledButton.setDown(intercept_enabled)
 
         self.intercept_queue = InterceptQueue()
@@ -58,32 +55,12 @@ class InterceptPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def enabled_button_clicked(self):
-        # new_value = not self.intercept_enabled
-        print('[InterceptPage] forwarding all requests')
-        self.__clear_request()
-        self.intercept_queue.forward_all()
-
-    def __clear_request(self):
-        self.intercepted_request = None
-        self.ui.interceptTitle.setText("Intercepted Request:")
-        self.ui.headers.set_headers(None)
-        self.ui.headers.set_header_line('')
-        self.ui.bodyText.setPlainText("")
-        self.__set_buttons_enabled(False)
-
-    def __set_buttons_enabled(self, enabled):
-        self.ui.forwardButton.setEnabled(enabled)
-        self.ui.forwardInterceptButton.setEnabled(enabled)
-        self.ui.dropButton.setEnabled(enabled)
-
-    def set_enabled(self, intercept_enabled):
-        self.intercept_enabled = intercept_enabled
-
-        if intercept_enabled is True:
-            self.ui.enabledButton.setText('Disable Intercept')
-        else:
-            self.ui.enabledButton.setText('Enable Intercept')
+        if self.intercept_enabled:
             self.__clear_request()
+            self.intercept_queue.forward_all()
+
+        self.intercept_queue.set_enabled(not self.intercept_enabled)
+        self.__set_enabled(not self.intercept_enabled)
 
     # Private methods
 
@@ -105,3 +82,25 @@ class InterceptPage(QtWidgets.QWidget):
 
         reloaded_flow = self.intercepted_flow.reload()
         self.intercept_queue.forward_flow(reloaded_flow, intercept_response)
+
+    def __clear_request(self):
+        self.intercepted_request = None
+        self.ui.interceptTitle.setText("Intercepted Request:")
+        self.ui.headers.set_headers(None)
+        self.ui.headers.set_header_line('')
+        self.ui.bodyText.setPlainText("")
+        self.__set_buttons_enabled(False)
+
+    def __set_enabled(self, intercept_enabled):
+        self.intercept_enabled = intercept_enabled
+
+        if intercept_enabled is True:
+            self.ui.enabledButton.setText('Disable Intercept')
+        else:
+            self.ui.enabledButton.setText('Enable Intercept')
+            self.__clear_request()
+
+    def __set_buttons_enabled(self, enabled):
+        self.ui.forwardButton.setEnabled(enabled)
+        self.ui.forwardInterceptButton.setEnabled(enabled)
+        self.ui.dropButton.setEnabled(enabled)

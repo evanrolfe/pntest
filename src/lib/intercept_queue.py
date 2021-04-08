@@ -38,9 +38,11 @@ class InterceptQueue(QtCore.QObject):
         self.__pop_queue_and_await_next_decision()
 
     def forward_all(self):
-        client_ids = list(set([f.client_id for f in self.queue]))
-        self.process_manager.forward_all(client_ids)
+        self.process_manager.forward_all()
         self.queue = []
+
+    def set_enabled(self, enabled):
+        self.process_manager.set_enabled(enabled)
 
     # Private Methods
 

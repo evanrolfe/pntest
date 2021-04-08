@@ -251,6 +251,11 @@ QPushButton:pressed {
   background-color: $bg-dark;
 }
 
+QPushButton:disabled {
+  background-color: $bg-mid;
+  color: $border-light;
+}
+
 QPushButton#toggleFuzzTableButton {
   background-color: $bg-dark;
   min-width: 10px;
