@@ -1,6 +1,6 @@
 import asyncio
-# import os
-# import signal
+import os
+import signal
 from sys import argv
 import zmq.asyncio
 import threading
@@ -42,28 +42,29 @@ poll = zmq.Poller()
 poll.register(socket, zmq.POLLIN)
 
 while True:
-    message_raw = socket.recv()
-    message = json.loads(message_raw)
+    sockets = dict(poll.poll(1000))
 
-    if message['type'] in ['forward', 'forward_and_intercept']:
-        proxy_events.forward_flow(message)
-    elif message['type'] == 'drop':
-        proxy_events.drop_flow(message)
-    elif message['type'] == 'forward_all':
-        proxy_events.forward_all()
-    elif message['type'] == 'enable_intercept':
-        proxy_events.set_intercept_enabled(message['value'])
-    elif message['type'] == 'poll':
-        # print(f'Received poll at {datetime.datetime.now().time()}')
-        last_poll_at = int(time.time())
+    diff = int(time.time()) - last_poll_at
+    # If the src/__main__.py process has stopped, then the proxy should kill itself
+    if diff >= TIMEOUT_AFTER_SECONDS_NO_POLL:
+        print(f'[Proxy] last poll was {diff} secs ago! Shutting down..')
+        os.kill(os.getpid(), signal.SIGTERM)
 
-    # sockets = dict(poll.poll(1000))
-    # if sockets:
-    # else:
-    #     diff = int(time.time()) - last_poll_at
-    #     # If the src/__main__.py process has stopped, then the proxy should kill itself
-    #     if diff >= TIMEOUT_AFTER_SECONDS_NO_POLL:
-    #         print(f'[Proxy] last poll was {diff} secs ago! Shutting down..')
-    #         os.kill(os.getpid(), signal.SIGTERM)
+    if sockets:
+        message_raw = socket.recv()
+        message = json.loads(message_raw)
+
+        if message['type'] in ['forward', 'forward_and_intercept']:
+            proxy_events.forward_flow(message)
+        elif message['type'] == 'drop':
+            proxy_events.drop_flow(message)
+        elif message['type'] == 'forward_all':
+            proxy_events.forward_all()
+        elif message['type'] == 'enable_intercept':
+            proxy_events.set_intercept_enabled(message['value'])
+        elif message['type'] == 'poll':
+            # print(f'Received poll at {datetime.datetime.now().time()}')
+            last_poll_at = int(time.time())
+
 
 proxy_thread.join()

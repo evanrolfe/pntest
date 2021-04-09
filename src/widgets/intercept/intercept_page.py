@@ -43,6 +43,8 @@ class InterceptPage(QtWidgets.QWidget):
             self.ui.headers.set_header_line(flow.response.get_header_line_no_http_version())
             self.ui.bodyText.setPlainText(flow.response.content)
 
+            self.ui.forwardInterceptButton.setEnabled(False)
+
         else:
             self.ui.interceptTitle.setText(f"Intercepted HTTP Request: {flow.request.method} {flow.request.get_url()}")
             self.ui.headers.set_headers(flow.request.get_headers())

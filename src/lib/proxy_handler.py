@@ -31,29 +31,32 @@ class ProxyZmqServer(QtCore.QObject):
         poll = zmq.Poller()
         poll.register(self.socket, zmq.POLLIN)
 
-        print('[ProxyZmqServer] loop starting...')
-        while True:
-            try:
-                identity = self.socket.recv()
-                message = self.socket.recv_string()
-                # print(f'[ProxyZmqServer] Received {message} from {identity}')
-                self.client_ids.add(int(identity))
-                self.handle_message(message)
-            except:  # noqa
-                exctype, value = sys.exc_info()[:2]
-                self.__show_error_box(f'{exctype}: {value}')
-                pass
-            # sockets = dict(poll.poll(1000))
-            # if sockets:
-            # else:
-            #     # print(f'[ProxyZmqServer] polling client_ids {list(self.client_ids)}')
-            #     print('[ProxyZmqServer] polling')
-            #     for client_id in list(self.client_ids):
-            #         message = {'type': 'poll'}
-            #         self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
+        print('[ProxyZmqServer] starting...')
+        self.should_continue = True
+        while self.should_continue:
+            sockets = dict(poll.poll(1000))
+
+            # print(f'[ProxyZmqServer] polling client_ids {list(self.client_ids)}')
+            for client_id in list(self.client_ids):
+                message = {'type': 'poll'}
+                self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
+
+            if sockets:
+                try:
+                    identity = self.socket.recv()
+                    message = self.socket.recv_string()
+                    # print(f'[ProxyZmqServer] Received {message} from {identity}')
+                    self.client_ids.add(int(identity))
+                    self.handle_message(message)
+                except Exception:  # noqa
+                    exctype, value = sys.exc_info()[:2]
+                    # self.__show_error_box(f'{exctype}: {value}')
+                    print(f'{exctype}: {value}')
+                    pass
 
     def stop(self):
         print('[ProxyZmqServer] stopping...')
+        self.should_continue = False
         self.socket.close()
         self.context.term()
 
@@ -90,6 +93,9 @@ class ProxyZmqServer(QtCore.QObject):
         http_response.save()
 
         http_flow = HttpFlow.where('uuid', '=', response_state['flow_uuid']).first()
+        if http_flow is None:
+            return
+
         http_flow.response_id = http_response.id
         http_flow.save()
 
