@@ -189,7 +189,6 @@ class MainWindow(QtWidgets.QMainWindow):
         print(f'Opening {db_path}')
         database = Database.get_instance()
         database.reload_with_new_database(db_path)
-        self.backend.reload_with_new_database(db_path)
 
         self.reload()
 
@@ -211,8 +210,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         database.load_new_database(new_db_path)
         self.reload()
-
-        # self.backend.reload_with_new_database(file_path)
 
     def setup_menu_actions(self):
         self.ui.actionOpen.triggered.connect(self.open_project)

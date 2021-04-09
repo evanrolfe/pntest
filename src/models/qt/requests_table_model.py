@@ -1,6 +1,5 @@
 from PySide2 import QtCore
 
-# from lib.backend import Backend
 from models.data.http_flow import HttpFlow
 
 class RequestsTableModel(QtCore.QAbstractTableModel):

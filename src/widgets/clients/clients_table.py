@@ -37,8 +37,6 @@ class ClientsTable(QtWidgets.QWidget):
         self.ui.clientsTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.ui.clientsTable.customContextMenuRequested.connect(self.right_clicked)
 
-        # self.backend = Backend.get_instance()
-
     def setTableModel(self, model):
         self.table_model = model
         self.ui.clientsTable.setModel(model)

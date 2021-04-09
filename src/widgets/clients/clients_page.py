@@ -2,7 +2,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.clients.ui_clients_page import Ui_ClientsPage
 
-# from lib.backend import Backend
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
 

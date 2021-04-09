@@ -9,7 +9,6 @@ from lib.stylesheet_loader import StyleheetLoader
 from widgets.main_window import MainWindow
 
 THEME = 'dark'
-BACKEND_PATH_RELATIVE = 'include/pntest-core'
 
 # Get absolute path to resource, works for dev and for PyInstaller
 def resource_path(app_path, relative_path):
@@ -22,13 +21,11 @@ def main():
 
     app_path = pathlib.Path(__file__).parent.parent.absolute()
     src_path = os.path.join(app_path, 'src')
-    backend_path = resource_path(app_path, BACKEND_PATH_RELATIVE)
     data_path = resource_path(app_path, 'include')
     tmp_db_path = resource_path(app_path, 'pntest-tmp.db')
     style_dir_path = resource_path(src_path, 'style')
 
     print(f'[Gui] App path: {app_path}')
-    print(f'[Gui] Backend path: {backend_path}')
     print(f'[Gui] Data path: {data_path}')
     print(f'[Gui] DB path: {tmp_db_path}')
     print(f'[Gui] style dir path: {style_dir_path}')
