@@ -2,7 +2,7 @@ from orator import Model
 from PySide2 import QtGui
 
 from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest
+# TODO: Remove these two models:
 from models.data.editor_request import EditorRequest
 from models.data.network_request import NetworkRequest
 

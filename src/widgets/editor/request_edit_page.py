@@ -1,10 +1,12 @@
 from PySide2 import QtWidgets, QtCore, QtGui
+from urllib.parse import urlsplit
 
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
-from lib.http_request import HttpRequest
+from lib.http_request import HttpRequest as HttpRequestLib
+from models.data.http_response import HttpResponse
 
 class RequestEditPage(QtWidgets.QWidget):
     form_input_changed = QtCore.Signal(bool)
@@ -85,11 +87,24 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def response_received(self, response):
         # Display response headers and body
-        self.flow.request.response_body = response.text
-        self.flow.request.response_status = response.status_code
-        self.flow.request.response_status_message = response.reason
-        self.flow.request.set_response_headers(dict(response.headers))
-        self.ui.flowView.set_response(self.request)
+        response_db = HttpResponse()
+        response_db.content = response.text
+        response_db.status_code = response.status_code
+        response_db.reason = response.reason
+        response_db.set_headers(dict(response.headers))
+        if response.raw.version == 11:
+            response_db.http_version = 'HTTP/1.1'
+        elif response.raw.version == 10:
+            response_db.http_version = 'HTTP/1.0'
+
+        response_db.save()
+
+        self.flow.response_id = response_db.id
+        self.flow.save()
+        self.flow = self.flow.reload()
+
+        self.update_request_with_values_from_form()
+        self.ui.flowView.set_response(self.flow)
 
     @QtCore.Slot()
     def request_error(self, error):
@@ -111,7 +126,7 @@ class RequestEditPage(QtWidgets.QWidget):
         url = self.ui.urlInput.text()
         headers = self.ui.flowView.get_request_headers()
         payload = self.ui.flowView.get_request_payload()
-        http_request = HttpRequest(method, url, headers, payload)
+        http_request = HttpRequestLib(method, url, headers, payload)
 
         # Pass the function to execute
         # Any other args, kwargs are passed to the run function
@@ -121,6 +136,19 @@ class RequestEditPage(QtWidgets.QWidget):
         self.worker.signals.finished.connect(self.ui.flowView.hide_loader)
 
         self.threadpool.start(self.worker)
+
+    # Get the request values (method, url, header, content) from the form and set them on the
+    # HttpRequest object, but dont save it
+    def update_request_with_values_from_form(self):
+        method = self.ui.methodInput.currentText()
+        url = self.ui.urlInput.text()
+        url_data = urlsplit(url)
+
+        self.flow.request.method = method
+        self.flow.request.host = url_data.hostname
+        if url_data.port:
+            self.flow.request.port = url_data.port
+        self.flow.request.path = url_data.path  # TODO: Should this include url_data.query?
 
     @QtCore.Slot()
     def cancel_request(self):

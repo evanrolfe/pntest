@@ -24,6 +24,9 @@ class HttpResponse(Model):
         attributes['headers'] = json.loads(attributes['headers'])
         return attributes
 
+    def set_headers(self, headers):
+        self.headers = json.dumps(headers)
+
     def get_headers(self):
         if self.headers is None:
             return None
