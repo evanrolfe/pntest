@@ -1,7 +1,6 @@
 import re
 import os
 import logging
-from PySide2 import QtSql
 from orator import DatabaseManager, Model
 
 from models.data.capture_filter import CaptureFilter
@@ -33,15 +32,7 @@ class Database:
     def __init__(self, db_path):
         self.db_path = db_path
 
-        config = {
-            'default': {
-                'driver': 'sqlite',
-                'database': db_path,
-                'log_queries': True
-            }
-        }
-        self.orator_db = DatabaseManager(config)
-        Model.set_connection_resolver(self.orator_db)
+        self.connect_to_db()
 
         # Virtually private constructor.
         if Database.__instance is not None:
@@ -52,39 +43,26 @@ class Database:
 
     def delete_existing_db(self):
         if os.path.isfile(self.db_path):
-            print('[Frontend] found existing db, deleting.')
+            print('[Gui] found existing db, deleting.')
             os.remove(self.db_path)
 
     def load_or_create(self):
-        self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-        self.db.setDatabaseName(self.db_path)
-        db_result = self.db.open()
-
-        if db_result is True:
-            print(f'[Frontend] Loaded database from {self.db_path}')
-        else:
-            print(
-                f'[Frontend] ERROR could not load database from {self.db_path}')
-
-        db_tables = []
-        query = QtSql.QSqlQuery("SELECT name FROM sqlite_master WHERE type='table'")
-        query.exec_()
-        while query.next():
-            db_tables.append(query.value(0))
+        db_tables = self.db.select("SELECT name FROM sqlite_master WHERE type='table'")
 
         if (len(db_tables) != NUM_TABLES):
-            print(f'[Frontend] database not up-to-date ({len(db_tables)} tables), importing the schema...')
+            print(f'[Gui] database not up-to-date ({len(db_tables)} tables), importing the schema...')
             self.import_schema()
 
-    def load_orator_db(self):
+    def connect_to_db(self):
         config = {
             'default': {
                 'driver': 'sqlite',
-                'database': self.db_path
+                'database': self.db_path,
+                'log_queries': ENABLE_QUERY_LOGGING
             }
         }
-        self.orator_db = DatabaseManager(config)
-        Model.set_connection_resolver(self.orator_db)
+        self.db = DatabaseManager(config)
+        Model.set_connection_resolver(self.db)
 
     def import_schema(self):
         query_sql = re.sub(r'\r\n|\n|\r', '', SCHEMA_SQL)
@@ -93,13 +71,7 @@ class Database:
         queries = list(filter(None, queries))  # Remove empty strings
 
         for query_str in queries:
-            query = QtSql.QSqlQuery()
-            query.prepare(query_str)
-            result = query.exec_()
-
-            if result is False:
-                print(query_str)
-                print(query.lastError())
+            self.db.insert(query_str)
 
         CaptureFilter.create_defaults()
         Setting.create_defaults()
@@ -108,13 +80,13 @@ class Database:
         self.close()
         self.db_path = new_db_path
         self.load_or_create()
-        self.load_orator_db()
+        self.connect_to_db()
 
     def load_new_database(self, new_db_path):
         self.db_path = new_db_path
         self.load_or_create()
-        self.load_orator_db()
+        self.connect_to_db()
 
     def close(self):
         self.db.close()
-        self.orator_db.purge()
+        self.db.purge()

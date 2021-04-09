@@ -63,9 +63,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup_menu_actions()
         self.restore_layout_state()
 
-        # For testing purposes:
-        self.ui.stackedWidget.setCurrentWidget(self.editor_page)
-
     # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
     def set_process_manager(self, process_manager):
         self.process_manager = process_manager
