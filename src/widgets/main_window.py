@@ -56,12 +56,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup_sidebar()
 
         # Shortcut for closing app
-        self.network_page.send_request_to_editor.connect(self.editor_page.send_request_to_editor)
-        self.network_page.send_request_to_editor.connect(self.show_editor_page)
+        self.network_page.send_flow_to_editor.connect(self.editor_page.send_flow_to_editor)
+        self.network_page.send_flow_to_editor.connect(self.show_editor_page)
 
         # Menubar:
         self.setup_menu_actions()
         self.restore_layout_state()
+
+        # For testing purposes:
+        self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 
     # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
     def set_process_manager(self, process_manager):

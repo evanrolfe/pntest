@@ -79,6 +79,17 @@ class HttpFlow(Model):
             self.modified()
         ]
 
+    def duplicate(self):
+        new_request = self.request.duplicate()
+        new_request.save()
+
+        new_flow = HttpFlow()
+        new_flow.type = HttpFlow.TYPE_EDITOR
+        new_flow.request_id = new_request.id
+        new_flow.save()
+
+        return new_flow
+
     def modify_request(self, modified_method, modified_path, modified_headers, modified_content):
         original_request = self.request().first()
         original_state = original_request.get_state()
@@ -175,3 +186,7 @@ class HttpFlow(Model):
             return host.split(':')
         else:
             return [host, None]
+
+    def is_editable(self):
+        # Note: this would be false for navigation requests, which we dont have at the moment
+        return True

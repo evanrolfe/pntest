@@ -23,6 +23,22 @@ class HttpRequest(Model):
 
         return request
 
+    def duplicate(self):
+        new_request = HttpRequest()
+
+        new_request.http_version = self.http_version
+        new_request.headers = self.headers
+        new_request.content = self.content
+        new_request.trailers = self.trailers
+        new_request.host = self.host
+        new_request.port = self.port
+        new_request.method = self.method
+        new_request.scheme = self.scheme
+        new_request.authority = self.authority
+        new_request.path = self.path
+
+        return new_request
+
     def set_blank_values_for_editor(self):
         self.http_version = 'HTTP/1.1'
         self.headers = None

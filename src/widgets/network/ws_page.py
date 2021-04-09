@@ -8,7 +8,6 @@ from models.data.websocket_message import WebsocketMessage
 
 class WsPage(QtWidgets.QWidget):
     toggle_page = QtCore.Signal()
-    send_request_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         super(WsPage, self).__init__(*args, **kwargs)
@@ -25,7 +24,6 @@ class WsPage(QtWidgets.QWidget):
         self.ui.messagesTable.row_selected.connect(self.select_message)
         self.ui.messagesTable.delete_rows.connect(self.delete_messages)
         # self.ui.messagesTable.search_text_changed.connect(self.search_requests)
-        # self.ui.messagesTable.send_request_to_editor.connect(self.send_request_to_editor)
 
         self.restore_layout_state()
 

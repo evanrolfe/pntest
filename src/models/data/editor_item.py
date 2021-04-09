@@ -2,9 +2,6 @@ from orator import Model
 from PySide2 import QtGui
 
 from models.data.http_flow import HttpFlow
-# TODO: Remove these two models:
-from models.data.editor_request import EditorRequest
-from models.data.network_request import NetworkRequest
 
 class EditorItem(Model):
     __table__ = 'editor_items'
@@ -51,24 +48,13 @@ class EditorItem(Model):
         super(EditorItem, self).save(*args, **kwargs)
 
     @classmethod
-    def create_from_network_request(cls, network_request):
-        # Reload the request from the database:
-        network_request = NetworkRequest.find(network_request.id)
-
-        editor_request = EditorRequest()
-        editor_request.method = network_request.method
-        editor_request.url = network_request.get_url()
-        editor_request.request_headers = network_request.request_headers
-        editor_request.request_payload = network_request.request_payload
-        editor_request.overwrite_calculated_headers()
-        editor_request.save()
-
+    def create_for_http_flow(cls, flow):
         editor_item = EditorItem()
         editor_item.name = 'new request'
-        editor_item.item_type = 'request'
-        editor_item.item_id = editor_request.id
+        editor_item.item_type = cls.TYPE_HTTP_FLOW
+        editor_item.item_id = flow.id
         editor_item.save()
-        print('Saved')
+
         return editor_item
 
     def icon(self):

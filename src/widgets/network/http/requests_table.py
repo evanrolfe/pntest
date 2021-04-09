@@ -4,12 +4,13 @@ from views._compiled.network.http.ui_requests_table import Ui_RequestsTable
 from widgets.network.http.display_filters import DisplayFilters
 from widgets.network.http.capture_filters import CaptureFilters
 from widgets.qt.row_style_delegate import RowStyleDelegate
+from models.data.http_flow import HttpFlow
 
 class RequestsTable(QtWidgets.QWidget):
     request_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
     delete_requests = QtCore.Signal(list)
     search_text_changed = QtCore.Signal(str)
-    send_request_to_editor = QtCore.Signal(object)
+    send_flow_to_editor = QtCore.Signal(HttpFlow)
 
     def __init__(self, *args, **kwargs):
         super(RequestsTable, self).__init__(*args, **kwargs)
@@ -82,7 +83,7 @@ class RequestsTable(QtWidgets.QWidget):
     @QtCore.Slot()
     def right_clicked(self, position):
         index = self.ui.requestsTable.indexAt(position)
-        request = self.table_model.requests[index.row()]
+        flow = self.table_model.flows[index.row()]
 
         menu = QtWidgets.QMenu()
 
@@ -91,14 +92,14 @@ class RequestsTable(QtWidgets.QWidget):
             menu.addAction(action)
             action.triggered.connect(lambda: self.delete_requests.emit(self.selected_request_ids))
         else:
-            if request.is_editable():
+            if flow.is_editable():
                 send_action = QtWidgets.QAction("Send to editor")
                 menu.addAction(send_action)
-                send_action.triggered.connect(lambda: self.send_request_to_editor.emit(request))
+                send_action.triggered.connect(lambda: self.send_flow_to_editor.emit(flow))
 
             action = QtWidgets.QAction("Delete request")
             menu.addAction(action)
-            action.triggered.connect(lambda: self.delete_requests.emit([request.id]))
+            action.triggered.connect(lambda: self.delete_requests.emit([flow.id]))
 
         menu.exec_(self.sender().mapToGlobal(position))
 

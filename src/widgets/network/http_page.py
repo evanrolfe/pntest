@@ -9,7 +9,7 @@ from models.data.http_flow import HttpFlow
 
 class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.Signal()
-    send_request_to_editor = QtCore.Signal(object)
+    send_flow_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         super(HttpPage, self).__init__(*args, **kwargs)
@@ -24,7 +24,7 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.requestsTableWidget.request_selected.connect(self.select_request)
         self.ui.requestsTableWidget.delete_requests.connect(self.delete_requests)
         self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
-        self.ui.requestsTableWidget.send_request_to_editor.connect(self.send_request_to_editor)
+        self.ui.requestsTableWidget.send_flow_to_editor.connect(self.send_flow_to_editor)
 
         self.ui.toggleButton.clicked.connect(self.toggle_page)
         self.ui.requestViewWidget.set_show_rendered(True)

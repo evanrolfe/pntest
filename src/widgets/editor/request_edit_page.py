@@ -125,7 +125,12 @@ class RequestEditPage(QtWidgets.QWidget):
         self.flow.request.host = url_data.hostname
         if url_data.port:
             self.flow.request.port = url_data.port
-        self.flow.request.path = url_data.path  # TODO: Should this include url_data.query?
+
+        if url_data.query == '':
+            self.flow.request.path = url_data.path
+        else:
+            self.flow.request.path = url_data.path + '?' + url_data.query
+
         self.flow.request.content = self.ui.flowView.get_request_payload()
         self.flow.request.set_headers(headers)
 
