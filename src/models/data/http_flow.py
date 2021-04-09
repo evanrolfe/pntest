@@ -8,9 +8,25 @@ class HttpFlow(Model):
     __table__ = 'http_flows'
     __fillable__ = ['*']
 
+    TYPE_PROXY = 'proxy'
+    TYPE_EDITOR = 'editor'
+
     @classmethod
     def find_for_table(cls):
         return cls.with_('request', 'response').order_by('id', 'desc').get()
+
+    @classmethod
+    def create_for_editor(cls):
+        request = HttpRequest()
+        request.set_blank_values_for_editor()
+        request.save()
+
+        flow = HttpFlow()
+        flow.type = HttpFlow.TYPE_EDITOR
+        flow.request_id = request.id
+        flow.save()
+
+        return flow
 
     @has_one('id', 'request_id')
     def request(self):

@@ -79,15 +79,15 @@ class Ui_RequestEditPage(object):
         self.layout2 = QHBoxLayout()
         self.layout2.setObjectName(u"layout2")
         self.layout2.setContentsMargins(0, 0, 0, 0)
-        self.requestViewWidget = FlowView(RequestEditPage)
-        self.requestViewWidget.setObjectName(u"requestViewWidget")
+        self.flowView = FlowView(RequestEditPage)
+        self.flowView.setObjectName(u"flowView")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.requestViewWidget.sizePolicy().hasHeightForWidth())
-        self.requestViewWidget.setSizePolicy(sizePolicy1)
+        sizePolicy1.setHeightForWidth(self.flowView.sizePolicy().hasHeightForWidth())
+        self.flowView.setSizePolicy(sizePolicy1)
 
-        self.layout2.addWidget(self.requestViewWidget)
+        self.layout2.addWidget(self.flowView)
 
 
         self.verticalLayout.addLayout(self.layout2)

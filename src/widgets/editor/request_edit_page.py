@@ -16,7 +16,9 @@ class RequestEditPage(QtWidgets.QWidget):
         super(RequestEditPage, self).__init__()
 
         self.editor_item = editor_item
-        self.request = self.editor_item.item()
+        self.flow = self.editor_item.item()
+        self.request = self.flow.request
+
         self.ui = Ui_RequestEditPage()
         self.ui.setupUi(self)
 
@@ -28,11 +30,11 @@ class RequestEditPage(QtWidgets.QWidget):
         self.restore_layout_state()
 
         self.ui.toggleFuzzTableButton.clicked.connect(self.toggle_fuzz_table)
-        self.ui.sendButton.clicked.connect(self.ui.requestViewWidget.show_loader)
+        self.ui.sendButton.clicked.connect(self.ui.flowView.show_loader)
         self.ui.sendButton.clicked.connect(self.send_request_async)
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
-        self.ui.requestViewWidget.set_show_rendered(False)
+        self.ui.flowView.set_show_rendered(False)
 
         self.show_request()
         self.request_is_modified = False
@@ -59,35 +61,35 @@ class RequestEditPage(QtWidgets.QWidget):
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
     def show_request(self):
-        self.ui.urlInput.setText(self.request.url)
-        self.set_method_on_form(self.request.method)
+        self.ui.urlInput.setText(self.flow.request.get_url())
+        self.set_method_on_form(self.flow.request.method)
 
-        self.ui.requestViewWidget.set_request(self.request)
+        self.ui.flowView.set_flow(self.flow)
 
     @QtCore.Slot()
     def save_request(self):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        headers = self.ui.requestViewWidget.get_request_headers()
+        headers = self.ui.flowView.get_request_headers()
 
-        self.request.url = url
-        self.request.method = method
-        self.request.request_payload = self.ui.requestViewWidget.get_request_payload()
-        self.request.set_request_headers(headers)
-        self.request.save()
+        self.flow.request.url = url
+        self.flow.request.method = method
+        self.flow.request.request_payload = self.ui.flowView.get_request_payload()
+        self.flow.request.set_request_headers(headers)
+        self.flow.request.save()
 
         self.form_input_changed.emit(False)
         self.request_saved.emit()
-        print(f'saving {method} {url} to request {self.request.id}')
+        print(f'saving {method} {url} to request {self.flow.request.id}')
 
     @QtCore.Slot()
     def response_received(self, response):
         # Display response headers and body
-        self.request.response_body = response.text
-        self.request.response_status = response.status_code
-        self.request.response_status_message = response.reason
-        self.request.set_response_headers(dict(response.headers))
-        self.ui.requestViewWidget.set_response(self.request)
+        self.flow.request.response_body = response.text
+        self.flow.request.response_status = response.status_code
+        self.flow.request.response_status_message = response.reason
+        self.flow.request.set_response_headers(dict(response.headers))
+        self.ui.flowView.set_response(self.request)
 
     @QtCore.Slot()
     def request_error(self, error):
@@ -103,12 +105,12 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def send_request_async(self):
         print('Sending the request!')
-        self.ui.requestViewWidget.show_loader()
+        self.ui.flowView.show_loader()
 
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        headers = self.ui.requestViewWidget.get_request_headers()
-        payload = self.ui.requestViewWidget.get_request_payload()
+        headers = self.ui.flowView.get_request_headers()
+        payload = self.ui.flowView.get_request_payload()
         http_request = HttpRequest(method, url, headers, payload)
 
         # Pass the function to execute
@@ -116,14 +118,14 @@ class RequestEditPage(QtWidgets.QWidget):
         self.worker = BackgroundWorker(lambda: http_request.send())
         self.worker.signals.result.connect(self.response_received)
         self.worker.signals.error.connect(self.request_error)
-        self.worker.signals.finished.connect(self.ui.requestViewWidget.hide_loader)
+        self.worker.signals.finished.connect(self.ui.flowView.hide_loader)
 
         self.threadpool.start(self.worker)
 
     @QtCore.Slot()
     def cancel_request(self):
         self.worker.kill()
-        self.ui.requestViewWidget.hide_loader()
+        self.ui.flowView.hide_loader()
 
     @QtCore.Slot()
     def form_field_changed(self):
@@ -132,8 +134,8 @@ class RequestEditPage(QtWidgets.QWidget):
             'url': self.ui.urlInput.text()
         }
         original_request = {
-            'method': self.request.method or self.METHODS[0],
-            'url': self.request.url or ''
+            'method': self.flow.request.method or self.METHODS[0],
+            'url': self.flow.request.get_url() or ''
         }
 
         self.request_is_modified = (request_on_form != original_request)

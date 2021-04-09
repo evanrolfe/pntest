@@ -80,7 +80,7 @@ class ProxyZmqServer(QtCore.QObject):
         http_flow.uuid = request_state['flow_uuid']
         http_flow.client_id = request_state['client_id']
         http_flow.request_id = http_request.id
-        http_flow.type = 'proxy'
+        http_flow.type = HttpFlow.TYPE_PROXY
         http_flow.save()
 
         self.signals.flow_created.emit(http_flow)

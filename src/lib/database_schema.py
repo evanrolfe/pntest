@@ -124,10 +124,10 @@ CREATE TABLE IF NOT EXISTS crawls(
 CREATE TABLE IF NOT EXISTS http_requests(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     http_version TEXT NOT NULL,
-    headers TEXT NOT NULL,
+    headers TEXT,
     content TEXT,
     trailers TEXT,
-    timestamp_start REAL NOT NULL,
+    timestamp_start REAL,
     timestamp_end REAL,
     host TEXT NOT NULL,
     port INTEGER NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS http_requests(
     scheme TEXT NOT NULL,
     authority TEXT,
     path TEXT NOT NULL,
-    created_at INTEGER NOT NULL,
+    created_at INTEGER,
     updated_at INTEGER
 );
 
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS http_responses(
 
 CREATE TABLE IF NOT EXISTS http_flows(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT NOT NULL,
+    uuid TEXT,
     client_id INTEGER,
     type TEXT NOT NULL,
     request_id INTEGER,

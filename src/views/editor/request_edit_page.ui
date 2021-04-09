@@ -117,7 +117,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="FlowView" name="requestViewWidget" native="true">
+        <widget class="FlowView" name="flowView" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>

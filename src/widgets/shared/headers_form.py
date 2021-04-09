@@ -48,6 +48,10 @@ class HeadersForm(QtWidgets.QWidget):
         else:
             self.ui.headerLine.setVisible(False)
 
+    def set_default_headers(self):
+        headers = self.DEFAULT_HEADERS[:]
+        self.table_model.set_headers(headers)
+
     def set_headers(self, headers):
         if headers is None:
             # headers = self.DEFAULT_HEADERS[:]

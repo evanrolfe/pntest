@@ -1,11 +1,16 @@
 from orator import Model
 from PySide2 import QtGui
 
+from models.data.http_flow import HttpFlow
+from models.data.http_request import HttpRequest
 from models.data.editor_request import EditorRequest
 from models.data.network_request import NetworkRequest
 
 class EditorItem(Model):
     __table__ = 'editor_items'
+
+    TYPE_HTTP_FLOW = 'http_flow'
+    TYPE_DIR = 'dir'
 
     # NOTE: This only works for type=request
     def duplicate(self):
@@ -33,17 +38,15 @@ class EditorItem(Model):
         self.delete()
 
     def item(self):
-        if self.item_type == 'request':
-            return EditorRequest.where('id', '=', self.item_id).first()
+        if self.item_type == self.TYPE_HTTP_FLOW:
+            return HttpFlow.where('id', '=', self.item_id).first()
 
     def save(self, *args, **kwargs):
         item_id = getattr(self, 'item_id', None)
 
-        if self.item_type == 'request' and item_id is None:
-            request = EditorRequest()
-            request.save()
-            print(f'Created request id {request.id}')
-            self.item_id = request.id
+        if self.item_type == self.TYPE_HTTP_FLOW and item_id is None:
+            flow = HttpFlow.create_for_editor()
+            self.item_id = flow.id
 
         super(EditorItem, self).save(*args, **kwargs)
 
@@ -69,10 +72,9 @@ class EditorItem(Model):
         return editor_item
 
     def icon(self):
-        if self.item_type == 'request':
+        if self.item_type == self.TYPE_HTTP_FLOW:
             icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
-
-            method = self.item().method.lower()
+            method = self.item().request.method.lower()
             if method not in icon_methods:
                 method = 'other'
 

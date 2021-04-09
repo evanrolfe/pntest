@@ -23,6 +23,15 @@ class HttpRequest(Model):
 
         return request
 
+    def set_blank_values_for_editor(self):
+        self.http_version = 'HTTP/1.1'
+        self.headers = None
+        self.host = ''
+        self.port = 80
+        self.method = 'GET'
+        self.scheme = 'http'
+        self.path = ''
+
     def get_state(self):
         attributes = self.serialize()
         attributes['headers'] = json.loads(attributes['headers'])
