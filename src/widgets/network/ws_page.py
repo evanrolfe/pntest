@@ -80,7 +80,7 @@ class WsPage(QtWidgets.QWidget):
 
     # @QtCore.Slot()
     # def search_requests(self, search_text):
-    #     # requests = NetworkRequest.search({'search': search_text})
+    #     # requests = HttpFlow.search({'search': search_text})
     #     # self.table_model.requests = requests
     #     # self.table_model.refresh()
     #     self.request_data = RequestData()

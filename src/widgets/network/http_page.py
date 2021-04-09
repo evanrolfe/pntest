@@ -4,7 +4,6 @@ from views._compiled.network.ui_http_page import Ui_HttpPage
 
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
-from models.data.network_request import NetworkRequest
 from models.data.http_flow import HttpFlow
 
 class HttpPage(QtWidgets.QWidget):
@@ -34,7 +33,7 @@ class HttpPage(QtWidgets.QWidget):
 
     def reload(self):
         self.ui.requestViewWidget.clear_request()
-        http_flows = NetworkRequest.find_for_table()
+        http_flows = HttpFlow.find_for_table()
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
@@ -82,7 +81,7 @@ class HttpPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def search_requests(self, search_text):
         return True
-        # requests = NetworkRequest.search({'search': search_text})
+        # requests = HttpFlow.search({'search': search_text})
         # self.table_model.requests = requests
         # self.table_model.refresh()
         # self.request_data = RequestData()

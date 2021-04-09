@@ -1,7 +1,7 @@
 from PySide2 import QtCore
 
 # from lib.backend import Backend
-from models.data.network_request import NetworkRequest
+from models.data.http_flow import HttpFlow
 
 class RequestsTableModel(QtCore.QAbstractTableModel):
     def __init__(self, flows, parent=None):
@@ -30,7 +30,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         row_index2 = self.get_index_of(request_ids[-1])
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        NetworkRequest.destroy(*request_ids)
+        HttpFlow.destroy(*request_ids)
         self.flows = list(filter(lambda r: r.id not in request_ids, self.flows))
         self.endRemoveRows()
 

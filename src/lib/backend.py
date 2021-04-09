@@ -2,7 +2,6 @@ import json
 from PySide2 import QtCore, QtWidgets
 import pendulum
 
-from models.request import Request
 from models.data.websocket_message import WebsocketMessage
 
 LIST_AVAILABLE_CLIENTS_COMMAND = b'{"command": "listAvailableClientTypes"}'
