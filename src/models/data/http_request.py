@@ -1,6 +1,8 @@
 import json
 from orator import Model
 
+from widgets.shared.headers_form import HeadersForm
+
 class HttpRequest(Model):
     __table__ = 'http_requests'
     __fillable__ = ['*']
@@ -22,22 +24,6 @@ class HttpRequest(Model):
         request.path = state['path']
 
         return request
-
-    def duplicate(self):
-        new_request = HttpRequest()
-
-        new_request.http_version = self.http_version
-        new_request.headers = self.headers
-        new_request.content = self.content
-        new_request.trailers = self.trailers
-        new_request.host = self.host
-        new_request.port = self.port
-        new_request.method = self.method
-        new_request.scheme = self.scheme
-        new_request.authority = self.authority
-        new_request.path = self.path
-
-        return new_request
 
     def set_blank_values_for_editor(self):
         self.http_version = 'HTTP/1.1'
@@ -74,3 +60,31 @@ class HttpRequest(Model):
             port = ''
 
         return f'{self.scheme}://{self.host}{port}{self.path}'
+
+    def duplicate(self):
+        new_request = HttpRequest()
+
+        new_request.http_version = self.http_version
+        new_request.headers = self.headers
+        new_request.content = self.content
+        new_request.trailers = self.trailers
+        new_request.host = self.host
+        new_request.port = self.port
+        new_request.method = self.method
+        new_request.scheme = self.scheme
+        new_request.authority = self.authority
+        new_request.path = self.path
+
+        return new_request
+
+    def overwrite_calculated_headers(self):
+        calc_text = HeadersForm.CALCULATED_TEXT
+        headers = self.get_headers()
+
+        if headers.get('Host'):
+            headers['Host'] = calc_text
+
+        if headers.get('Content-Length'):
+            headers['Content-Length'] = calc_text
+
+        self.set_headers(headers)

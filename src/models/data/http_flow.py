@@ -81,6 +81,7 @@ class HttpFlow(Model):
 
     def duplicate(self):
         new_request = self.request.duplicate()
+        new_request.overwrite_calculated_headers()
         new_request.save()
 
         new_flow = HttpFlow()
