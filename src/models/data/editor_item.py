@@ -9,15 +9,18 @@ class EditorItem(Model):
     TYPE_HTTP_FLOW = 'http_flow'
     TYPE_DIR = 'dir'
 
-    # NOTE: This only works for type=request
     def duplicate(self):
-        editor_request = self.item().duplicate()
-        editor_request.save()
+        if self.item_type != self.TYPE_HTTP_FLOW:
+            print('WARNING - cannot duplicate editor items which arent http_flows')
+            return
+
+        flow = self.item().duplicate()
+        flow.save()
 
         editor_item = EditorItem()
         editor_item.name = self.name
         editor_item.item_type = self.item_type
-        editor_item.item_id = editor_request.id
+        editor_item.item_id = flow.id
         return editor_item
 
     def children(self):
