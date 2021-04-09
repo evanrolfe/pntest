@@ -13,7 +13,7 @@ class HttpFlow(Model):
 
     @classmethod
     def find_for_table(cls):
-        return cls.with_('request', 'response').order_by('id', 'desc').get()
+        return cls.with_('request', 'response').where('type', '=', cls.TYPE_PROXY).order_by('id', 'desc').get()
 
     @classmethod
     def create_for_editor(cls):
