@@ -162,23 +162,6 @@ class HttpFlow(Model):
         websocket_message.content = modified_content
         websocket_message.save()
 
-    # Accepts a response from the requests package
-    def save_response_from_requests(self, response):
-        response_db = HttpResponse()
-        response_db.content = response.text
-        response_db.status_code = response.status_code
-        response_db.reason = response.reason
-        response_db.set_headers(dict(response.headers))
-        if response.raw.version == 11:
-            response_db.http_version = 'HTTP/1.1'
-        elif response.raw.version == 10:
-            response_db.http_version = 'HTTP/1.0'
-
-        response_db.save()
-
-        self.response_id = response_db.id
-        self.save()
-
     def reload(self):
         return HttpFlow.with_('request', 'response', 'websocket_messages').find(self.id)
 

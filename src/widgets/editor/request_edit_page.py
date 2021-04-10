@@ -6,6 +6,7 @@ from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
 from lib.http_request import HttpRequest as HttpRequestLib
+from models.data.http_response import HttpResponse
 
 class RequestEditPage(QtWidgets.QWidget):
     form_input_changed = QtCore.Signal(bool)
@@ -75,12 +76,9 @@ class RequestEditPage(QtWidgets.QWidget):
         self.request_saved.emit()
 
     @QtCore.Slot()
-    def response_received(self, response):
-        self.flow.save_response_from_requests(response)
-        self.flow = self.flow.reload()
-
-        self.update_request_with_values_from_form()
-        self.ui.flowView.set_response(self.flow)
+    def response_received(self, requests_response):
+        response = HttpResponse.from_requests_response(requests_response)
+        self.ui.flowView.set_response_from_editor(self.flow, response)
 
     @QtCore.Slot()
     def request_error(self, error):

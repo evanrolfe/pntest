@@ -96,6 +96,7 @@ class FlowView(QtWidgets.QWidget):
             self.ui.requestHeaders.set_default_headers()
         self.ui.requestPayload.set_value(request.content or '')
 
+    # Requires the flow,request and response to be saved to the DB (used by the network page)
     def set_response(self, flow):
         if self.show_modified_response and flow.response_modified():
             response = flow.response
@@ -113,6 +114,21 @@ class FlowView(QtWidgets.QWidget):
         # if self.show_rendered:
         #     self.ui.responseRendered.set_value(response_body_rendered or '')
         headers = flow.response.get_headers()
+        content_type = headers.get('Content-Type', '')
+        # mime_type = content_type.split(';')[0]
+
+        if 'html' in content_type:
+            self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
+        else:
+            self.ui.responseBodyPreview.setHtml('')
+
+    # This method does not need the response to be saved to the DB:
+    def set_response_from_editor(self, flow, response):
+        self.ui.responseHeaders.set_header_line(response.get_header_line())
+        self.ui.responseHeaders.set_headers(response.get_headers())
+        self.ui.responseRaw.set_value(response.content or '')
+
+        headers = response.get_headers()
         content_type = headers.get('Content-Type', '')
         # mime_type = content_type.split(';')[0]
 

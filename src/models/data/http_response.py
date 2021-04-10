@@ -19,6 +19,21 @@ class HttpResponse(Model):
 
         return response
 
+    @classmethod
+    def from_requests_response(cls, requests_response):
+        response_model = HttpResponse()
+        response_model.content = requests_response.text
+        response_model.status_code = requests_response.status_code
+        response_model.reason = requests_response.reason
+        response_model.set_headers(dict(requests_response.headers))
+
+        if requests_response.raw.version == 11:
+            response_model.http_version = 'HTTP/1.1'
+        elif requests_response.raw.version == 10:
+            response_model.http_version = 'HTTP/1.0'
+
+        return response_model
+
     def get_state(self):
         attributes = self.serialize()
         attributes['headers'] = json.loads(attributes['headers'])
