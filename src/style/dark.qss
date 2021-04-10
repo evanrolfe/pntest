@@ -279,6 +279,14 @@ QPushButton#saveButton {
   font-size: 13px;
   font-weight: 600;
 }
+
+QPushButton#saveAsExample {
+  margin-top: 5px;
+  margin-right: 10px;
+  font-size: 12px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
 /*------------------------------------------------------------------------------*
  * QComboBox
  *------------------------------------------------------------------------------*/

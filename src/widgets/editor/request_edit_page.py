@@ -37,6 +37,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
         self.ui.flowView.set_show_rendered(False)
+        self.ui.flowView.show_save_as_example_button()
 
         self.show_request()
         self.request_is_modified = False
