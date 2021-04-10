@@ -10,6 +10,7 @@ class HttpFlow(Model):
 
     TYPE_PROXY = 'proxy'
     TYPE_EDITOR = 'editor'
+    TYPE_EDITOR_EXAMPLE = 'editor_example'
 
     @classmethod
     def find_for_table(cls):
@@ -79,7 +80,7 @@ class HttpFlow(Model):
             self.modified()
         ]
 
-    def duplicate(self):
+    def duplicate_for_editor(self):
         new_request = self.request.duplicate()
         new_request.overwrite_calculated_headers()
         new_request.save()
@@ -87,6 +88,19 @@ class HttpFlow(Model):
         new_flow = HttpFlow()
         new_flow.type = HttpFlow.TYPE_EDITOR
         new_flow.request_id = new_request.id
+        new_flow.save()
+
+        return new_flow
+
+    def duplicate_for_example(self, response):
+        new_request = self.request.duplicate()
+        new_request.save()
+
+        new_flow = HttpFlow()
+        new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
+        new_flow.request_id = new_request.id
+        new_flow.response_id = response.id
+        new_flow.http_flow_id = self.id
         new_flow.save()
 
         return new_flow

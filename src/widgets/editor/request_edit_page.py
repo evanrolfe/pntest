@@ -36,8 +36,10 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.sendButton.clicked.connect(self.send_request_async)
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
+
         self.ui.flowView.set_show_rendered(False)
         self.ui.flowView.show_save_as_example_button()
+        self.ui.flowView.save_example_button.clicked.connect(self.save_example)
 
         self.show_request()
         self.request_is_modified = False
@@ -77,9 +79,17 @@ class RequestEditPage(QtWidgets.QWidget):
         self.request_saved.emit()
 
     @QtCore.Slot()
+    def save_example(self):
+        print('Saving an example!')
+        self.update_request_with_values_from_form()
+        self.latest_response.save()
+        example_flow = self.flow.duplicate_for_example(self.latest_response)
+        print(f'Saved example flow: {example_flow.id}')
+
+    @QtCore.Slot()
     def response_received(self, requests_response):
-        response = HttpResponse.from_requests_response(requests_response)
-        self.ui.flowView.set_response_from_editor(self.flow, response)
+        self.latest_response = HttpResponse.from_requests_response(requests_response)
+        self.ui.flowView.set_response_from_editor(self.flow, self.latest_response)
 
     @QtCore.Slot()
     def request_error(self, error):

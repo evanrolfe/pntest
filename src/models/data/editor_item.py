@@ -14,7 +14,7 @@ class EditorItem(Model):
             print('WARNING - cannot duplicate editor items which arent http_flows')
             return
 
-        flow = self.item().duplicate()
+        flow = self.item().duplicate_for_editor()
         flow.save()
 
         editor_item = EditorItem()

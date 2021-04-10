@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS http_flows(
     original_request_id,
     response_id INTEGER,
     original_response_id,
+    http_flow_id INTEGER,
     created_at INTEGER NOT NULL,
     updated_at INTEGER
 );

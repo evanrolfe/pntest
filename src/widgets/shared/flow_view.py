@@ -7,6 +7,8 @@ from views._compiled.shared.ui_flow_view import Ui_FlowView
 # TODO: Split this into two components, one for request, one for response
 
 class FlowView(QtWidgets.QWidget):
+    save_example_clicked = QtCore.Signal()
+
     def __init__(self, *args, **kwargs):
         super(FlowView, self).__init__(*args, **kwargs)
         self.ui = Ui_FlowView()
@@ -41,9 +43,9 @@ class FlowView(QtWidgets.QWidget):
         self.show_modified_response = True
 
     def show_save_as_example_button(self):
-        button = QtWidgets.QPushButton('Save as Example')
-        button.setObjectName('saveAsExample')
-        self.ui.responseTabs.setCornerWidget(button)
+        self.save_example_button = QtWidgets.QPushButton('Save as Example')
+        self.save_example_button.setObjectName('saveAsExample')
+        self.ui.responseTabs.setCornerWidget(self.save_example_button)
 
     @QtCore.Slot(int)
     def show_modified_request_change(self, index):

@@ -37,7 +37,7 @@ class EditorPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def send_flow_to_editor(self, flow):
-        new_flow = flow.duplicate()
+        new_flow = flow.duplicate_for_editor()
         editor_item = EditorItem.create_for_http_flow(new_flow)
 
         print(f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')

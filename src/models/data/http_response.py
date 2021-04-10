@@ -34,6 +34,17 @@ class HttpResponse(Model):
 
         return response_model
 
+    def duplicate(self):
+        new_response = HttpResponse()
+
+        new_response.http_version = self.http_version
+        new_response.headers = self.headers
+        new_response.content = self.content
+        new_response.status_code = self.status_code
+        new_response.reason = self.reason
+
+        return new_response
+
     def get_state(self):
         attributes = self.serialize()
         attributes['headers'] = json.loads(attributes['headers'])
