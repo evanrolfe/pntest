@@ -191,3 +191,19 @@ class HttpFlow(Model):
     def is_editable(self):
         # Note: this would be false for navigation requests, which we dont have at the moment
         return True
+
+class HttpFlowObserver:
+    def deleted(self, flow):
+        if flow.request:
+            flow.request.delete()
+
+        if flow.original_request:
+            flow.original_request.delete()
+
+        if flow.response:
+            flow.response.delete()
+
+        if flow.original_response:
+            flow.original_response.delete()
+
+HttpFlow.observe(HttpFlowObserver())
