@@ -2,9 +2,10 @@ from PySide2 import QtCore, QtWidgets
 
 from views._compiled.editor.ui_examples_table import Ui_ExamplesTable
 from models.qt.examples_table_model import ExamplesTableModel
+from models.data.http_flow import HttpFlow
 
 class ExamplesTable(QtWidgets.QWidget):
-    example_selected = QtCore.Signal(QtCore.QItemSelection, QtCore.QItemSelection)
+    example_selected = QtCore.Signal(HttpFlow)
     # open_client_clicked = QtCore.Signal(Client)
     # close_client_clicked = QtCore.Signal(Client)
     # bring_to_front_client_clicked = QtCore.Signal(Client)
@@ -45,10 +46,7 @@ class ExamplesTable(QtWidgets.QWidget):
     def selection_changed(self, selected, deselected):
         selected_index = selected.indexes()[0]
         flow = self.table_model.flow_for_index(selected_index)
-
-        # crawl = Crawl.find(selected_id)
-        # self.ui.crawlView.set_crawl(crawl)
-
+        self.example_selected.emit(flow)
 
     # @QtCore.Slot()
     # def right_clicked(self, position):

@@ -96,14 +96,11 @@ class HttpFlow(Model):
 
         return new_flow
 
-    def duplicate_for_example(self, response):
-        new_request = self.request.duplicate()
-        new_request.save()
-
+    def duplicate_for_example(self, request, response):
         new_flow = HttpFlow()
         new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
         new_flow.title = f'Example #{self.examples.count() + 1}'
-        new_flow.request_id = new_request.id
+        new_flow.request_id = request.id
         new_flow.response_id = response.id
         new_flow.http_flow_id = self.id
         new_flow.save()
@@ -182,7 +179,7 @@ class HttpFlow(Model):
         websocket_message.save()
 
     def reload(self):
-        return HttpFlow.with_('request', 'response', 'websocket_messages').find(self.id)
+        return HttpFlow.with_('request', 'response', 'websocket_messages', 'examples').find(self.id)
 
     def get_host_and_port(self, host):
         if ':' in host:

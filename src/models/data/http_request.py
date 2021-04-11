@@ -54,7 +54,7 @@ class HttpRequest(Model):
         return f'{self.method} {self.path} {self.http_version}'
 
     def get_url(self):
-        if self.port not in [80, 443]:
+        if self.port not in [80, 443, None]:
             port = ':' + str(self.port)
         else:
             port = ''

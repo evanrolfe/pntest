@@ -20,6 +20,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.editor_item = editor_item
         self.flow = self.editor_item.item()
         self.request = self.flow.request
+        self.original_flow = self.flow
 
         self.ui = Ui_RequestEditPage()
         self.ui.setupUi(self)
@@ -42,6 +43,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.flowView.save_example_button.clicked.connect(self.save_example)
 
         self.show_request()
+        self.show_examples()
         self.request_is_modified = False
 
         # save_response_button = QtWidgets.QPushButton('Save Response')
@@ -65,14 +67,21 @@ class RequestEditPage(QtWidgets.QWidget):
         # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
-        # self.ui.examplesTable.example_selected.connect(self.show_example)
+        self.ui.examplesTable.example_selected.connect(self.show_example)
 
     def show_request(self):
         self.ui.urlInput.setText(self.flow.request.get_url())
         self.set_method_on_form(self.flow.request.method)
-
         self.ui.flowView.set_flow(self.flow)
+
+    def show_examples(self):
         self.ui.examplesTable.set_flow(self.flow)
+
+    @QtCore.Slot()
+    def show_example(self, flow):
+        print(f'Showing flow {flow.id}')
+        self.flow = flow
+        self.show_request()
 
     @QtCore.Slot()
     def save_request(self):
@@ -83,14 +92,23 @@ class RequestEditPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def save_example(self):
-        print('Saving an example!')
-        self.update_request_with_values_from_form()
+        # 1. Save the HttpResponse (without a flow)
         self.latest_response.save()
 
         # NOTE: Have to reload multiple times is stupid but Orator does not seem to update the
         # has_many relations on the fly
         self.flow = self.flow.reload()
-        self.flow.duplicate_for_example(self.latest_response)
+
+        # 2. Update the HttpRequest and duplicate it
+        self.update_request_with_values_from_form()
+        new_request = self.flow.request.duplicate()
+        new_request.save()
+
+        # 3. Create the example HttpFlow
+        example_flow = self.flow.duplicate_for_example(new_request, self.latest_response)
+        print(f'Saved example {example_flow.id}')
+
+        # Reload the original flow so we have the original and the new example, then reload the ExamplesTable
         self.flow = self.flow.reload()
         self.ui.examplesTable.set_flow(self.flow)
 
@@ -141,8 +159,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.flow.request.method = method
         self.flow.request.host = url_data.hostname
-        if url_data.port:
-            self.flow.request.port = url_data.port
+        self.flow.request.port = url_data.port
 
         if url_data.query == '':
             self.flow.request.path = url_data.path
