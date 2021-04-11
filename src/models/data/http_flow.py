@@ -49,6 +49,10 @@ class HttpFlow(Model):
     def websocket_messages(self):
         return WebsocketMessage
 
+    @has_many('http_flow_id', 'id')
+    def examples(self):
+        return HttpFlow
+
     def request_modified(self):
         original_request_id = getattr(self, 'original_request_id', None)
         return original_request_id is not None
@@ -98,6 +102,7 @@ class HttpFlow(Model):
 
         new_flow = HttpFlow()
         new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
+        new_flow.title = f'Example #{self.examples.count() + 1}'
         new_flow.request_id = new_request.id
         new_flow.response_id = response.id
         new_flow.http_flow_id = self.id

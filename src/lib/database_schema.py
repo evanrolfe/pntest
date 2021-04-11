@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS http_flows(
     uuid TEXT,
     client_id INTEGER,
     type TEXT NOT NULL,
+    title TEXT,
     request_id INTEGER,
     original_request_id,
     response_id INTEGER,

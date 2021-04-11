@@ -46,6 +46,10 @@ class FlowView(QtWidgets.QWidget):
         self.save_example_button = QtWidgets.QPushButton('Save as Example')
         self.save_example_button.setObjectName('saveAsExample')
         self.ui.responseTabs.setCornerWidget(self.save_example_button)
+        self.save_example_button.setEnabled(False)
+
+    def set_save_as_example_enabled(self, enabled):
+        self.save_example_button.setEnabled(enabled)
 
     @QtCore.Slot(int)
     def show_modified_request_change(self, index):

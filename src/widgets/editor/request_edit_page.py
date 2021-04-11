@@ -31,7 +31,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.settings = AppSettings.get_instance()
         self.restore_layout_state()
 
-        self.ui.toggleFuzzTableButton.clicked.connect(self.toggle_fuzz_table)
+        self.ui.toggleExamplesButton.clicked.connect(self.toggle_examples_table)
         self.ui.sendButton.clicked.connect(self.ui.flowView.show_loader)
         self.ui.sendButton.clicked.connect(self.send_request_async)
         self.ui.saveButton.clicked.connect(self.save_request)
@@ -65,11 +65,14 @@ class RequestEditPage(QtWidgets.QWidget):
         # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
+        # self.ui.examplesTable.example_selected.connect(self.show_example)
+
     def show_request(self):
         self.ui.urlInput.setText(self.flow.request.get_url())
         self.set_method_on_form(self.flow.request.method)
 
         self.ui.flowView.set_flow(self.flow)
+        self.ui.examplesTable.set_flow(self.flow)
 
     @QtCore.Slot()
     def save_request(self):
@@ -83,13 +86,19 @@ class RequestEditPage(QtWidgets.QWidget):
         print('Saving an example!')
         self.update_request_with_values_from_form()
         self.latest_response.save()
-        example_flow = self.flow.duplicate_for_example(self.latest_response)
-        print(f'Saved example flow: {example_flow.id}')
+
+        # NOTE: Have to reload multiple times is stupid but Orator does not seem to update the
+        # has_many relations on the fly
+        self.flow = self.flow.reload()
+        self.flow.duplicate_for_example(self.latest_response)
+        self.flow = self.flow.reload()
+        self.ui.examplesTable.set_flow(self.flow)
 
     @QtCore.Slot()
     def response_received(self, requests_response):
         self.latest_response = HttpResponse.from_requests_response(requests_response)
         self.ui.flowView.set_response_from_editor(self.flow, self.latest_response)
+        self.ui.flowView.set_save_as_example_enabled(True)
 
     @QtCore.Slot()
     def request_error(self, error):
@@ -163,21 +172,21 @@ class RequestEditPage(QtWidgets.QWidget):
         self.form_input_changed.emit(self.request_is_modified)
 
     def hide_fuzz_table(self):
-        self.ui.fuzzRequestsTable.setVisible(False)
-        self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
+        self.ui.examplesTable.setVisible(False)
+        self.ui.toggleExamplesButton.setText("9 Saved Examples [+]")
 
     @QtCore.Slot()
-    def toggle_fuzz_table(self):
-        visible = not self.ui.fuzzRequestsTable.isVisible()
-        self.ui.fuzzRequestsTable.setVisible(visible)
+    def toggle_examples_table(self):
+        visible = not self.ui.examplesTable.isVisible()
+        self.ui.examplesTable.setVisible(visible)
 
         if visible:
             self.restore_layout_state()
 
         if (visible):
-            self.ui.toggleFuzzTableButton.setText("9 Saved Examples [-]")
+            self.ui.toggleExamplesButton.setText("9 Saved Examples [-]")
         else:
-            self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
+            self.ui.toggleExamplesButton.setText("9 Saved Examples [+]")
 
     def restore_layout_state(self):
         return None

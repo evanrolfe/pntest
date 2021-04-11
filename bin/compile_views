@@ -27,6 +27,7 @@ pyside2-uic src/views/intercept/intercept_page.ui > src/views/_compiled/intercep
 # Editor Page:
 pyside2-uic src/views/editor/request_edit_page.ui > src/views/_compiled/editor/ui_request_edit_page.py
 pyside2-uic src/views/editor/editor_page.ui > src/views/_compiled/editor/ui_editor_page.py
+pyside2-uic src/views/editor/examples_table.ui > src/views/_compiled/editor/ui_examples_table.py
 
 # Shared:
 pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
