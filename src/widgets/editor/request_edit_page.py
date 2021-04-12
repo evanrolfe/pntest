@@ -40,6 +40,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.methodInput.insertItems(0, self.METHODS)
 
         self.ui.flowView.set_show_rendered(False)
+        self.ui.flowView.set_editable(True)
         self.ui.flowView.show_save_as_example_button()
         self.ui.flowView.save_example_button.clicked.connect(self.save_example)
 

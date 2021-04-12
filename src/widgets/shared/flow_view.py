@@ -3,9 +3,6 @@ from PySide2 import QtCore
 
 from views._compiled.shared.ui_flow_view import Ui_FlowView
 
-# TODO: Rename this to FlowView
-# TODO: Split this into two components, one for request, one for response
-
 class FlowView(QtWidgets.QWidget):
     save_example_clicked = QtCore.Signal()
 
@@ -17,6 +14,11 @@ class FlowView(QtWidgets.QWidget):
         self.response_modified_dropdown = None
         self.show_modified_request = False
         self.show_modified_response = False
+        self.editable = False
+
+    def set_editable(self, editable):
+        self.editable = editable
+        self.ui.requestHeaders.set_editable(editable)
 
     def set_show_rendered(self, show_rendered):
         if show_rendered is False:
