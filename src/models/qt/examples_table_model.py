@@ -6,11 +6,6 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
         self.headers = ['Title', 'Status', 'Response Length']
         self.flows = flows
 
-    # def set_clients(self, clients):
-    #     self.flows = clients
-    #     self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
-    #     self.layoutChanged.emit()
-
     def flow_for_index(self, index):
         row = index.row()
         return self.flows[row]
@@ -20,6 +15,12 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
         for i, header in enumerate(self.headers):
             roles[QtCore.Qt.UserRole + i + 1] = header.encode()
         return roles
+
+    def flags(self, index):
+        if index.column() == 0 and index.row() > 0:
+            return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        else:
+            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
         if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
@@ -34,7 +35,7 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
         return len(self.flows)
 
     def data(self, index, role):
-        if role == QtCore.Qt.DisplayRole:
+        if role in [QtCore.Qt.EditRole, QtCore.Qt.DisplayRole]:
             if not index.isValid():
                 return None
 
@@ -55,6 +56,17 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
                     return 'Original Request'
                 else:
                     return None
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if role == QtCore.Qt.EditRole:
+            if value != '':
+                flow = self.flows[index.row()]
+                flow.title = value
+                flow.save()
+
+            return True
+
+        return False
 
     @QtCore.Slot(result="QVariantList")
     def roleNameArray(self):

@@ -70,6 +70,7 @@ class RequestEditPage(QtWidgets.QWidget):
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
         self.ui.examplesTable.example_selected.connect(self.show_example)
+        self.ui.examplesTable.delete_examples.connect(self.delete_examples)
 
     def show_request(self):
         self.ui.urlInput.setText(self.flow.request.get_url())
@@ -88,6 +89,18 @@ class RequestEditPage(QtWidgets.QWidget):
         self.flow = flow
         self.show_request()
         self.set_send_save_buttons_enabled(not self.flow.is_example())
+
+    @QtCore.Slot()
+    def delete_examples(self, flows):
+        example_flows = [f for f in flows if f.is_example()]
+
+        if len(example_flows) == 0:
+            return
+
+        for flow in example_flows:
+            flow.delete()
+
+        self.ui.examplesTable.reload()
 
     @QtCore.Slot()
     def save_request(self):

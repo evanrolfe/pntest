@@ -6,6 +6,7 @@ from models.data.http_flow import HttpFlow
 
 class ExamplesTable(QtWidgets.QWidget):
     example_selected = QtCore.Signal(HttpFlow)
+    delete_examples = QtCore.Signal(list)
     # open_client_clicked = QtCore.Signal(Client)
     # close_client_clicked = QtCore.Signal(Client)
     # bring_to_front_client_clicked = QtCore.Signal(Client)
@@ -34,45 +35,61 @@ class ExamplesTable(QtWidgets.QWidget):
         self.ui.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         # # Set right-click behaviour:
-        # self.ui.table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        # self.ui.table.customContextMenuRequested.connect(self.right_clicked)
+        self.ui.table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.ui.table.customContextMenuRequested.connect(self.right_clicked)
+        self.selected_flows = []
 
     def set_flow(self, flow):
         self.flow = flow
         self.table_model = ExamplesTableModel([self.flow] + list(self.flow.examples))
         self.ui.table.setModel(self.table_model)
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
+        self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
 
     @QtCore.Slot()
     def selection_changed(self, selected, deselected):
-        selected_index = selected.indexes()[0]
-        flow = self.table_model.flow_for_index(selected_index)
-        self.example_selected.emit(flow)
+        try:
+            selected_index = selected.indexes()[0]
+            flow = self.table_model.flow_for_index(selected_index)
+            self.example_selected.emit(flow)
+        except IndexError:
+            return
 
     def reload(self):
         self.flow = self.flow.reload()
         self.table_model = ExamplesTableModel([self.flow] + list(self.flow.examples))
         self.ui.table.setModel(self.table_model)
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
+        self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
 
-    # @QtCore.Slot()
-    # def right_clicked(self, position):
-    #     index = self.ui.table.indexAt(position)
-    #     client = self.table_model.clients[index.row()]
-    #     menu = QtWidgets.QMenu()
+    @QtCore.Slot()
+    def set_selected_flows(self, selected, deselected):
+        selected_q_indexes = self.ui.table.selectionModel().selectedRows()
+        selected_flows = [self.table_model.flows[i.row()] for i in selected_q_indexes]
+        self.selected_flows = selected_flows
 
-    #     if client.open == 1:
-    #         bring_front_action = QtWidgets.QAction("Bring to Front")
-    #         bring_front_action.triggered.connect(lambda: self.bring_to_front_client_clicked.emit(client))
+    @QtCore.Slot()
+    def right_clicked(self, position):
+        index = self.ui.table.indexAt(position)
+        index_col0 = index.siblingAtColumn(0)
+        flow = self.table_model.flows[index.row()]
+        menu = QtWidgets.QMenu()
 
-    #         close_action = QtWidgets.QAction("Close Client")
-    #         close_action.triggered.connect(lambda: self.close_client_clicked.emit(client))
+        if (len(self.selected_flows) > 1):
+            action = QtWidgets.QAction(f"Delete {len(self.selected_flows)} selected examples")
+            menu.addAction(action)
+            action.triggered.connect(lambda: self.delete_examples.emit(self.selected_flows))
+        else:
+            send_action = QtWidgets.QAction("Rename")
+            menu.addAction(send_action)
+            send_action.triggered.connect(lambda: self.ui.table.edit(index_col0))
 
-    #         menu.addAction(bring_front_action)
-    #         menu.addAction(close_action)
-    #     else:
-    #         action = QtWidgets.QAction("Open Client")
-    #         menu.addAction(action)
-    #         action.triggered.connect(lambda: self.open_client_clicked.emit(client))
+            del_action = QtWidgets.QAction("Delete example")
+            menu.addAction(del_action)
+            del_action.triggered.connect(lambda: self.delete_examples.emit([flow]))
 
-    #     menu.exec_(self.mapToGlobal(position))
+            if not flow.is_example():
+                send_action.setEnabled(False)
+                del_action.setEnabled(False)
+
+        menu.exec_(self.sender().mapToGlobal(position))

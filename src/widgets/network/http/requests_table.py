@@ -54,8 +54,7 @@ class RequestsTable(QtWidgets.QWidget):
 
         # Set right-click behaviour:
         self.ui.requestsTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.ui.requestsTable.customContextMenuRequested.connect(
-            self.right_clicked)
+        self.ui.requestsTable.customContextMenuRequested.connect(self.right_clicked)
         self.selected_request_ids = []
 
     def setTableModel(self, model):
