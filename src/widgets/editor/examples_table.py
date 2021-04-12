@@ -21,9 +21,9 @@ class ExamplesTable(QtWidgets.QWidget):
         horizontalHeader.setSortIndicator(0, QtCore.Qt.DescendingOrder)
         # self.ui.table.setSortingEnabled(True)
 
-        self.ui.table.setColumnWidth(0, 50)
-        self.ui.table.setColumnWidth(1, 150)
-        self.ui.table.setColumnWidth(2, 50)
+        # self.ui.table.setColumnWidth(2, 250)
+        # self.ui.table.setColumnWidth(1, 50)
+        # self.ui.table.setColumnWidth(2, 50)
 
         verticalHeader = self.ui.table.verticalHeader()
         verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
@@ -39,7 +39,7 @@ class ExamplesTable(QtWidgets.QWidget):
 
     def set_flow(self, flow):
         self.flow = flow
-        self.table_model = ExamplesTableModel(self.flow.examples)
+        self.table_model = ExamplesTableModel([self.flow] + list(self.flow.examples))
         self.ui.table.setModel(self.table_model)
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
 
@@ -51,7 +51,7 @@ class ExamplesTable(QtWidgets.QWidget):
 
     def reload(self):
         self.flow = self.flow.reload()
-        self.table_model = ExamplesTableModel(self.flow.examples)
+        self.table_model = ExamplesTableModel([self.flow] + list(self.flow.examples))
         self.ui.table.setModel(self.table_model)
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
 

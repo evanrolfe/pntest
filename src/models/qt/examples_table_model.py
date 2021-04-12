@@ -43,12 +43,18 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
 
             flow = self.flows[index.row()]
 
-            if (index.column() == 0):
-                return flow.title
-            elif (index.column() == 1):
-                return flow.response.status_code
-            elif (index.column() == 2):
-                return len(flow.response.content)
+            if flow.is_example():
+                if (index.column() == 0):
+                    return flow.title
+                elif (index.column() == 1):
+                    return flow.response.status_code
+                elif (index.column() == 2):
+                    return len(flow.response.content)
+            else:
+                if (index.column() == 0):
+                    return 'Original Request'
+                else:
+                    return None
 
     @QtCore.Slot(result="QVariantList")
     def roleNameArray(self):

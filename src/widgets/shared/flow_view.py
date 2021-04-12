@@ -91,7 +91,7 @@ class FlowView(QtWidgets.QWidget):
     def set_flow(self, flow):
         self.flow = flow
         self.set_modified_dropdown(flow)
-        self.set_request(self.flow)
+        self.set_request(flow)
         self.set_response(flow)
 
     def set_request(self, flow):
@@ -119,6 +119,10 @@ class FlowView(QtWidgets.QWidget):
             response = flow.response
 
         if not response:
+            self.ui.responseHeaders.set_header_line('')
+            self.ui.responseHeaders.set_headers(None)
+            self.ui.responseRaw.set_value('')
+            self.ui.responseBodyPreview.setHtml(None)
             return
 
         self.ui.responseHeaders.set_header_line(response.get_header_line())

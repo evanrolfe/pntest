@@ -87,7 +87,7 @@ class RequestEditPage(QtWidgets.QWidget):
     def show_example(self, flow):
         self.flow = flow
         self.show_request()
-        self.set_send_save_buttons_enabled(False)
+        self.set_send_save_buttons_enabled(not self.flow.is_example())
 
     @QtCore.Slot()
     def save_request(self):

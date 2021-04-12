@@ -53,6 +53,9 @@ class HttpFlow(Model):
     def examples(self):
         return HttpFlow
 
+    def is_example(self):
+        return hasattr(self, 'http_flow_id') and self.http_flow_id is not None
+
     def request_modified(self):
         original_request_id = getattr(self, 'original_request_id', None)
         return original_request_id is not None
