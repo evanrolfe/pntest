@@ -134,7 +134,7 @@ class FlowView(QtWidgets.QWidget):
             self.ui.responseBodyPreview.setHtml('')
 
     # This method does not need the response to be saved to the DB:
-    def set_response_from_editor(self, flow, response):
+    def set_response_from_editor(self, response, url):
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
         self.ui.responseRaw.set_value(response.content or '')
@@ -144,7 +144,7 @@ class FlowView(QtWidgets.QWidget):
         # mime_type = content_type.split(';')[0]
 
         if 'html' in content_type:
-            self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
+            self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=url)
         else:
             self.ui.responseBodyPreview.setHtml('')
 

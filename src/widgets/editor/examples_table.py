@@ -38,7 +38,8 @@ class ExamplesTable(QtWidgets.QWidget):
         # self.ui.table.customContextMenuRequested.connect(self.right_clicked)
 
     def set_flow(self, flow):
-        self.table_model = ExamplesTableModel(flow.examples)
+        self.flow = flow
+        self.table_model = ExamplesTableModel(self.flow.examples)
         self.ui.table.setModel(self.table_model)
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
 
@@ -47,6 +48,12 @@ class ExamplesTable(QtWidgets.QWidget):
         selected_index = selected.indexes()[0]
         flow = self.table_model.flow_for_index(selected_index)
         self.example_selected.emit(flow)
+
+    def reload(self):
+        self.flow = self.flow.reload()
+        self.table_model = ExamplesTableModel(self.flow.examples)
+        self.ui.table.setModel(self.table_model)
+        self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
 
     # @QtCore.Slot()
     # def right_clicked(self, position):

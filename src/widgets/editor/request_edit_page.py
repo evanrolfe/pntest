@@ -105,17 +105,16 @@ class RequestEditPage(QtWidgets.QWidget):
         new_request.save()
 
         # 3. Create the example HttpFlow
-        example_flow = self.flow.duplicate_for_example(new_request, self.latest_response)
-        print(f'Saved example {example_flow.id}')
+        self.flow.duplicate_for_example(new_request, self.latest_response)
 
-        # Reload the original flow so we have the original and the new example, then reload the ExamplesTable
-        self.flow = self.flow.reload()
-        self.ui.examplesTable.set_flow(self.flow)
+        # 4. Update GUI
+        self.ui.examplesTable.reload()
+        self.ui.flowView.set_save_as_example_enabled(False)
 
     @QtCore.Slot()
     def response_received(self, requests_response):
         self.latest_response = HttpResponse.from_requests_response(requests_response)
-        self.ui.flowView.set_response_from_editor(self.flow, self.latest_response)
+        self.ui.flowView.set_response_from_editor(self.latest_response, requests_response.request.url)
         self.ui.flowView.set_save_as_example_enabled(True)
 
     @QtCore.Slot()
