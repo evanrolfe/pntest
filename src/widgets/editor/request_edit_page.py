@@ -28,7 +28,8 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.urlInput.setText(self.editor_item.name)
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.hide_fuzz_table()
+        self.ui.examplesTable.setVisible(False)
+        self.ui.toggleExamplesButton.setText("Saved Examples >>")
         self.settings = AppSettings.get_instance()
         self.restore_layout_state()
 
@@ -77,11 +78,15 @@ class RequestEditPage(QtWidgets.QWidget):
     def show_examples(self):
         self.ui.examplesTable.set_flow(self.flow)
 
+    def set_send_save_buttons_enabled(self, enabled):
+        self.ui.sendButton.setVisible(enabled)
+        self.ui.saveButton.setVisible(enabled)
+
     @QtCore.Slot()
     def show_example(self, flow):
-        print(f'Showing flow {flow.id}')
         self.flow = flow
         self.show_request()
+        self.set_send_save_buttons_enabled(False)
 
     @QtCore.Slot()
     def save_request(self):
@@ -187,10 +192,6 @@ class RequestEditPage(QtWidgets.QWidget):
         self.request_is_modified = (request_on_form != original_request)
         self.form_input_changed.emit(self.request_is_modified)
 
-    def hide_fuzz_table(self):
-        self.ui.examplesTable.setVisible(False)
-        self.ui.toggleExamplesButton.setText("9 Saved Examples [+]")
-
     @QtCore.Slot()
     def toggle_examples_table(self):
         visible = not self.ui.examplesTable.isVisible()
@@ -200,9 +201,9 @@ class RequestEditPage(QtWidgets.QWidget):
             self.restore_layout_state()
 
         if (visible):
-            self.ui.toggleExamplesButton.setText("9 Saved Examples [-]")
+            self.ui.toggleExamplesButton.setText("<< Saved Examples")
         else:
-            self.ui.toggleExamplesButton.setText("9 Saved Examples [+]")
+            self.ui.toggleExamplesButton.setText("Saved Examples >>")
 
     def restore_layout_state(self):
         return None

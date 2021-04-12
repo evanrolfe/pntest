@@ -256,7 +256,7 @@ QPushButton:disabled {
   color: $border-light;
 }
 
-QPushButton#toggleFuzzTableButton {
+QPushButton#toggleExamplesButton {
   background-color: $bg-dark;
   min-width: 10px;
 }

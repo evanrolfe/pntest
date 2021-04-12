@@ -37,22 +37,22 @@ class Ui_RequestEditPage(object):
         self.examplesTable.setMinimumSize(QSize(0, 200))
         self.examplesTable.setMaximumSize(QSize(16777215, 99999))
         self.requestEditSplitter.addWidget(self.examplesTable)
-        self.widget = QWidget(self.requestEditSplitter)
-        self.widget.setObjectName(u"widget")
-        self.verticalLayout = QVBoxLayout(self.widget)
+        self.layoutWidget = QWidget(self.requestEditSplitter)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.layout1 = QHBoxLayout()
         self.layout1.setObjectName(u"layout1")
         self.layout1.setContentsMargins(10, 10, 10, -1)
-        self.horizontalSpacer = QSpacerItem(388, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.layout1.addItem(self.horizontalSpacer)
-
-        self.toggleExamplesButton = QPushButton(self.widget)
+        self.toggleExamplesButton = QPushButton(self.layoutWidget)
         self.toggleExamplesButton.setObjectName(u"toggleExamplesButton")
 
         self.layout1.addWidget(self.toggleExamplesButton)
+
+        self.horizontalSpacer = QSpacerItem(388, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.layout1.addItem(self.horizontalSpacer)
 
 
         self.verticalLayout.addLayout(self.layout1)
@@ -60,23 +60,23 @@ class Ui_RequestEditPage(object):
         self.requestActionsLayout = QHBoxLayout()
         self.requestActionsLayout.setObjectName(u"requestActionsLayout")
         self.requestActionsLayout.setContentsMargins(10, 10, 10, 20)
-        self.methodInput = QComboBox(self.widget)
+        self.methodInput = QComboBox(self.layoutWidget)
         self.methodInput.setObjectName(u"methodInput")
 
         self.requestActionsLayout.addWidget(self.methodInput)
 
-        self.urlInput = QLineEdit(self.widget)
+        self.urlInput = QLineEdit(self.layoutWidget)
         self.urlInput.setObjectName(u"urlInput")
         self.urlInput.setMinimumSize(QSize(300, 0))
 
         self.requestActionsLayout.addWidget(self.urlInput)
 
-        self.sendButton = QPushButton(self.widget)
+        self.sendButton = QPushButton(self.layoutWidget)
         self.sendButton.setObjectName(u"sendButton")
 
         self.requestActionsLayout.addWidget(self.sendButton)
 
-        self.saveButton = QPushButton(self.widget)
+        self.saveButton = QPushButton(self.layoutWidget)
         self.saveButton.setObjectName(u"saveButton")
 
         self.requestActionsLayout.addWidget(self.saveButton)
@@ -87,7 +87,7 @@ class Ui_RequestEditPage(object):
         self.layout2 = QHBoxLayout()
         self.layout2.setObjectName(u"layout2")
         self.layout2.setContentsMargins(0, 0, 0, 0)
-        self.flowView = FlowView(self.widget)
+        self.flowView = FlowView(self.layoutWidget)
         self.flowView.setObjectName(u"flowView")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -100,7 +100,7 @@ class Ui_RequestEditPage(object):
 
         self.verticalLayout.addLayout(self.layout2)
 
-        self.requestEditSplitter.addWidget(self.widget)
+        self.requestEditSplitter.addWidget(self.layoutWidget)
 
         self.horizontalLayout.addWidget(self.requestEditSplitter)
 
