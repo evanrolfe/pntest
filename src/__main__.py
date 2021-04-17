@@ -1,8 +1,8 @@
 import sys
-import pathlib
 import os
 from PySide2 import QtCore, QtWidgets
 
+from lib.paths import get_app_path, get_resource_path
 from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -10,22 +10,17 @@ from widgets.main_window import MainWindow
 
 THEME = 'dark'
 
-# Get absolute path to resource, works for dev and for PyInstaller
-def resource_path(app_path, relative_path):
-    default = app_path
-    base_path = getattr(sys, '_MEIPASS', default)
-    return os.path.join(base_path, relative_path)
 
 def main():
     QtCore.QCoreApplication.setApplicationName('pntest')
 
     app = QtWidgets.QApplication(sys.argv)
 
-    app_path = pathlib.Path(__file__).parent.parent.absolute()
+    app_path = get_app_path()
     src_path = os.path.join(app_path, 'src')
-    data_path = resource_path(app_path, 'include')
-    tmp_db_path = resource_path(app_path, 'pntest-tmp.db')
-    style_dir_path = resource_path(src_path, 'style')
+    data_path = get_resource_path(app_path, 'include')
+    tmp_db_path = get_resource_path(app_path, 'pntest-tmp.db')
+    style_dir_path = get_resource_path(app_path, 'style')
 
     print(f'[Gui] App path: {app_path}')
     print(f'[Gui] Data path: {data_path}')

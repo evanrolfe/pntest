@@ -1,3 +1,4 @@
+altgraph==0.17
 args==0.1.0
 asgiref==3.3.1
 attrs==20.3.0
@@ -50,6 +51,8 @@ pycodestyle==2.6.0
 pycparser==2.20
 pyflakes==2.2.0
 Pygments==2.7.4
+pyinstaller==4.3
+pyinstaller-hooks-contrib==2021.1
 pylev==1.3.0
 pyOpenSSL==20.0.1
 pyparsing==2.4.7
