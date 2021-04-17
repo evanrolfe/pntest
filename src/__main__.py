@@ -17,6 +17,8 @@ def resource_path(app_path, relative_path):
     return os.path.join(base_path, relative_path)
 
 def main():
+    QtCore.QCoreApplication.setApplicationName('pntest')
+
     app = QtWidgets.QApplication(sys.argv)
 
     app_path = pathlib.Path(__file__).parent.parent.absolute()
@@ -47,11 +49,6 @@ def main():
     main_window.show()
 
     app.aboutToQuit.connect(main_window.about_to_quit)
-
-    # Settings:
-    QtCore.QCoreApplication.setOrganizationName('PnT Limted')
-    QtCore.QCoreApplication.setOrganizationDomain('getpntest.com')
-    QtCore.QCoreApplication.setApplicationName('PnTest')
 
     # Style:
     app.setStyle('Fusion')

@@ -4,8 +4,9 @@ from views._compiled.clients.ui_clients_page import Ui_ClientsPage
 
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
+from lib.browser_launcher.browser_launcher import detect_available_browsers
 
-ENABLED_CLIENTS = ['anything']
+ANYTHING_CLIENT = {'name': 'anything'}
 
 class ClientsPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -42,7 +43,7 @@ class ClientsPage(QtWidgets.QWidget):
             'firefox': self.ui.firefoxButton,
             'anything': self.ui.anythingButton
         }
-        self.set_enabled_clients(ENABLED_CLIENTS)
+        self.set_enabled_clients(detect_available_browsers())
 
     def reload(self):
         # self.ui.clientView.clear()
@@ -73,10 +74,10 @@ class ClientsPage(QtWidgets.QWidget):
         self.reload_table_data()
 
     def set_enabled_clients(self, enabled_clients):
-        self.enabled_clients = enabled_clients
+        self.enabled_clients = enabled_clients + [ANYTHING_CLIENT]
 
         for client in self.enabled_clients:
-            button = self.client_buttons[client]
+            button = self.client_buttons[client['name']]
             button.setEnabled(True)
 
         # Update the anything button port
@@ -97,7 +98,9 @@ class ClientsPage(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def open_client_clicked(self, client):
-        client.launch()
+        client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
+
+        client.launch(client_info)
         self.reload_table_data()
 
     @QtCore.Slot()

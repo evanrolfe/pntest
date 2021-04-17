@@ -1,0 +1,35 @@
+from PySide2 import QtCore
+
+DEFAULT_CHROME_OPTIONS = [
+    '--enable-pinch ',
+    '--disable-sync ',
+    '--no-default-browser-check ',
+    '--disable-restore-session-state ',
+    '--disable-web-security ',
+    '--disable-features=IsolateOrigins,site-per-process ',
+    '--disable-site-isolation-trials -test-type ',
+    '--no-sandbox ',
+    '--disable-restore-session-state ',
+    '--no-default-browser-check ',
+    '--disable-popup-blocking ',
+    '--disable-translate ',
+    '--disable-default-apps ',
+    '--disable-sync ',
+    '--enable-fixed-layout ',
+    '--no-first-run '
+]
+
+def get_command_line_options(client):
+    if client.type in ['chrome', 'chromium']:
+        app_config_path = QtCore.QStandardPaths.standardLocations(QtCore.QStandardPaths.AppConfigLocation)[0]
+
+        proxy_options = [
+            f'--proxy-server=127.0.0.1:{client.proxy_port}',
+            '--proxy-bypass-list=<-loopback>'
+        ]
+
+        user_data_dir_options = [
+            f'--user-data-dir={app_config_path}/{client.type}-profile'
+        ]
+
+        return DEFAULT_CHROME_OPTIONS + proxy_options + user_data_dir_options

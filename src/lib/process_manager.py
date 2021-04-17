@@ -67,11 +67,12 @@ class ProcessManager(QtCore.QObject):
         os.kill(pid, signal.SIGTERM)
         self.processes.remove(process)
 
-    def launch_browser(self, client):
+    def launch_browser(self, client, browser_command, options):
         process = subprocess.Popen(
-            CHROMIUM_COMMAND.split(' '),
+            browser_command.split(' ') + options,
             preexec_fn=os.setsid
         )
+        print(f'Launched browser pid {process.pid}')
         self.processes.append({'client': client, 'type': 'browser', 'process': process})
 
     def launch_proxy(self, client):
