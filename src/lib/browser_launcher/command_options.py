@@ -1,4 +1,4 @@
-from PySide2 import QtCore
+from lib.paths import get_app_config_path
 
 DEFAULT_CHROME_OPTIONS = [
     '--enable-pinch ',
@@ -21,15 +21,13 @@ DEFAULT_CHROME_OPTIONS = [
 
 def get_command_line_options(client):
     if client.type in ['chrome', 'chromium']:
-        app_config_path = QtCore.QStandardPaths.standardLocations(QtCore.QStandardPaths.AppConfigLocation)[0]
-
         proxy_options = [
             f'--proxy-server=127.0.0.1:{client.proxy_port}',
             '--proxy-bypass-list=<-loopback>'
         ]
 
         user_data_dir_options = [
-            f'--user-data-dir={app_config_path}/{client.type}-profile'
+            f'--user-data-dir={get_app_config_path()}/{client.type}-profile'
         ]
 
         return DEFAULT_CHROME_OPTIONS + proxy_options + user_data_dir_options
