@@ -9,7 +9,6 @@ def get_app_config_path():
 def get_app_path():
     return pathlib.Path(__file__).parent.parent.absolute()
 
-
 # Get absolute path to resource, works for dev and for PyInstaller
 def get_resource_path(app_path, relative_path):
     default = app_path

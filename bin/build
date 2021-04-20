@@ -1,13 +1,16 @@
 rm -rf build/pntest/
 rm -rf dist/pntest/
 
-pyinstaller --name="pntest" --windowed ./src/__main__.py --onefile \
-  --paths=/home/evan/Code/pntest/src \
-  --paths=/home/evan/Code/pntest/venv/lib/python3.9/site-packages/ \
-  --add-binary='include/cert9.db:include/' \
-  --add-binary='include/rootCA.csr:include/' \
-  --add-binary='include/rootCA.key:include/' \
-  --add-data='src/style/dark.qss:style/' \
-  --add-data='src/style/dark_theme.qss:style/' \
-  --add-data='src/style/light.qss:style/' \
-  --noupx
+pyinstaller ./src/__main__.py --onefile \
+    --name="pntest" \
+    --windowed \
+    --paths=$PWD/src \
+    --paths=$PWD/venv/lib/python3.9/site-packages/ \
+    --add-binary='include/pntest_proxy:include/' \
+    --add-binary='include/cert9.db:include/' \
+    --add-binary='include/rootCA.csr:include/' \
+    --add-binary='include/rootCA.key:include/' \
+    --add-data='src/style/dark.qss:style/' \
+    --add-data='src/style/dark_theme.qss:style/' \
+    --add-data='src/style/light.qss:style/' \
+    --noupx

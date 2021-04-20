@@ -10,7 +10,6 @@ from widgets.main_window import MainWindow
 
 THEME = 'dark'
 
-
 def main():
     QtCore.QCoreApplication.setApplicationName('pntest')
 

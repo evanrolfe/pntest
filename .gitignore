@@ -6,3 +6,4 @@ build/*
 dist/*
 production.log
 test/tmp.db
+include/pntest_proxy

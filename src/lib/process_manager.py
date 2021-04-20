@@ -7,9 +7,9 @@ from PySide2 import QtCore
 from models.data.http_flow import HttpFlow
 from models.data.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
+from lib.paths import get_app_path
 
 CHROMIUM_COMMAND = 'chromium-browser --no-sandbox --noerrdialogs --user-data-dir=/home/evan/Code/pntest/include/chromium-profile' # noqa
-PROXY_COMMAND = f'{sys.executable} /home/evan/Code/pntest/src/proxy'
 
 class ProcessManager(QtCore.QObject):
     flow_created = QtCore.Signal(HttpFlow)
@@ -76,7 +76,14 @@ class ProcessManager(QtCore.QObject):
         self.processes.append({'client': client, 'type': 'browser', 'process': process})
 
     def launch_proxy(self, client):
-        proxy_command = f'{sys.executable} {self.src_path}/proxy {client.proxy_port} {client.id}'
+        app_path = str(get_app_path())
+        print(f"[ProcessManager] Launching proxy, app_path: {app_path}")
+
+        # TODO: Probably not the safest way of determining if this is in dev mode, better to use an ENV var
+        if 'src' in app_path:
+            proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id}'
+        else:
+            proxy_command = f'{app_path}/include/pntest_proxy {client.proxy_port} {client.id}'
 
         process = subprocess.Popen(
             proxy_command.split(' '),
