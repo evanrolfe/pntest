@@ -22,9 +22,9 @@ $ pip install -r requirements.txt
 ```
 
 ## Develop
-Run the app:
+Run the app in developer mode:
 ```bash
-$ python src
+$ bin/dev
 ```
 
 Compile Qt assets to python with:

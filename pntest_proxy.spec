@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['src/proxy/__main__.py'],
-             pathex=['/home/evan/Code/pntest2/src/proxy', '/home/evan/Code/pntest2/venv/lib/python3.9/site-packages/', '/home/evan/Code/pntest2'],
+             pathex=['/home/evan/Code/pntest/src/proxy', '/home/evan/Code/pntest/venv/lib/python3.9/site-packages/', '/home/evan/Code/pntest'],
              binaries=[('include/cert9.db', 'include/'), ('include/rootCA.csr', 'include/'), ('include/rootCA.key', 'include/')],
              datas=[],
              hiddenimports=[],

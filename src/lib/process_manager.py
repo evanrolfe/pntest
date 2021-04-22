@@ -8,6 +8,7 @@ from models.data.http_flow import HttpFlow
 from models.data.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
+from lib.utils import is_dev_mode
 
 CHROMIUM_COMMAND = 'chromium-browser --no-sandbox --noerrdialogs --user-data-dir=/home/evan/Code/pntest/include/chromium-profile' # noqa
 
@@ -79,15 +80,16 @@ class ProcessManager(QtCore.QObject):
         app_path = str(get_app_path())
         print(f"[ProcessManager] Launching proxy, app_path: {app_path}")
 
-        # TODO: Probably not the safest way of determining if this is in dev mode, better to use an ENV var
-        if 'src' in app_path:
+        if is_dev_mode():
             proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id}'
         else:
             proxy_command = f'{app_path}/include/pntest_proxy {client.proxy_port} {client.id}'
 
+        current_env = os.environ.copy()
         process = subprocess.Popen(
             proxy_command.split(' '),
-            preexec_fn=os.setsid
+            preexec_fn=os.setsid,
+            env=current_env
         )
         self.processes.append({'client': client, 'type': 'proxy', 'process': process})
 

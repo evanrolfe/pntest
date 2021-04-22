@@ -1,6 +1,19 @@
+import pathlib
+import asyncio
+import os
 from mitmproxy import addons, master, options
 from mitmproxy.addons import termlog, keepserving, readfile
-import asyncio
+
+def is_dev_mode():
+    return os.getenv('DEV_MODE') is not None
+
+def get_include_path():
+    if is_dev_mode():
+        app_path = pathlib.Path(__file__).parent.parent.parent.absolute()
+        return f"{app_path}/include"
+    else:
+        app_path = pathlib.Path(__file__).parent
+        return f"{app_path}/include"
 
 class ErrorCheck:
     def __init__(self):
@@ -14,7 +27,8 @@ class Proxy():
     def __init__(self, proxy_events, listen_port):
         self.opts = options.Options()
         self.opts.listen_port = listen_port
-        self.opts.confdir = '/home/evan/Code/mitmproxy/certs'
+        self.opts.confdir = get_include_path()
+        print(f"---------------> {get_include_path()}")
 
         self.master = master.Master(self.opts)
         proxy_events.set_proxy(self)

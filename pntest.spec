@@ -6,7 +6,7 @@ block_cipher = None
 
 a = Analysis(['src/__main__.py'],
              pathex=['/home/evan/Code/pntest/src', '/home/evan/Code/pntest/venv/lib/python3.9/site-packages/', '/home/evan/Code/pntest'],
-             binaries=[('include/cert9.db', 'include/'), ('include/rootCA.csr', 'include/'), ('include/rootCA.key', 'include/')],
+             binaries=[('include/pntest_proxy', 'include/'), ('include/cert9.db', 'include/'), ('include/rootCA.csr', 'include/'), ('include/rootCA.key', 'include/')],
              datas=[('src/style/dark.qss', 'style/'), ('src/style/dark_theme.qss', 'style/'), ('src/style/light.qss', 'style/')],
              hiddenimports=[],
              hookspath=[],
