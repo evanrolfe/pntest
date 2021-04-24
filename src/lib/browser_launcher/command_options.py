@@ -1,4 +1,6 @@
-from lib.paths import get_app_config_path
+from pathlib import Path
+from lib.paths import get_app_config_path, get_include_path
+from lib.cert_utils import generate_hpkp_from_pem_certificate
 
 DEFAULT_CHROME_OPTIONS = [
     '--enable-pinch ',
@@ -21,9 +23,17 @@ DEFAULT_CHROME_OPTIONS = [
 
 def get_command_line_options(client):
     if client.type in ['chrome', 'chromium']:
+
+        print(f"----------------------> include_path: {get_include_path()}")
+        ca_pem = Path(f'{get_include_path()}/mitmproxy-ca.pem').read_text()
+        spki = generate_hpkp_from_pem_certificate(ca_pem)
+        print(f"----------------------> spki: {spki}")
+
         proxy_options = [
             f'--proxy-server=127.0.0.1:{client.proxy_port}',
-            '--proxy-bypass-list=<-loopback>'
+            '--proxy-bypass-list=<-loopback>',
+            f'--ignore-certificate-errors-spki-list={spki}',
+
         ]
 
         user_data_dir_options = [

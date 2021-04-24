@@ -28,8 +28,7 @@ class Proxy():
         self.opts = options.Options()
         self.opts.listen_port = listen_port
         self.opts.confdir = get_include_path()
-        print(f"---------------> {get_include_path()}")
-
+        print(f'[Proxy] --------------------------------> {self.opts.confdir}')
         self.master = master.Master(self.opts)
         proxy_events.set_proxy(self)
         self.master.addons.add(proxy_events)

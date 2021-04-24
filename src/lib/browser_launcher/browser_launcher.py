@@ -48,7 +48,6 @@ def check(browser):
         print(f"Linux/Unidentified system {pltfrm}")
         return check_which(browser)
 
-
 def detect_available_browsers():
     available_browsers = []
 

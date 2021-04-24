@@ -10,8 +10,6 @@ from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
 from lib.utils import is_dev_mode
 
-CHROMIUM_COMMAND = 'chromium-browser --no-sandbox --noerrdialogs --user-data-dir=/home/evan/Code/pntest/include/chromium-profile' # noqa
-
 class ProcessManager(QtCore.QObject):
     flow_created = QtCore.Signal(HttpFlow)
     flow_updated = QtCore.Signal(HttpFlow)

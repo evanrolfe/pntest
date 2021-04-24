@@ -10,6 +10,9 @@ pyinstaller ./src/__main__.py --onefile \
     --add-binary='include/cert9.db:include/' \
     --add-binary='include/rootCA.csr:include/' \
     --add-binary='include/rootCA.key:include/' \
+    --add-binary='include/mitmproxy-ca.pem:include/' \
+    --add-binary='include/mitmproxy-dhparam.pem:include/' \
+    --add-binary='include/html_page.html:include/' \
     --add-data='src/style/dark.qss:style/' \
     --add-data='src/style/dark_theme.qss:style/' \
     --add-data='src/style/light.qss:style/' \
