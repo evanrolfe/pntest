@@ -24,14 +24,14 @@ DEFAULT_CHROME_OPTIONS = [
     '--enable-fixed-layout',
     '--no-first-run',
     '--disable-setuid-sandbox',
-    '--noerrdialogs https://pntest'
+    '--noerrdialogs http://pntest'
 ]
 
 def launch_chrome_or_chromium(client, browser_command):
     options = get_options_chrome_or_chromium(client)
 
     process = subprocess.Popen(
-        browser_command.split(' ') + options,
+        browser_command.split(' ') + options + ['http://pntest'],
         preexec_fn=os.setsid
     )
     return process
@@ -79,6 +79,7 @@ def get_options_firefox(client):
 
 def configure_firefox_profile(client, profile_path):
     proxy_host = '"127.0.0.1"'
+
     prefs = [
         '"network.proxy.http", ' + proxy_host,
         '"network.proxy.http_port", ' + str(client.proxy_port),
@@ -91,7 +92,9 @@ def configure_firefox_profile(client, profile_path):
         '"browser.sessionstore.resume_from_crash", false',
         '"browser.startup.page", 0',
         '"browser.shell.checkDefaultBrowser", false',
-        '"network.proxy.no_proxies_on", ["<-loopback>"]'
+        '"network.proxy.no_proxies_on", ["<-loopback>"]',
+        '"browser.startup.page", 1',
+        '"browser.startup.homepage", "http://pntest"'
     ]
 
     prefs_str = ''.join([f'user_pref({pref});\n' for pref in prefs])

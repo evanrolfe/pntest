@@ -1,11 +1,18 @@
 import simplejson as json
+from pathlib import Path
+
 from mitmproxy.http import Headers
+from mitmproxy import http
+
+from paths import get_include_path
 
 class ProxyEvents:
     def __init__(self, client_id):
         self.client_id = client_id
         self.intercept_enabled = False
         self.intercepted_flows = []
+
+        self.pntest_homepage_html = Path(f'{get_include_path()}/html_page.html').read_text()
 
     def set_proxy(self, proxy):
         self.proxy = proxy
@@ -69,6 +76,10 @@ class ProxyEvents:
     # ---------------------------------------------------------------------------
     def request(self, flow):
         print('[Proxy] HTTP request')
+
+        # The default homepage at http://pntest
+        if flow.request.host == 'pntest':
+            flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
 
         request_state = flow.request.get_state()
         request_state['flow_uuid'] = flow.id
