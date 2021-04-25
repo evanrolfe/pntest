@@ -34,6 +34,11 @@ class Client(Model):
 
     def close(self):
         process_manager = ProcessManager.get_instance()
-        process_manager.close_proxy(self)
+
+        if self.type != 'anything':
+            process_manager.close_browser(self)
+        else:
+            process_manager.close_proxy(self)
+
         self.open = False
         self.save()

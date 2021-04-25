@@ -5,6 +5,7 @@ from views._compiled.clients.ui_clients_page import Ui_ClientsPage
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
 from lib.browser_launcher.detect import detect_available_browsers
+from lib.process_manager import ProcessManager
 
 ANYTHING_CLIENT = {'name': 'anything'}
 
@@ -44,6 +45,9 @@ class ClientsPage(QtWidgets.QWidget):
             'anything': self.ui.anythingButton
         }
         self.set_enabled_clients(detect_available_browsers())
+
+        self.process_manager = ProcessManager.get_instance()
+        self.process_manager.clients_changed.connect(self.reload)
 
     def reload(self):
         # self.ui.clientView.clear()

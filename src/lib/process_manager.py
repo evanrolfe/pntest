@@ -10,8 +10,10 @@ from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
 from lib.utils import is_dev_mode
 from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
+from lib.browser_launcher.browser_proc import BrowserProc
 
 class ProcessManager(QtCore.QObject):
+    clients_changed = QtCore.Signal()
     flow_created = QtCore.Signal(HttpFlow)
     flow_updated = QtCore.Signal(HttpFlow)
     flow_intercepted = QtCore.Signal(HttpFlow)
@@ -41,6 +43,7 @@ class ProcessManager(QtCore.QObject):
     def init(self, src_path):
         self.src_path = src_path
         self.processes = []
+        self.threadpool = QtCore.QThreadPool()
 
         self.proxy_handler = ProxyHandler(self)
         self.proxy_handler.start()
@@ -58,7 +61,11 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.stop()
 
         for process_dict in self.processes:
-            os.kill(process_dict['process'].pid, signal.SIGTERM)
+            if 'process' in process_dict:
+                os.kill(process_dict['process'].pid, signal.SIGTERM)
+
+            if 'worker' in process_dict:
+                process_dict['worker'].kill()
 
     def close_proxy(self, client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'proxy'][0]
@@ -67,14 +74,32 @@ class ProcessManager(QtCore.QObject):
         os.kill(pid, signal.SIGTERM)
         self.processes.remove(process)
 
+    def close_browser(self, client):
+        process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
+        process['worker'].kill()
+        self.processes.remove(process)
+
+    @QtCore.Slot()
+    def browser_was_closed(self, client):
+        print(f"[ProcessManager] browser {client.id} closed, closing proxy")
+        browser_process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
+        self.processes.remove(browser_process)
+
+        self.close_proxy(client)
+        client.open = False
+        client.save()
+        self.clients_changed.emit()
+
     def launch_browser(self, client, browser_command):
         if client.type in ['chrome', 'chromium']:
-            process = launch_chrome_or_chromium(client, browser_command)
+            worker = BrowserProc(client, lambda: launch_chrome_or_chromium(client, browser_command))
         elif client.type == 'firefox':
-            process = launch_firefox(client, browser_command)
+            worker = BrowserProc(client, lambda: launch_firefox(client, browser_command))
 
-        print(f'Launched browser pid {process.pid}')
-        self.processes.append({'client': client, 'type': 'browser', 'process': process})
+        worker.signals.exited.connect(self.browser_was_closed)
+        self.threadpool.start(worker)
+
+        self.processes.append({'client': client, 'type': 'browser', 'worker': worker})
 
     def launch_proxy(self, client):
         app_path = str(get_app_path())
