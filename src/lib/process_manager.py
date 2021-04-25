@@ -9,6 +9,7 @@ from models.data.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
 from lib.utils import is_dev_mode
+from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
 
 class ProcessManager(QtCore.QObject):
     flow_created = QtCore.Signal(HttpFlow)
@@ -66,11 +67,12 @@ class ProcessManager(QtCore.QObject):
         os.kill(pid, signal.SIGTERM)
         self.processes.remove(process)
 
-    def launch_browser(self, client, browser_command, options):
-        process = subprocess.Popen(
-            browser_command.split(' ') + options,
-            preexec_fn=os.setsid
-        )
+    def launch_browser(self, client, browser_command):
+        if client.type in ['chrome', 'chromium']:
+            process = launch_chrome_or_chromium(client, browser_command)
+        elif client.type == 'firefox':
+            process = launch_firefox(client, browser_command)
+
         print(f'Launched browser pid {process.pid}')
         self.processes.append({'client': client, 'type': 'browser', 'process': process})
 

@@ -4,7 +4,7 @@ from views._compiled.clients.ui_clients_page import Ui_ClientsPage
 
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
-from lib.browser_launcher.browser_launcher import detect_available_browsers
+from lib.browser_launcher.detect import detect_available_browsers
 
 ANYTHING_CLIENT = {'name': 'anything'}
 

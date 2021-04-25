@@ -1,6 +1,5 @@
 from orator import Model
 from lib.process_manager import ProcessManager
-from lib.browser_launcher.command_options import get_command_line_options
 
 PROXY_PORT = 8080
 BROWSER_PORT = 9222
@@ -28,9 +27,7 @@ class Client(Model):
 
         browser_command = client_info.get('command')
         if browser_command:
-            options = get_command_line_options(self)
-            print(options)
-            process_manager.launch_browser(self, browser_command, options)
+            process_manager.launch_browser(self, browser_command)
 
         self.open = True
         self.save()
