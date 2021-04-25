@@ -1,6 +1,7 @@
 import subprocess
 import os
 from pathlib import Path
+import shutil
 
 from lib.paths import get_app_config_path, get_include_path
 from lib.cert_utils import generate_hpkp_from_pem_certificate
@@ -98,3 +99,6 @@ def configure_firefox_profile(client, profile_path):
 
     with open(pref_file, 'a+') as file:
         file.write(prefs_str)
+
+    cert9_file = f'{get_include_path()}/cert9.db'
+    shutil.copyfile(cert9_file, f'{profile_path}/cert9.db')
