@@ -33,6 +33,7 @@ class HttpRequest(Model):
         self.method = 'GET'
         self.scheme = 'http'
         self.path = ''
+        self.content = ''
 
     def get_state(self):
         attributes = self.serialize()

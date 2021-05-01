@@ -105,7 +105,17 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def save_request(self):
         self.update_request_with_values_from_form()
-        self.flow.request.save()
+        if hasattr(self.flow, 'id'):
+            self.flow.request.save()
+        else:
+            saved_editor_item = self.editor_item.save()
+            self.editor_item = saved_editor_item
+            self.flow = self.editor_item.item()
+            self.request = self.flow.request
+            self.original_flow = self.flow
+
+            # TODO: This needs to emit a signal to add the editor_item to the tabs
+
         self.form_input_changed.emit(False)
         self.request_saved.emit()
 
@@ -178,6 +188,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.flow.request.method = method
         self.flow.request.host = url_data.hostname
         self.flow.request.port = url_data.port
+        self.flow.request.scheme = url_data.scheme
 
         if url_data.query == '':
             self.flow.request.path = url_data.path
