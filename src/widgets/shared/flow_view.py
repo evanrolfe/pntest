@@ -1,4 +1,6 @@
 import json
+# from html5print import HTMLBeautifier
+from bs4 import BeautifulSoup
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 
@@ -42,7 +44,7 @@ class FlowView(QtWidgets.QWidget):
         self.response_format_dropdown.insertItems(0, self.FORMATS)
         self.response_format_dropdown.setObjectName('responseFormatDropdown')
         self.response_format_dropdown.setCurrentIndex(len(self.FORMATS) - 1)
-        self.response_format_dropdown.currentIndexChanged.connect(self.set_response_body_format)
+        self.response_format_dropdown.currentIndexChanged.connect(self.change_response_body_format)
 
         self.save_example_button = QtWidgets.QPushButton('Save as Example')
         self.save_example_button.setObjectName('saveAsExample')
@@ -168,6 +170,7 @@ class FlowView(QtWidgets.QWidget):
 
     # This method does not need the response to be saved to the DB:
     def set_response_from_editor(self, response, url):
+        self.editor_response = response
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
 
@@ -198,20 +201,28 @@ class FlowView(QtWidgets.QWidget):
         self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
 
     @QtCore.Slot()
-    def set_response_body_format(self, index):
-        format = self.FORMATS[index]
-        print(f'Setting format to {format}')
-        self.selected_format = format
-        content = self.ui.responseRaw.get_value()
+    def change_response_body_format(self, index):
+        self.selected_format = self.FORMATS[index]
+
+        if self.flow.response:
+            content = self.flow.response.content
+        else:
+            content = self.editor_response.content
+
         formatted_content = self.format_text(content)
-        self.ui.responseRaw.set_value(formatted_content)
+        self.ui.responseRaw.set_value(formatted_content, self.selected_format)
 
     def format_text(self, text):
+        # TODO: Format javascript
         if self.selected_format == 'JSON':
             try:
                 formatted_content = json.dumps(json.loads(text), indent=2)
             except json.decoder.JSONDecodeError:
                 formatted_content = text
+        elif self.selected_format == 'XML':
+            formatted_content = BeautifulSoup(text, 'xml.parser').prettify()
+        elif self.selected_format == 'HTML':
+            formatted_content = BeautifulSoup(text, 'html.parser').prettify()
         else:
             formatted_content = text
 

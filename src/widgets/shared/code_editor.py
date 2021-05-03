@@ -13,7 +13,6 @@ class WebBridge(QtCore.QObject):
     def set_value(self, value, format):
         self.value = value
         self.format = format
-        print(f'=======> Format: {format}')
         self.emit_set_code()
 
     @QtCore.Slot()

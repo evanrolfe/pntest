@@ -4,6 +4,7 @@ asgiref==3.3.1
 attrs==20.3.0
 autopep8==1.5.5
 backpack==0.1
+beautifulsoup4==4.9.3
 blinker==1.4
 Brotli==1.0.9
 certifi==2020.12.5
@@ -20,6 +21,8 @@ Flask==1.1.2
 h11==0.12.0
 h2==4.0.0
 hpack==4.0.0
+html5lib==1.1
+html5print==0.1.2
 hyperframe==6.0.0
 idna==2.10
 importlib-metadata==3.4.0
@@ -42,6 +45,7 @@ pendulum==1.5.1
 pkg-resources==0.0.0
 pluggy==0.13.1
 plumbum==1.7.0
+ply==3.4
 protobuf==3.14.0
 publicsuffix2==2.20191221
 py==1.10.0
@@ -72,14 +76,18 @@ ruamel.yaml.clib==0.2.2
 shiboken2==5.15.2
 simplejson==3.17.2
 six==1.15.0
+slimit==0.8.1
 sortedcontainers==2.3.0
+soupsieve==2.2.1
 text-unidecode==1.2
+tinycss2==1.1.0
 toml==0.10.2
 tornado==6.1
 typing-extensions==3.7.4.3
 tzlocal==1.5.1
 urllib3==1.26.2
 urwid==2.1.2
+webencodings==0.5.1
 Werkzeug==1.0.1
 wrapt==1.12.1
 wsproto==1.0.0
