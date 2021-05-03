@@ -41,7 +41,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.ui.flowView.set_show_rendered(False)
         self.ui.flowView.set_editable(True)
-        self.ui.flowView.show_save_as_example_button()
+        self.ui.flowView.set_save_as_example_enabled(False)
         self.ui.flowView.save_example_button.clicked.connect(self.save_example)
 
         self.show_request()

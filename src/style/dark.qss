@@ -319,7 +319,7 @@ QComboBox::drop-down {
   image: url(":/icons/dark/icons8-sort-down-18.png");
 }
 
-#modifiedDropdown {
+#modifiedDropdown, #responseModifiedDropdown, #responseFormatDropdown {
     margin-top: 5px;
     margin-bottom: 5px;
     margin-right: 10px;

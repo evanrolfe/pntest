@@ -27,6 +27,7 @@ class HttpPage(QtWidgets.QWidget):
 
         self.ui.toggleButton.clicked.connect(self.toggle_page)
         self.ui.requestViewWidget.set_show_rendered(True)
+        self.ui.requestViewWidget.set_save_as_example_visible(False)
         self.ui.requestViewWidget.show_modified_dropdown()
 
         self.restore_layout_state()

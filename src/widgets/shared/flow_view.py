@@ -1,3 +1,4 @@
+import json
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 
@@ -5,6 +6,8 @@ from views._compiled.shared.ui_flow_view import Ui_FlowView
 
 class FlowView(QtWidgets.QWidget):
     save_example_clicked = QtCore.Signal()
+
+    FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
 
     def __init__(self, *args, **kwargs):
         super(FlowView, self).__init__(*args, **kwargs)
@@ -15,6 +18,44 @@ class FlowView(QtWidgets.QWidget):
         self.show_modified_request = False
         self.show_modified_response = False
         self.editable = False
+        self.selected_format = self.FORMATS[len(self.FORMATS) - 1]
+
+        # Setup Request Corner Widget:
+        self.request_modified_dropdown = QtWidgets.QComboBox()
+        self.request_modified_dropdown.setContentsMargins(10, 10, 10, 10)
+        self.request_modified_dropdown.insertItems(0, ['Modified', 'Original'])
+        self.request_modified_dropdown.setObjectName('modifiedDropdown')
+        self.request_modified_dropdown.currentIndexChanged.connect(self.show_modified_request_change)
+
+        self.ui.requestTabs.setCornerWidget(self.request_modified_dropdown)
+
+        # Setup Response Corner Widget:
+        self.response_modified_dropdown = QtWidgets.QComboBox()
+        self.response_modified_dropdown.setContentsMargins(10, 10, 10, 10)
+        self.response_modified_dropdown.insertItems(0, ['Modified', 'Original'])
+        self.response_modified_dropdown.setObjectName('responseModifiedDropdown')
+        self.response_modified_dropdown.setCurrentIndex(0)
+        self.response_modified_dropdown.currentIndexChanged.connect(self.show_modified_response_change)
+
+        self.response_format_dropdown = QtWidgets.QComboBox()
+        self.response_format_dropdown.setContentsMargins(10, 10, 10, 10)
+        self.response_format_dropdown.insertItems(0, self.FORMATS)
+        self.response_format_dropdown.setObjectName('responseFormatDropdown')
+        self.response_format_dropdown.setCurrentIndex(len(self.FORMATS) - 1)
+        self.response_format_dropdown.currentIndexChanged.connect(self.set_response_body_format)
+
+        self.save_example_button = QtWidgets.QPushButton('Save as Example')
+        self.save_example_button.setObjectName('saveAsExample')
+        self.save_example_button.setEnabled(False)
+
+        self.response_corner_widget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout(self.response_corner_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.response_format_dropdown)
+        layout.addWidget(self.response_modified_dropdown)
+        layout.addWidget(self.save_example_button)
+
+        self.ui.responseTabs.setCornerWidget(self.response_corner_widget)
 
     def set_editable(self, editable):
         self.editable = editable
@@ -27,28 +68,11 @@ class FlowView(QtWidgets.QWidget):
         self.show_rendered = show_rendered
 
     def show_modified_dropdown(self):
-        self.request_modified_dropdown = QtWidgets.QComboBox()
-        self.request_modified_dropdown.setContentsMargins(10, 10, 10, 10)
-        self.request_modified_dropdown.insertItems(0, ['Modified', 'Original'])
-        self.request_modified_dropdown.setObjectName('modifiedDropdown')
-        self.request_modified_dropdown.currentIndexChanged.connect(self.show_modified_request_change)
-
-        self.response_modified_dropdown = QtWidgets.QComboBox()
-        self.response_modified_dropdown.setContentsMargins(10, 10, 10, 10)
-        self.response_modified_dropdown.insertItems(0, ['Modified', 'Original'])
-        self.response_modified_dropdown.setObjectName('modifiedDropdown')
-        self.response_modified_dropdown.currentIndexChanged.connect(self.show_modified_response_change)
-
-        self.ui.requestTabs.setCornerWidget(self.request_modified_dropdown)
-        self.ui.responseTabs.setCornerWidget(self.response_modified_dropdown)
         self.show_modified_request = True
         self.show_modified_response = True
 
-    def show_save_as_example_button(self):
-        self.save_example_button = QtWidgets.QPushButton('Save as Example')
-        self.save_example_button.setObjectName('saveAsExample')
-        self.ui.responseTabs.setCornerWidget(self.save_example_button)
-        self.save_example_button.setEnabled(False)
+    def set_save_as_example_visible(self, visible):
+        self.save_example_button.setVisible(visible)
 
     def set_save_as_example_enabled(self, enabled):
         self.save_example_button.setEnabled(enabled)
@@ -127,7 +151,10 @@ class FlowView(QtWidgets.QWidget):
 
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
-        self.ui.responseRaw.set_value(response.content or '')
+
+        self.set_format_from_headers(response.get_headers())
+        formatted_content = self.format_text(response.content)
+        self.ui.responseRaw.set_value(formatted_content or '', self.selected_format)
         # if self.show_rendered:
         #     self.ui.responseRendered.set_value(response_body_rendered or '')
         headers = flow.response.get_headers()
@@ -143,7 +170,10 @@ class FlowView(QtWidgets.QWidget):
     def set_response_from_editor(self, response, url):
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
-        self.ui.responseRaw.set_value(response.content or '')
+
+        self.set_format_from_headers(response.get_headers())
+        formatted_content = self.format_text(response.content)
+        self.ui.responseRaw.set_value(formatted_content or '', self.selected_format)
 
         headers = response.get_headers()
         content_type = headers.get('Content-Type', '')
@@ -166,3 +196,41 @@ class FlowView(QtWidgets.QWidget):
     @QtCore.Slot()
     def hide_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
+
+    @QtCore.Slot()
+    def set_response_body_format(self, index):
+        format = self.FORMATS[index]
+        print(f'Setting format to {format}')
+        self.selected_format = format
+        content = self.ui.responseRaw.get_value()
+        formatted_content = self.format_text(content)
+        self.ui.responseRaw.set_value(formatted_content)
+
+    def format_text(self, text):
+        if self.selected_format == 'JSON':
+            try:
+                formatted_content = json.dumps(json.loads(text), indent=2)
+            except json.decoder.JSONDecodeError:
+                formatted_content = text
+        else:
+            formatted_content = text
+
+        return formatted_content
+
+    def set_format_from_headers(self, headers):
+        lower_case_headers = {k.lower(): v for k, v in headers.items()}
+        content_type = lower_case_headers.get('content-type')
+
+        if 'json' in content_type:
+            self.selected_format = 'JSON'
+        elif 'xml' in content_type:
+            self.selected_format = 'XML'
+        elif 'html' in content_type:
+            self.selected_format = 'HTML'
+        elif 'javascript' in content_type:
+            self.selected_format = 'Javascript'
+        else:
+            self.selected_format = 'Unformatted'
+
+        index = self.FORMATS.index(self.selected_format)
+        self.response_format_dropdown.setCurrentIndex(index)
