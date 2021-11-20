@@ -8,7 +8,7 @@ from models.data.crawl import Crawl
 from models.data.client import Client
 
 class TestCrawlsPage:
-    @mock.patch("lib.backend.Backend.get_instance", mock.MagicMock())
+    #@mock.patch("lib.backend.Backend.get_instance", mock.MagicMock())
     def test_crawls_page(self, database, qtbot):
         client = factory(Client).create()
         factory(Crawl).create(client_id=client.id)

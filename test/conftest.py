@@ -1,7 +1,7 @@
 import pytest
 
 from lib.database import Database
-from models.data.editor_request import EditorRequest
+# from models.data.editor_request import EditorRequest
 from models.data.editor_item import EditorItem
 
 @pytest.fixture(scope="session")
@@ -12,7 +12,7 @@ def database():
 
 @pytest.fixture(scope="function")
 def cleanup_database():
-    EditorRequest.truncate()
+    # EditorRequest.truncate()
     EditorItem.truncate()
 
     yield
