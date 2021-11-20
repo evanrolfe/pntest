@@ -1,5 +1,6 @@
 import asyncio
 import os
+import pathlib
 import signal
 from sys import argv
 import zmq.asyncio
@@ -15,11 +16,20 @@ TIMEOUT_AFTER_SECONDS_NO_POLL = 3
 
 port_num = int(argv[1])
 client_id = int(argv[2])
+
 print(f'Proxy server starting, port {port_num}, client_id {client_id}..')
 
+if os.getenv('DEV_MODE'):
+    app_path = pathlib.Path(__file__).parent.parent.parent.absolute()
+    print(f'[Proxy] dev mode')
+    include_path = f"{app_path}/include"
+else:
+    include_path = argv[3]
+print(f'[Proxy] --------------> include_path: {include_path}')
+
 # 1. Start mitmproxy
-proxy_events = ProxyEvents(client_id)
-proxy = Proxy(proxy_events, port_num)
+proxy_events = ProxyEvents(client_id, include_path)
+proxy = Proxy(proxy_events, port_num, include_path)
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
 proxy_thread.start()

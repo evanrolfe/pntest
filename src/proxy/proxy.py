@@ -3,8 +3,6 @@ import asyncio
 from mitmproxy import addons, master, options
 from mitmproxy.addons import termlog, keepserving, readfile
 
-from paths import get_include_path
-
 class ErrorCheck:
     def __init__(self):
         self.has_errored = False
@@ -14,11 +12,10 @@ class ErrorCheck:
             self.has_errored = True
 
 class Proxy():
-    def __init__(self, proxy_events, listen_port):
+    def __init__(self, proxy_events, listen_port, include_path):
         self.opts = options.Options()
         self.opts.listen_port = listen_port
-        self.opts.confdir = get_include_path()
-        print(f'[Proxy] --------------------------------> {self.opts.confdir}')
+        self.opts.confdir = include_path
         self.master = master.Master(self.opts)
         proxy_events.set_proxy(self)
         self.master.addons.add(proxy_events)

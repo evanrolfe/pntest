@@ -108,8 +108,8 @@ class ProcessManager(QtCore.QObject):
         if is_dev_mode():
             proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id}'
         else:
-            proxy_command = f'{app_path}/include/pntest_proxy {client.proxy_port} {client.id}'
-
+            proxy_command = f'{app_path}/include/pntest_proxy {client.proxy_port} {client.id} {app_path}/include'
+        print(proxy_command)
         current_env = os.environ.copy()
         process = subprocess.Popen(
             proxy_command.split(' '),

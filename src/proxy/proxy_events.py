@@ -4,15 +4,13 @@ from pathlib import Path
 from mitmproxy.http import Headers
 from mitmproxy import http
 
-from paths import get_include_path
-
 class ProxyEvents:
-    def __init__(self, client_id):
+    def __init__(self, client_id, include_path):
         self.client_id = client_id
         self.intercept_enabled = False
         self.intercepted_flows = []
-
-        self.pntest_homepage_html = Path(f'{get_include_path()}/html_page.html').read_text()
+        self.include_path = include_path
+        self.pntest_homepage_html = Path(f'{self.include_path}/html_page.html').read_text()
 
     def set_proxy(self, proxy):
         self.proxy = proxy
