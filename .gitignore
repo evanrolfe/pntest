@@ -3,7 +3,9 @@ venv
 *.pyo
 **/__pycache__
 build/*
-dist/*
+dist/pntest
+dist/debian/pntest/usr/bin/pntest
+dist/debian/pntest.deb
 production.log
 test/tmp.db
 include/pntest_proxy
