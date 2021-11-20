@@ -32,10 +32,11 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
         if index.column() == 0:
             return QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled
         else:
-            if index.row() < 2:
-                return QtCore.Qt.ItemIsEnabled
-            else:
-                return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled
+            # TODO: Only set this on the Editor page
+            # if index.row() < 2:
+            #     return QtCore.Qt.ItemIsEnabled
+            # else:
+            return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled
 
     def roleNames(self):
         roles = {}

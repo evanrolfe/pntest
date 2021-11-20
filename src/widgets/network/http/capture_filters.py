@@ -36,7 +36,6 @@ class CaptureFilters(QtWidgets.QDialog):
 
     @QtCore.Slot()
     def save(self):
-        # self.backend.send_command(self.launch_command)
         host_setting_index = self.ui.hostSettingDropdown.currentIndex()
         host_setting = self.index_to_setting(host_setting_index)
         host_list = self.ui.hostsText.toPlainText().split("\n")

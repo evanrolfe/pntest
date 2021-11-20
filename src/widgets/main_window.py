@@ -6,7 +6,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2 import QtXml # noqa F401
 
 from views._compiled.ui_main_window import Ui_MainWindow
-
 from lib.app_settings import AppSettings
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -57,16 +56,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup_sidebar()
 
         # Shortcut for closing app
-        self.network_page.send_request_to_editor.connect(self.editor_page.send_request_to_editor)
-        self.network_page.send_request_to_editor.connect(self.show_editor_page)
+        self.network_page.send_flow_to_editor.connect(self.editor_page.send_flow_to_editor)
+        self.network_page.send_flow_to_editor.connect(self.show_editor_page)
 
         # Menubar:
         self.setup_menu_actions()
         self.restore_layout_state()
-        # self.show_editor_page()
 
-    def set_backend(self, backend):
-        self.backend = backend
+    # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
+    def set_process_manager(self, process_manager):
+        self.process_manager = process_manager
+
+        # TODO: We could probably use the singleton get_instance() and set these in the page's constructors
+        # Network Page:
+        self.process_manager.flow_created.connect(self.network_page.http_page.flow_created)
+        self.process_manager.flow_updated.connect(self.network_page.http_page.flow_updated)
+        self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
@@ -99,7 +104,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
-        self.backend.kill()
 
     def exit(self):
         QtWidgets.QApplication.quit()
@@ -116,39 +120,33 @@ class MainWindow(QtWidgets.QMainWindow):
         # icon_size = QSize(52, 35)
 
         # Network Item
-        network_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-cloud-backup-restore-50.png"), None)
+        network_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-cloud-backup-restore-50.png"), None)
         network_item.setData(QtCore.Qt.UserRole, 'network')
         # network_item.setSizeHint(icon_size)
         self.ui.sideBar.addItem(network_item)
 
         # Intercept Item
-        intercept_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-rich-text-converter-50.png"), None)
+        intercept_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-rich-text-converter-50.png"), None)
         intercept_item.setData(QtCore.Qt.UserRole, 'intercept')
         self.ui.sideBar.addItem(intercept_item)
 
         # Clients Item
-        clients_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-browse-page-50.png"), None)
+        clients_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-browse-page-50.png"), None)
         clients_item.setData(QtCore.Qt.UserRole, 'clients')
         self.ui.sideBar.addItem(clients_item)
 
         # Requests Item
-        requests_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-compose-50.png"), None)
+        requests_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-compose-50.png"), None)
         requests_item.setData(QtCore.Qt.UserRole, 'requests')
         self.ui.sideBar.addItem(QtWidgets.QListWidgetItem(requests_item))
 
         # Crawler Item
-        crawler_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-spiderweb-50.png"), None)
+        crawler_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-spiderweb-50.png"), None)
         crawler_item.setData(QtCore.Qt.UserRole, 'crawler')
         self.ui.sideBar.addItem(crawler_item)
 
         # Extensions Item
-        extensions_item = QtWidgets.QListWidgetItem(
-            QtGui.QIcon(":/icons/dark/icons8-plus-math-50.png"), None)
+        extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-plus-math-50.png"), None)
         extensions_item.setData(QtCore.Qt.UserRole, 'extensions')
         self.ui.sideBar.addItem(extensions_item)
 
@@ -176,6 +174,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def open_project(self):
+        # print('Resuming request...')
+        # self.proxy_events_manager.resume_request()
         file = QtWidgets.QFileDialog.getOpenFileName(
             self,
             "Open Project",
@@ -186,7 +186,6 @@ class MainWindow(QtWidgets.QMainWindow):
         print(f'Opening {db_path}')
         database = Database.get_instance()
         database.reload_with_new_database(db_path)
-        self.backend.reload_with_new_database(db_path)
 
         self.reload()
 
@@ -208,8 +207,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         database.load_new_database(new_db_path)
         self.reload()
-
-        # self.backend.reload_with_new_database(file_path)
 
     def setup_menu_actions(self):
         self.ui.actionOpen.triggered.connect(self.open_project)

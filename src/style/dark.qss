@@ -251,7 +251,12 @@ QPushButton:pressed {
   background-color: $bg-dark;
 }
 
-QPushButton#toggleFuzzTableButton {
+QPushButton:disabled {
+  background-color: $bg-mid;
+  color: $border-light;
+}
+
+QPushButton#toggleExamplesButton {
   background-color: $bg-dark;
   min-width: 10px;
 }
@@ -273,6 +278,14 @@ QPushButton#sendButton:pressed {
 QPushButton#saveButton {
   font-size: 13px;
   font-weight: 600;
+}
+
+QPushButton#saveAsExample {
+  margin-top: 5px;
+  margin-right: 10px;
+  font-size: 12px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 /*------------------------------------------------------------------------------*
  * QComboBox
@@ -306,7 +319,7 @@ QComboBox::drop-down {
   image: url(":/icons/dark/icons8-sort-down-18.png");
 }
 
-#modifiedDropdown {
+#modifiedDropdown, #responseModifiedDropdown, #responseFormatDropdown {
     margin-top: 5px;
     margin-bottom: 5px;
     margin-right: 10px;

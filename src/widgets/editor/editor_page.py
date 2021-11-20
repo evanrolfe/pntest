@@ -36,7 +36,9 @@ class EditorPage(QtWidgets.QWidget):
         # self.ui.requestGroupView.save_layout_state()
 
     @QtCore.Slot()
-    def send_request_to_editor(self, request):
-        editor_item = EditorItem.create_from_network_request(request)
+    def send_flow_to_editor(self, flow):
+        new_flow = flow.duplicate_for_editor()
+        editor_item = EditorItem.create_for_http_flow(new_flow)
+
         print(f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')
         self.ui.itemExplorer.new_editor_item_created(editor_item)

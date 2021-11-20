@@ -4,7 +4,7 @@ from widgets.network.http_page import HttpPage
 from widgets.network.ws_page import WsPage
 
 class NetworkPage(QtWidgets.QWidget):
-    send_request_to_editor = QtCore.Signal(object)
+    send_flow_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         super(NetworkPage, self).__init__(*args, **kwargs)
@@ -21,7 +21,7 @@ class NetworkPage(QtWidgets.QWidget):
         layout.addWidget(self.stacked_widget)
 
         # Connect signals
-        self.http_page.send_request_to_editor.connect(self.send_request_to_editor)
+        self.http_page.send_flow_to_editor.connect(self.send_flow_to_editor)
         self.ws_page.toggle_page.connect(self.set_page_http)
         self.http_page.toggle_page.connect(self.set_page_ws)
 

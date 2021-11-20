@@ -1,3 +1,4 @@
+from copy import deepcopy
 from PySide2 import QtWidgets, QtCore
 
 from views._compiled.shared.ui_headers_form import Ui_HeadersForm
@@ -13,6 +14,7 @@ class HeadersForm(QtWidgets.QWidget):
         [True, 'Connection', 'keep-alive'],
         [True, 'User-Agent', 'pntest/0.1'],
     ]
+    EMPTY_HEADER = [False, '', '']
 
     def __init__(self, *args, **kwargs):
         super(HeadersForm, self).__init__(*args, **kwargs)
@@ -20,6 +22,7 @@ class HeadersForm(QtWidgets.QWidget):
         self.ui = Ui_HeadersForm()
         self.ui.setupUi(self)
 
+        self.editable = False
         self.table_model = RequestHeadersTableModel([])
         self.set_header_line('')
         self.set_headers({})
@@ -42,18 +45,27 @@ class HeadersForm(QtWidgets.QWidget):
         # self.ui.showGeneratedHeaders.setTristate(False)
         # self.ui.showGeneratedHeaders.stateChanged.connect(self.show_generated_headers)
 
+    def set_editable(self, editable):
+        self.editable = editable
+
     def set_header_line(self, header_line):
         if header_line is not None:
             self.ui.headerLine.setText(header_line)
         else:
             self.ui.headerLine.setVisible(False)
 
+    def set_default_headers(self):
+        headers = self.DEFAULT_HEADERS[:] + [self.EMPTY_HEADER]
+        self.table_model.set_headers(deepcopy(headers))
+
     def set_headers(self, headers):
         if headers is None:
-            # headers = self.DEFAULT_HEADERS[:]
             headers = []
         else:
             headers = [[True, key, value] for key, value in headers.items()]
+
+        if self.editable:
+            headers.append(deepcopy(self.EMPTY_HEADER))
 
         self.table_model.set_headers(headers)
 
@@ -65,6 +77,9 @@ class HeadersForm(QtWidgets.QWidget):
         else:
             self.ui.headersTable.hideRow(0)
             self.ui.headersTable.hideRow(1)
+
+    def get_header_line(self):
+        return self.ui.headerLine.text()
 
     def get_headers(self):
         return self.table_model.get_headers()

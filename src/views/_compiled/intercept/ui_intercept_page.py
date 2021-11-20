@@ -12,6 +12,9 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widgets.shared.code_editor import CodeEditor
+from widgets.shared.headers_form import HeadersForm
+
 
 class Ui_InterceptPage(object):
     def setupUi(self, InterceptPage):
@@ -110,10 +113,10 @@ class Ui_InterceptPage(object):
         self.verticalLayout_4 = QVBoxLayout(self.headersTab)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.headersText = QPlainTextEdit(self.headersTab)
-        self.headersText.setObjectName(u"headersText")
+        self.headers = HeadersForm(self.headersTab)
+        self.headers.setObjectName(u"headers")
 
-        self.verticalLayout_4.addWidget(self.headersText)
+        self.verticalLayout_4.addWidget(self.headers)
 
         self.interceptTabs.addTab(self.headersTab, "")
         self.bodyTab = QWidget()

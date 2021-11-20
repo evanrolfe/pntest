@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'request_view.ui'
+## Form generated from reading UI file 'flow_view.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -18,15 +18,15 @@ from widgets.shared.headers_form import HeadersForm
 from widgets.shared.loader import Loader
 
 
-class Ui_RequestView(object):
-    def setupUi(self, RequestView):
-        if not RequestView.objectName():
-            RequestView.setObjectName(u"RequestView")
-        RequestView.resize(590, 678)
-        self.verticalLayout_2 = QVBoxLayout(RequestView)
+class Ui_FlowView(object):
+    def setupUi(self, FlowView):
+        if not FlowView.objectName():
+            FlowView.setObjectName(u"FlowView")
+        FlowView.resize(590, 678)
+        self.verticalLayout_2 = QVBoxLayout(FlowView)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.splitter = QSplitter(RequestView)
+        self.splitter = QSplitter(FlowView)
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Vertical)
         self.requestTabs = QTabWidget(self.splitter)
@@ -124,22 +124,22 @@ class Ui_RequestView(object):
         self.verticalLayout_2.addWidget(self.splitter)
 
 
-        self.retranslateUi(RequestView)
+        self.retranslateUi(FlowView)
 
         self.requestTabs.setCurrentIndex(-1)
         self.responseTabs.setCurrentIndex(0)
 
 
-        QMetaObject.connectSlotsByName(RequestView)
+        QMetaObject.connectSlotsByName(FlowView)
     # setupUi
 
-    def retranslateUi(self, RequestView):
-        RequestView.setWindowTitle(QCoreApplication.translate("RequestView", u"Form", None))
-        self.requestTabs.setTabText(self.requestTabs.indexOf(self.requestHeadersTab), QCoreApplication.translate("RequestView", u"Request", None))
-        self.requestTabs.setTabText(self.requestTabs.indexOf(self.requestPayloadTab), QCoreApplication.translate("RequestView", u"Payload", None))
-        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseHeadersTab), QCoreApplication.translate("RequestView", u"Response", None))
-        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRawTab), QCoreApplication.translate("RequestView", u"Body", None))
-        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRenderedTab), QCoreApplication.translate("RequestView", u"Rendered", None))
-        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyPreviewTab), QCoreApplication.translate("RequestView", u"Preview", None))
+    def retranslateUi(self, FlowView):
+        FlowView.setWindowTitle(QCoreApplication.translate("FlowView", u"Form", None))
+        self.requestTabs.setTabText(self.requestTabs.indexOf(self.requestHeadersTab), QCoreApplication.translate("FlowView", u"Request", None))
+        self.requestTabs.setTabText(self.requestTabs.indexOf(self.requestPayloadTab), QCoreApplication.translate("FlowView", u"Payload", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseHeadersTab), QCoreApplication.translate("FlowView", u"Response", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRawTab), QCoreApplication.translate("FlowView", u"Body", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRenderedTab), QCoreApplication.translate("FlowView", u"Rendered", None))
+        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyPreviewTab), QCoreApplication.translate("FlowView", u"Preview", None))
     # retranslateUi
 

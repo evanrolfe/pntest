@@ -3,7 +3,6 @@ from PySide2 import QtWidgets, QtCore
 from views._compiled.crawls.ui_crawls_page import Ui_CrawlsPage
 
 from widgets.crawls.new_crawl import NewCrawl
-from lib.backend import Backend
 from models.qt.crawls_table_model import CrawlsTableModel
 from models.data.crawl import Crawl
 
@@ -19,9 +18,6 @@ class CrawlsPage(QtWidgets.QWidget):
 
         self.ui.crawlsTable.setTableModel(self.crawls_table_model)
         self.ui.crawlsTable.crawl_selected.connect(self.select_crawl)
-
-        # Reload when the crawls have changed:
-        self.backend = Backend.get_instance()
 
         # New Crawler Dialog:
         self.new_crawl = NewCrawl(self)

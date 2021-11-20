@@ -1,10 +1,12 @@
 from PySide2 import QtCore, QtWidgets
 
 from models.data.editor_item import EditorItem
+from models.data.editor_item_unsaved import EditorItemUnsaved
 from widgets.editor.request_edit_page import RequestEditPage
 
 class Tabs(QtWidgets.QTabWidget):
     item_changed = QtCore.Signal(EditorItem)
+    new_request_saved = QtCore.Signal(EditorItem)
 
     def __init__(self, *args, **kwargs):
         super(Tabs, self).__init__(*args, **kwargs)
@@ -12,8 +14,17 @@ class Tabs(QtWidgets.QTabWidget):
         self.setTabsClosable(True)
         self.setMovable(True)
         self.setIconSize(QtCore.QSize(20, 12))
+        self.open_blank_item()
 
         self.tabCloseRequested.connect(self.close_tab)
+
+    def open_blank_item(self):
+        editor_item = EditorItemUnsaved()
+        request_edit_page = RequestEditPage(editor_item)
+        request_edit_page.request_saved.connect(lambda: self.reload_icon)
+        request_edit_page.request_saved.connect(lambda: self.new_request_saved.emit(request_edit_page.editor_item))
+        self.insertTab(self.count(), request_edit_page, editor_item.icon(), editor_item.name)
+        self.setCurrentIndex(self.count() - 1)
 
     @QtCore.Slot()
     def open_item(self, editor_item):

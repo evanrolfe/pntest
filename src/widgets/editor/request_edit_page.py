@@ -1,10 +1,12 @@
 from PySide2 import QtWidgets, QtCore, QtGui
+from urllib.parse import urlsplit
 
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
-from lib.http_request import HttpRequest
+from lib.http_request import HttpRequest as HttpRequestLib
+from models.data.http_response import HttpResponse
 
 class RequestEditPage(QtWidgets.QWidget):
     form_input_changed = QtCore.Signal(bool)
@@ -16,25 +18,34 @@ class RequestEditPage(QtWidgets.QWidget):
         super(RequestEditPage, self).__init__()
 
         self.editor_item = editor_item
-        self.request = self.editor_item.item()
+        self.flow = self.editor_item.item()
+        self.request = self.flow.request
+        self.original_flow = self.flow
+
         self.ui = Ui_RequestEditPage()
         self.ui.setupUi(self)
 
         self.ui.urlInput.setText(self.editor_item.name)
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.hide_fuzz_table()
+        self.ui.examplesTable.setVisible(False)
+        self.ui.toggleExamplesButton.setText("Saved Examples >>")
         self.settings = AppSettings.get_instance()
         self.restore_layout_state()
 
-        self.ui.toggleFuzzTableButton.clicked.connect(self.toggle_fuzz_table)
-        self.ui.sendButton.clicked.connect(self.ui.requestViewWidget.show_loader)
+        self.ui.toggleExamplesButton.clicked.connect(self.toggle_examples_table)
+        self.ui.sendButton.clicked.connect(self.ui.flowView.show_loader)
         self.ui.sendButton.clicked.connect(self.send_request_async)
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
-        self.ui.requestViewWidget.set_show_rendered(False)
+
+        self.ui.flowView.set_show_rendered(False)
+        self.ui.flowView.set_editable(True)
+        self.ui.flowView.set_save_as_example_enabled(False)
+        self.ui.flowView.save_example_button.clicked.connect(self.save_example)
 
         self.show_request()
+        self.show_examples()
         self.request_is_modified = False
 
         # save_response_button = QtWidgets.QPushButton('Save Response')
@@ -58,36 +69,82 @@ class RequestEditPage(QtWidgets.QWidget):
         # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
-    def show_request(self):
-        self.ui.urlInput.setText(self.request.url)
-        self.set_method_on_form(self.request.method)
+        self.ui.examplesTable.example_selected.connect(self.show_example)
+        self.ui.examplesTable.delete_examples.connect(self.delete_examples)
 
-        self.ui.requestViewWidget.set_request(self.request)
+    def show_request(self):
+        self.ui.urlInput.setText(self.flow.request.get_url())
+        self.set_method_on_form(self.flow.request.method)
+        self.ui.flowView.set_flow(self.flow)
+
+    def show_examples(self):
+        self.ui.examplesTable.set_flow(self.flow)
+
+    def set_send_save_buttons_enabled(self, enabled):
+        self.ui.sendButton.setVisible(enabled)
+        self.ui.saveButton.setVisible(enabled)
+
+    @QtCore.Slot()
+    def show_example(self, flow):
+        self.flow = flow
+        self.show_request()
+        self.set_send_save_buttons_enabled(not self.flow.is_example())
+
+    @QtCore.Slot()
+    def delete_examples(self, flows):
+        example_flows = [f for f in flows if f.is_example()]
+
+        if len(example_flows) == 0:
+            return
+
+        for flow in example_flows:
+            flow.delete()
+
+        self.ui.examplesTable.reload()
 
     @QtCore.Slot()
     def save_request(self):
-        method = self.ui.methodInput.currentText()
-        url = self.ui.urlInput.text()
-        headers = self.ui.requestViewWidget.get_request_headers()
+        self.update_request_with_values_from_form()
+        if hasattr(self.flow, 'id'):
+            self.flow.request.save()
+        else:
+            saved_editor_item = self.editor_item.save()
+            self.editor_item = saved_editor_item
+            self.flow = self.editor_item.item()
+            self.request = self.flow.request
+            self.original_flow = self.flow
 
-        self.request.url = url
-        self.request.method = method
-        self.request.request_payload = self.ui.requestViewWidget.get_request_payload()
-        self.request.set_request_headers(headers)
-        self.request.save()
+            # TODO: This needs to emit a signal to add the editor_item to the tabs
 
         self.form_input_changed.emit(False)
         self.request_saved.emit()
-        print(f'saving {method} {url} to request {self.request.id}')
 
     @QtCore.Slot()
-    def response_received(self, response):
-        # Display response headers and body
-        self.request.response_body = response.text
-        self.request.response_status = response.status_code
-        self.request.response_status_message = response.reason
-        self.request.set_response_headers(dict(response.headers))
-        self.ui.requestViewWidget.set_response(self.request)
+    def save_example(self):
+        # 1. Save the HttpResponse (without a flow)
+        self.latest_response.save()
+
+        # NOTE: Have to reload multiple times is stupid but Orator does not seem to update the
+        # has_many relations on the fly
+        self.flow = self.flow.reload()
+
+        # 2. Update the HttpRequest and duplicate it
+        self.update_request_with_values_from_form()
+        new_request = self.flow.request.duplicate()
+        new_request.save()
+
+        # 3. Create the example HttpFlow
+        self.flow.duplicate_for_example(new_request, self.latest_response)
+
+        # 4. Update GUI
+        self.ui.examplesTable.reload()
+        self.ui.flowView.set_save_as_example_enabled(False)
+
+    @QtCore.Slot()
+    def response_received(self, requests_response):
+        self.latest_response = HttpResponse.from_requests_response(requests_response)
+        self.ui.flowView.set_response_from_editor(self.latest_response, requests_response.request.url)
+        self.ui.flowView.set_save_as_example_enabled(True)
 
     @QtCore.Slot()
     def request_error(self, error):
@@ -103,27 +160,48 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def send_request_async(self):
         print('Sending the request!')
-        self.ui.requestViewWidget.show_loader()
+        self.ui.flowView.show_loader()
 
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
-        headers = self.ui.requestViewWidget.get_request_headers()
-        payload = self.ui.requestViewWidget.get_request_payload()
-        http_request = HttpRequest(method, url, headers, payload)
+        headers = self.ui.flowView.get_request_headers()
+        payload = self.ui.flowView.get_request_payload()
+        http_request = HttpRequestLib(method, url, headers, payload)
 
         # Pass the function to execute
         # Any other args, kwargs are passed to the run function
         self.worker = BackgroundWorker(lambda: http_request.send())
         self.worker.signals.result.connect(self.response_received)
         self.worker.signals.error.connect(self.request_error)
-        self.worker.signals.finished.connect(self.ui.requestViewWidget.hide_loader)
+        self.worker.signals.finished.connect(self.ui.flowView.hide_loader)
 
         self.threadpool.start(self.worker)
+
+    # Get the request values (method, url, header, content) from the form and set them on the
+    # HttpRequest object, but dont save it
+    def update_request_with_values_from_form(self):
+        method = self.ui.methodInput.currentText()
+        url = self.ui.urlInput.text()
+        headers = self.ui.flowView.get_request_headers()
+        url_data = urlsplit(url)
+
+        self.flow.request.method = method
+        self.flow.request.host = url_data.hostname
+        self.flow.request.port = url_data.port
+        self.flow.request.scheme = url_data.scheme
+
+        if url_data.query == '':
+            self.flow.request.path = url_data.path
+        else:
+            self.flow.request.path = url_data.path + '?' + url_data.query
+
+        self.flow.request.content = self.ui.flowView.get_request_payload()
+        self.flow.request.set_headers(headers)
 
     @QtCore.Slot()
     def cancel_request(self):
         self.worker.kill()
-        self.ui.requestViewWidget.hide_loader()
+        self.ui.flowView.hide_loader()
 
     @QtCore.Slot()
     def form_field_changed(self):
@@ -132,29 +210,25 @@ class RequestEditPage(QtWidgets.QWidget):
             'url': self.ui.urlInput.text()
         }
         original_request = {
-            'method': self.request.method or self.METHODS[0],
-            'url': self.request.url or ''
+            'method': self.flow.request.method or self.METHODS[0],
+            'url': self.flow.request.get_url() or ''
         }
 
         self.request_is_modified = (request_on_form != original_request)
         self.form_input_changed.emit(self.request_is_modified)
 
-    def hide_fuzz_table(self):
-        self.ui.fuzzRequestsTable.setVisible(False)
-        self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
-
     @QtCore.Slot()
-    def toggle_fuzz_table(self):
-        visible = not self.ui.fuzzRequestsTable.isVisible()
-        self.ui.fuzzRequestsTable.setVisible(visible)
+    def toggle_examples_table(self):
+        visible = not self.ui.examplesTable.isVisible()
+        self.ui.examplesTable.setVisible(visible)
 
         if visible:
             self.restore_layout_state()
 
         if (visible):
-            self.ui.toggleFuzzTableButton.setText("9 Saved Examples [-]")
+            self.ui.toggleExamplesButton.setText("<< Saved Examples")
         else:
-            self.ui.toggleFuzzTableButton.setText("9 Saved Examples [+]")
+            self.ui.toggleExamplesButton.setText("Saved Examples >>")
 
     def restore_layout_state(self):
         return None

@@ -4,12 +4,11 @@ from views._compiled.network.ui_http_page import Ui_HttpPage
 
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
-from models.request_data import RequestData
-from models.data.network_request import NetworkRequest
+from models.data.http_flow import HttpFlow
 
 class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.Signal()
-    send_request_to_editor = QtCore.Signal(object)
+    send_flow_to_editor = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         super(HttpPage, self).__init__(*args, **kwargs)
@@ -17,26 +16,27 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Setup the request model
-        requests = NetworkRequest.order_by('id', 'desc').get()
-        self.requests_table_model = RequestsTableModel(requests)
-        self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
+        http_flows = HttpFlow.find_for_table()
+        self.table_model = RequestsTableModel(http_flows)
+        self.ui.requestsTableWidget.setTableModel(self.table_model)
 
         self.ui.requestsTableWidget.request_selected.connect(self.select_request)
         self.ui.requestsTableWidget.delete_requests.connect(self.delete_requests)
         self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
-        self.ui.requestsTableWidget.send_request_to_editor.connect(self.send_request_to_editor)
+        self.ui.requestsTableWidget.send_flow_to_editor.connect(self.send_flow_to_editor)
 
         self.ui.toggleButton.clicked.connect(self.toggle_page)
         self.ui.requestViewWidget.set_show_rendered(True)
+        self.ui.requestViewWidget.set_save_as_example_visible(False)
         self.ui.requestViewWidget.show_modified_dropdown()
 
         self.restore_layout_state()
 
     def reload(self):
         self.ui.requestViewWidget.clear_request()
-        requests = NetworkRequest.order_by('id', 'desc').get()
-        self.requests_table_model = RequestsTableModel(requests)
-        self.ui.requestsTableWidget.setTableModel(self.requests_table_model)
+        http_flows = HttpFlow.find_for_table()
+        self.table_model = RequestsTableModel(http_flows)
+        self.ui.requestsTableWidget.setTableModel(self.table_model)
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
@@ -59,8 +59,8 @@ class HttpPage(QtWidgets.QWidget):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
             selected_id = selected_id_cols[0].data()
-            request = NetworkRequest.find(selected_id)
-            self.ui.requestViewWidget.set_request(request)
+            flow = HttpFlow.find(selected_id)
+            self.ui.requestViewWidget.set_flow(flow)
 
     @QtCore.Slot()
     def delete_requests(self, request_ids):
@@ -77,15 +77,24 @@ class HttpPage(QtWidgets.QWidget):
         response = message_box.exec_()
 
         if response == QtWidgets.QMessageBox.Yes:
-            self.requests_table_model.delete_requests(request_ids)
+            self.table_model.delete_requests(request_ids)
 
     @QtCore.Slot()
     def search_requests(self, search_text):
-        # requests = NetworkRequest.search({'search': search_text})
-        # self.requests_table_model.requests = requests
-        # self.requests_table_model.refresh()
-        self.request_data = RequestData()
-        self.request_data.set_filter_param('search', search_text)
-        self.request_data.load_requests()
-        self.requests_table_model.requests = self.request_data.requests
-        self.requests_table_model.refresh()
+        return True
+        # requests = HttpFlow.search({'search': search_text})
+        # self.table_model.requests = requests
+        # self.table_model.refresh()
+        # self.request_data = RequestData()
+        # self.request_data.set_filter_param('search', search_text)
+        # self.request_data.load_requests()
+        # self.table_model.requests = self.request_data.requests
+        # self.table_model.refresh()
+
+    @QtCore.Slot()
+    def flow_created(self, flow):
+        self.table_model.add_flow(flow)
+
+    @QtCore.Slot()
+    def flow_updated(self, flow):
+        self.table_model.update_flow(flow)

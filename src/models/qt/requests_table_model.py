@@ -1,31 +1,25 @@
 from PySide2 import QtCore
 
-from lib.backend import Backend
-from models.data.network_request import NetworkRequest
+from models.data.http_flow import HttpFlow
 
 class RequestsTableModel(QtCore.QAbstractTableModel):
-    def __init__(self, requests, parent=None):
+    def __init__(self, flows, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Source', 'Type', 'Method', 'Host', 'Path', 'Status', 'Modified']
-        self.requests = list(requests)
+        self.flows = list(flows)
 
-        # Register callback with the backend:
-        self.backend = Backend.get_instance()
-        self.backend.register_callback('newRequest', self.add_request)
-        self.backend.register_callback('updatedRequest', self.update_request)
-
-    def add_request(self, request):
+    def add_flow(self, flow):
         rowIndex = 0
         self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)
-        self.requests.insert(0, request)
+        self.flows.insert(0, flow)
         self.endInsertRows()
 
-    def update_request(self, request):
-        for i, r in enumerate(self.requests):
-            if r.id == request.id:
-                self.requests[i] = request
+    def update_flow(self, flow):
+        for i, r in enumerate(self.flows):
+            if r.id == flow.id:
+                self.flows[i] = flow
 
-        rowIndex = self.get_index_of(request.id)
+        rowIndex = self.get_index_of(flow.id)
         start_index = self.index(rowIndex, 0)
         end_index = self.index(rowIndex, len(self.headers) - 1)
         self.dataChanged.emit(start_index, end_index)
@@ -35,8 +29,8 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         row_index2 = self.get_index_of(request_ids[-1])
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        NetworkRequest.destroy(*request_ids)
-        self.requests = list(filter(lambda r: r.id not in request_ids, self.requests))
+        HttpFlow.destroy(*request_ids)
+        self.flows = list(filter(lambda r: r.id not in request_ids, self.flows))
         self.endRemoveRows()
 
     def roleNames(self):
@@ -55,28 +49,19 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         return len(self.headers)
 
     def rowCount(self, index):
-        return len(self.requests)
+        return len(self.flows)
 
     def data(self, index, role):
         if role == QtCore.Qt.DisplayRole:
             if not index.isValid():
                 return None
 
-            if index.row() > len(self.requests):
+            if index.row() > len(self.flows):
                 return None
 
-            request = self.requests[index.row()]
+            flow = self.flows[index.row()]
 
-            row_values = [
-                request.id,
-                request.client_id,
-                request.request_type,
-                request.method,
-                request.host,
-                request.path,
-                request.response_status,
-                request.modified_str()
-            ]
+            row_values = flow.values_for_table()
 
             return row_values[index.column()]
 
@@ -96,34 +81,34 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         reverse = (order == QtCore.Qt.DescendingOrder)
 
         if (column == 0):
-            self.requests = sorted(self.requests, key=lambda r: r.id, reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: flow.id, reverse=reverse)
         elif (column == 1):
-            self.requests = sorted(self.requests, key=lambda r: int(r.client_id or 0), reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: int(flow.client_id or 0), reverse=reverse)
         elif (column == 2):
-            self.requests = sorted(self.requests, key=lambda r: r.request_type, reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: flow.request.scheme, reverse=reverse)
         elif (column == 3):
-            self.requests = sorted(self.requests, key=lambda r: [r.method, r.id], reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: [flow.request.method, flow.id], reverse=reverse)
         elif (column == 4):
-            self.requests = sorted(self.requests, key=lambda r: [r.host, r.id], reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: [flow.request.host, flow.id], reverse=reverse)
         elif (column == 5):
-            self.requests = sorted(self.requests, key=lambda r: [r.path, r.id], reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: [flow.request.path, flow.id], reverse=reverse)
         elif (column == 6):
-            self.requests = sorted(self.requests, key=self.response_status_sort_key, reverse=reverse)
+            self.flows = sorted(self.flows, key=self.response_status_sort_key, reverse=reverse)
 
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
 
-    def response_status_sort_key(self, request):
-        if (request.response_status == ''):
+    def response_status_sort_key(self, flow):
+        if not flow.response:
             status = 0
         else:
-            status = int(request.response_status)
+            status = flow.response.status_code
 
-        return [status, request.id]
+        return [status, flow.id]
 
     def refresh(self):
         self.layoutChanged.emit()
 
     def get_index_of(self, request_id):
-        for i, r in enumerate(self.requests):
+        for i, r in enumerate(self.flows):
             if r.id == request_id:
                 return i

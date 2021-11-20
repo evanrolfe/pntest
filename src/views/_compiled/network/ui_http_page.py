@@ -13,7 +13,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from widgets.network.http.requests_table import RequestsTable
-from widgets.shared.request_view import RequestView
+from widgets.shared.flow_view import FlowView
 
 
 class Ui_HttpPage(object):
@@ -71,7 +71,7 @@ class Ui_HttpPage(object):
         self.requestsTableWidget.setSizePolicy(sizePolicy1)
         self.requestsTableWidget.setMinimumSize(QSize(740, 0))
         self.requestsTableAndViewSplitter.addWidget(self.requestsTableWidget)
-        self.requestViewWidget = RequestView(self.requestsTableAndViewSplitter)
+        self.requestViewWidget = FlowView(self.requestsTableAndViewSplitter)
         self.requestViewWidget.setObjectName(u"requestViewWidget")
         sizePolicy1.setHeightForWidth(self.requestViewWidget.sizePolicy().hasHeightForWidth())
         self.requestViewWidget.setSizePolicy(sizePolicy1)

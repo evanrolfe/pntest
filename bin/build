@@ -1,0 +1,19 @@
+rm -rf build/pntest/
+rm -rf dist/pntest/
+
+pyinstaller ./src/__main__.py --onefile \
+    --name="pntest" \
+    --windowed \
+    --paths=$PWD/src \
+    --paths=$PWD/venv/lib/python3.9/site-packages/ \
+    --add-binary='include/pntest_proxy:include/' \
+    --add-binary='include/cert9.db:include/' \
+    --add-binary='include/rootCA.csr:include/' \
+    --add-binary='include/rootCA.key:include/' \
+    --add-binary='include/mitmproxy-ca.pem:include/' \
+    --add-binary='include/mitmproxy-dhparam.pem:include/' \
+    --add-binary='include/html_page.html:include/' \
+    --add-data='src/style/dark.qss:style/' \
+    --add-data='src/style/dark_theme.qss:style/' \
+    --add-data='src/style/light.qss:style/' \
+    --noupx

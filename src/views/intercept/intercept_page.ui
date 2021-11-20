@@ -200,7 +200,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPlainTextEdit" name="headersText"/>
+          <widget class="HeadersForm" name="headers" native="true"/>
          </item>
         </layout>
        </widget>
@@ -235,6 +235,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CodeEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.code_editor.h</header>
+  </customwidget>
+  <customwidget>
+   <class>HeadersForm</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.headers_form.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

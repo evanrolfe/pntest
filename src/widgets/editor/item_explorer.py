@@ -128,8 +128,8 @@ class ItemExplorer(QtWidgets.QTreeView):
     @QtCore.Slot()
     def new_request_clicked(self, parent_index):
         child_editor_item = EditorItem()
-        child_editor_item.name = 'new request'
-        child_editor_item.item_type = 'request'
+        child_editor_item.name = 'New HTTP Request'
+        child_editor_item.item_type = EditorItem.TYPE_HTTP_FLOW
 
         self.insertChild(child_editor_item, parent_index)
         self.item_created.emit(child_editor_item)
@@ -137,7 +137,7 @@ class ItemExplorer(QtWidgets.QTreeView):
     @QtCore.Slot()
     def new_dir_clicked(self, parent_index):
         child_editor_item = EditorItem()
-        child_editor_item.name = 'new folder'
+        child_editor_item.name = 'New Folder'
         child_editor_item.item_type = 'dir'
 
         self.insertChild(child_editor_item, parent_index)
