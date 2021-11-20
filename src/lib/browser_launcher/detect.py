@@ -11,7 +11,7 @@ BROWSERS = [
     },
     {
         'name': 'chromium',
-        'command': 'chromium-browser',
+        'command': 'chromium',
         'regex': r'Chromium ([0-9,\.]+) (.+)',
         'type': 'chrome',
     },

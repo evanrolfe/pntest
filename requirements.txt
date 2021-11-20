@@ -35,7 +35,7 @@ lazy-object-proxy==1.5.2
 ldap3==2.8.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
-mitmproxy @ https://github.com/mitmproxy/mitmproxy/archive/refs/heads/main.zip
+mitmproxy==7.0.4
 msgpack==1.0.2
 orator==0.9.9
 packaging==20.9

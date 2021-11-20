@@ -70,3 +70,34 @@ to this:
 datas = collect_data_files("pendulum", include_py_files=True)
 hiddenimports = collect_submodules("pendulum")
 ```
+
+## Generating certificate authority and importing to browsers:
+*Certificate authority*
+1. Generate the CA key:
+```
+$ openssl genrsa -des3 -out include/rootCA.key 4096
+```
+2. Generate a cert and pem file
+```
+$ openssl req -x509 -new -nodes -extensions v3_ca -key include/rootCA.key -sha256 -days 3650 -out include/mitmproxy-ca.pem
+$ openssl rsa -in include/rootCA.key >> include/mitmproxy-ca.pem
+```
+
+*Import to browsers*
+[Chrome/Chromium] No more action needed as chrome is started using the `--ignore-certificate-errors-spki-list` option.
+
+[Firefox] Generate the cert9.db file with the certificate imported:
+
+1. Create a new firefox profile:
+```
+$ firefox -CreateProfile pntest-new
+```
+
+2. Start firefox:
+```
+$ firefox -P "pntest-cert"
+```
+
+3. Import the certiciate (settins -> certificates -> import -> select include/mitmproxy-ca.pem -> Trust CA to identify web sites & Trust CA to identify email users)
+
+4. Locate the cert9.db file i.e. `~/.mozilla/firefox/gwmyug3m.pntest-cert/cert9.db` in Linux and copy it to `pntest/include/cert9.db`
