@@ -1,9 +1,15 @@
 import json
+from typing import Optional
 import inflection
 
 from orator import Model, accessor
 
 class CaptureFilter(Model):
+    id: int
+    filters: str
+    created_at: Optional[int]
+    updated_at: Optional[int]
+
     DEFAULT_CAPTURE_FILTERS = {
         'hostList': [],
         'hostSetting': '',

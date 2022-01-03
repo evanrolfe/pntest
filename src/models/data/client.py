@@ -1,3 +1,4 @@
+from typing import Optional
 from orator import Model
 from lib.process_manager import ProcessManager
 
@@ -5,6 +6,17 @@ PROXY_PORT = 8080
 BROWSER_PORT = 9222
 
 class Client(Model):
+    id: int
+    title: Optional[str]
+    cookies: Optional[str]
+    pages: Optional[str]
+    type: str
+    proxy_port: Optional[int]
+    browser_port: Optional[int]
+    open: bool
+    created_at: Optional[int]
+    updated_at: Optional[int]
+
     @classmethod
     def get_next_port_available(cls):
         clients = Client.all()

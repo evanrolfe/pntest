@@ -11,9 +11,13 @@ class EditorItem(Model):
     TYPE_DIR = 'dir'
 
     # Type definition
-    name: str
     id: int
     parent_id: Optional[int]
+    name: str
+    item_type: str
+    item_id: Optional[int]
+    created_at: Optional[int]
+    updated_at: Optional[int]
 
     def duplicate(self):
         if self.item_type != self.TYPE_HTTP_FLOW:
@@ -43,7 +47,7 @@ class EditorItem(Model):
 
         self.delete()
 
-    def item(self):
+    def item(self) -> Optional[HttpFlow]:
         if self.item_type == self.TYPE_HTTP_FLOW:
             return HttpFlow.where('id', '=', self.item_id).first()
 
