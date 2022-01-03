@@ -1,36 +1,43 @@
+from typing import Optional, Union
 from PySide2 import QtCore
+from models.data.client import Client
 
 class ClientsTableModel(QtCore.QAbstractTableModel):
-    def __init__(self, clients, parent=None):
+    dataChanged: QtCore.SignalInstance
+    layoutChanged: QtCore.SignalInstance
+    headers: list[str]
+    clients: list[Client]
+
+    def __init__(self, clients: list[Client], parent: Optional[QtCore.QObject] = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Type', 'Name',
                         'Status', 'Proxy Port', 'Browser Port']
         self.clients = clients
 
-    def set_clients(self, clients):
+    def set_clients(self, clients: list[Client]) -> None:
         self.clients = clients
-        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+        self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
         self.layoutChanged.emit()
 
-    def roleNames(self):
-        roles = {}
-        for i, header in enumerate(self.headers):
-            roles[QtCore.Qt.UserRole + i + 1] = header.encode()
-        return roles
+    # def roleNames(self):
+    #     roles = {}
+    #     for i, header in enumerate(self.headers):
+    #         roles[QtCore.Qt.UserRole + i + 1] = header.encode()
+    #     return roles
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: int) -> Union[None, str]:
+        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             return self.headers[section]
 
         return None
 
-    def columnCount(self, parent):
+    def columnCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.headers)
 
-    def rowCount(self, index):
+    def rowCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.clients)
 
-    def data(self, index, role):
+    def data(self, index: QtCore.QModelIndex, role: int) -> Union[None, str]:
         if role == QtCore.Qt.DisplayRole:
             if not index.isValid():
                 return None
@@ -41,18 +48,18 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
             client = self.clients[index.row()]
 
             if (index.column() == 0):
-                return client.id
+                return str(client.id)
             elif (index.column() == 1):
-                return client.type
+                return str(client.type)
             elif (index.column() == 2):
-                return client.title
+                return str(client.title)
             elif (index.column() == 3):
-                return client.open_text()
+                return str(client.open_text())
             elif (index.column() == 4):
-                return client.proxy_port
+                return str(client.proxy_port)
             elif (index.column() == 5):
-                return client.browser_port
+                return str(client.browser_port)
 
-    @QtCore.Slot(result="QVariantList")
-    def roleNameArray(self):
+    @QtCore.Slot(result="QVariantList")  # type: ignore
+    def roleNameArray(self) -> list[str]:
         return self.headers

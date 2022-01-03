@@ -1,6 +1,11 @@
 from orator import Model
 
 class WebsocketMessage(Model):
+    id: int
+    http_flow_id: int
+    direction: str
+    created_at: int
+
     __table__ = 'websocket_messages'
     __fillable__ = ['*']
 

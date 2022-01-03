@@ -1,6 +1,10 @@
 from PySide2 import QtCore
+from typing import cast
 
 class CrawlsTableModel(QtCore.QAbstractTableModel):
+    dataChanged: QtCore.SignalInstance
+    layoutChanged: QtCore.SignalInstance
+
     def __init__(self, crawls, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Source', 'Status', 'Started', 'Finished']
@@ -8,13 +12,13 @@ class CrawlsTableModel(QtCore.QAbstractTableModel):
 
     def set_crawls(self, crawls):
         self.crawls = crawls
-        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+        self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
         self.layoutChanged.emit()
 
     def roleNames(self):
         roles = {}
         for i, header in enumerate(self.headers):
-            roles[QtCore.Qt.UserRole + i + 1] = header.encode()
+            roles[cast(int, QtCore.Qt.UserRole) + i + 1] = header.encode()
         return roles
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
@@ -50,7 +54,7 @@ class CrawlsTableModel(QtCore.QAbstractTableModel):
             elif (index.column() == 4):
                 return crawl.started_at
 
-    @QtCore.Slot(result="QVariantList")
+    @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self):
         return self.headers
 

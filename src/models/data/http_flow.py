@@ -1,3 +1,4 @@
+from typing import Optional
 from orator import Model
 from orator.orm import has_one, has_many
 from models.data.http_request import HttpRequest
@@ -11,6 +12,19 @@ class HttpFlow(Model):
     TYPE_PROXY = 'proxy'
     TYPE_EDITOR = 'editor'
     TYPE_EDITOR_EXAMPLE = 'editor_example'
+
+    id: int
+    uuid: Optional[str]
+    client_id: int
+    type: str
+    title: Optional[str]
+    request_id: int
+    original_request_id: Optional[int]
+    response_id: int
+    original_response_id: Optional[int]
+    http_flow_id: int
+    created_at: int
+    updated_at: Optional[int]
 
     @classmethod
     def find_for_table(cls):

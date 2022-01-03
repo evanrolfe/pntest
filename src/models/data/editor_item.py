@@ -1,3 +1,4 @@
+from typing import Optional
 from orator import Model
 from PySide2 import QtGui
 
@@ -8,6 +9,11 @@ class EditorItem(Model):
 
     TYPE_HTTP_FLOW = 'http_flow'
     TYPE_DIR = 'dir'
+
+    # Type definition
+    name: str
+    id: int
+    parent_id: Optional[int]
 
     def duplicate(self):
         if self.item_type != self.TYPE_HTTP_FLOW:

@@ -1,40 +1,45 @@
+from typing import Optional
 from PySide2 import QtCore
+from models.data.http_flow import HttpFlow
 
 class ExamplesTableModel(QtCore.QAbstractTableModel):
-    def __init__(self, flows, parent=None):
+    headers: list[str]
+    flows: list[HttpFlow]
+
+    def __init__(self, flows: list[HttpFlow], parent: QtCore.QObject = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['Title', 'Status', 'Response Length']
         self.flows = flows
 
-    def flow_for_index(self, index):
+    def flow_for_index(self, index: QtCore.QModelIndex) -> HttpFlow:
         row = index.row()
         return self.flows[row]
 
-    def roleNames(self):
-        roles = {}
-        for i, header in enumerate(self.headers):
-            roles[QtCore.Qt.UserRole + i + 1] = header.encode()
-        return roles
+    # def roleNames(self):
+    #     roles = {}
+    #     for i, header in enumerate(self.headers):
+    #         roles[QtCore.Qt.UserRole + i + 1] = header.encode()
+    #     return roles
 
-    def flags(self, index):
+    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlags:
         if index.column() == 0 and index.row() > 0:
-            return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+            return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable  # type: ignore
         else:
-            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable  # type: ignore
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole):
         if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.headers[section]
 
         return None
 
-    def columnCount(self, parent):
+    def columnCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.headers)
 
-    def rowCount(self, index):
+    def rowCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.flows)
 
-    def data(self, index, role):
+    def data(self, index: QtCore.QModelIndex, role: QtCore.Qt) -> Optional[str]:
         if role in [QtCore.Qt.EditRole, QtCore.Qt.DisplayRole]:
             if not index.isValid():
                 return None
@@ -50,14 +55,14 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
                 elif (index.column() == 1):
                     return flow.response.status_code
                 elif (index.column() == 2):
-                    return len(flow.response.content)
+                    return str(len(flow.response.content))
             else:
                 if (index.column() == 0):
                     return 'Original Request'
                 else:
                     return None
 
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
+    def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt = QtCore.Qt.EditRole) -> bool:
         if role == QtCore.Qt.EditRole:
             if value != '':
                 flow = self.flows[index.row()]
@@ -68,6 +73,6 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
 
         return False
 
-    @QtCore.Slot(result="QVariantList")
-    def roleNameArray(self):
+    @QtCore.Slot(result="QVariantList")  # type: ignore
+    def roleNameArray(self) -> list[str]:
         return self.headers

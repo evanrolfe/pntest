@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 from orator import Model
 
 from widgets.shared.headers_form import HeadersForm
@@ -6,6 +7,22 @@ from widgets.shared.headers_form import HeadersForm
 class HttpRequest(Model):
     __table__ = 'http_requests'
     __fillable__ = ['*']
+
+    id: int
+    http_version: str
+    headers: Optional[str]
+    content: Optional[str]
+    trailers: Optional[str]
+    timestamp_start: float
+    timestamp_end: float
+    host: str
+    port: int
+    method: str
+    scheme: str
+    authority: Optional[str]
+    path: str
+    created_at: int
+    updated_at: int
 
     @classmethod
     def from_state(cls, state):

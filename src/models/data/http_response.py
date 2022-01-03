@@ -1,9 +1,21 @@
 import json
+from typing import Optional
 from orator import Model
 
 class HttpResponse(Model):
     __table__ = 'http_responses'
     __fillable__ = ['*']
+
+    id: int
+    http_version: str
+    headers: str
+    content: Optional[str]
+    timestamp_start: float
+    timestamp_end: float
+    status_code: int
+    reason: Optional[str]
+    created_at: int
+    updated_at: Optional[int]
 
     @classmethod
     def from_state(cls, state):
