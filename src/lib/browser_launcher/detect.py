@@ -1,41 +1,57 @@
 import subprocess
 import re
 import platform
+from copy import deepcopy
 
 BROWSERS = [
     {
         'name': 'chrome',
-        'command': 'google-chrome',
+        'commands': ['helloworld', 'chrome', 'google-chrome'],
         'regex': r'Google Chrome (.+)',
         'type': 'chrome',
     },
     {
         'name': 'chromium',
-        'command': 'chromium',
+        'commands': ['chromium', 'chromium-browser'],
         'regex': r'Chromium ([0-9,\.]+) (.+)',
         'type': 'chrome',
     },
     {
-        'command': 'firefox',
         'name': 'firefox',
+        'commands': ['firefox'],
         'regex': r'Mozilla Firefox (.+)',
         'type': 'firefox',
     },
 ]
 
-def check_which(browser):
+def check_command(command):
     try:
-        result = subprocess.run([browser['command'], '--version'], stdout=subprocess.PIPE)
+        result = subprocess.run([command, '--version'], stdout=subprocess.PIPE)
+        return result
     except FileNotFoundError:
         return None
 
+def check_which(browser):
+    browser_copy = deepcopy(browser)
+    result = None
+
+    for command in browser_copy['commands']:
+        result = check_command(command)
+        if result is not None:
+            browser_copy['command'] = command
+            break
+
+    if result is None:
+        return browser_copy
+
     output = result.stdout.decode().strip()
-    matches = re.match(browser['regex'], output)
+    matches = re.match(browser_copy['regex'], output)
 
     if matches:
-        browser['version'] = matches[1]
+        browser_copy['version'] = matches[1]
 
-    return browser
+    del browser_copy['commands']
+    return browser_copy
 
 def check(browser):
     pltfrm = platform.system()
