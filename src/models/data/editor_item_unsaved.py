@@ -32,4 +32,4 @@ class EditorItemUnsaved(EditorItem):
         #     if method not in icon_methods:
         #         method = 'other'
         method = 'get'
-        return QtGui.QIcon(f":/icons/dark/methods/{method}.png")
+        return QtGui.QIcon(QtGui.QPixmap(f":/icons/dark/methods/{method}.png"))

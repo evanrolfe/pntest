@@ -1,7 +1,7 @@
 from typing import Optional
-from orator import Model
+from models.data.orator_model import OratorModel
 
-class Setting(Model):
+class Setting(OratorModel):
     id: int
     key: str
     value: str

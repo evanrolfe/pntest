@@ -1,8 +1,11 @@
+from __future__ import annotations
 import json
-from typing import Optional
+from typing import Optional, Any
 from orator import Model
 
 from widgets.shared.headers_form import HeadersForm
+
+Headers = dict[str, str]
 
 class HttpRequest(Model):
     __table__ = 'http_requests'
@@ -25,7 +28,7 @@ class HttpRequest(Model):
     updated_at: int
 
     @classmethod
-    def from_state(cls, state):
+    def from_state(cls, state: dict[str, Any]) -> HttpRequest:
         request = HttpRequest()
         request.http_version = state['http_version']
         request.headers = json.dumps(dict(state['headers']))
@@ -42,7 +45,7 @@ class HttpRequest(Model):
 
         return request
 
-    def set_blank_values_for_editor(self):
+    def set_blank_values_for_editor(self) -> None:
         self.http_version = 'HTTP/1.1'
         self.headers = None
         self.host = ''
@@ -52,26 +55,26 @@ class HttpRequest(Model):
         self.path = ''
         self.content = ''
 
-    def get_state(self):
+    def get_state(self) -> dict[str, Any]:
         attributes = self.serialize()
         attributes['headers'] = json.loads(attributes['headers'])
         return attributes
 
-    def set_headers(self, headers):
+    def set_headers(self, headers: Headers) -> None:
         self.headers = json.dumps(headers)
 
-    def get_headers(self):
+    def get_headers(self) -> Optional[Headers]:
         if self.headers is None:
             return None
         return json.loads(self.headers)
 
-    def get_header_line_no_http_version(self):
+    def get_header_line_no_http_version(self) -> str:
         return f'{self.method} {self.path}'
 
-    def get_header_line(self):
+    def get_header_line(self) -> str:
         return f'{self.method} {self.path} {self.http_version}'
 
-    def get_url(self):
+    def get_url(self) -> str:
         if self.port not in [80, 443, None]:
             port = ':' + str(self.port)
         else:
@@ -79,7 +82,7 @@ class HttpRequest(Model):
 
         return f'{self.scheme}://{self.host}{port}{self.path}'
 
-    def duplicate(self):
+    def duplicate(self) -> HttpRequest:
         new_request = HttpRequest()
 
         new_request.http_version = self.http_version
@@ -95,9 +98,12 @@ class HttpRequest(Model):
 
         return new_request
 
-    def overwrite_calculated_headers(self):
+    def overwrite_calculated_headers(self) -> None:
         calc_text = HeadersForm.CALCULATED_TEXT
         headers = self.get_headers()
+
+        if headers is None:
+            return
 
         if headers.get('Host'):
             headers['Host'] = calc_text

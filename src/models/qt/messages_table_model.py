@@ -47,7 +47,7 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
     #         roles[QtCore.Qt.UserRole + i + 1] = header.encode()
     #     return roles
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole):
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
         if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.headers[section]
 

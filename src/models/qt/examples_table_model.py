@@ -27,7 +27,7 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
         else:
             return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable  # type: ignore
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole):
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
         if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.headers[section]
 
@@ -53,9 +53,15 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
                 if (index.column() == 0):
                     return flow.title
                 elif (index.column() == 1):
-                    return flow.response.status_code
+                    response = flow.response
+                    if response is None:
+                        return
+                    return str(response.status_code)
                 elif (index.column() == 2):
-                    return str(len(flow.response.content))
+                    response = flow.response
+                    if response is None or response.content is None:
+                        return
+                    return str(len(response.content))
             else:
                 if (index.column() == 0):
                     return 'Original Request'

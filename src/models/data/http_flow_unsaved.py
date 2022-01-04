@@ -1,7 +1,5 @@
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
-# from models.data.http_response import HttpResponse
-# from models.data.websocket_message import WebsocketMessage
 
 class HttpFlowUnsaved(HttpFlow):
     def __init__(self, *args, **kwargs):

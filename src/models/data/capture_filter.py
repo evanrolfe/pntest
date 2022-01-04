@@ -1,10 +1,12 @@
+from __future__ import annotations
 import json
-from typing import Optional
+from typing import Optional, Any
 import inflection
 
-from orator import Model, accessor
+from orator import accessor
+from models.data.orator_model import OratorModel
 
-class CaptureFilter(Model):
+class CaptureFilter(OratorModel):
     id: int
     filters: str
     created_at: Optional[int]
@@ -21,41 +23,42 @@ class CaptureFilter(Model):
     }
 
     @classmethod
-    def create_defaults(cls):
+    def create_defaults(cls) -> CaptureFilter:
         capture_filter = CaptureFilter()
         capture_filter.id = 1
         capture_filter.filters = json.dumps(cls.DEFAULT_CAPTURE_FILTERS)
         capture_filter.save()
+        return capture_filter
 
     @accessor
-    def host_list(self):
+    def host_list(self) -> list[str]:
         return self.parsed_filters('hostList')
 
     @accessor
-    def host_setting(self):
+    def host_setting(self) -> str:
         return self.parsed_filters('hostSetting')
 
     @accessor
-    def path_list(self):
+    def path_list(self) -> list[str]:
         return self.parsed_filters('pathList')
 
     @accessor
-    def path_setting(self):
+    def path_setting(self) -> str:
         return self.parsed_filters('pathSetting')
 
     @accessor
-    def ext_list(self):
+    def ext_list(self) -> list[str]:
         return self.parsed_filters('extList')
 
     @accessor
-    def ext_setting(self):
+    def ext_setting(self) -> str:
         return self.parsed_filters('extSetting')
 
     @accessor
-    def navigation_requests(self):
+    def navigation_requests(self) -> bool:
         return self.parsed_filters('navigationRequests')
 
-    def parsed_filters(self, value=None):
+    def parsed_filters(self, value: str = None) -> Any:
         parsed_filters = json.loads(self.filters)
 
         if value is None:
@@ -63,7 +66,7 @@ class CaptureFilter(Model):
         else:
             return parsed_filters[value]
 
-    def set_filters(self, filters):
+    def set_filters(self, filters: dict[str, str]) -> None:
         current_filters = self.parsed_filters()
 
         for key, value in filters.items():

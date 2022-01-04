@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 from PySide2 import QtCore
 
 Header = tuple[bool, str, str]
@@ -53,7 +53,7 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
     #         roles[QtCore.Qt.UserRole + i + 1] = header.encode()
     #     return roles
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole):
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
         if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.row_headers[section]
 

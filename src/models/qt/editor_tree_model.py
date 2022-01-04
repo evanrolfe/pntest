@@ -127,11 +127,7 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return QtCore.Qt.NoItemFlags | QtCore.Qt.ItemIsDropEnabled  # type: ignore
 
-        return QtCore.Qt.ItemIsEditable | \
-            QtCore.Qt.ItemIsSelectable | \
-            QtCore.Qt.ItemIsEnabled | \
-            QtCore.Qt.ItemIsDragEnabled | \
-            QtCore.Qt.ItemIsDropEnabled
+        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled  # type: ignore
 
     def getItem(self, index: QtCore.QModelIndex) -> EditorTreeItem:
         if index.isValid():

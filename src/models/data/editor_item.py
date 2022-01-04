@@ -1,30 +1,26 @@
-from typing import Optional
-from orator import Model
+from __future__ import annotations
+
 from PySide2 import QtGui
 
+from models.data.orator_model import OratorModel
 from models.data.http_flow import HttpFlow
 
-class EditorItem(Model):
+class EditorItem(OratorModel):
     __table__ = 'editor_items'
 
     TYPE_HTTP_FLOW = 'http_flow'
     TYPE_DIR = 'dir'
-
-    # Type definition
-    id: int
-    parent_id: Optional[int]
-    name: str
-    item_type: str
-    item_id: Optional[int]
-    created_at: Optional[int]
-    updated_at: Optional[int]
 
     def duplicate(self):
         if self.item_type != self.TYPE_HTTP_FLOW:
             print('WARNING - cannot duplicate editor items which arent http_flows')
             return
 
-        flow = self.item().duplicate_for_editor()
+        original_flow = self.item()
+        if original_flow is None:
+            return
+
+        flow = original_flow.duplicate_for_editor()
         flow.save()
 
         editor_item = EditorItem()
@@ -38,8 +34,10 @@ class EditorItem(Model):
 
     def delete_everything(self):
         self.delete_resursive()
-        if self.item() is not None:
-            self.item().delete()
+        item = self.item()
+
+        if item is not None:
+            item.delete()
 
     def delete_resursive(self):
         for child in self.children():
@@ -47,7 +45,7 @@ class EditorItem(Model):
 
         self.delete()
 
-    def item(self) -> Optional[HttpFlow]:
+    def item(self):
         if self.item_type == self.TYPE_HTTP_FLOW:
             return HttpFlow.where('id', '=', self.item_id).first()
 
@@ -58,7 +56,7 @@ class EditorItem(Model):
             flow = HttpFlow.create_for_editor()
             self.item_id = flow.id
 
-        super(EditorItem, self).save(*args, **kwargs)
+        return super(EditorItem, self).save(*args, **kwargs)
 
     @classmethod
     def create_for_http_flow(cls, flow):
@@ -73,8 +71,13 @@ class EditorItem(Model):
     def icon(self):
         if self.item_type == self.TYPE_HTTP_FLOW:
             icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
-            method = self.item().request.method.lower()
+
+            item = self.item()
+            if item is None:
+                return
+
+            method = item.request.method.lower()
             if method not in icon_methods:
                 method = 'other'
 
-            return QtGui.QIcon(f":/icons/dark/methods/{method}.png")
+            return QtGui.QIcon(QtGui.QPixmap(f":/icons/dark/methods/{method}.png"))

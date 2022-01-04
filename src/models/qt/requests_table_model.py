@@ -52,7 +52,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
             roles[user_role_int + i + 1] = str(header.encode())
         return roles
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole):
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
         if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
             return self.headers[section]
 
@@ -111,8 +111,10 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
 
     def response_status_sort_key(self, flow: HttpFlow) -> tuple[int, int]:
-        if flow.has_response():
-            status = flow.response.status_code
+        # TODO: Fix this:
+        response = flow.response
+        if response is not None and flow.has_response():
+            status = response.status_code
         else:
             status = 0
 

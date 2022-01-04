@@ -1,11 +1,11 @@
 from typing import Optional
-from orator import Model
+from models.data.orator_model import OratorModel
 from lib.process_manager import ProcessManager
 
 PROXY_PORT = 8080
 BROWSER_PORT = 9222
 
-class Client(Model):
+class Client(OratorModel):
     id: int
     title: Optional[str]
     cookies: Optional[str]
