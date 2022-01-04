@@ -75,7 +75,7 @@ class ClientsPage(QtWidgets.QWidget):
         client.save()
 
         print(client)
-        self.reload_table_data()
+        self.open_client_clicked(client)
 
     def set_enabled_clients(self, enabled_clients):
         self.enabled_clients = enabled_clients + [ANYTHING_CLIENT]
