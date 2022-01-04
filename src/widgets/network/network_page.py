@@ -34,3 +34,7 @@ class NetworkPage(QtWidgets.QWidget):
     def save_layout_state(self):
         self.http_page.save_layout_state()
         self.ws_page.save_layout_state()
+
+    def reload(self):
+        self.http_page.reload()
+        self.ws_page.reload()

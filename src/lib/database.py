@@ -88,5 +88,4 @@ class Database:
         self.connect_to_db()
 
     def close(self):
-        self.db.close()
         self.db.purge()

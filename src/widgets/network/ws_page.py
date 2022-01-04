@@ -28,7 +28,7 @@ class WsPage(QtWidgets.QWidget):
         self.restore_layout_state()
 
     def reload(self):
-        self.ui.messageViewWidget.clear_request()
+        self.ui.messageViewWidget.clear_message()
         messages = WebsocketMessage.order_by('id', 'desc').get()
         self.table_model = MessagesTableModel(messages)
         self.ui.messagesTable.setTableModel(self.table_model)
