@@ -1,5 +1,6 @@
 import sys
 import traceback
+from typing import cast
 from PySide2 import QtCore
 
 class WorkerSignals(QtCore.QObject):
@@ -21,7 +22,7 @@ class BackgroundWorker(QtCore.QRunnable):
     def kill(self):
         self.alive = False
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type: ignore
     def run(self):
         # Retrieve args/kwargs here; and fire processing using them
         try:
@@ -32,9 +33,9 @@ class BackgroundWorker(QtCore.QRunnable):
                 return
         except:  # noqa: E722
             exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
+            cast(QtCore.SignalInstance, self.signals.error).emit((exctype, value, traceback.format_exc()))
         else:
             # Return the result of the processing
-            self.signals.result.emit(result)
+            cast(QtCore.SignalInstance, self.signals.result).emit(result)
         finally:
-            self.signals.finished.emit()  # Done
+            cast(QtCore.SignalInstance, self.signals.finished).emit()

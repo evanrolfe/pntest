@@ -1,5 +1,6 @@
 import os
 import signal
+from typing import cast
 from PySide2 import QtCore
 
 class WorkerSignals(QtCore.QObject):
@@ -13,14 +14,14 @@ class BrowserProc(QtCore.QRunnable):
         self.fn = fn
         self.signals = WorkerSignals()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type: ignore
     def run(self):
         self.process = self.fn()
         stdout, stderr = self.process.communicate()
         exit_code = self.process.wait()
 
         print(stdout, stderr, exit_code)
-        self.signals.exited.emit(self.client)
+        cast(QtCore.SignalInstance, self.signals.exited).emit(self.client)
 
     def kill(self):
         os.kill(self.process.pid, signal.SIGTERM)

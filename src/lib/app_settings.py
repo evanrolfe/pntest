@@ -12,11 +12,11 @@ class AppSettings:
         return AppSettings.__instance
 
     def __init__(self):
-        self.qsettings = QtCore.QSettings()
+        self.qsettings = QtCore.QSettings("Pntest", "Pntest")  # type: ignore
 
         # Virtually private constructor.
         if AppSettings.__instance is not None:
-            raise Exception("This class is a singleton!")
+            raise Exception("AppSettings class is a singleton!")
         else:
             AppSettings.__instance = self
     # /Singleton method stuff

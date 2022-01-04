@@ -2,6 +2,7 @@ from PySide2 import QtCore, QtWidgets
 import zmq
 import sys
 import simplejson as json
+from typing import cast
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
@@ -21,7 +22,7 @@ class ProxyZmqServer(QtCore.QObject):
         self.signals = ProxySignals()
         self.client_ids = set()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type: ignore
     def run(self):
         print('\n\nRpyc server starting..')
         self.context = zmq.Context()
@@ -83,10 +84,10 @@ class ProxyZmqServer(QtCore.QObject):
         http_flow.type = HttpFlow.TYPE_PROXY
         http_flow.save()
 
-        self.signals.flow_created.emit(http_flow)
+        cast(QtCore.SignalInstance, self.signals.flow_created).emit(http_flow)
 
         if request_state['intercepted']:
-            self.signals.flow_intercepted.emit(http_flow)
+            cast(QtCore.SignalInstance, self.signals.flow_intercepted).emit(http_flow)
 
     def response(self, response_state):
         http_response = HttpResponse.from_state(response_state)
@@ -99,10 +100,10 @@ class ProxyZmqServer(QtCore.QObject):
         http_flow.response_id = http_response.id
         http_flow.save()
 
-        self.signals.flow_updated.emit(http_flow)
+        cast(QtCore.SignalInstance, self.signals.flow_updated).emit(http_flow)
 
         if response_state['intercepted']:
-            self.signals.flow_intercepted.emit(http_flow)
+            cast(QtCore.SignalInstance, self.signals.flow_intercepted).emit(http_flow)
 
     def websocket_message(self, message_state):
         http_flow = HttpFlow.where('uuid', '=', message_state['flow_uuid']).first()
@@ -111,11 +112,11 @@ class ProxyZmqServer(QtCore.QObject):
         websocket_message.http_flow_id = http_flow.id
         websocket_message.save()
 
-        self.signals.websocket_message_created.emit(websocket_message)
+        cast(QtCore.SignalInstance, self.signals.websocket_message_created).emit(websocket_message)
 
         if message_state['intercepted']:
             http_flow.intercept_websocket_message = True
-            self.signals.flow_intercepted.emit(http_flow)
+            cast(QtCore.SignalInstance, self.signals.flow_intercepted).emit(http_flow)
 
     def forward_flow(self, flow, intercept_response):
         if intercept_response:
@@ -154,7 +155,7 @@ class ProxyHandler():
         self.zmq_server = ProxyZmqServer()
         self.zmq_server.moveToThread(self.thread)
         self.signals = self.zmq_server.signals
-        self.thread.started.connect(self.zmq_server.run)
+        self.thread.started.connect(self.zmq_server.run)  # type: ignore
 
     def start(self):
         self.thread.start()
@@ -163,7 +164,7 @@ class ProxyHandler():
         print("Stopping ProxyEventsWorker...")
         self.zmq_server.stop()
         self.thread.quit()
-        self.thread.wait()
+        self.thread.wait()  # type: ignore
 
     def forward_flow(self, flow, intercept_response):
         self.zmq_server.forward_flow(flow, intercept_response)

@@ -26,7 +26,7 @@ class Database:
     def get_instance():
         # Static access method.
         if Database.__instance is None:
-            Database()
+            raise Exception("Database class is a singleton!")
         return Database.__instance
 
     def __init__(self, db_path):
@@ -36,7 +36,7 @@ class Database:
 
         # Virtually private constructor.
         if Database.__instance is not None:
-            raise Exception("This class is a singleton!")
+            raise Exception("Database class is a singleton!")
         else:
             Database.__instance = self
     # /Singleton method stuff

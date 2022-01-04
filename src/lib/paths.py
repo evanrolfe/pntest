@@ -6,7 +6,7 @@ from PySide2.QtCore import QStandardPaths
 from lib.utils import is_dev_mode
 
 def get_app_config_path():
-    return QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]
+    return QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]  # type: ignore
 
 def get_app_path():
     return pathlib.Path(__file__).parent.parent.absolute()
@@ -23,4 +23,4 @@ def get_include_path():
 def get_resource_path(app_path, relative_path):
     default = app_path
     base_path = getattr(sys, '_MEIPASS', default)
-    return os.path.join(base_path, relative_path)
+    return os.path.join(str(base_path), relative_path)

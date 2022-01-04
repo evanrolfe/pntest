@@ -3,8 +3,9 @@ import hashlib
 import base64
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
+from typing import Optional
 
-def generate_hpkp_from_pem_certificate(pem_cert: str) -> str:
+def generate_hpkp_from_pem_certificate(pem_cert: str) -> Optional[str]:
     # Take the certificate and convert it to a X.509 certificate
     cert = x509.load_pem_x509_certificate(pem_cert.encode("utf-8"), default_backend())
 

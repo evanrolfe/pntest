@@ -10,16 +10,22 @@ class StyleheetLoader:
     def load_theme(self, theme):
         if (theme == 'light'):
             style_path = os.path.join(self.style_dir_path, 'light.qss')
+
+            theme_vars = {}
         elif (theme == 'dark'):
             theme_path = os.path.join(self.style_dir_path, 'dark_theme.qss')
             style_path = os.path.join(self.style_dir_path, 'dark.qss')
 
-        file = QtCore.QFile(style_path)
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+            theme_vars = self.get_theme_vars(theme_path)
+        else:
+            return
+
+        file = QtCore.QFile(style_path)  # type: ignore
+        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)  # type: ignore
         stream = QtCore.QTextStream(file)
 
         stylesheet = stream.readAll()
-        theme_vars = self.get_theme_vars(theme_path)
+
         return self.replace_vars_in_stylesheet(stylesheet, theme_vars)
 
     def replace_vars_in_stylesheet(self, stylesheet, theme_vars):
@@ -30,12 +36,17 @@ class StyleheetLoader:
 
     def get_theme_vars(self, theme_path):
         file = QtCore.QFile(theme_path)
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)  # type: ignore
         stream = QtCore.QTextStream(file)
         theme_str = stream.readAll()
 
         matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)  # noqa W605
-        var_strings = matches[1].replace('\n', '').replace(' ', '').split(';')[:-1]
+        match = matches[1]
+
+        if match is None:
+            return
+
+        var_strings = match.replace('\n', '').replace(' ', '').split(';')[:-1]
 
         var_map = {}
         for str in var_strings:
