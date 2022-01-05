@@ -17,6 +17,8 @@ class Client(OratorModel):
     created_at: Optional[int]
     updated_at: Optional[int]
 
+    TERMINAL_TYPES = ['terminal', 'existing_terminal']
+
     @classmethod
     def get_next_port_available(cls):
         clients = Client.all()
@@ -54,3 +56,6 @@ class Client(OratorModel):
 
         self.open = False
         self.save()
+
+    def get_terminal_command(self):
+        return f'Run this command in your terminal: curl localhost:{self.proxy_port}/terminal'

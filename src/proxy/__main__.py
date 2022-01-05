@@ -28,7 +28,7 @@ else:
 print(f'[Proxy] --------------> include_path: {include_path}')
 
 # 1. Start mitmproxy
-proxy_events = ProxyEvents(client_id, include_path)
+proxy_events = ProxyEvents(client_id, port_num, include_path)
 proxy = Proxy(proxy_events, port_num, include_path)
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))

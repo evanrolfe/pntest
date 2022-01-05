@@ -5,10 +5,11 @@ from mitmproxy.http import Headers
 from mitmproxy import http
 
 class ProxyEvents:
-    def __init__(self, client_id, include_path):
+    def __init__(self, client_id, port_num, include_path):
         self.client_id = client_id
         self.intercept_enabled = False
         self.intercepted_flows = []
+        self.port_num = port_num
         self.include_path = include_path
         self.pntest_homepage_html = Path(f'{self.include_path}/html_page.html').read_text()
 
@@ -79,6 +80,10 @@ class ProxyEvents:
         if flow.request.host == 'pntest':
             flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
 
+        # The termain setup script at http://localhost:8080/terminal
+        if flow.request.host == 'localhost' and flow.request.path == '/terminal':
+            flow.response = http.Response.make(200, self.__terminal_setup_command(), {"content-type": "text/plain"})
+
         request_state = flow.request.get_state()
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
@@ -119,7 +124,6 @@ class ProxyEvents:
         self.__send_message(message_state)
 
         if message_state['intercepted']:
-            # import code; code.interact(local=dict(globals(), **locals()))
             flow.intercepted_message = message
             self.intercept_flow(flow)
 
@@ -141,3 +145,21 @@ class ProxyEvents:
 
     def __send_message(self, message):
         self.socket.send_string(json.dumps(message))
+
+    def __terminal_setup_command(self):
+        proxy_url = f'127.0.0.1:{self.port_num}'
+        env_vars = {
+            'http_proxy': proxy_url,
+            'HTTP_PROXY': proxy_url,
+            'https_proxy': proxy_url,
+            'HTTPS_PROXY': proxy_url,
+            'GLOBAL_AGENT_HTTP_PROXY': proxy_url,
+            'CGI_HTTP_PROXY': proxy_url,
+            'npm_config_proxy': proxy_url,
+            'npm_config_https_proxy': proxy_url,
+            'npm_config_scripts_prepend_node_path': 'false',
+            'GOPROXY': proxy_url,
+        }
+
+        print(env_vars)
+        return 'hello world!'

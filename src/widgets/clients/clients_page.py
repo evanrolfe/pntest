@@ -1,13 +1,15 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.clients.ui_clients_page import Ui_ClientsPage
-
+from typing import cast
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
 from lib.browser_launcher.detect import detect_available_browsers
 from lib.process_manager import ProcessManager
 
 ANYTHING_CLIENT = {'name': 'anything'}
+EXISTING_TERMINAL_CLIENT = {'name': 'existing_terminal'}
+BROWSER_CLIENTS = ['chromium', 'chrome', 'firefox']
 
 class ClientsPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -25,10 +27,12 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.clientsTable.bring_to_front_client_clicked.connect(self.bring_to_front_client_clicked)
 
         # Add Icons:
-        self.ui.chromiumButton.setIcon(QtGui.QIcon(':/icons/icons8-chromium.svg'))
-        self.ui.chromeButton.setIcon(QtGui.QIcon(':/icons/icons8-chrome.svg'))
-        self.ui.firefoxButton.setIcon(QtGui.QIcon(':/icons/icons8-firefox.svg'))
-        self.ui.anythingButton.setIcon(QtGui.QIcon(':/icons/icons8-question-mark.png'))
+        self.ui.chromiumButton.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons8-chromium.svg')))
+        self.ui.chromeButton.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons8-chrome.svg')))
+        self.ui.firefoxButton.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons8-firefox.svg')))
+        self.ui.anythingButton.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons8-question-mark.png')))
+        self.ui.terminalButton.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons8-console-64.png')))
+        self.ui.existingTerminalButton.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons8-console-64.png')))
 
         # Connect client buttons:
         self.ui.chromiumButton.clicked.connect(lambda: self.create_client('chromium'))
@@ -36,13 +40,15 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.firefoxButton.clicked.connect(lambda: self.create_client('firefox'))
         self.ui.anythingButton.clicked.connect(lambda: self.create_client('anything'))
         self.ui.terminalButton.clicked.connect(lambda: self.create_client('terminal'))
+        self.ui.existingTerminalButton.clicked.connect(lambda: self.create_client('existing_terminal'))
 
         # Disable clients not available
         self.client_buttons = {
             'chromium': self.ui.chromiumButton,
             'chrome': self.ui.chromeButton,
             'firefox': self.ui.firefoxButton,
-            'anything': self.ui.anythingButton
+            'anything': self.ui.anythingButton,
+            'existing_terminal': self.ui.existingTerminalButton
         }
         self.set_enabled_clients(detect_available_browsers())
 
@@ -69,7 +75,7 @@ class ClientsPage(QtWidgets.QWidget):
         client.type = client_type
         client.proxy_port = ports['proxy']
 
-        if client_type != 'anything':
+        if client_type in BROWSER_CLIENTS:
             client.browser_port = ports['browser']
 
         client.save()
@@ -78,7 +84,7 @@ class ClientsPage(QtWidgets.QWidget):
         self.open_client_clicked(client)
 
     def set_enabled_clients(self, enabled_clients):
-        self.enabled_clients = enabled_clients + [ANYTHING_CLIENT]
+        self.enabled_clients = enabled_clients + [ANYTHING_CLIENT, EXISTING_TERMINAL_CLIENT]
 
         for client in self.enabled_clients:
             button = self.client_buttons[client['name']]
@@ -105,6 +111,10 @@ class ClientsPage(QtWidgets.QWidget):
         client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
 
         client.launch(client_info)
+
+        if client.type == 'existing_terminal':
+            self.display_terminal_command(client)
+
         self.reload_table_data()
 
     @QtCore.Slot()
@@ -115,3 +125,10 @@ class ClientsPage(QtWidgets.QWidget):
     @QtCore.Slot()
     def bring_to_front_client_clicked(self, client):
         print(f'============> bring to front client {client}')
+
+    def display_terminal_command(self, client):
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('Existing Terminal')
+        message_box.setText(client.get_terminal_command())
+        message_box.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        message_box.exec_()
