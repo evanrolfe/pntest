@@ -1,6 +1,6 @@
 import sys
 import os
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 
 from lib.paths import get_app_path, get_resource_path
 from lib.process_manager import ProcessManager
@@ -49,6 +49,10 @@ def main():
     style_loader = StyleheetLoader(style_dir_path)
     stylesheet = style_loader.load_theme(THEME)
     app.setStyleSheet(stylesheet)
+
+    # Icon:
+    app.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('/home/evan/Code/pntest/pntest-icon32.ico')))
+    main_window.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('/home/evan/Code/pntest/pntest-icon32.ico')))
 
     sys.exit(app.exec_())
 
