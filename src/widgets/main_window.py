@@ -12,7 +12,6 @@ from lib.stylesheet_loader import StyleheetLoader
 from widgets.network.network_page import NetworkPage
 from widgets.intercept.intercept_page import InterceptPage
 from widgets.clients.clients_page import ClientsPage
-from widgets.crawls.crawls_page import CrawlsPage
 from widgets.editor.editor_page import EditorPage
 
 # pyside2-rcc assets/assets.qrc > assets_compiled/assets.py
@@ -38,14 +37,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.network_page = NetworkPage()
         self.intercept_page = InterceptPage()
         self.clients_page = ClientsPage()
-        self.crawls_page = CrawlsPage()
         self.editor_page = EditorPage()
 
         # Setup stacked widget:
         self.ui.stackedWidget.addWidget(self.network_page)
         self.ui.stackedWidget.addWidget(self.intercept_page)
         self.ui.stackedWidget.addWidget(self.clients_page)
-        self.ui.stackedWidget.addWidget(self.crawls_page)
         self.ui.stackedWidget.addWidget(self.editor_page)
         self.ui.stackedWidget.setCurrentWidget(self.network_page)
 
@@ -140,15 +137,10 @@ class MainWindow(QtWidgets.QMainWindow):
         requests_item.setData(QtCore.Qt.UserRole, 'requests')
         self.ui.sideBar.addItem(QtWidgets.QListWidgetItem(requests_item))
 
-        # Crawler Item
-        crawler_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-spiderweb-50.png"), None)
-        crawler_item.setData(QtCore.Qt.UserRole, 'crawler')
-        self.ui.sideBar.addItem(crawler_item)
-
         # Extensions Item
-        extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-plus-math-50.png"), None)
-        extensions_item.setData(QtCore.Qt.UserRole, 'extensions')
-        self.ui.sideBar.addItem(extensions_item)
+        # extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-plus-math-50.png"), None)
+        # extensions_item.setData(QtCore.Qt.UserRole, 'extensions')
+        # self.ui.sideBar.addItem(extensions_item)
 
         self.ui.sideBar.setCurrentRow(0)
 
@@ -162,8 +154,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.intercept_page)
         elif item_value == 'clients':
             self.ui.stackedWidget.setCurrentWidget(self.clients_page)
-        elif item_value == 'crawler':
-            self.ui.stackedWidget.setCurrentWidget(self.crawls_page)
         elif item_value == 'requests':
             self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 

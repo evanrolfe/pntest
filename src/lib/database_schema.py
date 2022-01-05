@@ -43,16 +43,6 @@ CREATE TABLE IF NOT EXISTS settings(
   updated_at INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS crawls(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  client_id INTEGER,
-  config TEXT,
-  status TEXT,
-  created_at INTEGER,
-  started_at INTEGER,
-  finished_at INTEGER
-);
-
 CREATE TABLE IF NOT EXISTS http_requests(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     http_version TEXT NOT NULL,

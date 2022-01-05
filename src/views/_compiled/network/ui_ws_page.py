@@ -25,18 +25,18 @@ class Ui_WsPage(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.crawlerToolbar = QWidget(WsPage)
-        self.crawlerToolbar.setObjectName(u"crawlerToolbar")
+        self.pageToolbar = QWidget(WsPage)
+        self.pageToolbar.setObjectName(u"pageToolbar")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.crawlerToolbar.sizePolicy().hasHeightForWidth())
-        self.crawlerToolbar.setSizePolicy(sizePolicy)
-        self.crawlerToolbar.setMaximumSize(QSize(16777215, 40))
-        self.horizontalLayout = QHBoxLayout(self.crawlerToolbar)
+        sizePolicy.setHeightForWidth(self.pageToolbar.sizePolicy().hasHeightForWidth())
+        self.pageToolbar.setSizePolicy(sizePolicy)
+        self.pageToolbar.setMaximumSize(QSize(16777215, 40))
+        self.horizontalLayout = QHBoxLayout(self.pageToolbar)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(10, 5, 10, 5)
-        self.label = QLabel(self.crawlerToolbar)
+        self.label = QLabel(self.pageToolbar)
         self.label.setObjectName(u"label")
         font = QFont()
         font.setPointSize(10)
@@ -50,14 +50,14 @@ class Ui_WsPage(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.toggleButton = QPushButton(self.crawlerToolbar)
+        self.toggleButton = QPushButton(self.pageToolbar)
         self.toggleButton.setObjectName(u"toggleButton")
         self.toggleButton.setMaximumSize(QSize(100, 16777215))
 
         self.horizontalLayout.addWidget(self.toggleButton)
 
 
-        self.verticalLayout.addWidget(self.crawlerToolbar)
+        self.verticalLayout.addWidget(self.pageToolbar)
 
         self.messagesTableAndViewSplitter = QSplitter(WsPage)
         self.messagesTableAndViewSplitter.setObjectName(u"messagesTableAndViewSplitter")
