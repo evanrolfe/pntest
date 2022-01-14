@@ -44,7 +44,7 @@ class ClientsTable(QtWidgets.QWidget):
         # Client Selected Signal:
         self.ui.clientsTable.selectionModel().selectionChanged.connect(self.client_selected)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def right_clicked(self, position):
         index = self.ui.clientsTable.indexAt(position)
         client = self.table_model.clients[index.row()]

@@ -6,7 +6,7 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
         self.parent = parent
         super(RowStyleDelegate, self).__init__(parent=None)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def highlight_index(self, index):
         if index is None:
             self.hovered_row = None

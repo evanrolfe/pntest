@@ -46,7 +46,7 @@ class ExamplesTable(QtWidgets.QWidget):
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
         self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def selection_changed(self, selected, deselected):
         try:
             selected_index = selected.indexes()[0]
@@ -62,13 +62,13 @@ class ExamplesTable(QtWidgets.QWidget):
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
         self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def set_selected_flows(self, selected, deselected):
         selected_q_indexes = self.ui.table.selectionModel().selectedRows()
         selected_flows = [self.table_model.flows[i.row()] for i in selected_q_indexes]
         self.selected_flows = selected_flows
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def right_clicked(self, position):
         index = self.ui.table.indexAt(position)
         index_col0 = index.siblingAtColumn(0)

@@ -83,7 +83,7 @@ class MainWindow(QtWidgets.QMainWindow):
         settings = AppSettings.get_instance()
         settings.save('geometry', geometry)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def reload_style(self):
         style_loader = StyleheetLoader('/home/evan/Code/pntest/src/style/')
         stylesheet = style_loader.load_theme('dark')
@@ -91,12 +91,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         print('reloaded the stylesheet!')
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def show_editor_page(self):
         self.ui.sideBar.setCurrentRow(3)
         self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def about_to_quit(self):
         self.save_layout_state()
         self.network_page.save_layout_state()
@@ -144,7 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.ui.sideBar.setCurrentRow(0)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def sidebar_item_clicked(self, item):
         item_value = item.data(QtCore.Qt.UserRole)
 
@@ -162,7 +162,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor_page.reload()
         self.clients_page.reload()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def open_project(self):
         # print('Resuming request...')
         # self.proxy_events_manager.resume_request()
@@ -179,7 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.reload()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def save_project_as(self):
         file = QtWidgets.QFileDialog.getSaveFileName(
             self,

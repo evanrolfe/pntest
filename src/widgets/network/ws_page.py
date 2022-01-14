@@ -49,7 +49,7 @@ class WsPage(QtWidgets.QWidget):
         settings.save("WsPage.messagesTableAndViewSplitter", splitter_state)
         settings.save("WsPage.messageViewSplitterState", splitter_state2)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def select_message(self, selected, deselected):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
@@ -57,7 +57,7 @@ class WsPage(QtWidgets.QWidget):
             message = WebsocketMessage.find(selected_id)
             self.ui.messageViewWidget.set_message(message)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def delete_messages(self, message_ids):
         if len(message_ids) > 1:
             message = f'Are you sure you want to delete {len(message_ids)} websocket messages?'
@@ -74,11 +74,11 @@ class WsPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.Yes:
             self.table_model.delete_messages(message_ids)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def websocket_message_created(self, websocket_message):
         self.table_model.add_message(websocket_message)
 
-    # @QtCore.Slot()
+    # @QtCore.Slot()  # type:ignore
     # def search_requests(self, search_text):
     #     # requests = HttpFlow.search({'search': search_text})
     #     # self.table_model.requests = requests

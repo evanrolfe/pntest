@@ -74,12 +74,12 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.setColumnWidth(6, 50)
         self.ui.requestsTable.setColumnWidth(7, 70)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def set_selected_requests(self, selected, deselected):
         selected_q_indexes = self.ui.requestsTable.selectionModel().selectedRows()
         self.selected_request_ids = list(map(lambda index: index.data(), selected_q_indexes))
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def right_clicked(self, position):
         index = self.ui.requestsTable.indexAt(position)
         flow = self.table_model.flows[index.row()]
@@ -102,10 +102,10 @@ class RequestsTable(QtWidgets.QWidget):
 
         menu.exec_(self.sender().mapToGlobal(position))
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def display_filters_clicked(self):
         print("You clicked me!")
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def search_text_edited(self, new_text):
         self.search_text_changed.emit(new_text)

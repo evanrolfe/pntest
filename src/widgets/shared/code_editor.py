@@ -15,7 +15,7 @@ class WebBridge(QtCore.QObject):
         self.format = format
         self.emit_set_code()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def emit_set_code(self):
         self.set_code.emit(self.value, self.format)
 

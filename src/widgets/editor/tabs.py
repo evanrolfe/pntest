@@ -26,7 +26,7 @@ class Tabs(QtWidgets.QTabWidget):
         self.insertTab(self.count(), request_edit_page, editor_item.icon(), editor_item.name)
         self.setCurrentIndex(self.count() - 1)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def open_item(self, editor_item):
         existing_tab_index = self.get_index_for_editor_item(editor_item)
 
@@ -41,17 +41,17 @@ class Tabs(QtWidgets.QTabWidget):
         else:
             self.setCurrentIndex(existing_tab_index)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def close_tab(self, index):
         self.removeTab(index)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def close_item(self, tree_item):
         index = self.get_index_for_editor_item(tree_item.editor_item)
         if index:
             self.removeTab(index)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def change_item(self, editor_item):
         index = self.get_index_for_editor_item(editor_item)
         new_tab_text = editor_item.name
@@ -65,13 +65,13 @@ class Tabs(QtWidgets.QTabWidget):
 
         self.setTabText(index, new_tab_text)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def reload_icon(self, editor_item):
         index = self.get_index_for_editor_item(editor_item)
         self.setTabIcon(index, editor_item.icon())
         self.item_changed.emit(editor_item)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def editor_item_form_changed(self, editor_item, modified):
         index = self.get_index_for_editor_item(editor_item)
         tab_text = self.tabText(index)

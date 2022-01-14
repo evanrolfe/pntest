@@ -57,11 +57,11 @@ class ClientsPage(QtWidgets.QWidget):
         clients = Client.all()
         self.clients_table_model.set_clients(clients)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def new_client_click(self):
         self.new_client_modal.show()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def create_client(self, client_type):
         ports = Client.get_next_port_available()
 
@@ -100,18 +100,18 @@ class ClientsPage(QtWidgets.QWidget):
 
         # return client_info
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def open_client_clicked(self, client):
         client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
 
         client.launch(client_info)
         self.reload_table_data()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def close_client_clicked(self, client):
         client.close()
         self.reload_table_data()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def bring_to_front_client_clicked(self, client):
         print(f'============> bring to front client {client}')

@@ -67,12 +67,12 @@ class MessagesTable(QtWidgets.QWidget):
         self.ui.messagesTable.setColumnWidth(2, 80)
         self.ui.messagesTable.setColumnWidth(3, 80)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def set_selected_messages(self, selected, deselected):
         selected_q_indexes = self.ui.messagesTable.selectionModel().selectedRows()
         self.selected_message_ids = list(map(lambda index: index.data(), selected_q_indexes))
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def right_clicked(self, position):
         index = self.ui.messagesTable.indexAt(position)
         message = self.table_model.messages[index.row()]
@@ -95,6 +95,6 @@ class MessagesTable(QtWidgets.QWidget):
 
         menu.exec_(self.sender().mapToGlobal(position))
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def search_text_edited(self, new_text):
         self.search_text_changed.emit(new_text)

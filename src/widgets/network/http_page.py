@@ -54,7 +54,7 @@ class HttpPage(QtWidgets.QWidget):
         settings.save("HttpPage.requestsTableAndViewSplitterState", splitter_state)
         settings.save("HttpPage.requestsViewSplitterState", splitter_state2)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def select_request(self, selected, deselected):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
@@ -62,7 +62,7 @@ class HttpPage(QtWidgets.QWidget):
             flow = HttpFlow.find(selected_id)
             self.ui.requestViewWidget.set_flow(flow)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def delete_requests(self, request_ids):
         if len(request_ids) > 1:
             message = f'Are you sure you want to delete {len(request_ids)} requests?'
@@ -79,7 +79,7 @@ class HttpPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.Yes:
             self.table_model.delete_requests(request_ids)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def search_requests(self, search_text):
         return True
         # requests = HttpFlow.search({'search': search_text})
@@ -91,10 +91,10 @@ class HttpPage(QtWidgets.QWidget):
         # self.table_model.requests = self.request_data.requests
         # self.table_model.refresh()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def flow_created(self, flow):
         self.table_model.add_flow(flow)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def flow_updated(self, flow):
         self.table_model.update_flow(flow)

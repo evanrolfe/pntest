@@ -40,19 +40,19 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.setModel(self.tree_model)
         print(f'ItemExplorer: reloading with {len(editor_items)} items')
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def reload_item(self, editor_item):
         print(f'ItemExplorer: reloading editor item: {editor_item.name}')
         self.tree_model.layoutChanged.emit()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def change_selection(self, index):
         self.selectionModel().setCurrentIndex(
             index,
             QtCore.QItemSelectionModel.ClearAndSelect
         )
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def right_click(self, position):
         index = self.indexAt(position)
 
@@ -63,13 +63,13 @@ class ItemExplorer(QtWidgets.QTreeView):
         else:
             self.show_single_selection_context_menu(index, position)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def double_click(self, index):
         item = self.tree_model.getItem(index)
         if not item.is_dir:
             self.item_double_clicked.emit(item.editor_item)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def click(self, index):
         item = self.tree_model.getItem(index)
         if not item.is_dir:
@@ -125,7 +125,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.insertChild(editor_item, QtCore.QModelIndex())
         self.item_created.emit(editor_item)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def new_request_clicked(self, parent_index):
         child_editor_item = EditorItem()
         child_editor_item.name = 'New HTTP Request'
@@ -134,7 +134,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.insertChild(child_editor_item, parent_index)
         self.item_created.emit(child_editor_item)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def new_dir_clicked(self, parent_index):
         child_editor_item = EditorItem()
         child_editor_item.name = 'New Folder'
@@ -142,17 +142,17 @@ class ItemExplorer(QtWidgets.QTreeView):
 
         self.insertChild(child_editor_item, parent_index)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def copy_clicked(self, parent_index):
         tree_item = self.tree_model.getItem(parent_index)
         self.copied_editor_item = tree_item.editor_item.duplicate()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def paste_clicked(self, parent_index):
         self.insertChild(self.copied_editor_item, parent_index)
         self.item_created.emit(self.copied_editor_item)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def delete_clicked(self, index):
         tree_item = self.tree_model.getItem(index)
 

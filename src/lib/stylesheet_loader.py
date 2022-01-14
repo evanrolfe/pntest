@@ -41,6 +41,10 @@ class StyleheetLoader:
         theme_str = stream.readAll()
 
         matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)  # noqa W605
+
+        if matches is None:
+            return
+
         match = matches[1]
 
         if match is None:

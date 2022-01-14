@@ -35,7 +35,7 @@ class EditorPage(QtWidgets.QWidget):
 
         # self.ui.requestGroupView.save_layout_state()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def send_flow_to_editor(self, flow):
         new_flow = flow.duplicate_for_editor()
         editor_item = EditorItem.create_for_http_flow(new_flow)

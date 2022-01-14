@@ -34,7 +34,7 @@ class CaptureFilters(QtWidgets.QDialog):
         self.ui.hostsText.setPlainText("\n".join(self.capture_filters.host_list))
         self.ui.pathsText.setPlainText("\n".join(self.capture_filters.path_list))
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def save(self):
         host_setting_index = self.ui.hostSettingDropdown.currentIndex()
         host_setting = self.index_to_setting(host_setting_index)
@@ -53,11 +53,11 @@ class CaptureFilters(QtWidgets.QDialog):
         self.capture_filters.save()
         self.close()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def host_setting_changed(self, index):
         self.ui.hostsText.setDisabled((index == 0))
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def path_setting_changed(self, index):
         self.ui.pathsText.setDisabled((index == 0))
 

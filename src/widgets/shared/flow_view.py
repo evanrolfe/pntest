@@ -192,15 +192,15 @@ class FlowView(QtWidgets.QWidget):
             self.response_modified_dropdown.setCurrentIndex(0)
             self.response_modified_dropdown.setVisible(flow.response_modified())
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def show_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def hide_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def change_response_body_format(self, index):
         self.selected_format = self.FORMATS[index]
 

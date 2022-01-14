@@ -84,13 +84,13 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.sendButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def show_example(self, flow):
         self.flow = flow
         self.show_request()
         self.set_send_save_buttons_enabled(not self.flow.is_example())
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def delete_examples(self, flows):
         example_flows = [f for f in flows if f.is_example()]
 
@@ -102,7 +102,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.reload()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def save_request(self):
         self.update_request_with_values_from_form()
         if hasattr(self.flow, 'id'):
@@ -119,7 +119,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.form_input_changed.emit(False)
         self.request_saved.emit()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def save_example(self):
         # 1. Save the HttpResponse (without a flow)
         self.latest_response.save()
@@ -140,13 +140,13 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.examplesTable.reload()
         self.ui.flowView.set_save_as_example_enabled(False)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def response_received(self, requests_response):
         self.latest_response = HttpResponse.from_requests_response(requests_response)
         self.ui.flowView.set_response_from_editor(self.latest_response, requests_response.request.url)
         self.ui.flowView.set_save_as_example_enabled(True)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def request_error(self, error):
         exctype, value, traceback = error
 
@@ -157,7 +157,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
     # TODO: Close the request:
     # https://stackoverflow.com/questions/10115126/python-requests-close-http-connection
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def send_request_async(self):
         print('Sending the request!')
         self.ui.flowView.show_loader()
@@ -198,12 +198,12 @@ class RequestEditPage(QtWidgets.QWidget):
         self.flow.request.content = self.ui.flowView.get_request_payload()
         self.flow.request.set_headers(headers)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def cancel_request(self):
         self.worker.kill()
         self.ui.flowView.hide_loader()
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def form_field_changed(self):
         request_on_form = {
             'method': self.ui.methodInput.currentText(),
@@ -217,7 +217,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.request_is_modified = (request_on_form != original_request)
         self.form_input_changed.emit(self.request_is_modified)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def toggle_examples_table(self):
         visible = not self.ui.examplesTable.isVisible()
         self.ui.examplesTable.setVisible(visible)

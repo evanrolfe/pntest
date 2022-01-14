@@ -24,7 +24,7 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercept_queue = InterceptQueue()
         self.intercept_queue.decision_required.connect(self.decision_required)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def decision_required(self, flow):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
@@ -51,20 +51,20 @@ class InterceptPage(QtWidgets.QWidget):
             self.ui.headers.set_header_line(flow.request.get_header_line_no_http_version())
             self.ui.bodyText.setPlainText(flow.request.content)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def forward_button_clicked(self):
         self.__forward_flow(False)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def forward_intercept_button_clicked(self):
         self.__forward_flow(True)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def drop_button_clicked(self):
         self.__clear_request()
         self.intercept_queue.drop_flow(self.intercepted_flow)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def enabled_button_clicked(self):
         if self.intercept_enabled:
             self.__clear_request()

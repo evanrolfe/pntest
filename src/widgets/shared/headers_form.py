@@ -69,7 +69,7 @@ class HeadersForm(QtWidgets.QWidget):
 
         self.table_model.set_headers(headers)
 
-    @QtCore.Slot()
+    @QtCore.Slot()  # type:ignore
     def show_generated_headers(self, state):
         if state == QtCore.Qt.Checked:
             self.ui.headersTable.showRow(0)
