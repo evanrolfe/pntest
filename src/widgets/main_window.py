@@ -98,6 +98,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()  # type:ignore
     def about_to_quit(self):
+        import code; code.interact(local=locals())
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()

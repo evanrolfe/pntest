@@ -11,7 +11,7 @@ class ErrorCheck:
         if e.level == "error":
             self.has_errored = True
 
-class Proxy():
+class ProxyWrapper():
     def __init__(self, proxy_events, listen_port, include_path):
         self.opts = options.Options()
         self.opts.listen_port = listen_port
@@ -20,13 +20,11 @@ class Proxy():
         proxy_events.set_proxy(self)
         self.master.addons.add(proxy_events)
 
-        self.master.errorcheck = ErrorCheck()
         self.master.addons.add(termlog.TermLog())
         self.master.addons.add(*addons.default_addons())
         self.master.addons.add(
             keepserving.KeepServing(),
-            readfile.ReadFileStdin(),
-            self.master.errorcheck
+            readfile.ReadFileStdin()
         )
 
     def run_in_thread(self, loop, master):

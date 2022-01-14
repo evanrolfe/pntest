@@ -7,8 +7,8 @@ import zmq.asyncio
 import threading
 import simplejson as json
 import time
-
-from proxy import Proxy
+import zmq
+from proxy_wrapper import ProxyWrapper
 from proxy_events import ProxyEvents
 
 PROXY_ZMQ_PORT = 5556
@@ -29,7 +29,7 @@ print(f'[Proxy] --------------> include_path: {include_path}')
 
 # 1. Start mitmproxy
 proxy_events = ProxyEvents(client_id, include_path)
-proxy = Proxy(proxy_events, port_num, include_path)
+proxy = ProxyWrapper(proxy_events, port_num, include_path)
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
 proxy_thread.start()

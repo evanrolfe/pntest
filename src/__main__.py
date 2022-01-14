@@ -42,13 +42,15 @@ def main():
     main_window.set_process_manager(process_manager)
     main_window.show()
 
-    app.aboutToQuit.connect(main_window.about_to_quit)
+    app.aboutToQuit.connect(main_window.about_to_quit)  # type: ignore
 
     # Style:
     app.setStyle('Fusion')
     style_loader = StyleheetLoader(style_dir_path)
     stylesheet = style_loader.load_theme(THEME)
-    app.setStyleSheet(stylesheet)
+
+    if stylesheet is not None:
+        app.setStyleSheet(stylesheet)
 
     # Icon:
     app.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('/home/evan/Code/pntest/pntest-icon32.ico')))
