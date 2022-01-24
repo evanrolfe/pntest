@@ -47,6 +47,7 @@ class Ui_RequestEditPage(object):
         self.layout1.setContentsMargins(10, 10, 10, -1)
         self.toggleExamplesButton = QPushButton(self.layoutWidget)
         self.toggleExamplesButton.setObjectName(u"toggleExamplesButton")
+        self.toggleExamplesButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.layout1.addWidget(self.toggleExamplesButton)
 
@@ -73,11 +74,13 @@ class Ui_RequestEditPage(object):
 
         self.sendButton = QPushButton(self.layoutWidget)
         self.sendButton.setObjectName(u"sendButton")
+        self.sendButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.requestActionsLayout.addWidget(self.sendButton)
 
         self.saveButton = QPushButton(self.layoutWidget)
         self.saveButton.setObjectName(u"saveButton")
+        self.saveButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.requestActionsLayout.addWidget(self.saveButton)
 

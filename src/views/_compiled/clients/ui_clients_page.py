@@ -112,36 +112,42 @@ class Ui_ClientsPage(object):
         self.chromeButton = QPushButton(ClientsPage)
         self.chromeButton.setObjectName(u"chromeButton")
         self.chromeButton.setEnabled(False)
+        self.chromeButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout.addWidget(self.chromeButton, 0, 0, 1, 1)
 
         self.chromiumButton = QPushButton(ClientsPage)
         self.chromiumButton.setObjectName(u"chromiumButton")
         self.chromiumButton.setEnabled(False)
+        self.chromiumButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout.addWidget(self.chromiumButton, 0, 1, 1, 1)
 
         self.firefoxButton = QPushButton(ClientsPage)
         self.firefoxButton.setObjectName(u"firefoxButton")
         self.firefoxButton.setEnabled(False)
+        self.firefoxButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout.addWidget(self.firefoxButton, 0, 2, 1, 1)
 
         self.terminalButton = QPushButton(ClientsPage)
         self.terminalButton.setObjectName(u"terminalButton")
         self.terminalButton.setEnabled(False)
+        self.terminalButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout.addWidget(self.terminalButton, 0, 3, 1, 1)
 
         self.existingTerminalButton = QPushButton(ClientsPage)
         self.existingTerminalButton.setObjectName(u"existingTerminalButton")
         self.existingTerminalButton.setEnabled(False)
+        self.existingTerminalButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout.addWidget(self.existingTerminalButton, 0, 4, 1, 1)
 
         self.anythingButton = QPushButton(ClientsPage)
         self.anythingButton.setObjectName(u"anythingButton")
         self.anythingButton.setEnabled(False)
+        self.anythingButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.gridLayout.addWidget(self.anythingButton, 1, 0, 1, 1)
 

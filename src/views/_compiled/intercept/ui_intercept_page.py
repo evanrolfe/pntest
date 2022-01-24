@@ -12,7 +12,6 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from widgets.shared.code_editor import CodeEditor
 from widgets.shared.headers_form import HeadersForm
 
 
@@ -73,21 +72,25 @@ class Ui_InterceptPage(object):
         self.horizontalLayout2.setObjectName(u"horizontalLayout2")
         self.forwardButton = QPushButton(InterceptPage)
         self.forwardButton.setObjectName(u"forwardButton")
+        self.forwardButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.horizontalLayout2.addWidget(self.forwardButton)
 
         self.forwardInterceptButton = QPushButton(InterceptPage)
         self.forwardInterceptButton.setObjectName(u"forwardInterceptButton")
+        self.forwardInterceptButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.horizontalLayout2.addWidget(self.forwardInterceptButton)
 
         self.dropButton = QPushButton(InterceptPage)
         self.dropButton.setObjectName(u"dropButton")
+        self.dropButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.horizontalLayout2.addWidget(self.dropButton)
 
         self.enabledButton = QPushButton(InterceptPage)
         self.enabledButton.setObjectName(u"enabledButton")
+        self.enabledButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.horizontalLayout2.addWidget(self.enabledButton)
 

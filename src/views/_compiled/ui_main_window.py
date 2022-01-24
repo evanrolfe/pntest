@@ -44,6 +44,7 @@ class Ui_MainWindow(object):
         self.sideBar.setSizePolicy(sizePolicy)
         self.sideBar.setMinimumSize(QSize(52, 0))
         self.sideBar.setMaximumSize(QSize(52, 16777215))
+        self.sideBar.viewport().setProperty("cursor", QCursor(Qt.ArrowCursor))
 
         self.horizontalLayout.addWidget(self.sideBar)
 
@@ -55,7 +56,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 1200, 23))
+        self.menuBar.setGeometry(QRect(0, 0, 1200, 22))
         self.menuFile = QMenu(self.menuBar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuEdit = QMenu(self.menuBar)

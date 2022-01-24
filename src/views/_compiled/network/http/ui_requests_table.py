@@ -49,11 +49,13 @@ class Ui_RequestsTable(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.displayFiltersButton = QPushButton(RequestsTable)
         self.displayFiltersButton.setObjectName(u"displayFiltersButton")
+        self.displayFiltersButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.horizontalLayout.addWidget(self.displayFiltersButton)
 
         self.captureFiltersButton = QPushButton(RequestsTable)
         self.captureFiltersButton.setObjectName(u"captureFiltersButton")
+        self.captureFiltersButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.horizontalLayout.addWidget(self.captureFiltersButton)
 

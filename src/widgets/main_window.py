@@ -1,7 +1,6 @@
 import shutil
 
 from PySide2 import QtCore, QtGui, QtWidgets
-
 # NOTE: This line is necessary for pyinstaller to succeed (for some reason):
 from PySide2 import QtXml # noqa F401
 
@@ -98,7 +97,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()  # type:ignore
     def about_to_quit(self):
-        import code; code.interact(local=locals())
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
@@ -120,22 +118,25 @@ class MainWindow(QtWidgets.QMainWindow):
         # Network Item
         network_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-cloud-backup-restore-50.png"), None)
         network_item.setData(QtCore.Qt.UserRole, 'network')
-        # network_item.setSizeHint(icon_size)
+        network_item.setToolTip("Network")
         self.ui.sideBar.addItem(network_item)
 
         # Intercept Item
         intercept_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-rich-text-converter-50.png"), None)
         intercept_item.setData(QtCore.Qt.UserRole, 'intercept')
+        intercept_item.setToolTip("Intercept")
         self.ui.sideBar.addItem(intercept_item)
 
         # Clients Item
         clients_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-browse-page-50.png"), None)
         clients_item.setData(QtCore.Qt.UserRole, 'clients')
+        clients_item.setToolTip("Clients")
         self.ui.sideBar.addItem(clients_item)
 
         # Requests Item
         requests_item = QtWidgets.QListWidgetItem(QtGui.QIcon(":/icons/dark/icons8-compose-50.png"), None)
         requests_item.setData(QtCore.Qt.UserRole, 'requests')
+        requests_item.setToolTip("Request Editor")
         self.ui.sideBar.addItem(QtWidgets.QListWidgetItem(requests_item))
 
         # Extensions Item
