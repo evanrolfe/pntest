@@ -1,7 +1,9 @@
 from orator.orm import Factory
 from models.data.client import Client
-from models.data.crawl import Crawl
 from models.data.editor_item import EditorItem
+from models.data.http_flow import HttpFlow
+from models.data.http_request import HttpRequest
+from models.data.http_response import HttpResponse
 
 factory = Factory()
 
@@ -17,18 +19,11 @@ def client_factory(faker):
         'open': 0
     }
 
-@factory.define(Crawl)
-def crawl_factory(faker):
-    return {
-        'config': '{}',
-        'status': 'finished',
-    }
-
 @factory.define_as(EditorItem, 'request')
 def editor_item_factory_request(faker):
     return {
         'name': 'Login request',
-        'item_type': 'request',
+        'item_type': EditorItem.TYPE_HTTP_FLOW,
         'item_id': 1
     }
 
@@ -36,5 +31,57 @@ def editor_item_factory_request(faker):
 def editor_item_factory_dir(faker):
     return {
         'name': 'My requests',
-        'item_type': 'dir'
+        'item_type': EditorItem.TYPE_DIR
+    }
+
+@factory.define_as(HttpFlow, 'proxy')
+def http_flow_proxy(faker):
+    return {
+        'type': HttpFlow.TYPE_PROXY,
+    }
+
+@factory.define_as(HttpFlow, 'editor')
+def http_flow_editor(faker):
+    return {
+        'type': HttpFlow.TYPE_EDITOR,
+    }
+
+@factory.define_as(HttpRequest, 'proxy')
+def http_request_proxy(faker):
+    return {
+        'http_version': 'HTTP/1.1',
+        'headers': '{"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}',
+        'timestamp_start': 1641555291.54401,
+        'timestamp_end': 1641555291.54628,
+        'host': 'wonderbill.com',
+        'port': 80,
+        'method': 'GET',
+        'scheme': 'http',
+        'path': '/',
+    }
+
+@factory.define_as(HttpRequest, 'editor')
+def http_request_editor(faker):
+    return {
+        'http_version': 'HTTP/1.1',
+        'headers': '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}',
+        'timestamp_start': 1641555291.54401,
+        'timestamp_end': 1641555291.54628,
+        'host': 'wonderbill.com',
+        'port': 80,
+        'method': 'GET',
+        'scheme': 'http',
+        'path': '/',
+    }
+
+@factory.define_as(HttpResponse, 'http_response')
+def http_response(faker):
+    return {
+        'http_version': 'HTTP/1.1',
+        'headers': '{"Cache-Control": "no-cache, no-store", "Content-Length": "57", "Content-Type": "application/json", "MS-CV": "Fi5N4PgVHUS1BTxUimu7kA.0", "X-Content-Type-Options": "nosniff", "Date": "Fri, 07 Jan 2022 14:58:33 GMT", "Connection": "close"}',
+        'content': '{"ipv":false,"pvm":null,"rej":0,"bln":0,"acc":1,"efi":[]}',
+        'timestamp_start': 1641567513.68341,
+        'timestamp_end': 1641567513.6862,
+        'status_code': 200,
+        'reason': 'OK',
     }

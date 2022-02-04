@@ -1,6 +1,6 @@
 from models.data.orator_model import OratorModel
 from orator.orm import has_one, has_many
-from models.data.http_request import HttpRequest
+from models.data.http_request import HttpRequest, Headers
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
 
@@ -110,7 +110,7 @@ class HttpFlow(OratorModel):
 
         return new_flow
 
-    def modify_request(self, modified_method, modified_path, modified_headers, modified_content):
+    def modify_request(self, modified_method: str, modified_path: str, modified_headers: Headers, modified_content: str):
         original_request = self.request().first()
         original_state = original_request.get_state()
         request_unchanged = (
@@ -145,7 +145,7 @@ class HttpFlow(OratorModel):
         self.request_id = new_request.id
         self.save()
 
-    def modify_response(self, modified_status_code, modified_headers, modified_content):
+    def modify_response(self, modified_status_code: int, modified_headers: Headers, modified_content: str):
         original_response = self.response().first()
         original_state = original_response.get_state()
 

@@ -4,6 +4,8 @@ from PySide2 import QtWidgets, QtCore
 from views._compiled.shared.ui_headers_form import Ui_HeadersForm
 from models.qt.request_headers_table_model import RequestHeadersTableModel
 
+Headers = dict[str, str]
+
 class HeadersForm(QtWidgets.QWidget):
     CALCULATED_TEXT = '<calculated when request is sent>'
     DEFAULT_HEADERS = [
@@ -81,5 +83,5 @@ class HeadersForm(QtWidgets.QWidget):
     def get_header_line(self):
         return self.ui.headerLine.text()
 
-    def get_headers(self):
+    def get_headers(self) -> Headers:
         return self.table_model.get_headers()

@@ -10,3 +10,7 @@ class OratorModel(Model):
     @classmethod
     def where(cls, arg1: str, arg2: str, arg3: Any) -> Builder:
         pass
+
+    @classmethod
+    def count(cls) -> int:
+        pass

@@ -1,4 +1,4 @@
 {
     // Unfortunately the type definitions from Pyside2 are just not good enough so we have to ignore them
-    "ignore": ["./src/widgets"]
+    "ignore": ["./src/widgets", "./src/views/_compiled"]
 }

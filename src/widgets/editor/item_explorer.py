@@ -25,6 +25,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.setDragDropOverwriteMode(True)
         self.setIconSize(QtCore.QSize(25, 15))
+        # self.setUniformRowHeights(True)
 
         self.customContextMenuRequested.connect(self.right_click)
         self.doubleClicked.connect(self.double_click)

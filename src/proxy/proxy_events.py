@@ -72,7 +72,7 @@ class ProxyEvents:
     # ---------------------------------------------------------------------------
     # MitmProxy Events:
     # ---------------------------------------------------------------------------
-    def request(self, flow):
+    def request(self, flow: http.HTTPFlow):
         print('[Proxy] HTTP request')
 
         # The default homepage at http://pntest
@@ -90,9 +90,12 @@ class ProxyEvents:
         if request_state['intercepted']:
             self.intercept_flow(flow)
 
-    def response(self, flow):
+    def response(self, flow: http.HTTPFlow):
         print('[Proxy] HTTP response')
         intercept_response = getattr(flow, 'intercept_response', False)
+
+        if flow.response is None:
+            return
 
         response_state = flow.response.get_state()
         response_state['flow_uuid'] = flow.id
@@ -104,8 +107,12 @@ class ProxyEvents:
         if intercept_response:
             self.intercept_flow(flow)
 
-    def websocket_message(self, flow):
+    def websocket_message(self, flow: http.HTTPFlow):
         print('[Proxy] websocket message')
+
+        if flow.websocket is None:
+            return
+
         message = flow.websocket.messages[-1]
         direction = 'outgoing' if message.from_client else 'incoming'
 
@@ -119,7 +126,6 @@ class ProxyEvents:
         self.__send_message(message_state)
 
         if message_state['intercepted']:
-            # import code; code.interact(local=dict(globals(), **locals()))
             flow.intercepted_message = message
             self.intercept_flow(flow)
 

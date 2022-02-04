@@ -87,13 +87,13 @@ class HttpRequest(Model):
 
         new_request.http_version = self.http_version
         new_request.headers = self.headers
-        new_request.content = self.content
-        new_request.trailers = self.trailers
+        new_request.content = getattr(self, 'content', None)
+        new_request.trailers = getattr(self, 'trailers', None)
         new_request.host = self.host
         new_request.port = self.port
         new_request.method = self.method
         new_request.scheme = self.scheme
-        new_request.authority = self.authority
+        new_request.authority = getattr(self, 'authority', None)
         new_request.path = self.path
 
         return new_request

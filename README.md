@@ -22,6 +22,8 @@ $ pip install -r requirements.txt
 ```
 
 ## Develop
+Always run `source venv/bin/activate` at the start to load the Python virtual env.
+
 Run the app in developer mode:
 ```bash
 $ bin/dev

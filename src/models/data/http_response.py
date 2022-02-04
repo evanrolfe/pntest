@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 from typing import Optional, Any
 from orator import Model
+from requests import Response
 
 Headers = dict[str, str]
 
@@ -35,17 +36,16 @@ class HttpResponse(Model):
         return response
 
     @classmethod
-    # TODO: Set the requests_response type to one from the proxy package
-    def from_requests_response(cls, requests_response: Any) -> HttpResponse:
+    def from_requests_response(cls, response: Response) -> HttpResponse:
         response_model = HttpResponse()
-        response_model.content = requests_response.text
-        response_model.status_code = requests_response.status_code
-        response_model.reason = requests_response.reason
-        response_model.set_headers(dict(requests_response.headers))
+        response_model.content = response.text
+        response_model.status_code = response.status_code
+        response_model.reason = response.reason
+        response_model.set_headers(dict(response.headers))
 
-        if requests_response.raw.version == 11:
+        if response.raw.version == 11:
             response_model.http_version = 'HTTP/1.1'
-        elif requests_response.raw.version == 10:
+        elif response.raw.version == 10:
             response_model.http_version = 'HTTP/1.0'
 
         return response_model
