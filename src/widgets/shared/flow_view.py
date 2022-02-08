@@ -188,9 +188,11 @@ class FlowView(QtWidgets.QWidget):
             self.ui.responseBodyPreview.setHtml('')
 
     def set_modified_dropdown(self, flow):
-        if self.response_modified_dropdown:
-            self.response_modified_dropdown.setCurrentIndex(0)
-            self.response_modified_dropdown.setVisible(flow.response_modified())
+        self.request_modified_dropdown.setCurrentIndex(0)
+        self.request_modified_dropdown.setVisible(flow.request_modified())
+
+        self.response_modified_dropdown.setCurrentIndex(0)
+        self.response_modified_dropdown.setVisible(flow.response_modified())
 
     @QtCore.Slot()  # type:ignore
     def show_loader(self):
