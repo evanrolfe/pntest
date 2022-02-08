@@ -176,6 +176,10 @@ class MainWindow(QtWidgets.QMainWindow):
             "PnTest Project Files (*.pnt *.db)"
         )
         db_path = file[0]
+
+        if db_path == '':  # Cancel was pressed:
+            return
+
         print(f'Opening {db_path}')
         database = Database.get_instance()
         database.reload_with_new_database(db_path)
