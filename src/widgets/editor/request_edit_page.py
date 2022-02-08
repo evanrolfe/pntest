@@ -114,8 +114,6 @@ class RequestEditPage(QtWidgets.QWidget):
             self.request = self.flow.request
             self.original_flow = self.flow
 
-            # TODO: This needs to emit a signal to add the editor_item to the tabs
-
         self.form_input_changed.emit(False)
         self.request_saved.emit()
 

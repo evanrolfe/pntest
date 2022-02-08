@@ -85,10 +85,14 @@ class Tabs(QtWidgets.QTabWidget):
         elif not modified and last_char == '*':
             self.setTabText(index, tab_text[0:-1])
 
+    @QtCore.Slot()  # type:ignore
+    def close_current_tab(self):
+        self.close_tab(self.currentIndex())
+
     def get_index_for_editor_item(self, editor_item):
-        editor_items = [self.widget(i).editor_item for i in range(0, self.count())]
+        editor_item_ids = [self.widget(i).editor_item.id for i in range(0, self.count())]
 
         try:
-            return editor_items.index(editor_item)
+            return editor_item_ids.index(editor_item.id)
         except ValueError:
             return None

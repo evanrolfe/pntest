@@ -7,6 +7,7 @@ class EditorItemUnsaved(EditorItem):
     def __init__(self, *args, **kwargs):
         super(EditorItemUnsaved, self).__init__(*args, **kwargs)
 
+        self.id = 0
         self.name = 'Untitled'
         self.item_type = EditorItem.TYPE_HTTP_FLOW
         self.http_flow = HttpFlowUnsaved()

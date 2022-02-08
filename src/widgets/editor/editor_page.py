@@ -1,4 +1,4 @@
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.editor.ui_editor_page import Ui_EditorPage
 from lib.app_settings import AppSettings
@@ -16,8 +16,23 @@ class EditorPage(QtWidgets.QWidget):
         self.ui.itemExplorer.item_created.connect(self.ui.editorTabs.open_item)
         self.ui.itemExplorer.item_deleted.connect(self.ui.editorTabs.close_item)
         self.ui.itemExplorer.item_renamed.connect(self.ui.editorTabs.change_item)
+
+        self.ui.editorTabs.new_request_saved.connect(self.ui.itemExplorer.reload_data)
         self.ui.editorTabs.item_changed.connect(self.ui.itemExplorer.reload_item)
         self.ui.editorTabs.setObjectName('editorTabs')
+
+        # Keyboard shortcuts:
+        self.connect(
+            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_N), self),
+            QtCore.SIGNAL('activated()'),
+            self.ui.editorTabs.open_blank_item
+        )
+
+        self.connect(
+            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_W), self),
+            QtCore.SIGNAL('activated()'),
+            self.ui.editorTabs.close_current_tab
+        )
 
     def reload(self):
         self.ui.editorTabs.clear()
