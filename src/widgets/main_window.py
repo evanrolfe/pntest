@@ -1,4 +1,5 @@
 import shutil
+from pathlib import Path
 
 from PySide2 import QtCore, QtGui, QtWidgets
 # NOTE: This line is necessary for pyinstaller to succeed (for some reason):
@@ -187,9 +188,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self,
             "Save Project As",
             "~/",
-            "PnTest Project Files (*.pnt *.db)"
+            ".pnt"
         )
         new_db_path = file[0]
+
+        ext = Path(new_db_path).suffix
+        if ext == '':
+            new_db_path += '.pnt'
 
         database = Database.get_instance()
         database.close()

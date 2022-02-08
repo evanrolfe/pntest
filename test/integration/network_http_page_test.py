@@ -3,7 +3,6 @@ from PySide2 import QtCore
 from support.fixtures import load_fixtures
 from widgets.network.http_page import HttpPage
 
-
 class TestNetworkHttpPage:
     def get_data_at(self, table, row: int, column: int):
         index = table.model().index(row, column)
@@ -36,4 +35,3 @@ class TestNetworkHttpPage:
         table = widget.ui.requestViewWidget.ui.requestHeaders.ui.headersTable
         assert self.get_data_at(table, 0, 1) == 'Host'
         assert self.get_data_at(table, 0, 2) == 'wonderbill.com'
-
