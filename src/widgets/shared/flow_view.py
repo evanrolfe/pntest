@@ -234,7 +234,9 @@ class FlowView(QtWidgets.QWidget):
         lower_case_headers = {k.lower(): v for k, v in headers.items()}
         content_type = lower_case_headers.get('content-type')
 
-        if 'json' in content_type:
+        if content_type is None:
+            self.selected_format = 'Unformatted'
+        elif 'json' in content_type:
             self.selected_format = 'JSON'
         elif 'xml' in content_type:
             self.selected_format = 'XML'
