@@ -50,6 +50,12 @@ class Ui_EditorPage(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
+        self.varsButton = QPushButton(self.pageToolbar)
+        self.varsButton.setObjectName(u"varsButton")
+        self.varsButton.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_2.addWidget(self.varsButton)
+
 
         self.verticalLayout.addWidget(self.pageToolbar)
 
@@ -79,5 +85,6 @@ class Ui_EditorPage(object):
     def retranslateUi(self, EditorPage):
         EditorPage.setWindowTitle(QCoreApplication.translate("EditorPage", u"Form", None))
         self.label.setText(QCoreApplication.translate("EditorPage", u"EDITOR", None))
+        self.varsButton.setText(QCoreApplication.translate("EditorPage", u"Variables", None))
     # retranslateUi
 
