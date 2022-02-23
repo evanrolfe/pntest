@@ -26,7 +26,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QWidget" name="varsTable" native="true"/>
+    <widget class="HoverableQTableView" name="varsTable" native="true"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -64,6 +64,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HoverableQTableView</class>
+   <extends>QWidget</extends>
+   <header>widgets.qt.hoverable_q_table_view.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

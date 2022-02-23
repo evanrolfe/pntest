@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widgets.qt.hoverable_q_table_view import HoverableQTableView
+
 
 class Ui_VariablesPopup(object):
     def setupUi(self, VariablesPopup):
@@ -30,7 +32,7 @@ class Ui_VariablesPopup(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.varsTable = QWidget(VariablesPopup)
+        self.varsTable = HoverableQTableView(VariablesPopup)
         self.varsTable.setObjectName(u"varsTable")
 
         self.verticalLayout.addWidget(self.varsTable)
