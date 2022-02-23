@@ -33,8 +33,21 @@ class VarsTableModel(QtCore.QAbstractTableModel):
     def rowCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.variables)
 
+    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlags:
+        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled  # type: ignore
+
+    def setData(self, index: QtCore.QModelIndex, value: Any, role: QtCore.Qt = QtCore.Qt.EditRole) -> bool:
+        if role == QtCore.Qt.EditRole:
+            var = self.variables[index.row()]
+            columns = ['key', 'value', 'description']
+            field = columns[index.column()]
+            setattr(var, field, value)
+            return True
+
+        return False
+
     def data(self, index: QtCore.QModelIndex, role: QtCore.Qt) -> Any:
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
             if not index.isValid():
                 return None
 

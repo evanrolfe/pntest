@@ -27,12 +27,16 @@ class VariablesPopup(QtWidgets.QDialog):
         verticalHeader.setVisible(False)
 
         self.ui.varsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.ui.varsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
 
         self.load_variables()
 
     @QtCore.Slot()
     def save(self):
-        print('You clicked save!')
+        for var in self.table_model.variables:
+            var.save()
+            print(f'saved variable {var.id}')
+
         self.close()
 
     def showEvent(self, event):
