@@ -1,6 +1,7 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from views._compiled.editor.ui_editor_page import Ui_EditorPage
+from widgets.shared.variables_popup import VariablesPopup
 from lib.app_settings import AppSettings
 from models.data.editor_item import EditorItem
 
@@ -20,6 +21,9 @@ class EditorPage(QtWidgets.QWidget):
         self.ui.editorTabs.new_request_saved.connect(self.ui.itemExplorer.reload_data)
         self.ui.editorTabs.item_changed.connect(self.ui.itemExplorer.reload_item)
         self.ui.editorTabs.setObjectName('editorTabs')
+
+        self.variables_popup = VariablesPopup(self)
+        self.ui.varsButton.clicked.connect(lambda: self.variables_popup.show())
 
         # Keyboard shortcuts:
         self.connect(

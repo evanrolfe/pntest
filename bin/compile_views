@@ -35,6 +35,7 @@ pyside2-uic src/views/shared/headers_form.ui > src/views/_compiled/shared/ui_hea
 pyside2-uic src/views/shared/request_body_form.ui > src/views/_compiled/shared/ui_request_body_form.py
 pyside2-uic src/views/shared/code_editor.ui > src/views/_compiled/shared/ui_code_editor.py
 pyside2-uic src/views/shared/flow_view.ui > src/views/_compiled/shared/ui_flow_view.py
+pyside2-uic src/views/shared/variables_popup.ui > src/views/_compiled/shared/ui_variables_popup.py
 
 # Mainwindow:
 pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
