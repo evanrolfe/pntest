@@ -13,6 +13,16 @@ class VarsTableModel(QtCore.QAbstractTableModel):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['Key', 'Value', 'Description']
         self.variables = list(variables)
+        self.insert_blank_row()
+
+    def insert_blank_row(self):
+        count = len(self.variables)
+        self.beginInsertRows(QtCore.QModelIndex(), count, count)  # type: ignore
+        # Pass array by value
+        blank_var = Variable()
+        blank_var.source_type = Variable.SOURCE_TYPE_GLOBAL
+        self.variables.append(blank_var)
+        self.endInsertRows()
 
     def roleNames(self) -> Dict[int, str]:
         roles = {}
@@ -39,9 +49,14 @@ class VarsTableModel(QtCore.QAbstractTableModel):
     def setData(self, index: QtCore.QModelIndex, value: Any, role: QtCore.Qt = QtCore.Qt.EditRole) -> bool:
         if role == QtCore.Qt.EditRole:
             var = self.variables[index.row()]
+
+            if var.is_blank() and value != '':
+                self.insert_blank_row()
+
             columns = ['key', 'value', 'description']
             field = columns[index.column()]
             setattr(var, field, value)
+
             return True
 
         return False
@@ -55,9 +70,16 @@ class VarsTableModel(QtCore.QAbstractTableModel):
                 return None
 
             var = self.variables[index.row()]
-            row_values = [var.key, var.value, var.description]
+            row_values = [
+                getattr(var, 'key', ''),
+                getattr(var, 'value', ''),
+                getattr(var, 'description', '')
+            ]
             return row_values[index.column()]
 
     @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
         return self.headers
+
+    def is_item_blank(self, index) -> bool:
+        return self.variables[index.row()].is_blank()

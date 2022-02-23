@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
   direction TEXT NOT NULL,
   content TEXT NOT NULL,
   content_original TEXT,
-  created_at INTEGER NOT NULL,
+  created_at INTEGER,
   updated_at INTEGER
 );
 """

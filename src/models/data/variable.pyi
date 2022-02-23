@@ -24,6 +24,9 @@ class Variable(OratorModel):
     def item(self) -> Optional[HttpRequest]:
         pass
 
+    def is_blank(self) -> bool:
+        pass
+
     def save(self, *args, **kwargs):
         pass
 

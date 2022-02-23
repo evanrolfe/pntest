@@ -34,8 +34,9 @@ class VariablesPopup(QtWidgets.QDialog):
     @QtCore.Slot()
     def save(self):
         for var in self.table_model.variables:
-            var.save()
-            print(f'saved variable {var.id}')
+            if not var.is_blank():
+                var.save()
+                print(f'saved variable {var.id}')
 
         self.close()
 
