@@ -1,4 +1,4 @@
-NUM_TABLES = 10
+NUM_TABLES = 11
 SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   parent_id INTEGER,
@@ -87,6 +87,17 @@ CREATE TABLE IF NOT EXISTS http_flows(
     http_flow_id INTEGER,
     created_at INTEGER NOT NULL,
     updated_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS variables(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  key TEXT NOT NULL,
+  value TEXT NOT NULL,
+  description TEXT,
+  source_type TEXT NOT NULL,
+  source_id INTEGER,
+  created_at INTEGER,
+  updated_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS websocket_messages(

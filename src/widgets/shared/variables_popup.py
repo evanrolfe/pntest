@@ -2,6 +2,7 @@ from PySide2 import QtCore, QtWidgets
 
 from views._compiled.shared.ui_variables_popup import Ui_VariablesPopup
 from models.qt.vars_table_model import VarsTableModel
+from models.data.variable import Variable
 
 class VariablesPopup(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -13,10 +14,6 @@ class VariablesPopup(QtWidgets.QDialog):
 
         self.ui.cancelButton.clicked.connect(self.close)
         self.ui.saveButton.clicked.connect(self.save)
-
-        vars = ['1', '2', '3']  # HttpFlow.find_for_table()
-        self.table_model = VarsTableModel(vars)
-        self.ui.varsTable.setModel(self.table_model)
 
         # Configure Table
         horizontalHeader = self.ui.varsTable.horizontalHeader()
@@ -31,7 +28,17 @@ class VariablesPopup(QtWidgets.QDialog):
 
         self.ui.varsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 
+        self.load_variables()
+
     @QtCore.Slot()
     def save(self):
         print('You clicked save!')
         self.close()
+
+    def showEvent(self, event):
+        self.load_variables()
+
+    def load_variables(self):
+        vars = Variable.all_global()
+        self.table_model = VarsTableModel(vars)
+        self.ui.varsTable.setModel(self.table_model)

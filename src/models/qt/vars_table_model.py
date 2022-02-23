@@ -1,16 +1,17 @@
 from typing import Dict, Optional, cast, Any
 from PySide2 import QtCore
+from models.data.variable import Variable
 
 class VarsTableModel(QtCore.QAbstractTableModel):
     dataChanged: QtCore.SignalInstance
     layoutChanged: QtCore.SignalInstance
 
     headers: list[str]
-    variables: list[str]
+    variables: list[Variable]
 
     def __init__(self, variables, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        self.headers = ['Key', 'Value']
+        self.headers = ['Key', 'Value', 'Description']
         self.variables = list(variables)
 
     def roleNames(self) -> Dict[int, str]:
@@ -40,10 +41,9 @@ class VarsTableModel(QtCore.QAbstractTableModel):
             if index.row() > len(self.variables):
                 return None
 
-            # flow = self.flows[index.row()]
-            # row_values = flow.values_for_table()
-            # return row_values[index.column()]
-            return 'ok'
+            var = self.variables[index.row()]
+            row_values = [var.key, var.value, var.description]
+            return row_values[index.column()]
 
     @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
