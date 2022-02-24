@@ -5,7 +5,7 @@ from PySide2 import QtWidgets
 from PySide2 import QtCore
 
 from views._compiled.shared.ui_flow_view import Ui_FlowView
-from widgets.shared.headers_form import Headers
+from lib.types import Headers
 
 class FlowView(QtWidgets.QWidget):
     save_example_clicked = QtCore.Signal()

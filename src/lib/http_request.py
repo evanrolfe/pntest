@@ -1,7 +1,8 @@
 import re
 from copy import deepcopy
 from requests import Request, Response, Session
-from widgets.shared.headers_form import HeadersForm, Headers
+from widgets.shared.headers_form import HeadersForm
+from lib.types import Headers
 from models.data.variable import Variable
 
 class HttpRequest:

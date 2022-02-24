@@ -126,7 +126,7 @@ class ProxyEvents:
         self.__send_message(message_state)
 
         if message_state['intercepted']:
-            flow.intercepted_message = message
+            flow.intercepted_message = message  # type: ignore
             self.intercept_flow(flow)
 
     # ---------------------------------------------------------------------------

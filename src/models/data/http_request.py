@@ -4,8 +4,7 @@ from typing import Optional, Any
 from orator import Model
 
 from widgets.shared.headers_form import HeadersForm
-
-Headers = dict[str, str]
+from lib.types import Headers
 
 class HttpRequest(Model):
     __table__ = 'http_requests'
