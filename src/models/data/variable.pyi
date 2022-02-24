@@ -33,3 +33,7 @@ class Variable(OratorModel):
     @classmethod
     def all_global(cls) -> list[Variable]:
         pass
+
+    @classmethod
+    def find_by_key(cls, key: str) -> Optional[Variable]:
+        pass

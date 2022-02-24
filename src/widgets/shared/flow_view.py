@@ -5,6 +5,7 @@ from PySide2 import QtWidgets
 from PySide2 import QtCore
 
 from views._compiled.shared.ui_flow_view import Ui_FlowView
+from widgets.shared.headers_form import Headers
 
 class FlowView(QtWidgets.QWidget):
     save_example_clicked = QtCore.Signal()
@@ -97,10 +98,10 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_response(self.flow)
 
-    def get_request_headers(self):
+    def get_request_headers(self) -> Headers:
         return self.ui.requestHeaders.get_headers()
 
-    def get_request_payload(self):
+    def get_request_payload(self) -> str:
         return self.ui.requestPayload.get_value()
 
     def clear_request(self):

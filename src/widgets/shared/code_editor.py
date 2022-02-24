@@ -42,5 +42,5 @@ class CodeEditor(QtWidgets.QWidget):
     def set_value(self, value, format=''):
         self.web_bridge.set_value(value, format)
 
-    def get_value(self):
+    def get_value(self) -> str:
         return self.web_bridge.value

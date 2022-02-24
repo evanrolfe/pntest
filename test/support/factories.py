@@ -4,6 +4,7 @@ from models.data.editor_item import EditorItem
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
+from models.data.variable import Variable
 
 factory = Factory()
 
@@ -84,4 +85,13 @@ def http_response(faker):
         'timestamp_end': 1641567513.6862,
         'status_code': 200,
         'reason': 'OK',
+    }
+
+@factory.define_as(Variable, 'global')
+def variable_factory_global(faker):
+    return {
+        'key': 'host',
+        'value': 'localhost',
+        'source_type': Variable.SOURCE_TYPE_GLOBAL,
+        'description': 'just a variable for testing'
     }

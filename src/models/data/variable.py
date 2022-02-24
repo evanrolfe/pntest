@@ -21,5 +21,14 @@ class Variable(OratorModel):
         return id is None and key is None and value is None and description is None
 
     @classmethod
+    def find_by_key(cls, key):
+        vars = cls.where('key', '=', key).get()
+
+        if len(vars) == 0:
+            return None
+        else:
+            return vars[0]
+
+    @classmethod
     def all_global(cls):
         return cls.where('source_type', '=', cls.SOURCE_TYPE_GLOBAL).order_by('id', 'asc').get()
