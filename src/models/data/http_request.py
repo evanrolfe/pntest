@@ -1,14 +1,18 @@
 from __future__ import annotations
 import json
-from typing import Optional, Any
+from urllib.parse import urlsplit
+from typing import Optional, Any, Union, cast
 from orator import Model
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
 
+FormData = dict[str, Union[str, Headers]]
+
 class HttpRequest(Model):
     __table__ = 'http_requests'
     __fillable__ = ['*']
+    __casts__ = {'form_data': 'dict'}
 
     id: int
     http_version: str
@@ -25,7 +29,9 @@ class HttpRequest(Model):
     path: str
     created_at: int
     updated_at: int
+    form_data: FormData
 
+    # This is how requests are received from the proxy
     @classmethod
     def from_state(cls, state: dict[str, Any]) -> HttpRequest:
         request = HttpRequest()
@@ -42,6 +48,9 @@ class HttpRequest(Model):
         request.authority = state['authority']
         request.path = state['path']
 
+        url = request.get_url()
+        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'body': request.content}
+
         return request
 
     def set_blank_values_for_editor(self) -> None:
@@ -53,6 +62,7 @@ class HttpRequest(Model):
         self.scheme = 'http'
         self.path = ''
         self.content = ''
+        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'body': ''}
 
     def get_state(self) -> dict[str, Any]:
         attributes = self.serialize()
@@ -94,6 +104,7 @@ class HttpRequest(Model):
         new_request.scheme = self.scheme
         new_request.authority = getattr(self, 'authority', None)
         new_request.path = self.path
+        new_request.form_data = self.form_data
 
         return new_request
 
@@ -111,3 +122,27 @@ class HttpRequest(Model):
             headers['Content-Length'] = calc_text
 
         self.set_headers(headers)
+
+    def set_form_data(self, form_data: FormData) -> None:
+        self.form_data = form_data
+
+        self.method = str(self.form_data['method'])
+
+        url_data = urlsplit(str(self.form_data['url']))
+        if url_data.hostname:
+            self.host = url_data.hostname
+
+        if url_data.port:
+            self.port = url_data.port
+        self.scheme = url_data.scheme
+
+        if url_data.query == '':
+            self.path = url_data.path
+        else:
+            self.path = url_data.path + '?' + url_data.query
+
+        self.content = str(form_data['body'])
+        self.set_headers(cast(Headers, form_data['headers']))
+
+    def save(self, *args, **kwargs):
+        return super(HttpRequest, self).save(*args, **kwargs)

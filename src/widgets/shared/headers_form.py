@@ -59,7 +59,7 @@ class HeadersForm(QtWidgets.QWidget):
         headers = self.DEFAULT_HEADERS[:] + [self.EMPTY_HEADER]
         self.table_model.set_headers(deepcopy(headers))
 
-    def set_headers(self, headers):
+    def set_headers(self, headers: Headers):
         if headers is None:
             headers = []
         else:

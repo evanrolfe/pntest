@@ -1,5 +1,5 @@
 from PySide2 import QtWidgets, QtCore, QtGui
-from urllib.parse import urlsplit
+from models.data.http_flow import HttpFlow
 
 from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 
@@ -9,6 +9,8 @@ from lib.http_request import HttpRequest as HttpRequestLib
 from models.data.http_response import HttpResponse
 
 class RequestEditPage(QtWidgets.QWidget):
+    flow: HttpFlow
+
     form_input_changed = QtCore.Signal(bool)
     request_saved = QtCore.Signal()
 
@@ -73,8 +75,9 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)
 
     def show_request(self):
-        self.ui.urlInput.setText(self.flow.request.get_url())
-        self.set_method_on_form(self.flow.request.method)
+        form_data = self.flow.request.form_data
+        self.ui.urlInput.setText(form_data['url'])
+        self.set_method_on_form(form_data['method'])
         self.ui.flowView.set_flow(self.flow)
 
     def show_examples(self):
@@ -181,20 +184,14 @@ class RequestEditPage(QtWidgets.QWidget):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
         headers = self.ui.flowView.get_request_headers()
-        url_data = urlsplit(url)
+        body = self.ui.flowView.get_request_payload()
 
-        self.flow.request.method = method
-        self.flow.request.host = url_data.hostname
-        self.flow.request.port = url_data.port
-        self.flow.request.scheme = url_data.scheme
-
-        if url_data.query == '':
-            self.flow.request.path = url_data.path
-        else:
-            self.flow.request.path = url_data.path + '?' + url_data.query
-
-        self.flow.request.content = self.ui.flowView.get_request_payload()
-        self.flow.request.set_headers(headers)
+        self.flow.request.set_form_data({
+            'method': method,
+            'url': url,
+            'headers': headers,
+            'body': body
+        })
 
     @QtCore.Slot()  # type:ignore
     def cancel_request(self):

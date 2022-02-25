@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS http_requests(
     scheme TEXT NOT NULL,
     authority TEXT,
     path TEXT NOT NULL,
+    form_data TEXT NOT NULL,
     created_at INTEGER,
     updated_at INTEGER
 );

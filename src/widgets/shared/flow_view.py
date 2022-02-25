@@ -130,8 +130,8 @@ class FlowView(QtWidgets.QWidget):
             request = flow.request
 
         self.ui.requestHeaders.set_header_line(request.get_header_line())
-        if request.get_headers():
-            self.ui.requestHeaders.set_headers(request.get_headers())
+        if request.form_data['headers']:
+            self.ui.requestHeaders.set_headers(request.form_data['headers'])
         else:
             self.ui.requestHeaders.set_default_headers()
         self.ui.requestPayload.set_value(request.content or '')

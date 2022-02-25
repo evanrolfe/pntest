@@ -12,5 +12,9 @@ class OratorModel(Model):
         pass
 
     @classmethod
+    def order_by(cls, arg1: str, arg2: str) -> Builder:
+        pass
+
+    @classmethod
     def count(cls) -> int:
         pass
