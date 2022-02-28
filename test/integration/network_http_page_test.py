@@ -1,4 +1,4 @@
-import time
+# import time
 from PySide2 import QtCore
 from support.fixtures import load_fixtures
 from widgets.network.http_page import HttpPage
@@ -22,10 +22,9 @@ class TestNetworkHttpPage:
         rect = table.visualRect(index)
         qtbot.mouseClick(table.viewport(), QtCore.Qt.LeftButton, pos=rect.center())
 
-        widget.show()
-        qtbot.waitForWindowShown(widget)
-        qtbot.mouseClick(table.viewport(), QtCore.Qt.LeftButton, pos=rect.center())
-        time.sleep(1)
+        # widget.show()
+        # qtbot.waitForWindowShown(widget)
+        # time.sleep(1)
 
         # Check request header line:
         header_line_text = widget.ui.requestViewWidget.ui.requestHeaders.ui.headerLine.text()

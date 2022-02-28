@@ -8,7 +8,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
     layoutChanged: QtCore.SignalInstance
 
     headers: list[str]
-    flow: list[HttpFlow]
+    flows: list[HttpFlow]
 
     def __init__(self, flows, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)

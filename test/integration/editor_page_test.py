@@ -1,4 +1,4 @@
-import time
+# import time
 from support.fixtures import load_fixtures
 from widgets.editor.editor_page import EditorPage
 
@@ -10,9 +10,9 @@ class TestEditorPage:
         qtbot.addWidget(widget)
         qtbot.waitForWindowShown(widget)
 
-        widget.show()
-        qtbot.waitForWindowShown(widget)
-        time.sleep(3)
+        # widget.show()
+        # qtbot.waitForWindowShown(widget)
+        # time.sleep(3)
 
         # TODO:
         assert 1 == 1

@@ -80,7 +80,7 @@ class RequestsTable(QtWidgets.QWidget):
         self.selected_request_ids = list(map(lambda index: index.data(), selected_q_indexes))
 
     @QtCore.Slot()  # type:ignore
-    def right_clicked(self, position):
+    def right_clicked(self, position: QtCore.QPoint):
         index = self.ui.requestsTable.indexAt(position)
         flow = self.table_model.flows[index.row()]
 
