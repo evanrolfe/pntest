@@ -6,6 +6,7 @@ from orator import Model
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
+from lib.input_parsing import parse_value, parse_headers
 
 FormData = dict[str, Union[str, Headers]]
 
@@ -132,9 +133,12 @@ class HttpRequest(Model):
     def set_form_data(self, form_data: FormData) -> None:
         self.form_data = form_data
 
+        # 1. Set method
         self.method = str(self.form_data['method'])
 
-        url_data = urlsplit(str(self.form_data['url']))
+        # 2. Set URL related attributes
+        parsed_url = parse_value(str(self.form_data['url']))
+        url_data = urlsplit(parsed_url)
         if url_data.hostname:
             self.host = url_data.hostname
 
@@ -147,8 +151,12 @@ class HttpRequest(Model):
         else:
             self.path = url_data.path + '?' + url_data.query
 
-        self.content = str(form_data['content'])
-        self.set_headers(cast(Headers, form_data['headers']))
+        # 3. Set content
+        self.content = parse_value(str(form_data['content']))
+
+        # 4. Set headers
+        parsed_headers = parse_headers(cast(Headers, form_data['headers']))
+        self.set_headers(parsed_headers)
 
     def save(self, *args, **kwargs):
         return super(HttpRequest, self).save(*args, **kwargs)

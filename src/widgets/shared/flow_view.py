@@ -134,7 +134,7 @@ class FlowView(QtWidgets.QWidget):
             self.ui.requestHeaders.set_headers(request.form_data['headers'])
         else:
             self.ui.requestHeaders.set_default_headers()
-        self.ui.requestPayload.set_value(request.content or '')
+        self.ui.requestPayload.set_value(request.form_data['content'] or '')
 
     # Requires the flow,request and response to be saved to the DB (used by the network page)
     def set_response(self, flow):
