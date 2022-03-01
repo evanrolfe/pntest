@@ -104,7 +104,13 @@ class HttpRequest(Model):
         new_request.scheme = self.scheme
         new_request.authority = getattr(self, 'authority', None)
         new_request.path = self.path
-        new_request.form_data = self.form_data
+
+        form_data = getattr(self, 'form_data', None)
+
+        if form_data is None:
+            new_request.form_data = self.generate_form_data()
+        else:
+            new_request.form_data = self.form_data
 
         return new_request
 
@@ -146,3 +152,14 @@ class HttpRequest(Model):
 
     def save(self, *args, **kwargs):
         return super(HttpRequest, self).save(*args, **kwargs)
+
+    def generate_form_data(self) -> FormData:
+        headers = self.get_headers() or {}
+        body = self.content or ''
+
+        return {
+            'method': self.method,
+            'url': self.get_url(),
+            'headers': headers,
+            'body': body
+        }

@@ -21,10 +21,10 @@ class TestHttpFlow:
         assert result == [http_flow.id, 1, 'http', 'GET', 'wonderbill.com', '/', None, False]
 
     def test_duplicate_for_editor(self, database, cleanup_database):
-        http_request = factory(HttpRequest, 'editor').make()
+        http_request = factory(HttpRequest, 'proxy').make()
         http_request.save()
 
-        http_flow = factory(HttpFlow, 'editor').make(request_id=http_request.id, client_id=1)
+        http_flow = factory(HttpFlow, 'proxy').make(request_id=http_request.id, client_id=1)
         http_flow.save()
 
         new_flow = http_flow.duplicate_for_editor()
@@ -34,6 +34,11 @@ class TestHttpFlow:
         assert new_flow.type == HttpFlow.TYPE_EDITOR
         assert new_flow.request_id != http_flow.request_id
         assert new_flow.request_id is not None
+
+        assert new_flow.request.form_data['method'] == 'GET'
+        assert new_flow.request.form_data['url'] == 'http://wonderbill.com/'
+        assert new_flow.request.form_data['headers'] == {"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}
+        assert new_flow.request.form_data['body'] == ''
 
     def test_duplicate_for_example(self, database, cleanup_database):
         http_request = factory(HttpRequest, 'editor').make()
