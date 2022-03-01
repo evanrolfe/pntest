@@ -184,13 +184,13 @@ class RequestEditPage(QtWidgets.QWidget):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
         headers = self.ui.flowView.get_request_headers()
-        body = self.ui.flowView.get_request_payload()
+        content = self.ui.flowView.get_request_payload()
 
         self.flow.request.set_form_data({
             'method': method,
             'url': url,
             'headers': headers,
-            'body': body
+            'content': content
         })
 
     @QtCore.Slot()  # type:ignore

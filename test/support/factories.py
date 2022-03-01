@@ -59,7 +59,7 @@ def http_request_proxy(faker):
         'method': 'GET',
         'scheme': 'http',
         'path': '/',
-        'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}, "body": ""}
+        'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}, "content": ""}
     }
 
 @factory.define_as(HttpRequest, 'editor')
@@ -74,7 +74,7 @@ def http_request_editor(faker):
         'method': 'GET',
         'scheme': 'http',
         'path': '/',
-        'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}, "body": ""}
+        'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}, "content": ""}
     }
 
 @factory.define_as(HttpResponse, 'http_response')

@@ -49,7 +49,7 @@ class HttpRequest(Model):
         request.path = state['path']
 
         url = request.get_url()
-        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'body': request.content}
+        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'content': request.content}
 
         return request
 
@@ -62,7 +62,7 @@ class HttpRequest(Model):
         self.scheme = 'http'
         self.path = ''
         self.content = ''
-        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'body': ''}
+        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': ''}
 
     def get_state(self) -> dict[str, Any]:
         attributes = self.serialize()
@@ -147,7 +147,7 @@ class HttpRequest(Model):
         else:
             self.path = url_data.path + '?' + url_data.query
 
-        self.content = str(form_data['body'])
+        self.content = str(form_data['content'])
         self.set_headers(cast(Headers, form_data['headers']))
 
     def save(self, *args, **kwargs):
@@ -155,11 +155,11 @@ class HttpRequest(Model):
 
     def generate_form_data(self) -> FormData:
         headers = self.get_headers() or {}
-        body = self.content or ''
+        content = self.content or ''
 
         return {
             'method': self.method,
             'url': self.get_url(),
             'headers': headers,
-            'body': body
+            'content': content
         }

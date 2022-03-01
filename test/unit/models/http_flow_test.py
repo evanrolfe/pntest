@@ -38,7 +38,7 @@ class TestHttpFlow:
         assert new_flow.request.form_data['method'] == 'GET'
         assert new_flow.request.form_data['url'] == 'http://wonderbill.com/'
         assert new_flow.request.form_data['headers'] == {"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}
-        assert new_flow.request.form_data['body'] == ''
+        assert new_flow.request.form_data['content'] == ''
 
     def test_duplicate_for_example(self, database, cleanup_database):
         http_request = factory(HttpRequest, 'editor').make()

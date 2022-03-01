@@ -41,4 +41,4 @@ class TestEditorPage:
         assert http_flow.request.form_data['method'] == 'GET'
         assert http_flow.request.form_data['url'] == 'http://localhost:8080/v1/accounts'
         assert http_flow.request.form_data['headers'] == {'Content-Length': '<calculated when request is sent>', 'Host': '<calculated when request is sent>', 'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'User-Agent': 'pntest/0.1'}
-        assert http_flow.request.form_data['body'] == ''
+        assert http_flow.request.form_data['content'] == ''
