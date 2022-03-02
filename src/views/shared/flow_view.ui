@@ -39,7 +39,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>-1</number>
+       <number>1</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -66,9 +66,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="requestPayloadTab">
+      <widget class="QWidget" name="requestBodyTab">
        <attribute name="title">
-        <string>Payload</string>
+        <string>Body</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7_body">
         <property name="leftMargin">
@@ -84,7 +84,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="CodeEditor" name="requestPayload" native="true"/>
+         <widget class="CodeEditor" name="requestBody" native="true"/>
         </item>
        </layout>
       </widget>
@@ -165,7 +165,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="CodeEditor" name="responseRendered"/>
+          <widget class="CodeEditor" name="responseRendered" native="true"/>
          </item>
         </layout>
        </widget>

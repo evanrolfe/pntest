@@ -102,13 +102,13 @@ class FlowView(QtWidgets.QWidget):
         return self.ui.requestHeaders.get_headers()
 
     def get_request_payload(self) -> str:
-        return self.ui.requestPayload.get_value()
+        return self.ui.requestBody.get_value()
 
     def clear_request(self):
         # Request:
         self.ui.requestHeaders.set_header_line('')
         self.ui.requestHeaders.set_headers({})
-        self.ui.requestPayload.set_value('')
+        self.ui.requestBody.set_value('')
 
         # Response:
         self.ui.responseRaw.set_value('')
@@ -134,7 +134,7 @@ class FlowView(QtWidgets.QWidget):
             self.ui.requestHeaders.set_headers(request.form_data['headers'])
         else:
             self.ui.requestHeaders.set_default_headers()
-        self.ui.requestPayload.set_value(request.form_data['content'] or '')
+        self.ui.requestBody.set_value(request.form_data['content'] or '')
 
     # Requires the flow,request and response to be saved to the DB (used by the network page)
     def set_response(self, flow):
