@@ -37,10 +37,10 @@ def launch_chrome_or_chromium(client, browser_command):
     return process
 
 def launch_firefox(client, browser_command):
-    get_options_firefox(client)
+    options = get_options_firefox(client)
 
     process = subprocess.Popen(
-        browser_command.split(' ') + ['-P', 'pntest'],
+        browser_command.split(' ') + options,
         preexec_fn=os.setsid
     )
     return process
@@ -54,7 +54,7 @@ def get_options_chrome_or_chromium(client):
 
     proxy_options = [
         f'--proxy-server=127.0.0.1:{client.proxy_port}',
-        '--proxy-bypass-list="<-loopback>"',
+        '--proxy-bypass-list=<-loopback>',
         f'--ignore-certificate-errors-spki-list={spki}'
     ]
 
@@ -65,17 +65,15 @@ def get_options_chrome_or_chromium(client):
     return DEFAULT_CHROME_OPTIONS + proxy_options + user_data_dir_options
 
 def get_options_firefox(client):
-    profile_path = f'{get_app_config_path()}/{client.type}-profile'
+    profile_path = f'{get_app_config_path()}/{client.type}-profile-{client.proxy_port}'
+    profile_name = f'pntest-{client.proxy_port}'
 
     if not os.path.isdir(profile_path):
         print(f'[BrowserLauncher] creating firefox profile in {profile_path}')
-        subprocess.run(['firefox', '-CreateProfile', f'pntest {profile_path}'])
+        subprocess.run(['firefox', '-CreateProfile', f'{profile_name} {profile_path}'])
         configure_firefox_profile(client, profile_path)
 
-    options = [
-        f'-P "pntest"'
-    ]
-    return options
+    return ['-P', profile_name]
 
 def configure_firefox_profile(client, profile_path):
     proxy_host = '"127.0.0.1"'
@@ -92,7 +90,7 @@ def configure_firefox_profile(client, profile_path):
         '"browser.sessionstore.resume_from_crash", false',
         '"browser.startup.page", 0',
         '"browser.shell.checkDefaultBrowser", false',
-        '"network.proxy.no_proxies_on", ["<-loopback>"]',
+        '"network.proxy.allow_hijacking_localhost", true',
         '"browser.startup.page", 1',
         '"browser.startup.homepage", "http://pntest"'
     ]

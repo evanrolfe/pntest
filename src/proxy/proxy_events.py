@@ -145,5 +145,9 @@ class ProxyEvents:
 
         return Headers(headers_list)
 
-    def __send_message(self, message):
-        self.socket.send_string(json.dumps(message))
+    def __send_message(self, message: dict):
+        try:
+            self.socket.send_string(json.dumps(message))
+        except UnicodeDecodeError:
+            print(f'ERROR => Could not send message for flow {message["flow_uuid"]}')
+            return
