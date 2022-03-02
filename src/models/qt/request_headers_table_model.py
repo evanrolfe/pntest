@@ -1,18 +1,18 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union, cast
 from PySide2 import QtCore
 
-Header = tuple[bool, str, str]
+HeaderTuple = tuple[bool, str, str]
 
 class RequestHeadersTableModel(QtCore.QAbstractTableModel):
     dataChanged: QtCore.SignalInstance
     layoutChanged: QtCore.SignalInstance
 
     row_headers: list[str]
-    headers: list[Header]
+    headers: list[HeaderTuple]
 
     BLANK_ROW = (False, '', '')
 
-    def __init__(self, headers: list[Header], parent: QtCore.QObject = None):
+    def __init__(self, headers: list[HeaderTuple], parent: QtCore.QObject = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.row_headers = ['', 'Header', 'Value']
         self.headers = headers
@@ -25,7 +25,7 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
         self.headers.append(self.BLANK_ROW[:])
         self.endInsertRows()
 
-    def set_headers(self, headers: list[Header]):
+    def set_headers(self, headers: list[HeaderTuple]):
         self.headers = headers
         self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
         self.layoutChanged.emit()
@@ -74,10 +74,10 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
 
         if role == QtCore.Qt.EditRole:
             if self.is_item_blank(index) and value != '':
-                self.headers[index.row()][0] = True  # type: ignore
+                self.modify_header(index.row(), 0, True)
                 self.insert_blank_row()
 
-            self.headers[index.row()][index.column()] = value  # type: ignore
+            self.modify_header(index.row(), index.column(), value)
             return True
 
         return False
@@ -105,3 +105,18 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
 
     def is_item_blank(self, index) -> bool:
         return self.headers[index.row()] == self.BLANK_ROW
+
+    # Note: this is necessary because tuples are immutable
+    def modify_header(self, row: int, col: int, value: Union[str, bool]) -> None:
+        header = self.headers[row]
+
+        if col == 0:
+            new_header = (cast(bool, value), header[1], header[2])
+        elif col == 1:
+            new_header = (header[0], cast(str, value), header[2])
+        elif col == 2:
+            new_header = (header[0], header[1], cast(str, value))
+        else:
+            return
+
+        self.headers[row] = new_header

@@ -8,14 +8,14 @@ from lib.types import Headers
 class HeadersForm(QtWidgets.QWidget):
     CALCULATED_TEXT = '<calculated when request is sent>'
     DEFAULT_HEADERS = [
-        [True, 'Content-Length', CALCULATED_TEXT],
-        [True, 'Host', CALCULATED_TEXT],
-        [True, 'Accept', '*/*'],
-        [True, 'Accept-Encoding', 'gzip, deflate'],
-        [True, 'Connection', 'keep-alive'],
-        [True, 'User-Agent', 'pntest/0.1'],
+        (True, 'Content-Length', CALCULATED_TEXT),
+        (True, 'Host', CALCULATED_TEXT),
+        (True, 'Accept', '*/*'),
+        (True, 'Accept-Encoding', 'gzip, deflate'),
+        (True, 'Connection', 'keep-alive'),
+        (True, 'User-Agent', 'pntest/0.1'),
     ]
-    EMPTY_HEADER = [False, '', '']
+    EMPTY_HEADER = (False, '', '')
 
     def __init__(self, *args, **kwargs):
         super(HeadersForm, self).__init__(*args, **kwargs)
@@ -43,9 +43,6 @@ class HeadersForm(QtWidgets.QWidget):
         self.ui.headersTable.setColumnWidth(0, 20)
         self.ui.headersTable.setColumnWidth(1, 250)
 
-        # self.ui.showGeneratedHeaders.setTristate(False)
-        # self.ui.showGeneratedHeaders.stateChanged.connect(self.show_generated_headers)
-
     def set_editable(self, editable):
         self.editable = editable
 
@@ -63,7 +60,7 @@ class HeadersForm(QtWidgets.QWidget):
         if headers is None:
             headers = []
         else:
-            headers = [[True, key, value] for key, value in headers.items()]
+            headers = [(True, key, value) for key, value in headers.items()]
 
         if self.editable:
             headers.append(deepcopy(self.EMPTY_HEADER))
