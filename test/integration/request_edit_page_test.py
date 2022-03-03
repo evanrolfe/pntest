@@ -16,7 +16,7 @@ class TestEditorPage:
 
         # Enter form data
         widget.ui.urlInput.setText("http://${var:host}:8080/${var:apiVersion}/accounts")
-        widget.ui.flowView.ui.requestPayload.set_value('{ "account_name": "${var:account_name}" }')
+        widget.ui.flowView.ui.requestBody.set_value('{ "account_name": "${var:account_name}" }')
 
         # Set the headers via the table model because QtBot is rubbish
         model = widget.ui.flowView.ui.requestHeaders.table_model
