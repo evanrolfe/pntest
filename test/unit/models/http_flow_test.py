@@ -44,9 +44,6 @@ class TestHttpFlow:
         http_request = factory(HttpRequest, 'editor').make()
         http_request.save()
 
-        new_request = http_request.duplicate()
-        new_request.save()
-
         http_response = factory(HttpResponse, 'http_response').make()
         http_response.save()
 
@@ -57,10 +54,10 @@ class TestHttpFlow:
         )
         http_flow.save()
 
-        new_flow = http_flow.duplicate_for_example(new_request, http_response)
+        new_flow = http_flow.duplicate_for_example(http_response)
 
         assert new_flow.type == HttpFlow.TYPE_EDITOR_EXAMPLE
-        assert new_flow.request_id == new_request.id
+        assert new_flow.request_id is not None
         assert new_flow.response_id == http_response.id
         assert new_flow.http_flow_id == http_flow.id
 

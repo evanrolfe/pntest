@@ -19,8 +19,6 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.editor_item = editor_item
         self.flow = self.editor_item.item()
-        self.request = self.flow.request
-        self.original_flow = self.flow
 
         self.ui = Ui_RequestEditPage()
         self.ui.setupUi(self)
@@ -112,8 +110,7 @@ class RequestEditPage(QtWidgets.QWidget):
             saved_editor_item = self.editor_item.save()
             self.editor_item = saved_editor_item
             self.flow = self.editor_item.item()
-            self.request = self.flow.request
-            self.original_flow = self.flow
+            self.ui.examplesTable.set_flow(self.flow)
 
         self.form_input_changed.emit(False)
         self.request_saved.emit()
@@ -122,21 +119,11 @@ class RequestEditPage(QtWidgets.QWidget):
     def save_example(self):
         # 1. Save the HttpResponse (without a flow)
         self.save_request()
-        self.latest_response.save()
-
-        # NOTE: Have to reload multiple times is stupid but Orator does not seem to update the
-        # has_many relations on the fly
-        self.flow = self.flow.reload()
-
-        # 2. Update the HttpRequest and duplicate it
-        new_request = self.flow.request.duplicate()
-        new_request.save()
 
         # 3. Create the example HttpFlow
-        self.flow.duplicate_for_example(new_request, self.latest_response)
+        self.flow.duplicate_for_example(self.latest_response)
 
         # 4. Update GUI
-        self.ui.examplesTable.set_flow(self.flow)
         self.ui.examplesTable.reload()
         self.ui.flowView.set_save_as_example_enabled(False)
 

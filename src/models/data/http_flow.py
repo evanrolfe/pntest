@@ -101,11 +101,16 @@ class HttpFlow(OratorModel):
 
         return new_flow
 
-    def duplicate_for_example(self, request, response):
+    def duplicate_for_example(self, response):
+        response.save()
+
+        new_request = self.request.duplicate()
+        new_request.save()
+
         new_flow = HttpFlow()
         new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
         new_flow.title = f'Example #{self.examples.count() + 1}'
-        new_flow.request_id = request.id
+        new_flow.request_id = new_request.id
         new_flow.response_id = response.id
         new_flow.http_flow_id = self.id
         new_flow.save()
@@ -206,7 +211,6 @@ class HttpFlow(OratorModel):
         http_response = HttpResponse.from_requests_response(raw_response)
 
         return http_response
-
 
 class HttpFlowObserver:
     def deleted(self, flow):

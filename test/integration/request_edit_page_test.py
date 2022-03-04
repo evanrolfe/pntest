@@ -55,3 +55,37 @@ class TestEditorPage:
             'X-Api-Token': '${var:apiToken}'
         }
         assert http_flow.request.form_data['content'] == '{ "account_name": "${var:account_name}" }'
+
+    def test_editor_page_sending_a_request_and_saving_example(self, database, qtbot):
+        load_fixtures()
+
+        editor_item = EditorItemUnsaved()
+        widget = RequestEditPage(editor_item)
+        qtbot.addWidget(widget)
+        qtbot.waitForWindowShown(widget)
+
+        # Enter form data
+        widget.ui.urlInput.setText("https://www.google.com")
+
+        # Click send button
+        button = widget.ui.sendButton
+        qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+
+        with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
+            pass
+
+        # Click save as example button
+        button2 = widget.ui.flowView.save_example_button
+        qtbot.mouseClick(button2, QtCore.Qt.LeftButton, pos=button2.rect().center())
+
+        example_flows = widget.ui.examplesTable.table_model.flows
+        original_flow = example_flows[0]
+        example_flow = example_flows[1]
+
+        assert original_flow.id == example_flow.http_flow_id
+
+        assert original_flow.request.id is not None
+        assert not original_flow.response
+
+        assert example_flow.request.id is not None
+        assert example_flow.response.id is not None  # type: ignore
