@@ -20,6 +20,7 @@ class EditorItem(OratorModel):
     # Constants:
     TYPE_HTTP_FLOW: str
     TYPE_DIR: str
+    TYPE_FUZZ: str
 
     def icon(self) -> Optional[QtGui.QIcon]:
         pass

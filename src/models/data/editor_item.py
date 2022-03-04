@@ -10,6 +10,7 @@ class EditorItem(OratorModel):
 
     TYPE_HTTP_FLOW = 'http_flow'
     TYPE_DIR = 'dir'
+    TYPE_FUZZ = 'fuzz'
 
     def duplicate(self):
         if self.item_type != self.TYPE_HTTP_FLOW:
@@ -46,14 +47,19 @@ class EditorItem(OratorModel):
         self.delete()
 
     def item(self):
-        if self.item_type == self.TYPE_HTTP_FLOW:
+        if self.item_type in [self.TYPE_HTTP_FLOW, self.TYPE_FUZZ]:
             return HttpFlow.where('id', '=', self.item_id).first()
 
     def save(self, *args, **kwargs):
         item_id = getattr(self, 'item_id', None)
 
-        if self.item_type == self.TYPE_HTTP_FLOW and item_id is None:
-            flow = HttpFlow.create_for_editor()
+        if self.item_type in [self.TYPE_HTTP_FLOW, self.TYPE_FUZZ] and item_id is None:
+            if self.item_type == self.TYPE_FUZZ:
+                type = HttpFlow.TYPE_EDITOR_FUZZ
+            else:
+                type = HttpFlow.TYPE_EDITOR
+
+            flow = HttpFlow.create_for_editor(type)
             self.item_id = flow.id
 
         return super(EditorItem, self).save(*args, **kwargs)
@@ -69,6 +75,9 @@ class EditorItem(OratorModel):
         return editor_item
 
     def icon(self):
+        if self.item_type == self.TYPE_FUZZ:
+            return QtGui.QIcon(QtGui.QPixmap(f":/icons/dark/methods/fuzz.png"))
+
         if self.item_type == self.TYPE_HTTP_FLOW:
             icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
 

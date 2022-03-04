@@ -3,6 +3,7 @@ from PySide2 import QtCore, QtWidgets
 from models.data.editor_item import EditorItem
 from models.data.editor_item_unsaved import EditorItemUnsaved
 from widgets.editor.request_edit_page import RequestEditPage
+from widgets.editor.fuzz_edit_page import FuzzEditPage
 
 class Tabs(QtWidgets.QTabWidget):
     item_changed = QtCore.Signal(EditorItem)
@@ -27,16 +28,22 @@ class Tabs(QtWidgets.QTabWidget):
         self.setCurrentIndex(self.count() - 1)
 
     @QtCore.Slot()  # type:ignore
-    def open_item(self, editor_item):
+    def open_item(self, editor_item: EditorItem):
         existing_tab_index = self.get_index_for_editor_item(editor_item)
 
         if existing_tab_index is None:
-            request_edit_page = RequestEditPage(editor_item)
-            request_edit_page.form_input_changed.connect(
+            if editor_item.item_type == EditorItem.TYPE_FUZZ:
+                edit_page = FuzzEditPage(editor_item)
+            elif editor_item.item_type == EditorItem.TYPE_HTTP_FLOW:
+                edit_page = RequestEditPage(editor_item)
+            else:
+                return
+
+            edit_page.form_input_changed.connect(
                 lambda modified: self.editor_item_form_changed(editor_item, modified)
             )
-            request_edit_page.request_saved.connect(lambda: self.reload_icon(editor_item))
-            self.insertTab(self.count(), request_edit_page, editor_item.icon(), editor_item.name)
+            edit_page.request_saved.connect(lambda: self.reload_icon(editor_item))
+            self.insertTab(self.count(), edit_page, editor_item.icon(), editor_item.name)
             self.setCurrentIndex(self.count() - 1)
         else:
             self.setCurrentIndex(existing_tab_index)

@@ -26,8 +26,10 @@ pyside2-uic src/views/intercept/intercept_page.ui > src/views/_compiled/intercep
 
 # Editor Page:
 pyside2-uic src/views/editor/request_edit_page.ui > src/views/_compiled/editor/ui_request_edit_page.py
+pyside2-uic src/views/editor/fuzz_edit_page.ui > src/views/_compiled/editor/ui_fuzz_edit_page.py
 pyside2-uic src/views/editor/editor_page.ui > src/views/_compiled/editor/ui_editor_page.py
 pyside2-uic src/views/editor/examples_table.ui > src/views/_compiled/editor/ui_examples_table.py
+pyside2-uic src/views/editor/fuzz_view.ui > src/views/_compiled/editor/ui_fuzz_view.py
 
 # Shared:
 pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
@@ -42,12 +44,22 @@ pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
 
 # HACK: pyside2-uic does not import the QWebEngineView so we have to add this line manually:
 # BE CAREFUL when changing this file as this line will easily break!
+
+# 1. Ui_FlowView
 line=`sed "15q;d" src/views/_compiled/shared/ui_flow_view.py`
 if ! [[ $line =~ "qwebengineview" ]]; then
   echo "WARNING: src/views/_compiled/shared/ui_flow_view.py does not contain qwebengineview on line 15 as expected.";
 fi
 sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/shared/ui_flow_view.py
 
+# 2. Ui_FuzzView
+# line=`sed "15q;d" src/views/_compiled/editor/ui_fuzz_view.py`
+# if ! [[ $line =~ "qwebengineview" ]]; then
+#   echo "WARNING: src/views/_compiled/editor/ui_fuzz_view.py does not contain qwebengineview on line 15 as expected.";
+# fi
+# sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/editor/ui_fuzz_view.py
+
+# 3. Ui_CodeEditor
 line=`sed "15q;d" src/views/_compiled/shared/ui_code_editor.py`
 if ! [[ $line =~ "qwebengineview" ]]; then
   echo "WARNING: src/views/_compiled/shared/ui_code_editor.py does not contain qwebengineview on line 15 as expected.";

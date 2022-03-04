@@ -5,7 +5,7 @@ from support.factories import factory
 
 class TestHttpFlow:
     def test_create_for_editor(self, database, cleanup_database):
-        flow = HttpFlow.create_for_editor()
+        flow = HttpFlow.create_for_editor(HttpFlow.TYPE_EDITOR)
 
         assert flow.request is not None
         assert flow.type == HttpFlow.TYPE_EDITOR

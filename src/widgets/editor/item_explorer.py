@@ -94,6 +94,9 @@ class ItemExplorer(QtWidgets.QTreeView):
         new_dir_action = QtWidgets.QAction("New Folder")
         new_dir_action.triggered.connect(lambda: self.new_dir_clicked(index))
 
+        new_fuzz_action = QtWidgets.QAction("New Fuzz")
+        new_fuzz_action.triggered.connect(lambda: self.new_fuzz_clicked(index))
+
         rename_action = QtWidgets.QAction("Rename")
         rename_action.triggered.connect(lambda: self.edit(index))
 
@@ -111,6 +114,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         if tree_item.is_dir:
             menu.addAction(new_request_action)
             menu.addAction(new_dir_action)
+            menu.addAction(new_fuzz_action)
             if self.copied_editor_item is not None:
                 menu.addAction(paste_action)
         else:
@@ -142,6 +146,15 @@ class ItemExplorer(QtWidgets.QTreeView):
         child_editor_item.item_type = 'dir'
 
         self.insertChild(child_editor_item, parent_index)
+
+    @QtCore.Slot()  # type:ignore
+    def new_fuzz_clicked(self, parent_index):
+        child_editor_item = EditorItem()
+        child_editor_item.name = 'New Fuzz Request'
+        child_editor_item.item_type = EditorItem.TYPE_FUZZ
+
+        self.insertChild(child_editor_item, parent_index)
+        self.item_created.emit(child_editor_item)
 
     @QtCore.Slot()  # type:ignore
     def copy_clicked(self, parent_index):

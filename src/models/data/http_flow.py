@@ -11,19 +11,20 @@ class HttpFlow(OratorModel):
     TYPE_PROXY = 'proxy'
     TYPE_EDITOR = 'editor'
     TYPE_EDITOR_EXAMPLE = 'editor_example'
+    TYPE_EDITOR_FUZZ = 'editor_fuzz'
 
     @classmethod
     def find_for_table(cls):
         return cls.with_('request', 'response').where('type', '=', cls.TYPE_PROXY).order_by('id', 'desc').get()
 
     @classmethod
-    def create_for_editor(cls):
+    def create_for_editor(cls, type):
         request = HttpRequest()
         request.set_blank_values_for_editor()
         request.save()
 
         flow = HttpFlow()
-        flow.type = HttpFlow.TYPE_EDITOR
+        flow.type = type
         flow.request_id = request.id
         flow.save()
 

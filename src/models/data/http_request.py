@@ -3,6 +3,7 @@ import json
 from urllib.parse import urlsplit
 from typing import Optional, Any, Union, cast
 from orator import Model
+from models.data.payload_file import PayloadFile
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
@@ -171,3 +172,12 @@ class HttpRequest(Model):
             'headers': headers,
             'content': content
         }
+
+    def payload_files(self) -> list[PayloadFile]:
+        if self.form_data.get('payload_files') is None:
+            return []
+
+        return [
+            PayloadFile.from_serialised(cast(dict, p))
+            for p in self.form_data['payload_files']
+        ]

@@ -48,6 +48,7 @@
     <file>icons/dark/methods/options.png</file>
     <file>icons/dark/methods/head.png</file>
     <file>icons/dark/methods/other.png</file>
+    <file>icons/dark/methods/fuzz.png</file>
 
     <file>html/codemirror.html</file>
     <file>html/codemirror/lib/codemirror.css</file>

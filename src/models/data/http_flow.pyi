@@ -31,6 +31,7 @@ class HttpFlow(OratorModel):
     TYPE_PROXY: str
     TYPE_EDITOR: str
     TYPE_EDITOR_EXAMPLE: str
+    TYPE_EDITOR_FUZZ: str
 
     # Orator Methods:
     def save(self) -> HttpFlow:
@@ -42,7 +43,7 @@ class HttpFlow(OratorModel):
         pass
 
     @classmethod
-    def create_for_editor(cls) -> HttpFlow:
+    def create_for_editor(cls, type: str) -> HttpFlow:
         pass
 
     def is_example(self) -> bool:
