@@ -87,3 +87,6 @@ class HttpFlow(OratorModel):
 
     def is_editable(self) -> bool:
         pass
+
+    def make_request(self) -> HttpResponse:
+        pass

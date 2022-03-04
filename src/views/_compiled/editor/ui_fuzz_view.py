@@ -14,6 +14,7 @@ from PySide2.QtWidgets import *
 
 from widgets.shared.code_editor import CodeEditor
 from widgets.shared.headers_form import HeadersForm
+from widgets.shared.loader import Loader
 
 
 class Ui_FuzzView(object):
@@ -21,13 +22,13 @@ class Ui_FuzzView(object):
         if not FuzzView.objectName():
             FuzzView.setObjectName(u"FuzzView")
         FuzzView.resize(658, 678)
-        self.verticalLayout_2 = QVBoxLayout(FuzzView)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.splitter = QSplitter(FuzzView)
-        self.splitter.setObjectName(u"splitter")
-        self.splitter.setOrientation(Qt.Vertical)
-        self.requestTabs = QTabWidget(self.splitter)
+        self.verticalLayout = QVBoxLayout(FuzzView)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.stackedWidget = QStackedWidget(FuzzView)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.requestTabs = QTabWidget()
         self.requestTabs.setObjectName(u"requestTabs")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -88,13 +89,17 @@ class Ui_FuzzView(object):
         self.verticalLayout_8_body.addWidget(self.payloadsTable)
 
         self.requestTabs.addTab(self.fuzzPayloadsTab, "")
-        self.splitter.addWidget(self.requestTabs)
+        self.stackedWidget.addWidget(self.requestTabs)
+        self.loaderWidget = Loader()
+        self.loaderWidget.setObjectName(u"loaderWidget")
+        self.stackedWidget.addWidget(self.loaderWidget)
 
-        self.verticalLayout_2.addWidget(self.splitter)
+        self.verticalLayout.addWidget(self.stackedWidget)
 
 
         self.retranslateUi(FuzzView)
 
+        self.stackedWidget.setCurrentIndex(0)
         self.requestTabs.setCurrentIndex(2)
 
 

@@ -34,6 +34,8 @@ class FuzzView(QtWidgets.QWidget):
         self.ui.payloadsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.ui.payloadsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
 
+        self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.hide_loader)
+
     def get_request_headers(self) -> Headers:
         return self.ui.requestHeaders.get_headers()
 
@@ -83,3 +85,11 @@ class FuzzView(QtWidgets.QWidget):
 
         self.table_model.insert_payload(payload)
         print(f'adding payload from {file_path}')
+
+    @QtCore.Slot()  # type:ignore
+    def show_loader(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
+
+    @QtCore.Slot()  # type:ignore
+    def hide_loader(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.requestTabs)

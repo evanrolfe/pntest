@@ -33,8 +33,9 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.restore_layout_state()
 
         self.ui.toggleExamplesButton.clicked.connect(self.toggle_examples_table)
-        # self.ui.sendButton.clicked.connect(self.ui.fuzzView.show_loader)
-        # self.ui.sendButton.clicked.connect(self.send_request_async)
+        self.ui.fuzzButton.clicked.connect(self.ui.fuzzView.show_loader)
+        self.ui.fuzzButton.clicked.connect(self.start_fuzzing_async)
+
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
 
@@ -70,6 +71,18 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.ui.urlInput.setText(form_data['url'])
         self.set_method_on_form(form_data['method'])
         self.ui.fuzzView.set_flow(self.flow)
+
+    @QtCore.Slot()  # type:ignore
+    def start_fuzzing_async(self):
+        print('Fuzzing...')
+
+        # 1. Generate HttpFlows and HttpRequests
+
+        # 2. Loop through each flow and make the request
+
+        # 3. Hide the loader
+
+        return
 
     def show_examples(self):
         self.ui.examplesTable.set_flow(self.flow)

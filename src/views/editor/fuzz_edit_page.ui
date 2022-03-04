@@ -117,7 +117,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="sendButton">
+          <widget class="QPushButton" name="fuzzButton">
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>

@@ -13,7 +13,10 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -27,9 +30,9 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QSplitter" name="splitter">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
      <widget class="QTabWidget" name="requestTabs">
       <property name="sizePolicy">
@@ -151,6 +154,7 @@
        </layout>
       </widget>
      </widget>
+     <widget class="Loader" name="loaderWidget"/>
     </widget>
    </item>
   </layout>
@@ -165,6 +169,12 @@
    <class>HeadersForm</class>
    <extends>QWidget</extends>
    <header>widgets.shared.headers_form.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Loader</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.loader.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

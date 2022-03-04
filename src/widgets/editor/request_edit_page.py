@@ -5,8 +5,6 @@ from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
-from lib.http_request import HttpRequest as HttpRequestLib
-from models.data.http_response import HttpResponse
 
 class RequestEditPage(QtWidgets.QWidget):
     flow: HttpFlow
@@ -123,6 +121,7 @@ class RequestEditPage(QtWidgets.QWidget):
     @QtCore.Slot()  # type:ignore
     def save_example(self):
         # 1. Save the HttpResponse (without a flow)
+        self.save_request()
         self.latest_response.save()
 
         # NOTE: Have to reload multiple times is stupid but Orator does not seem to update the
@@ -130,7 +129,6 @@ class RequestEditPage(QtWidgets.QWidget):
         self.flow = self.flow.reload()
 
         # 2. Update the HttpRequest and duplicate it
-        self.update_request_with_values_from_form()
         new_request = self.flow.request.duplicate()
         new_request.save()
 
@@ -138,13 +136,14 @@ class RequestEditPage(QtWidgets.QWidget):
         self.flow.duplicate_for_example(new_request, self.latest_response)
 
         # 4. Update GUI
+        self.ui.examplesTable.set_flow(self.flow)
         self.ui.examplesTable.reload()
         self.ui.flowView.set_save_as_example_enabled(False)
 
     @QtCore.Slot()  # type:ignore
-    def response_received(self, requests_response):
-        self.latest_response = HttpResponse.from_requests_response(requests_response)
-        self.ui.flowView.set_response_from_editor(self.latest_response, requests_response.request.url)
+    def response_received(self, http_response):
+        self.latest_response = http_response
+        self.ui.flowView.set_response_from_editor(self.latest_response)
         self.ui.flowView.set_save_as_example_enabled(True)
 
     @QtCore.Slot()  # type:ignore
@@ -163,15 +162,11 @@ class RequestEditPage(QtWidgets.QWidget):
         print('Sending the request!')
         self.ui.flowView.show_loader()
 
-        method = self.ui.methodInput.currentText()
-        url = self.ui.urlInput.text()
-        headers = self.ui.flowView.get_request_headers()
-        payload = self.ui.flowView.get_request_payload()
-        http_request = HttpRequestLib(method, url, headers, payload)
+        self.update_request_with_values_from_form()
 
         # Pass the function to execute
         # Any other args, kwargs are passed to the run function
-        self.worker = BackgroundWorker(lambda: http_request.send())
+        self.worker = BackgroundWorker(lambda: self.flow.make_request())
         self.worker.signals.result.connect(self.response_received)
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.finished.connect(self.ui.flowView.hide_loader)

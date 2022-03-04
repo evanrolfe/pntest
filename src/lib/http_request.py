@@ -1,5 +1,6 @@
 import re
 from copy import deepcopy
+from typing import Optional
 from requests import Request, Response, Session
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
@@ -9,18 +10,21 @@ class HttpRequest:
     method: str
     url: str
     headers: Headers
-    body: str
+    body: Optional[str]
 
-    def __init__(self, method: str, url: str, headers: Headers, body: str):
+    def __init__(self, method: str, url: str, headers: Headers, body: Optional[str]):
         self.method = self.replace_variables(method)
         self.url = self.replace_variables(url)
         self.headers = self.replace_variables_in_headers(headers)
-        self.body = self.replace_variables(body)
+
+        if body:
+            self.body = self.replace_variables(body)
 
     def send(self) -> Response:
         print(f'Requesting {self.method} {self.url}')
         session = Session()
-        request = Request(self.method, self.url, headers=self.parsed_headers(), data=self.body)
+        body = getattr(self, 'body', None)
+        request = Request(self.method, self.url, headers=self.parsed_headers(), data=body)
         prepped_request = session.prepare_request(request)
 
         self.response = session.send(prepped_request, timeout=30)

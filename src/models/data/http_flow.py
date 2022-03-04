@@ -1,5 +1,6 @@
 from models.data.orator_model import OratorModel
 from orator.orm import has_one, has_many
+from lib.http_request import HttpRequest as HttpRequestLib
 from models.data.http_request import HttpRequest, Headers
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
@@ -193,6 +194,19 @@ class HttpFlow(OratorModel):
     def is_editable(self):
         # Note: this would be false for navigation requests, which we dont have at the moment
         return True
+
+    def make_request(self):
+        method = self.request.method
+        url = self.request.get_url()
+        headers = self.request.get_headers() or {}
+        content = self.request.content
+        req = HttpRequestLib(method, url, headers, content)
+
+        raw_response = req.send()
+        http_response = HttpResponse.from_requests_response(raw_response)
+
+        return http_response
+
 
 class HttpFlowObserver:
     def deleted(self, flow):

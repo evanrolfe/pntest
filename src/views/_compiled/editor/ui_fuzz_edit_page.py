@@ -72,11 +72,11 @@ class Ui_FuzzEditPage(object):
 
         self.requestActionsLayout.addWidget(self.urlInput)
 
-        self.sendButton = QPushButton(self.layoutWidget)
-        self.sendButton.setObjectName(u"sendButton")
-        self.sendButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.fuzzButton = QPushButton(self.layoutWidget)
+        self.fuzzButton.setObjectName(u"fuzzButton")
+        self.fuzzButton.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.requestActionsLayout.addWidget(self.sendButton)
+        self.requestActionsLayout.addWidget(self.fuzzButton)
 
         self.saveButton = QPushButton(self.layoutWidget)
         self.saveButton.setObjectName(u"saveButton")
@@ -116,7 +116,7 @@ class Ui_FuzzEditPage(object):
     def retranslateUi(self, FuzzEditPage):
         FuzzEditPage.setWindowTitle(QCoreApplication.translate("FuzzEditPage", u"Form", None))
         self.toggleExamplesButton.setText(QCoreApplication.translate("FuzzEditPage", u"Saved Examples (10) <<", None))
-        self.sendButton.setText(QCoreApplication.translate("FuzzEditPage", u"Fuzz", None))
+        self.fuzzButton.setText(QCoreApplication.translate("FuzzEditPage", u"Fuzz", None))
         self.saveButton.setText(QCoreApplication.translate("FuzzEditPage", u"Save", None))
     # retranslateUi
 
