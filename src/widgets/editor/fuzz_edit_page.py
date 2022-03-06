@@ -1,9 +1,11 @@
 from PySide2 import QtWidgets, QtCore, QtGui
+from lib.fuzz_http_requests import FuzzHttpRequests
 from models.data.http_flow import HttpFlow
 
 from views._compiled.editor.ui_fuzz_edit_page import Ui_FuzzEditPage
 
 from lib.app_settings import AppSettings
+from lib.background_worker import BackgroundWorker
 
 class FuzzEditPage(QtWidgets.QWidget):
     flow: HttpFlow
@@ -75,14 +77,19 @@ class FuzzEditPage(QtWidgets.QWidget):
     @QtCore.Slot()  # type:ignore
     def start_fuzzing_async(self):
         print('Fuzzing...')
+        self.save_request()
+        fuzzer = FuzzHttpRequests(self.flow)
 
-        # 1. Generate HttpFlows and HttpRequests
+        self.worker = BackgroundWorker(fuzzer.start)
+        self.worker.signals.result.connect(self.fuzz_finished)
+        self.worker.signals.error.connect(self.request_error)
+        self.worker.signals.finished.connect(self.ui.fuzzView.hide_loader)
 
-        # 2. Loop through each flow and make the request
+        self.threadpool.start(self.worker)
 
-        # 3. Hide the loader
-
-        return
+    @QtCore.Slot()  # type:ignore
+    def fuzz_finished(self):
+        print('Finished!')
 
     def show_examples(self):
         self.ui.examplesTable.set_flow(self.flow)

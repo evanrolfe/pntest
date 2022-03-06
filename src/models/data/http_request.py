@@ -7,7 +7,7 @@ from models.data.payload_file import PayloadFile
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
-from lib.input_parsing import parse_value, parse_headers
+from lib.input_parsing import parse_value, parse_headers, parse_payload_values
 
 FormData = dict[str, Union[str, Headers]]
 
@@ -130,6 +130,25 @@ class HttpRequest(Model):
             headers['Content-Length'] = calc_text
 
         self.set_headers(headers)
+
+    def apply_payload_values(self, payload_values: dict[str, str]) -> None:
+        method = parse_payload_values(str(self.form_data['method']), payload_values)
+        url = parse_payload_values(str(self.form_data['url']), payload_values)
+        content = parse_payload_values(str(self.form_data['content']), payload_values)
+
+        # TODO:
+        headers = self.form_data['headers']
+
+        self.set_form_data({
+            'method': method,
+            'url': url,
+            'headers': headers,
+            'content': content
+        })
+        return
+
+    def reset_form_data(self) -> None:
+        self.set_form_data(self.form_data)
 
     def set_form_data(self, form_data: FormData) -> None:
         self.form_data = form_data

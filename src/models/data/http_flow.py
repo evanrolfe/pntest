@@ -117,6 +117,19 @@ class HttpFlow(OratorModel):
 
         return new_flow
 
+    def duplicate_for_fuzz_example(self):
+        new_request = self.request.duplicate()
+        new_request.save()
+
+        new_flow = HttpFlow()
+        new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
+        new_flow.title = f'Example #{self.examples.count() + 1}'
+        new_flow.request_id = new_request.id
+        new_flow.http_flow_id = self.id
+        new_flow.save()
+
+        return new_flow
+
     def modify_request(self, modified_method: str, modified_path: str, modified_headers: Headers, modified_content: str):
         original_request = self.request().first()
         original_state = original_request.get_state()

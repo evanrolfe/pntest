@@ -47,6 +47,12 @@ def http_flow_editor(faker):
         'type': HttpFlow.TYPE_EDITOR,
     }
 
+@factory.define_as(HttpFlow, 'editor_fuzz')
+def http_flow_editor_fuzz(faker):
+    return {
+        'type': HttpFlow.TYPE_EDITOR_FUZZ,
+    }
+
 @factory.define_as(HttpRequest, 'proxy')
 def http_request_proxy(faker):
     return {
@@ -75,6 +81,30 @@ def http_request_editor(faker):
         'scheme': 'http',
         'path': '/',
         'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}, "content": ""}
+    }
+
+@factory.define_as(HttpRequest, 'fuzz')
+def http_request_fuzz(faker):
+    return {
+        'http_version': 'HTTP/1.1',
+        'headers': '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}',
+        'timestamp_start': 1641555291.54401,
+        'timestamp_end': 1641555291.54628,
+        'host': 'wonderbill.com',
+        'port': 80,
+        'method': 'POST',
+        'scheme': 'http',
+        'path': '/',
+        'form_data': {
+            "method": "GET",
+            "url": "http://example.com/login.php",
+            "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"},
+            "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
+            "payload_files": [
+                {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 4, 'description': ''},
+                {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 4, 'description': ''}
+            ]
+        }
     }
 
 @factory.define_as(HttpResponse, 'http_response')

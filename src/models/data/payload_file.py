@@ -5,6 +5,7 @@ class PayloadFile:
     file_path: str
     num_items: int
     description: str
+    values: list[str]
 
     def __init__(self, file_path, key):
         self.file_path = file_path
@@ -23,6 +24,10 @@ class PayloadFile:
     def verify_file(self) -> None:
         with open(self.file_path) as file:
             self.num_items = sum(1 for _ in file)
+
+    def load_values(self):
+        with open(self.file_path, 'r') as file:
+            self.values = file.read().split('\n')
 
     def serialise(self) -> dict:
         return {

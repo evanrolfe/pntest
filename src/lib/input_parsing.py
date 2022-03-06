@@ -24,3 +24,11 @@ def parse_value(value: str) -> str:
         value = value.replace(match[0], new_value)
 
     return value
+
+def parse_payload_values(value: str, payload_values: dict[str, str]) -> str:
+    for match in re.finditer(r'\${payload:(\w+)\}', value):
+        key = match[1]
+        payload_value = payload_values.get(key) or ''
+        value = value.replace(match[0], payload_value)
+
+    return value
