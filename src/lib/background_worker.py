@@ -8,6 +8,9 @@ class WorkerSignals(QtCore.QObject):
     error = QtCore.Signal(tuple)
     result = QtCore.Signal(object)
 
+    # Only used by FuzzHttpRequest
+    response_received = QtCore.Signal(object)
+
 class BackgroundWorker(QtCore.QRunnable):
     def __init__(self, fn, *args, **kwargs):
         super(BackgroundWorker, self).__init__()
@@ -26,7 +29,7 @@ class BackgroundWorker(QtCore.QRunnable):
     def run(self):
         # Retrieve args/kwargs here; and fire processing using them
         try:
-            result = self.fn(*self.args, **self.kwargs)
+            result = self.fn(self.signals)
 
             # Hacky way of allow us to "cancel" a worker
             if not self.alive:

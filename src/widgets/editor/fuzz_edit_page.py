@@ -79,13 +79,23 @@ class FuzzEditPage(QtWidgets.QWidget):
         print('Fuzzing...')
         self.save_request()
         fuzzer = FuzzHttpRequests(self.flow)
-
         self.worker = BackgroundWorker(fuzzer.start)
         self.worker.signals.result.connect(self.fuzz_finished)
         self.worker.signals.error.connect(self.request_error)
+        self.worker.signals.response_received.connect(self.example_response_received)
         self.worker.signals.finished.connect(self.ui.fuzzView.hide_loader)
 
         self.threadpool.start(self.worker)
+
+    @QtCore.Slot()  # type:ignore
+    def example_response_received(self, example_flow: HttpFlow):
+        if not self.ui.examplesTable.isVisible():
+            self.toggle_examples_table()
+
+        # TODO: Find a more effecient way of doing this:
+        self.flow = self.flow.reload()
+        self.show_examples()
+        print(f'Got response for example: {example_flow.request.get_url()}')
 
     @QtCore.Slot()  # type:ignore
     def fuzz_finished(self):
@@ -95,7 +105,7 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.ui.examplesTable.set_flow(self.flow)
 
     def set_send_save_buttons_enabled(self, enabled):
-        self.ui.sendButton.setVisible(enabled)
+        self.ui.fuzzButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
 
     @QtCore.Slot()  # type:ignore

@@ -1,3 +1,6 @@
+from PySide2 import QtCore
+from typing import cast
+from lib.background_worker import WorkerSignals
 from models.data.http_flow import HttpFlow
 
 class FuzzHttpRequests:
@@ -6,7 +9,7 @@ class FuzzHttpRequests:
     def __init__(self, flow: HttpFlow):
         self.flow = flow
 
-    def start(self):
+    def start(self, signals: WorkerSignals):
         # 1. Load all payloads
         payloads = self.flow.request.payload_files()
         for p in payloads:
@@ -27,10 +30,11 @@ class FuzzHttpRequests:
             # 2.2 Replace the ${payload:usernames} values in the request
             example_flow.request.apply_payload_values(payload_values)
 
-            print(i)
-            print(example_flow.request.form_data['content'])
-
             # 2.3 Make the request
+            example_flow.request.save()
+            example_flow.make_request_and_save()
 
-            # 2.4 Save the response
+            # 2.4 Emit a signal
+            cast(QtCore.SignalInstance, signals.response_received).emit(example_flow)
+
         return

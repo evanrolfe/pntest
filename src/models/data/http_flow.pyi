@@ -93,3 +93,6 @@ class HttpFlow(OratorModel):
 
     def make_request(self) -> HttpResponse:
         pass
+
+    def make_request_and_save(self) -> None:
+        pass

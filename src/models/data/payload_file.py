@@ -1,4 +1,11 @@
 from __future__ import annotations
+from typing import TypedDict
+
+class PayloadFileSerialised(TypedDict):
+    key: str
+    file_path: str
+    num_items: int
+    description: str
 
 class PayloadFile:
     key: str
@@ -14,7 +21,7 @@ class PayloadFile:
         self.description = ''
 
     @classmethod
-    def from_serialised(cls, serialised_payload: dict) -> PayloadFile:
+    def from_serialised(cls, serialised_payload: PayloadFileSerialised) -> PayloadFile:
         payload_file = PayloadFile(serialised_payload['file_path'], serialised_payload['key'])
         payload_file.num_items = serialised_payload['num_items']
         payload_file.description = serialised_payload['description']
@@ -29,7 +36,7 @@ class PayloadFile:
         with open(self.file_path, 'r') as file:
             self.values = file.read().split('\n')
 
-    def serialise(self) -> dict:
+    def serialise(self) -> PayloadFileSerialised:
         return {
             'file_path': self.file_path,
             'key': self.key,

@@ -54,14 +54,21 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
                     return flow.title
                 elif (index.column() == 1):
                     response = flow.response
-                    if response is None:
+                    if response == None:
                         return
+
                     return str(response.status_code)
                 elif (index.column() == 2):
                     response = flow.response
-                    if response is None or response.content is None:
+                    response = flow.response
+                    if response == None:
                         return
-                    return str(len(response.content))
+
+                    content = getattr(response, 'content', None)
+                    if content == None:
+                        return
+
+                    return str(len(content))
             else:
                 if (index.column() == 0):
                     return 'Original Request'

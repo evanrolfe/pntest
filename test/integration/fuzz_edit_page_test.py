@@ -19,7 +19,7 @@ class TestFuzzEditPage:
         qtbot.waitForWindowShown(widget)
 
         # Enter form data
-        widget.ui.urlInput.setText("http://www.example.com/login.php?username=${payload:usernames}&password=${payload:passwords}")
+        widget.ui.urlInput.setText("http://www.wonderbill.com/login.php?username=${payload:usernames}&password=${payload:passwords}")
 
         # Set the payloads via the table model because QtBot is rubbish
         payload_usernames = PayloadFile('./test/support/usernames.txt', 'usernames')
@@ -32,10 +32,6 @@ class TestFuzzEditPage:
         model.insert_payload(payload_usernames)
         model.insert_payload(payload_passwords)
 
-        # widget.show()
-        # qtbot.waitForWindowShown(widget)
-        # qtbot.wait(3000)
-
         # Click save button
         button = widget.ui.saveButton
         qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
@@ -44,8 +40,20 @@ class TestFuzzEditPage:
         http_flow = http_flows[0]
 
         assert http_flow.type == 'editor_fuzz'
-        assert http_flow.request.form_data['url'] == 'http://www.example.com/login.php?username=${payload:usernames}&password=${payload:passwords}'
+        assert http_flow.request.form_data['url'] == 'http://www.wonderbill.com/login.php?username=${payload:usernames}&password=${payload:passwords}'
         assert http_flow.request.form_data['payload_files'] == [
             {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 4, 'description': ''},
             {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 4, 'description': ''}
         ]
+
+        button = widget.ui.fuzzButton
+        qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+
+        with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
+            pass
+
+        widget.show()
+        qtbot.waitForWindowShown(widget)
+        qtbot.wait(3000)
+
+        assert 1 == 1

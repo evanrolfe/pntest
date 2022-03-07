@@ -97,7 +97,7 @@ def http_request_fuzz(faker):
         'path': '/',
         'form_data': {
             "method": "GET",
-            "url": "http://example.com/login.php",
+            "url": "http://www.wonderbill.com/login.php",
             "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"},
             "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
             "payload_files": [

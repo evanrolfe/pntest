@@ -225,6 +225,13 @@ class HttpFlow(OratorModel):
 
         return http_response
 
+    def make_request_and_save(self):
+        http_response = self.make_request()
+        http_response.save()
+
+        self.response_id = http_response.id
+        self.save()
+
 class HttpFlowObserver:
     def deleted(self, flow):
         if flow.request:

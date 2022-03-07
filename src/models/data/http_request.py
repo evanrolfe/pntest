@@ -1,15 +1,20 @@
 from __future__ import annotations
 import json
 from urllib.parse import urlsplit
-from typing import Optional, Any, Union, cast
+from typing import Optional, Any, TypedDict, cast
 from orator import Model
-from models.data.payload_file import PayloadFile
+from models.data.payload_file import PayloadFile, PayloadFileSerialised
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
 from lib.input_parsing import parse_value, parse_headers, parse_payload_values
 
-FormData = dict[str, Union[str, Headers]]
+class FormData(TypedDict):
+    method: str
+    url: str
+    headers: Headers
+    content: str
+    payload_files: list[PayloadFileSerialised]
 
 class HttpRequest(Model):
     __table__ = 'http_requests'
@@ -34,6 +39,7 @@ class HttpRequest(Model):
     form_data: FormData
 
     # This is how requests are received from the proxy
+    # TODO: Use a TypedDict instead of Any
     @classmethod
     def from_state(cls, state: dict[str, Any]) -> HttpRequest:
         request = HttpRequest()
@@ -51,7 +57,7 @@ class HttpRequest(Model):
         request.path = state['path']
 
         url = request.get_url()
-        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'content': request.content}
+        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'content': request.content, 'payload_files': []}
 
         return request
 
@@ -64,8 +70,9 @@ class HttpRequest(Model):
         self.scheme = 'http'
         self.path = ''
         self.content = ''
-        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': ''}
+        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'payload_files': []}
 
+    # TODO: Use a TypedDict instead of Any
     def get_state(self) -> dict[str, Any]:
         attributes = self.serialize()
         attributes['headers'] = json.loads(attributes['headers'])
@@ -143,7 +150,8 @@ class HttpRequest(Model):
             'method': method,
             'url': url,
             'headers': headers,
-            'content': content
+            'content': content,
+            'payload_files': []
         })
         return
 
@@ -189,14 +197,12 @@ class HttpRequest(Model):
             'method': self.method,
             'url': self.get_url(),
             'headers': headers,
-            'content': content
+            'content': content,
+            'payload_files': []
         }
 
     def payload_files(self) -> list[PayloadFile]:
         if self.form_data.get('payload_files') is None:
             return []
 
-        return [
-            PayloadFile.from_serialised(cast(dict, p))
-            for p in self.form_data['payload_files']
-        ]
+        return [PayloadFile.from_serialised(p) for p in self.form_data['payload_files']]

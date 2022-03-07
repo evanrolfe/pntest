@@ -3,8 +3,7 @@ import json
 from typing import Optional, Any
 from orator import Model
 from requests import Response
-
-Headers = dict[str, str]
+from lib.types import Headers
 
 class HttpResponse(Model):
     __table__ = 'http_responses'
@@ -22,6 +21,7 @@ class HttpResponse(Model):
     updated_at: Optional[int]
 
     @classmethod
+    # TODO: Use a TypedDict for state
     def from_state(cls, state) -> HttpResponse:
         response = HttpResponse()
 
@@ -61,6 +61,7 @@ class HttpResponse(Model):
 
         return new_response
 
+    # TODO: Use a TypedDict instead of Any
     def get_state(self) -> dict[str, Any]:
         attributes = self.serialize()
         attributes['headers'] = json.loads(attributes['headers'])
