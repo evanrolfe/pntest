@@ -265,6 +265,7 @@ QPushButton#toggleExamplesButton {
   min-width: 10px;
 }
 
+/* SendButton */
 QPushButton#sendButton {
   background-color: $button-bright;
   font-size: 13px;
@@ -277,6 +278,21 @@ QPushButton#sendButton:hover {
 
 QPushButton#sendButton:pressed {
   background-color: $button-bright-pressed;
+}
+
+/* FuzzButton */
+QPushButton#fuzzButton {
+  background-color: #c95ab5;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+QPushButton#fuzzButton:hover {
+  background-color: #CD65BA;
+}
+
+QPushButton#fuzzButton:pressed {
+  background-color: #CD65BA;
 }
 
 QPushButton#saveButton {
