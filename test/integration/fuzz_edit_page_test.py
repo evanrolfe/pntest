@@ -46,14 +46,14 @@ class TestFuzzEditPage:
             {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 4, 'description': ''}
         ]
 
-        button = widget.ui.fuzzButton
-        qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+        # button = widget.ui.fuzzButton
+        # qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
 
-        with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
-            pass
+        # with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
+        #     pass
 
-        widget.show()
-        qtbot.waitForWindowShown(widget)
-        qtbot.wait(3000)
+        # widget.show()
+        # qtbot.waitForWindowShown(widget)
+        # qtbot.wait(3000)
 
-        assert 1 == 1
+        # assert 1 == 1

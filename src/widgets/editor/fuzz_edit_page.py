@@ -9,6 +9,7 @@ from lib.background_worker import BackgroundWorker
 
 class FuzzEditPage(QtWidgets.QWidget):
     flow: HttpFlow
+    fuzzer: FuzzHttpRequests
 
     form_input_changed = QtCore.Signal(bool)
     request_saved = QtCore.Signal()
@@ -40,6 +41,8 @@ class FuzzEditPage(QtWidgets.QWidget):
 
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
+
+        self.ui.fuzzView.cancel_clicked.connect(self.loader_cancel_clicked)
 
         self.show_request()
         self.show_examples()
@@ -78,8 +81,8 @@ class FuzzEditPage(QtWidgets.QWidget):
     def start_fuzzing_async(self):
         print('Fuzzing...')
         self.save_request()
-        fuzzer = FuzzHttpRequests(self.flow)
-        self.worker = BackgroundWorker(fuzzer.start)
+        self.fuzzer = FuzzHttpRequests(self.flow)
+        self.worker = BackgroundWorker(self.fuzzer.start)
         self.worker.signals.result.connect(self.fuzz_finished)
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.response_received.connect(self.example_response_received)
@@ -100,6 +103,10 @@ class FuzzEditPage(QtWidgets.QWidget):
     @QtCore.Slot()  # type:ignore
     def fuzz_finished(self):
         print('Finished!')
+
+    @QtCore.Slot()  # type:ignore
+    def loader_cancel_clicked(self):
+        self.fuzzer.cancel()
 
     def show_examples(self):
         self.ui.examplesTable.set_flow(self.flow)

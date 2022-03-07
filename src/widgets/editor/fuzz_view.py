@@ -9,6 +9,7 @@ from models.data.payload_file import PayloadFile
 
 class FuzzView(QtWidgets.QWidget):
     save_example_clicked = QtCore.Signal()
+    cancel_clicked = QtCore.Signal()
 
     FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
 
@@ -35,6 +36,7 @@ class FuzzView(QtWidgets.QWidget):
         self.ui.payloadsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
 
         self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.hide_loader)
+        self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_clicked)
 
     def get_request_headers(self) -> Headers:
         return self.ui.requestHeaders.get_headers()

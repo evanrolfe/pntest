@@ -1,6 +1,7 @@
 from lib.fuzz_http_requests import FuzzHttpRequests
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
+from lib.background_worker import WorkerSignals
 from support.factories import factory
 
 class TestFuzzHttpRequests:
@@ -13,8 +14,9 @@ class TestFuzzHttpRequests:
 
         http_flow = factory(HttpFlow, 'editor_fuzz').create(request_id=http_request.id)
 
+        signals = WorkerSignals()
         fuzzer = FuzzHttpRequests(http_flow)
-        fuzzer.start()
+        fuzzer.start(signals)
 
         http_flow = http_flow.reload()
         examples = http_flow.examples
@@ -28,3 +30,5 @@ class TestFuzzHttpRequests:
         assert examples[1].response.status_code == 404
         assert examples[2].response.status_code == 404
         assert examples[3].response.status_code == 404
+
+        print([e.title for e in examples])

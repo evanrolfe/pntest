@@ -5,9 +5,14 @@ from models.data.http_flow import HttpFlow
 
 class FuzzHttpRequests:
     flow: HttpFlow
+    cancelled: bool
 
     def __init__(self, flow: HttpFlow):
         self.flow = flow
+        self.cancelled = False
+
+    def cancel(self):
+        self.cancelled = True
 
     def start(self, signals: WorkerSignals):
         # 1. Load all payloads
@@ -20,12 +25,15 @@ class FuzzHttpRequests:
 
         # 2. Loop through each combination
         for i in range(0, n):
+            if self.cancelled:
+                break
+
             payload_values = {}
             for payload in payloads:
                 payload_values[payload.key] = payload.values[i]
 
             # 2.1 Generate an HttpFlow + HttpRequest
-            example_flow = self.flow.duplicate_for_fuzz_example()
+            example_flow = self.flow.duplicate_for_fuzz_example(i + 1)
 
             # 2.2 Replace the ${payload:usernames} values in the request
             example_flow.request.apply_payload_values(payload_values)

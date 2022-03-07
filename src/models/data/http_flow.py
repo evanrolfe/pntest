@@ -1,3 +1,5 @@
+from typing import Optional
+from lib.background_worker import WorkerSignals
 from models.data.orator_model import OratorModel
 from orator.orm import has_one, has_many
 from lib.http_request import HttpRequest as HttpRequestLib
@@ -117,13 +119,13 @@ class HttpFlow(OratorModel):
 
         return new_flow
 
-    def duplicate_for_fuzz_example(self):
+    def duplicate_for_fuzz_example(self, num):
         new_request = self.request.duplicate()
         new_request.save()
 
         new_flow = HttpFlow()
         new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
-        new_flow.title = f'Example #{self.examples.count() + 1}'
+        new_flow.title = f'Example #{num}'
         new_flow.request_id = new_request.id
         new_flow.http_flow_id = self.id
         new_flow.save()
@@ -213,7 +215,7 @@ class HttpFlow(OratorModel):
         # Note: this would be false for navigation requests, which we dont have at the moment
         return True
 
-    def make_request(self):
+    def make_request(self, signals: Optional[WorkerSignals] = None):
         method = self.request.method
         url = self.request.get_url()
         headers = self.request.get_headers() or {}

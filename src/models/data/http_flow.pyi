@@ -70,7 +70,7 @@ class HttpFlow(OratorModel):
     def duplicate_for_example(self, request: HttpRequest, response: HttpResponse) -> HttpFlow:
         pass
 
-    def duplicate_for_fuzz_example(self) -> HttpFlow:
+    def duplicate_for_fuzz_example(self, num: int) -> HttpFlow:
         pass
 
     def modify_request(self, modified_method: str, modified_path: str, modified_headers: dict[str, str], modified_content: str) -> None:

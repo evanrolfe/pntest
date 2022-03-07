@@ -153,7 +153,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         # Pass the function to execute
         # Any other args, kwargs are passed to the run function
-        self.worker = BackgroundWorker(lambda: self.flow.make_request())
+        self.worker = BackgroundWorker(self.flow.make_request)
         self.worker.signals.result.connect(self.response_received)
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.finished.connect(self.ui.flowView.hide_loader)
