@@ -1,0 +1,2 @@
+pip3 install virtualenv
+python3 -m virtualenv -p /usr/local/bin/python3 venv

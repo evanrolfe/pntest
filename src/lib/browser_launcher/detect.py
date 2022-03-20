@@ -6,7 +6,11 @@ from copy import deepcopy
 BROWSERS = [
     {
         'name': 'chrome',
-        'commands': ['helloworld', 'chrome', 'google-chrome'],
+        'commands': [
+            'chrome', 
+            'google-chrome',
+            '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+        ],
         'regex': r'Google Chrome (.+)',
         'type': 'chrome',
     },
@@ -18,7 +22,10 @@ BROWSERS = [
     },
     {
         'name': 'firefox',
-        'commands': ['firefox'],
+        'commands': [
+            'firefox',
+            '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+        ],
         'regex': r'Mozilla Firefox (.+)',
         'type': 'firefox',
     },
@@ -60,6 +67,7 @@ def check(browser):
         print("Your system is Windows")
     elif pltfrm == "Darwin":
         print("Your system is Mac")
+        return check_which(browser)
     else:
         print(f"Linux/Unidentified system {pltfrm}")
         return check_which(browser)

@@ -29,7 +29,6 @@ DEFAULT_CHROME_OPTIONS = [
 
 def launch_chrome_or_chromium(client, browser_command):
     options = get_options_chrome_or_chromium(client)
-
     process = subprocess.Popen(
         browser_command.split(' ') + options + ['http://pntest'],
         preexec_fn=os.setsid
@@ -37,7 +36,7 @@ def launch_chrome_or_chromium(client, browser_command):
     return process
 
 def launch_firefox(client, browser_command):
-    options = get_options_firefox(client)
+    options = get_options_firefox(client, browser_command)
 
     process = subprocess.Popen(
         browser_command.split(' ') + options,
@@ -64,13 +63,13 @@ def get_options_chrome_or_chromium(client):
 
     return DEFAULT_CHROME_OPTIONS + proxy_options + user_data_dir_options
 
-def get_options_firefox(client):
+def get_options_firefox(client, browser_command):
     profile_path = f'{get_app_config_path()}/{client.type}-profile-{client.proxy_port}'
     profile_name = f'pntest-{client.proxy_port}'
 
     if not os.path.isdir(profile_path):
         print(f'[BrowserLauncher] creating firefox profile in {profile_path}')
-        subprocess.run(['firefox', '-CreateProfile', f'{profile_name} {profile_path}'])
+        subprocess.run([browser_command, '-CreateProfile', f'{profile_name} {profile_path}'])
         configure_firefox_profile(client, profile_path)
 
     return ['-P', profile_name]
