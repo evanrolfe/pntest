@@ -7,9 +7,9 @@ BROWSERS = [
     {
         'name': 'chrome',
         'commands': [
-            'chrome', 
+            'chrome',
             'google-chrome',
-            '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
         ],
         'regex': r'Google Chrome (.+)',
         'type': 'chrome',

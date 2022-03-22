@@ -30,7 +30,7 @@ DEFAULT_CHROME_OPTIONS = [
 def launch_chrome_or_chromium(client, browser_command):
     options = get_options_chrome_or_chromium(client)
     process = subprocess.Popen(
-        browser_command.split(' ') + options + ['http://pntest'],
+        [browser_command] + options + ['http://pntest'],
         preexec_fn=os.setsid
     )
     return process
