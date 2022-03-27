@@ -194,6 +194,10 @@ class Ui_FuzzView(object):
 
         self.verticalLayout_8_body.addWidget(self.delayDurationStack)
 
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_8_body.addItem(self.verticalSpacer)
+
         self.requestTabs.addTab(self.fuzzPayloadsTab, "")
         self.stackedWidget.addWidget(self.requestTabs)
         self.loaderWidget = Loader()
