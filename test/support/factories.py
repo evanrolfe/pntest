@@ -83,8 +83,8 @@ def http_request_editor(faker):
         'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}, "content": ""}
     }
 
-@factory.define_as(HttpRequest, 'fuzz')
-def http_request_fuzz(faker):
+
+def generate_fuzz_request(fuzz_type):
     return {
         'http_version': 'HTTP/1.1',
         'headers': '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}',
@@ -100,12 +100,23 @@ def http_request_fuzz(faker):
             "url": "http://www.wonderbill.com/login.php",
             "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"},
             "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
-            "payload_files": [
-                {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 4, 'description': ''},
-                {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 4, 'description': ''}
-            ]
+            "fuzz_data": {
+                "payload_files": [
+                    {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 2, 'description': ''},
+                    {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 2, 'description': ''}
+                ],
+                "fuzz_type": fuzz_type
+            }
         }
     }
+
+@factory.define_as(HttpRequest, 'fuzz_one_to_one')
+def http_request_fuzz_one_to_one(faker):
+    return generate_fuzz_request(HttpRequest.FUZZ_TYPE_KEYS[0])
+
+@factory.define_as(HttpRequest, 'fuzz_cartesian')
+def http_request_fuzz_cartesian(faker):
+    return generate_fuzz_request(HttpRequest.FUZZ_TYPE_KEYS[1])
 
 @factory.define_as(HttpResponse, 'http_response')
 def http_response(faker):

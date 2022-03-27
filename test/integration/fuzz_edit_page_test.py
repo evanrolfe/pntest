@@ -42,8 +42,8 @@ class TestFuzzEditPage:
         assert http_flow.type == 'editor_fuzz'
         assert http_flow.request.form_data['url'] == 'http://www.wonderbill.com/login.php?username=${payload:usernames}&password=${payload:passwords}'
         assert http_flow.request.form_data['fuzz_data']['payload_files'] == [
-            {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 4, 'description': ''},
-            {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 4, 'description': ''}
+            {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 2, 'description': ''},
+            {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 2, 'description': ''}
         ]
         assert http_flow.request.form_data['fuzz_data']['fuzz_type'] == 'one_to_one'
 

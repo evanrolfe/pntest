@@ -208,8 +208,11 @@ class HttpRequest(Model):
             'fuzz_data': None
         }
 
+    def fuzz_data(self) -> Optional[FuzzFormData]:
+        return self.form_data.get('fuzz_data')
+
     def payload_files(self) -> list[PayloadFile]:
-        fuzz_data = self.form_data.get('fuzz_data')
+        fuzz_data = self.fuzz_data()
 
         if fuzz_data is None:
             return []
