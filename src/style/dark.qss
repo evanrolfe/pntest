@@ -282,17 +282,17 @@ QPushButton#sendButton:pressed {
 
 /* FuzzButton */
 QPushButton#fuzzButton {
-  background-color: #c95ab5;
+  background-color: #7A30AB;
   font-size: 13px;
   font-weight: 600;
 }
 
 QPushButton#fuzzButton:hover {
-  background-color: #CD65BA;
+  background-color: #8B37C3;
 }
 
 QPushButton#fuzzButton:pressed {
-  background-color: #CD65BA;
+  background-color: #8B37C3;
 }
 
 QPushButton#saveButton {

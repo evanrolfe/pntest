@@ -1,6 +1,7 @@
 # from html5print import HTMLBeautifier
 from PySide2 import QtWidgets
 from PySide2 import QtCore
+from models.data.http_request import HttpRequest
 
 from views._compiled.editor.ui_fuzz_view import Ui_FuzzView
 from lib.types import Headers
@@ -46,6 +47,10 @@ class FuzzView(QtWidgets.QWidget):
 
     def get_request_payload_files(self) -> list[PayloadFile]:
         return self.table_model.payloads
+
+    def get_fuzz_type(self) -> str:
+        index = self.ui.fuzzTypeDropdown.currentIndex()
+        return HttpRequest.FUZZ_TYPE_KEYS[index]
 
     def clear_request(self):
         # Request:

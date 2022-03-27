@@ -9,12 +9,16 @@ from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
 from lib.input_parsing import parse_value, parse_headers, parse_payload_values
 
+class FuzzFormData(TypedDict):
+    payload_files: list[PayloadFileSerialised]
+    fuzz_type: str
+
 class FormData(TypedDict):
     method: str
     url: str
     headers: Headers
     content: str
-    payload_files: list[PayloadFileSerialised]
+    fuzz_data: Optional[FuzzFormData]
 
 class HttpRequest(Model):
     __table__ = 'http_requests'
@@ -38,6 +42,9 @@ class HttpRequest(Model):
     updated_at: int
     form_data: FormData
 
+    FUZZ_TYPE_LABELS = ['One To One', 'Cartesian Product']
+    FUZZ_TYPE_KEYS = ['one_to_one', 'cartesian']
+
     # This is how requests are received from the proxy
     # TODO: Use a TypedDict instead of Any
     @classmethod
@@ -57,7 +64,7 @@ class HttpRequest(Model):
         request.path = state['path']
 
         url = request.get_url()
-        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'content': request.content, 'payload_files': []}
+        request.form_data = {'method': request.method, 'url': url, 'headers': dict(state['headers']), 'content': request.content, 'fuzz_data': None}
 
         return request
 
@@ -70,7 +77,7 @@ class HttpRequest(Model):
         self.scheme = 'http'
         self.path = ''
         self.content = ''
-        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'payload_files': []}
+        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'fuzz_data': None}
 
     # TODO: Use a TypedDict instead of Any
     def get_state(self) -> dict[str, Any]:
@@ -151,7 +158,7 @@ class HttpRequest(Model):
             'url': url,
             'headers': headers,
             'content': content,
-            'payload_files': []
+            'fuzz_data': None
         })
         return
 
@@ -198,11 +205,13 @@ class HttpRequest(Model):
             'url': self.get_url(),
             'headers': headers,
             'content': content,
-            'payload_files': []
+            'fuzz_data': None
         }
 
     def payload_files(self) -> list[PayloadFile]:
-        if self.form_data.get('payload_files') is None:
+        fuzz_data = self.form_data.get('fuzz_data')
+
+        if fuzz_data is None:
             return []
 
-        return [PayloadFile.from_serialised(p) for p in self.form_data['payload_files']]
+        return [PayloadFile.from_serialised(p) for p in fuzz_data['payload_files']]

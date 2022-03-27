@@ -6,6 +6,7 @@ from views._compiled.editor.ui_fuzz_edit_page import Ui_FuzzEditPage
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
+from models.data.http_request import HttpRequest, FormData
 
 class FuzzEditPage(QtWidgets.QWidget):
     flow: HttpFlow
@@ -47,6 +48,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.show_request()
         self.show_examples()
         self.request_is_modified = False
+
+        self.ui.fuzzView.ui.fuzzTypeDropdown.insertItems(0, HttpRequest.FUZZ_TYPE_LABELS)
 
         # save_response_button = QtWidgets.QPushButton('Save Response')
         # save_response_button.setContentsMargins(10, 10, 10, 10)
@@ -166,14 +169,19 @@ class FuzzEditPage(QtWidgets.QWidget):
         content = self.ui.fuzzView.get_request_body()
         payload_files = self.ui.fuzzView.get_request_payload_files()
         payload_files_serialised = [p.serialise() for p in payload_files]
+        fuzz_type = self.ui.fuzzView.get_fuzz_type()
 
-        self.flow.request.set_form_data({
+        form_data: FormData = {
             'method': method,
             'url': url,
             'headers': headers,
             'content': content,
-            'payload_files': payload_files_serialised
-        })
+            'fuzz_data': {
+                'payload_files': payload_files_serialised,
+                'fuzz_type': fuzz_type
+            }
+        }
+        self.flow.request.set_form_data(form_data)
 
     @QtCore.Slot()  # type:ignore
     def form_field_changed(self):
