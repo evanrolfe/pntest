@@ -46,6 +46,7 @@ class TestFuzzEditPage:
             {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 2, 'description': ''}
         ]
         assert http_flow.request.form_data['fuzz_data']['fuzz_type'] == 'one_to_one'
+        assert http_flow.request.form_data['fuzz_data']['delay_type'] == 'disabled'
 
         # button = widget.ui.fuzzButton
         # qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())

@@ -39,6 +39,14 @@ class FuzzView(QtWidgets.QWidget):
         self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.hide_loader)
         self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_clicked)
 
+        # Fuzz Type Dropdown
+        self.ui.fuzzTypeDropdown.insertItems(0, HttpRequest.FUZZ_TYPE_LABELS)
+
+        # Delay Type Dropdown:
+        self.ui.delayTypeDropdown.insertItems(0, HttpRequest.DELAY_TYPE_LABELS)
+        self.ui.delayTypeDropdown.currentIndexChanged.connect(self.delay_type_changed)
+        self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationDisabled)
+
     def get_request_headers(self) -> Headers:
         return self.ui.requestHeaders.get_headers()
 
@@ -51,6 +59,10 @@ class FuzzView(QtWidgets.QWidget):
     def get_fuzz_type(self) -> str:
         index = self.ui.fuzzTypeDropdown.currentIndex()
         return HttpRequest.FUZZ_TYPE_KEYS[index]
+
+    def get_delay_type(self) -> str:
+        index = self.ui.delayTypeDropdown.currentIndex()
+        return HttpRequest.DELAY_TYPE_KEYS[index]
 
     def clear_request(self):
         # Request:
@@ -74,6 +86,15 @@ class FuzzView(QtWidgets.QWidget):
 
         self.table_model = PayloadFilesTableModel(request.payload_files())
         self.ui.payloadsTable.setModel(self.table_model)
+
+    @QtCore.Slot()  # type:ignore
+    def delay_type_changed(self, index: int):
+        if index == 0:
+            self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationDisabled)
+        elif index == 1:
+            self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationForm)
+        elif index == 2:
+            self.ui.delayDurationStack.setCurrentWidget(self.ui.delayRangeForm)
 
     @QtCore.Slot()  # type:ignore
     def add_payload(self):

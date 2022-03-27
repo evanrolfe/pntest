@@ -112,23 +112,30 @@ class Ui_FuzzView(object):
 
         self.horizontalLayout_3.addWidget(self.label_3)
 
-        self.comboBox = QComboBox(self.fuzzPayloadsTab)
-        self.comboBox.setObjectName(u"comboBox")
+        self.delayTypeDropdown = QComboBox(self.fuzzPayloadsTab)
+        self.delayTypeDropdown.setObjectName(u"delayTypeDropdown")
 
-        self.horizontalLayout_3.addWidget(self.comboBox)
+        self.horizontalLayout_3.addWidget(self.delayTypeDropdown)
 
 
         self.verticalLayout_8_body.addLayout(self.horizontalLayout_3)
 
-        self.hlayout_4 = QHBoxLayout()
-        self.hlayout_4.setObjectName(u"hlayout_4")
-        self.hlayout_4.setContentsMargins(10, 10, 10, -1)
-        self.label_4 = QLabel(self.fuzzPayloadsTab)
+        self.delayDurationStack = QStackedWidget(self.fuzzPayloadsTab)
+        self.delayDurationStack.setObjectName(u"delayDurationStack")
+        self.delayDurationDisabled = QWidget()
+        self.delayDurationDisabled.setObjectName(u"delayDurationDisabled")
+        self.delayDurationStack.addWidget(self.delayDurationDisabled)
+        self.delayDurationForm = QWidget()
+        self.delayDurationForm.setObjectName(u"delayDurationForm")
+        self.delayDurationLayout = QHBoxLayout(self.delayDurationForm)
+        self.delayDurationLayout.setObjectName(u"delayDurationLayout")
+        self.delayDurationLayout.setContentsMargins(10, 10, 10, -1)
+        self.label_4 = QLabel(self.delayDurationForm)
         self.label_4.setObjectName(u"label_4")
 
-        self.hlayout_4.addWidget(self.label_4)
+        self.delayDurationLayout.addWidget(self.label_4)
 
-        self.delayDuration = QLineEdit(self.fuzzPayloadsTab)
+        self.delayDuration = QLineEdit(self.delayDurationForm)
         self.delayDuration.setObjectName(u"delayDuration")
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
@@ -137,10 +144,55 @@ class Ui_FuzzView(object):
         self.delayDuration.setSizePolicy(sizePolicy1)
         self.delayDuration.setMaximumSize(QSize(50, 16777215))
 
-        self.hlayout_4.addWidget(self.delayDuration)
+        self.delayDurationLayout.addWidget(self.delayDuration)
+
+        self.delayDurationStack.addWidget(self.delayDurationForm)
+        self.delayRangeForm = QWidget()
+        self.delayRangeForm.setObjectName(u"delayRangeForm")
+        self.delayRangeLayout = QVBoxLayout(self.delayRangeForm)
+        self.delayRangeLayout.setObjectName(u"delayRangeLayout")
+        self.delayRangeLayout.setContentsMargins(0, 0, 0, 0)
+        self.delayMinLayout = QHBoxLayout()
+        self.delayMinLayout.setObjectName(u"delayMinLayout")
+        self.delayMinLayout.setContentsMargins(10, 10, 10, -1)
+        self.label_5 = QLabel(self.delayRangeForm)
+        self.label_5.setObjectName(u"label_5")
+
+        self.delayMinLayout.addWidget(self.label_5)
+
+        self.delayMinDuration = QLineEdit(self.delayRangeForm)
+        self.delayMinDuration.setObjectName(u"delayMinDuration")
+        sizePolicy1.setHeightForWidth(self.delayMinDuration.sizePolicy().hasHeightForWidth())
+        self.delayMinDuration.setSizePolicy(sizePolicy1)
+        self.delayMinDuration.setMaximumSize(QSize(50, 16777215))
+
+        self.delayMinLayout.addWidget(self.delayMinDuration)
 
 
-        self.verticalLayout_8_body.addLayout(self.hlayout_4)
+        self.delayRangeLayout.addLayout(self.delayMinLayout)
+
+        self.delayMaxLayout = QHBoxLayout()
+        self.delayMaxLayout.setObjectName(u"delayMaxLayout")
+        self.delayMaxLayout.setContentsMargins(10, 10, 10, -1)
+        self.label_6 = QLabel(self.delayRangeForm)
+        self.label_6.setObjectName(u"label_6")
+
+        self.delayMaxLayout.addWidget(self.label_6)
+
+        self.delayMaxDuration = QLineEdit(self.delayRangeForm)
+        self.delayMaxDuration.setObjectName(u"delayMaxDuration")
+        sizePolicy1.setHeightForWidth(self.delayMaxDuration.sizePolicy().hasHeightForWidth())
+        self.delayMaxDuration.setSizePolicy(sizePolicy1)
+        self.delayMaxDuration.setMaximumSize(QSize(50, 16777215))
+
+        self.delayMaxLayout.addWidget(self.delayMaxDuration)
+
+
+        self.delayRangeLayout.addLayout(self.delayMaxLayout)
+
+        self.delayDurationStack.addWidget(self.delayRangeForm)
+
+        self.verticalLayout_8_body.addWidget(self.delayDurationStack)
 
         self.requestTabs.addTab(self.fuzzPayloadsTab, "")
         self.stackedWidget.addWidget(self.requestTabs)
@@ -168,7 +220,9 @@ class Ui_FuzzView(object):
         self.addPayloadButton.setText(QCoreApplication.translate("FuzzView", u"Import Payload", None))
         self.label_2.setText(QCoreApplication.translate("FuzzView", u"Fuzzing Type", None))
         self.label_3.setText(QCoreApplication.translate("FuzzView", u"Delay Type", None))
-        self.label_4.setText(QCoreApplication.translate("FuzzView", u"Delay Duration", None))
+        self.label_4.setText(QCoreApplication.translate("FuzzView", u"Delay Duration (s)", None))
+        self.label_5.setText(QCoreApplication.translate("FuzzView", u"Delay Duration Minimum (s)", None))
+        self.label_6.setText(QCoreApplication.translate("FuzzView", u"Delay Duration Maximum (s)", None))
         self.requestTabs.setTabText(self.requestTabs.indexOf(self.fuzzPayloadsTab), QCoreApplication.translate("FuzzView", u"Fuzzing Options", None))
     # retranslateUi
 

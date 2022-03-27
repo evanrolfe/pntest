@@ -12,6 +12,7 @@ from lib.input_parsing import parse_value, parse_headers, parse_payload_values
 class FuzzFormData(TypedDict):
     payload_files: list[PayloadFileSerialised]
     fuzz_type: str
+    delay_type: str
 
 class FormData(TypedDict):
     method: str
@@ -44,6 +45,9 @@ class HttpRequest(Model):
 
     FUZZ_TYPE_LABELS = ['One To One', 'Cartesian Product']
     FUZZ_TYPE_KEYS = ['one_to_one', 'cartesian']
+
+    DELAY_TYPE_LABELS = ['Disabled', 'Fixed Time Delay', 'Random Time Delay']
+    DELAY_TYPE_KEYS = ['disabled', 'fixed', 'random']
 
     # This is how requests are received from the proxy
     # TODO: Use a TypedDict instead of Any
