@@ -3,3 +3,5 @@ exec $SHELL
 pip3 install virtualenv
 python3 -m virtualenv -p /usr/local/bin/python3 venv
 # remove pkg-resources from requirements.txt
+# change --add-binary to --add-data in bin/build
+cp venv/lib/python3.9/site-packages/shiboken2/libshiboken2.abi3.5.15.dylib venv/lib/python3.9/site-packages/PySide2/

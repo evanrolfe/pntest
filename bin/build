@@ -1,17 +1,20 @@
 rm -rf build/pntest/
 rm -rf dist/pntest/
+rm -rf dist/pntest.app/
 
 pyinstaller ./src/__main__.py --onefile \
     --name="pntest" \
     --windowed \
     --paths=$PWD/src \
-    --paths=$PWD/venv/lib/python3.9/site-packages/ \
-    --add-binary='include/pntest_proxy:include/' \
-    --add-binary='include/cert9.db:include/' \
-    --add-binary='include/rootCA.key:include/' \
-    --add-binary='include/mitmproxy-ca.pem:include/' \
-    --add-binary='include/html_page.html:include/' \
+    --paths=$PWD/venv/lib/python3.9/site-packages/shiboken2 \
+    --paths=$PWD/venv/lib/python3.9/site-packages/PySide2/Qt/lib/QtWebEngineCore.framework/Resources/ \
+    --add-data='include/pntest_proxy:include/' \
+    --add-data='include/cert9.db:include/' \
+    --add-data='include/rootCA.key:include/' \
+    --add-data='include/mitmproxy-ca.pem:include/' \
+    --add-data='include/html_page.html:include/' \
     --add-data='src/style/dark.qss:style/' \
     --add-data='src/style/dark_theme.qss:style/' \
     --add-data='src/style/light.qss:style/' \
-    --noupx
+    --noupx  \
+    --add-data='venv/lib/python3.9/site-packages/PySide2/Qt/lib/QtWebEngineCore.framework/Resources/:.'
