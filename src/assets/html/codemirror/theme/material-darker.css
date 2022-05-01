@@ -26,11 +26,11 @@
 }
 
 .cm-s-material-darker div.CodeMirror-selected {
-  background: rgba(97, 97, 97, 0.2);
+  background: #BBDCFF;
 }
 
 .cm-s-material-darker.CodeMirror-focused div.CodeMirror-selected {
-  background: rgba(97, 97, 97, 0.2);
+  background: #BBDCFF;
 }
 
 .cm-s-material-darker .CodeMirror-line::selection,
