@@ -93,6 +93,6 @@ coll = COLLECT(exea,
 app = BUNDLE(
     coll,
     name='pntest.app',
-    icon=None,
-    bundle_identifier=None,
+    icon='p_icon-icons.com_60469.icns',
+    bundle_identifier='pntest.pntest',
 )

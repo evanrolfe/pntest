@@ -6,3 +6,10 @@ python3 -m virtualenv -p /usr/local/bin/python3 venv
 
 # Build with:
 pyinstaller pntest_all.spec
+
+# Package to dmb with:
+# https://www.pythonguis.com/tutorials/packaging-pyqt5-applications-pyinstaller-macos-dmg/
+brew install create-dmg
+bin/build_dmg
+
+# Make sure to set LSBackgroundOnly=false in dist/pntest.app/Contents/Info.plist
