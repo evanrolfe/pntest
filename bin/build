@@ -2,7 +2,7 @@ rm -rf build/pntest/
 rm -rf dist/pntest/
 rm -rf dist/pntest.app/
 
-pyinstaller ./src/__main__.py --onefile \
+pyinstaller ./src/__main__.py \
     --name="pntest" \
     --windowed \
     --paths=$PWD/src \

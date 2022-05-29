@@ -2,7 +2,7 @@ import asyncio
 import os
 import pathlib
 import signal
-from sys import argv
+from sys import argv, exit
 import zmq.asyncio
 import threading
 import simplejson as json
@@ -13,6 +13,9 @@ from proxy_events import ProxyEvents
 
 PROXY_ZMQ_PORT = 5556
 TIMEOUT_AFTER_SECONDS_NO_POLL = 3
+
+if argv[1] == '--version':
+    exit('PnTest Proxy v0.0.1')
 
 port_num = int(argv[1])
 client_id = int(argv[2])
