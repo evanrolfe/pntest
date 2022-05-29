@@ -7,8 +7,13 @@ from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from widgets.main_window import MainWindow
+from version import version
 
 THEME = 'dark'
+
+version_arg = sys.argv[1] if 1 < len(sys.argv) else None
+if version_arg == '--version':
+    sys.exit(f'pntest v{version}')
 
 def main():
     QtCore.QCoreApplication.setApplicationName('pntest')
