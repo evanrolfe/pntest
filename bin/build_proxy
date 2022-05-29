@@ -1,6 +1,6 @@
 rm -rf build/pntest_proxy/
 
-pyinstaller ./src/proxy/__main__.py --onefile \
+pyinstaller ./src/proxy/__main__.py \
     --name="pntest_proxy" \
     --paths=$PWD/src/proxy \
     --paths=$PWD/venv/lib/python3.9/site-packages/ \
