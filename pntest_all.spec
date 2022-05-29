@@ -90,9 +90,13 @@ coll = COLLECT(exea,
                b.datas,
                name='pntest_all')
 
+# Mac OS X Bundle
 app = BUNDLE(
     coll,
     name='pntest.app',
     icon='p_icon-icons.com_60469.icns',
     bundle_identifier='pntest.pntest',
+    info_plist={
+        'LSBackgroundOnly': False
+    }
 )
