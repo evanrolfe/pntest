@@ -4,13 +4,23 @@
 block_cipher = None
 
 #===============================================================================
-# pntest
+# pntest (MAC)
 #===============================================================================
+# On Mac it looks for QtWebEngine resources in ./PySide2/Qt, hence why its included in datas
 a = Analysis(
     ['src/__main__.py'],
-    pathex=['/Users/evan/Code/pntest/src'],
+    pathex=['src'],
     binaries=[],
-    datas=[('include/cert9.db', 'include/'), ('include/rootCA.key', 'include/'), ('include/mitmproxy-ca.pem', 'include/'), ('include/html_page.html', 'include/'), ('src/style/dark.qss', 'style/'), ('src/style/dark_theme.qss', 'style/'), ('src/style/light.qss', 'style/'), ('venv/lib/python3.9/site-packages/PySide2/Qt/lib/QtWebEngineCore.framework/Resources/', 'PySide2/Qt')],
+    datas=[
+        ('include/cert9.db', 'include/'),
+        ('include/rootCA.key', 'include/'),
+        ('include/mitmproxy-ca.pem', 'include/'),
+        ('include/html_page.html', 'include/'),
+        ('src/style/dark.qss', 'style/'),
+        ('src/style/dark_theme.qss', 'style/'),
+        ('src/style/light.qss', 'style/'),
+        ('venv/lib/python3.9/site-packages/PySide2/Qt/lib/QtWebEngineCore.framework/Resources/', 'PySide2/Qt')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -45,7 +55,7 @@ exea = EXE(
 #===============================================================================
 b = Analysis(
     ['src/proxy/__main__.py'],
-    pathex=['/Users/evan/Code/pntest/src/proxy', '/Users/evan/Code/pntest/venv/lib/python3.9/site-packages/'],
+    pathex=['src/proxy', 'venv/lib/python3.9/site-packages/'],
     binaries=[('include/cert9.db', 'include/'), ('include/rootCA.key', 'include/')],
     datas=[],
     hiddenimports=[],
@@ -88,7 +98,7 @@ coll = COLLECT(exea,
                b.binaries,
                b.zipfiles,
                b.datas,
-               name='pntest_all')
+               name='pntest')
 
 # Mac OS X Bundle
 app = BUNDLE(

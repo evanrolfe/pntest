@@ -1,0 +1,5 @@
+rm -rf build/pntest/
+rm -rf dist/pntest/
+rm -rf dist/pntest.app/
+
+pyinstaller pntest_mac.spec
