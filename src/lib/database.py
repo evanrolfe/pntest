@@ -4,7 +4,7 @@ import logging
 from orator import DatabaseManager, Model
 
 from models.data.capture_filter import CaptureFilter
-from models.data.setting import Setting
+from models.data.settings import Settings
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 
 # TODO: This class uses two database managers (Orator.DatabaesManager and QSqlDatabase), get rid of
@@ -74,7 +74,7 @@ class Database:
             self.db.insert(query_str)
 
         CaptureFilter.create_defaults()
-        Setting.create_defaults()
+        Settings.create_defaults()
 
     def reload_with_new_database(self, new_db_path):
         self.close()

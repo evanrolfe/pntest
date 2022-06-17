@@ -1,7 +1,8 @@
 from PySide2 import QtCore, QtWidgets
 
 from views._compiled.network.http.ui_capture_filters import Ui_CaptureFilters
-from models.data.capture_filter import CaptureFilter
+from models.data.settings import Settings
+from lib.process_manager import ProcessManager
 
 class CaptureFilters(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -23,16 +24,17 @@ class CaptureFilters(QtWidgets.QDialog):
 
     def load_capture_filters(self):
         print("Loading capture filters")
-        self.capture_filters = CaptureFilter.find(1)
+        self.settings = Settings.get()
+        capture_filters = self.settings.parsed()['capture_filters']
 
-        host_index = self.setting_to_index(self.capture_filters.host_setting)
+        host_index = self.setting_to_index(capture_filters['host_setting'])
         self.ui.hostSettingDropdown.setCurrentIndex(host_index)
 
-        path_index = self.setting_to_index(self.capture_filters.path_setting)
+        path_index = self.setting_to_index(capture_filters['path_setting'])
         self.ui.pathSettingDropdown.setCurrentIndex(path_index)
 
-        self.ui.hostsText.setPlainText("\n".join(self.capture_filters.host_list))
-        self.ui.pathsText.setPlainText("\n".join(self.capture_filters.path_list))
+        self.ui.hostsText.setPlainText("\n".join(capture_filters['host_list']))
+        self.ui.pathsText.setPlainText("\n".join(capture_filters['path_list']))
 
     @QtCore.Slot()  # type:ignore
     def save(self):
@@ -44,13 +46,17 @@ class CaptureFilters(QtWidgets.QDialog):
         path_setting = self.index_to_setting(path_setting_index)
         path_list = self.ui.pathsText.toPlainText().split("\n")
 
-        self.capture_filters.set_filters({
-            'host_list': list(filter(None, host_list)),
-            'host_setting': host_setting,
-            'path_list': list(filter(None, path_list)),
-            'path_setting': path_setting
-        })
-        self.capture_filters.save()
+        capture_filters = self.settings.parsed()['capture_filters']
+        capture_filters['host_list'] = list(filter(None, host_list))
+        capture_filters['host_setting'] = host_setting
+        capture_filters['path_list'] = list(filter(None, path_list))
+        capture_filters['path_setting'] = path_setting
+
+        self.settings.save()
+
+        process_manager = ProcessManager.get_instance()
+        process_manager.change_proxy_settings()
+
         self.close()
 
     @QtCore.Slot()  # type:ignore

@@ -63,10 +63,11 @@ def check_which(browser):
 def check(browser):
     pltfrm = platform.system()
 
-    if pltfrm == "Windows":
-        print("Your system is Windows")
-    elif pltfrm == "Darwin":
-        print("Your system is Mac")
+    # if pltfrm == "Windows":
+    #     # TODO
+    # el
+
+    if pltfrm == "Darwin":
         return check_which(browser)
     else:
         print(f"Linux/Unidentified system {pltfrm}")
