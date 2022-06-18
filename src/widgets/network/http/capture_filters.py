@@ -54,9 +54,6 @@ class CaptureFilters(QtWidgets.QDialog):
 
         self.settings.save()
 
-        process_manager = ProcessManager.get_instance()
-        process_manager.change_proxy_settings()
-
         self.close()
 
     @QtCore.Slot()  # type:ignore
