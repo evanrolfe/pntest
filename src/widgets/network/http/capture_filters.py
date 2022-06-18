@@ -53,6 +53,8 @@ class CaptureFilters(QtWidgets.QDialog):
         capture_filters['path_setting'] = path_setting
 
         self.settings.save()
+        process_manager = ProcessManager.get_instance()
+        process_manager.set_settings(self.settings.parsed())
 
         self.close()
 

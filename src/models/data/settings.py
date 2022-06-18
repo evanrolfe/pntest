@@ -1,19 +1,9 @@
 from __future__ import annotations
 import json
-from typing import Optional, TypedDict
+from typing import Optional
 from lib.database_cache import DatabaseCache
 from models.data.orator_model import OratorModel
-
-class CaptureFilterSettings(TypedDict):
-    host_list: list[str]
-    host_setting: str
-    path_list: list[str]
-    path_setting: str
-    ext_list: list[str]
-    ext_setting: str
-
-class SettingsJson(TypedDict):
-    capture_filters: CaptureFilterSettings
+from common_types import SettingsJson, CaptureFilterSettings
 
 class Settings(OratorModel):
     __table__ = 'settings'

@@ -72,9 +72,10 @@ while True:
             proxy_events.forward_all()
         elif message['type'] == 'enable_intercept':
             proxy_events.set_intercept_enabled(message['value'])
+        elif message['type'] == 'set_settings':
+            proxy_events.set_settings(message['value'])
         elif message['type'] == 'poll':
             # print(f'Received poll at {datetime.datetime.now().time()}')
             last_poll_at = int(time.time())
-
 
 proxy_thread.join()

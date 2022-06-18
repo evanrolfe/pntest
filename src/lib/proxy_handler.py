@@ -7,6 +7,7 @@ from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
+from common_types import SettingsJson
 
 PROXY_ZMQ_PORT = 5556
 
@@ -141,6 +142,11 @@ class ProxyZmqServer(QtCore.QObject):
         for client_id in list(self.client_ids):
             self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
 
+    def set_settings(self, settings: SettingsJson) -> None:
+        message = {'type': 'set_settings', 'value': settings}
+        for client_id in list(self.client_ids):
+            self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
+
     def __show_error_box(self, message):
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('ProxyZmqServer: Error')
@@ -177,3 +183,6 @@ class ProxyHandler():
 
     def set_enabled(self, enabled):
         self.zmq_server.set_enabled(enabled)
+
+    def set_settings(self, settings: SettingsJson) -> None:
+        self.zmq_server.set_settings(settings)
