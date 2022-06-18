@@ -14,7 +14,7 @@ from lib.paths import get_app_path
 from lib.utils import is_dev_mode
 from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
 from lib.browser_launcher.browser_proc import BrowserProc
-from common_types import SettingsJson
+from proxy.common_types import SettingsJson
 
 class ProcessManager(QtCore.QObject):
     clients_changed = QtCore.Signal()

@@ -3,8 +3,11 @@ from pathlib import Path
 
 from mitmproxy.http import Headers
 from mitmproxy import http
+from common_types import SettingsJson
 
 class ProxyEvents:
+    settings: SettingsJson
+
     def __init__(self, client_id, include_path):
         self.client_id = client_id
         self.intercept_enabled = False
@@ -70,7 +73,8 @@ class ProxyEvents:
         self.intercept_enabled = enabled
 
     # TODO: Type settings
-    def set_settings(self, settings):
+    def set_settings(self, settings: SettingsJson):
+        print(settings)
         self.settings = settings
 
     # ---------------------------------------------------------------------------

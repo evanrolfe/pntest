@@ -3,7 +3,7 @@ import json
 from typing import Optional
 from lib.database_cache import DatabaseCache
 from models.data.orator_model import OratorModel
-from common_types import SettingsJson, CaptureFilterSettings
+from proxy.common_types import SettingsJson, CaptureFilterSettings
 
 class Settings(OratorModel):
     __table__ = 'settings'

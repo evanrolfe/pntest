@@ -7,7 +7,7 @@ from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
-from common_types import SettingsJson
+from proxy.common_types import SettingsJson
 
 PROXY_ZMQ_PORT = 5556
 
