@@ -9,8 +9,6 @@ class CaptureFilterSettings(TypedDict):
     host_setting: str
     path_list: list[str]
     path_setting: str
-    ext_list: list[str]
-    ext_setting: str
 
 class SettingsJson(TypedDict):
     capture_filters: CaptureFilterSettings
@@ -52,4 +50,3 @@ class ProxyWebsocketMessage(TypedDict):
     direction: str
     content: str
     intercepted: bool
-

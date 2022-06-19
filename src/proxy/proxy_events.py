@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Optional
 import simplejson as json
 from pathlib import Path
 
@@ -6,15 +6,23 @@ from mitmproxy.http import Headers
 from mitmproxy import http
 from common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
-class ProxyEvents:
-    settings: SettingsJson
+class ProxyHttpFlow(http.HTTPFlow):
+    intercept_response: bool
 
-    def __init__(self, client_id, include_path):
+class ProxyEvents:
+    settings: Optional[SettingsJson]
+    client_id: int
+    intercept_enabled: bool
+    intercepted_flows: list[ProxyHttpFlow]
+    pntest_homepage_html: str
+
+    def __init__(self, client_id: int, include_path: str):
         self.client_id = client_id
         self.intercept_enabled = False
         self.intercepted_flows = []
         self.include_path = include_path
         self.pntest_homepage_html = Path(f'{self.include_path}/html_page.html').read_text()
+        self.settings = None
 
     def set_proxy(self, proxy):
         self.proxy = proxy
@@ -88,6 +96,9 @@ class ProxyEvents:
         if flow.request.host == 'pntest':
             flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
 
+        if not self.__should_request_be_captured(flow):
+            return
+
         request_state = cast(ProxyRequest, convert_dict_bytes_to_strings(flow.request.get_state()))
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
@@ -103,13 +114,13 @@ class ProxyEvents:
         print('[Proxy] HTTP response')
         intercept_response = getattr(flow, 'intercept_response', False)
 
-        if flow.response is None:
+        if flow.response is None or not self.__should_request_be_captured(flow):
             return
 
         response_state = cast(ProxyResponse, convert_dict_bytes_to_strings(flow.response.get_state()))
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
-        response_state['content'] = flow.response.text or ''
+        response_state['content'] = flow.response.text or ''.encode()
         response_state['intercepted'] = intercept_response
 
         self.__send_message(response_state)
@@ -161,6 +172,34 @@ class ProxyEvents:
         except UnicodeDecodeError:
             print(f'ERROR => Could not send message for flow {message["flow_uuid"]}')
             return
+
+    def __should_request_be_captured(self, flow: http.HTTPFlow) -> bool:
+        if self.settings is None:
+            return True
+
+        # Check host
+        host_list = self.settings['capture_filters']['host_list']
+        host_setting = self.settings['capture_filters']['host_setting']
+
+        if flow.request.host in host_list and host_setting == 'exclude':
+            return False
+
+        if flow.request.host not in host_list and host_setting == 'include':
+            return False
+
+        # Check Path
+        path_list = self.settings['capture_filters']['path_list']
+        path_setting = self.settings['capture_filters']['path_setting']
+
+        path_contains_any_of_path_list = any(path in flow.request.path for path in path_list)
+
+        if path_contains_any_of_path_list and path_setting == 'exclude':
+            return False
+
+        if not path_contains_any_of_path_list and path_setting == 'include':
+            return False
+
+        return True
 
 def convert_dict_bytes_to_strings(d):
     new_d = {}

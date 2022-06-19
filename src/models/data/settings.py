@@ -27,8 +27,6 @@ class Settings(OratorModel):
             'host_setting': '',
             'path_list': [],
             'path_setting': '',
-            'ext_list': [],
-            'ext_setting': '',
         }
         settings_json: SettingsJson = {
             'capture_filters': capture_filters

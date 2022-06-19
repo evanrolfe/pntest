@@ -8,6 +8,7 @@ import sys
 from typing import cast
 from PySide2 import QtCore
 from models.data.http_flow import HttpFlow
+from models.data.settings import Settings
 from models.data.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
@@ -51,6 +52,8 @@ class ProcessManager(QtCore.QObject):
 
         self.proxy_handler = ProxyHandler(self)
         self.proxy_handler.start()
+        self.set_settings(Settings.get().parsed())
+
         cast(QtCore.SignalInstance, self.proxy_handler.signals.flow_created).connect(self.flow_created)
         cast(QtCore.SignalInstance, self.proxy_handler.signals.flow_updated).connect(self.flow_updated)
         cast(QtCore.SignalInstance, self.proxy_handler.signals.flow_intercepted).connect(self.flow_intercepted)

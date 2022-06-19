@@ -6,6 +6,7 @@ import inflection
 from orator import accessor
 from models.data.orator_model import OratorModel
 
+# TODO: Remove this class as its unused
 class CaptureFilter(OratorModel):
     id: int
     filters: str
