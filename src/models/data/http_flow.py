@@ -61,6 +61,16 @@ class HttpFlow(OratorModel):
 
         return flow
 
+    @classmethod
+    def create_from_proxy_websocket_message(cls, proxy_websocket_message):
+        http_flow = HttpFlow.where('uuid', '=', proxy_websocket_message['flow_uuid']).first()
+
+        websocket_message = WebsocketMessage.from_state(proxy_websocket_message)
+        websocket_message.http_flow_id = http_flow.id
+        websocket_message.save()
+
+        return http_flow, websocket_message
+
     @has_one('id', 'request_id')
     def request(self):
         return HttpRequest

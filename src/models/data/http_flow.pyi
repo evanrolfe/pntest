@@ -4,6 +4,8 @@ from typing import Optional, Any
 from models.data.orator_model import OratorModel
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
+from models.data.websocket_message import WebsocketMessage
+from proxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 class HttpFlow(OratorModel):
     # Database columns:
@@ -47,11 +49,15 @@ class HttpFlow(OratorModel):
         pass
 
     @classmethod
-    def create_from_proxy_request(cls, proxy_request) -> HttpFlow:
+    def create_from_proxy_request(cls, proxy_request: ProxyRequest) -> HttpFlow:
         pass
 
     @classmethod
-    def update_from_proxy_response(cls, proxy_response) -> Optional[HttpFlow]:
+    def update_from_proxy_response(cls, proxy_response: ProxyResponse) -> Optional[HttpFlow]:
+        pass
+
+    @classmethod
+    def create_from_proxy_websocket_message(cls, proxy_websocket_message: ProxyWebsocketMessage) -> tuple[HttpFlow, WebsocketMessage]:
         pass
 
     def is_example(self) -> bool:

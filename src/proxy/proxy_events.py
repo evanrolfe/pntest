@@ -1,9 +1,10 @@
+from typing import cast
 import simplejson as json
 from pathlib import Path
 
 from mitmproxy.http import Headers
 from mitmproxy import http
-from common_types import SettingsJson
+from common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 class ProxyEvents:
     settings: SettingsJson
@@ -87,7 +88,7 @@ class ProxyEvents:
         if flow.request.host == 'pntest':
             flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
 
-        request_state = flow.request.get_state()
+        request_state = cast(ProxyRequest, convert_dict_bytes_to_strings(flow.request.get_state()))
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
@@ -105,11 +106,12 @@ class ProxyEvents:
         if flow.response is None:
             return
 
-        response_state = flow.response.get_state()
+        response_state = cast(ProxyResponse, convert_dict_bytes_to_strings(flow.response.get_state()))
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
-        response_state['content'] = flow.response.text
+        response_state['content'] = flow.response.text or ''
         response_state['intercepted'] = intercept_response
+
         self.__send_message(response_state)
 
         if intercept_response:
@@ -124,11 +126,11 @@ class ProxyEvents:
         message = flow.websocket.messages[-1]
         direction = 'outgoing' if message.from_client else 'incoming'
 
-        message_state = {
+        message_state: ProxyWebsocketMessage = {
             'type': 'websocket_message',
             'flow_uuid': flow.id,
             'direction': direction,
-            'content': message.content,
+            'content': message.content.decode(),
             'intercepted': self.__should_intercept_request(flow)
         }
         self.__send_message(message_state)
@@ -153,9 +155,29 @@ class ProxyEvents:
 
         return Headers(headers_list)
 
-    def __send_message(self, message: dict):
+    def __send_message(self, message):
         try:
             self.socket.send_string(json.dumps(message))
         except UnicodeDecodeError:
             print(f'ERROR => Could not send message for flow {message["flow_uuid"]}')
             return
+
+def convert_dict_bytes_to_strings(d):
+    new_d = {}
+    for key, value in d.items():
+        if type(value) is bytes and key != 'content':
+            new_d[key] = value.decode()
+        elif key == 'headers':
+            new_d[key] = convert_headers_bytes_to_strings(value)
+        else:
+            new_d[key] = value
+
+    return new_d
+
+def convert_headers_bytes_to_strings(headers):
+    new_headers = []
+    for header in headers:
+        new_header = (header[0].decode(), header[1].decode())
+        new_headers.append(new_header)
+
+    return new_headers

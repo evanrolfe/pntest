@@ -5,7 +5,7 @@ import simplejson as json
 from typing import cast
 from models.data.http_flow import HttpFlow
 from models.data.websocket_message import WebsocketMessage
-from proxy.common_types import SettingsJson
+from proxy.common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 PROXY_ZMQ_PORT = 5556
 
@@ -72,7 +72,7 @@ class ProxyZmqServer(QtCore.QObject):
             print(f'[ProxyZmqServer] Received websocket message')
             self.websocket_message(obj)
 
-    def request(self, request_state):
+    def request(self, request_state: ProxyRequest):
         http_flow = HttpFlow.create_from_proxy_request(request_state)
 
         cast(QtCore.SignalInstance, self.signals.flow_created).emit(http_flow)
@@ -80,7 +80,7 @@ class ProxyZmqServer(QtCore.QObject):
         if request_state['intercepted']:
             cast(QtCore.SignalInstance, self.signals.flow_intercepted).emit(http_flow)
 
-    def response(self, response_state):
+    def response(self, response_state: ProxyResponse):
         http_flow = HttpFlow.update_from_proxy_response(response_state)
 
         if not http_flow:
@@ -91,12 +91,8 @@ class ProxyZmqServer(QtCore.QObject):
         if response_state['intercepted']:
             cast(QtCore.SignalInstance, self.signals.flow_intercepted).emit(http_flow)
 
-    def websocket_message(self, message_state):
-        http_flow = HttpFlow.where('uuid', '=', message_state['flow_uuid']).first()
-
-        websocket_message = WebsocketMessage.from_state(message_state)
-        websocket_message.http_flow_id = http_flow.id
-        websocket_message.save()
+    def websocket_message(self, message_state: ProxyWebsocketMessage):
+        http_flow, websocket_message = HttpFlow.create_from_proxy_websocket_message(message_state)
 
         cast(QtCore.SignalInstance, self.signals.websocket_message_created).emit(websocket_message)
 
