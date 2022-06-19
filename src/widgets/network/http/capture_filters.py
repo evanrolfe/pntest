@@ -23,7 +23,6 @@ class CaptureFilters(QtWidgets.QDialog):
         self.load_capture_filters()
 
     def load_capture_filters(self):
-        print("Loading capture filters")
         self.settings = Settings.get()
         capture_filters = self.settings.parsed()['capture_filters']
 

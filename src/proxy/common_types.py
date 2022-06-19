@@ -10,8 +10,15 @@ class CaptureFilterSettings(TypedDict):
     path_list: list[str]
     path_setting: str
 
+class DisplayFilterSettings(TypedDict):
+    host_list: list[str]
+    host_setting: str
+    path_list: list[str]
+    path_setting: str
+
 class SettingsJson(TypedDict):
     capture_filters: CaptureFilterSettings
+    display_filters: DisplayFilterSettings
 
 class ProxyRequest(TypedDict):
     http_version: str
