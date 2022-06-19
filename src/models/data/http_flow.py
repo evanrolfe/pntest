@@ -33,6 +33,34 @@ class HttpFlow(OratorModel):
 
         return flow
 
+    @classmethod
+    def create_from_proxy_request(cls, proxy_request):
+        request = HttpRequest.from_state(proxy_request)
+        request.save()
+
+        flow = HttpFlow()
+        flow.uuid = proxy_request['flow_uuid']
+        flow.client_id = proxy_request['client_id']
+        flow.request_id = request.id
+        flow.type = HttpFlow.TYPE_PROXY
+        flow.save()
+
+        return flow
+
+    @classmethod
+    def update_from_proxy_response(cls, proxy_response):
+        flow = HttpFlow.where('uuid', '=', proxy_response['flow_uuid']).first()
+        if flow is None:
+            return
+
+        response = HttpResponse.from_state(proxy_response)
+        response.save()
+
+        flow.response_id = response.id
+        flow.save()
+
+        return flow
+
     @has_one('id', 'request_id')
     def request(self):
         return HttpRequest

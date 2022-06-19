@@ -46,6 +46,14 @@ class HttpFlow(OratorModel):
     def create_for_editor(cls, type: str) -> HttpFlow:
         pass
 
+    @classmethod
+    def create_from_proxy_request(cls, proxy_request) -> HttpFlow:
+        pass
+
+    @classmethod
+    def update_from_proxy_response(cls, proxy_response) -> Optional[HttpFlow]:
+        pass
+
     def is_example(self) -> bool:
         pass
 

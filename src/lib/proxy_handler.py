@@ -4,8 +4,6 @@ import sys
 import simplejson as json
 from typing import cast
 from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest
-from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
 from proxy.common_types import SettingsJson
 
@@ -75,15 +73,7 @@ class ProxyZmqServer(QtCore.QObject):
             self.websocket_message(obj)
 
     def request(self, request_state):
-        http_request = HttpRequest.from_state(request_state)
-        http_request.save()
-
-        http_flow = HttpFlow()
-        http_flow.uuid = request_state['flow_uuid']
-        http_flow.client_id = request_state['client_id']
-        http_flow.request_id = http_request.id
-        http_flow.type = HttpFlow.TYPE_PROXY
-        http_flow.save()
+        http_flow = HttpFlow.create_from_proxy_request(request_state)
 
         cast(QtCore.SignalInstance, self.signals.flow_created).emit(http_flow)
 
@@ -91,15 +81,10 @@ class ProxyZmqServer(QtCore.QObject):
             cast(QtCore.SignalInstance, self.signals.flow_intercepted).emit(http_flow)
 
     def response(self, response_state):
-        http_response = HttpResponse.from_state(response_state)
-        http_response.save()
+        http_flow = HttpFlow.update_from_proxy_response(response_state)
 
-        http_flow = HttpFlow.where('uuid', '=', response_state['flow_uuid']).first()
-        if http_flow is None:
+        if not http_flow:
             return
-
-        http_flow.response_id = http_response.id
-        http_flow.save()
 
         cast(QtCore.SignalInstance, self.signals.flow_updated).emit(http_flow)
 
