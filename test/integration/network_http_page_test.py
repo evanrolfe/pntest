@@ -33,4 +33,4 @@ class TestNetworkHttpPage:
         # Check request headers table:
         table = widget.ui.requestViewWidget.ui.requestHeaders.ui.headersTable
         assert self.get_data_at(table, 0, 1) == 'Host'
-        assert self.get_data_at(table, 0, 2) == 'wonderbill.com'
+        assert self.get_data_at(table, 0, 2) == 'synack.com'

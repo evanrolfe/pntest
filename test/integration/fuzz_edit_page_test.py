@@ -19,7 +19,7 @@ class TestFuzzEditPage:
         qtbot.waitForWindowShown(widget)
 
         # Enter form data
-        widget.ui.urlInput.setText("http://www.wonderbill.com/login.php?username=${payload:usernames}&password=${payload:passwords}")
+        widget.ui.urlInput.setText("http://www.synack.com/login.php?username=${payload:usernames}&password=${payload:passwords}")
 
         # Set the payloads via the table model because QtBot is rubbish
         payload_usernames = PayloadFile('./test/support/usernames.txt', 'usernames')
@@ -40,7 +40,7 @@ class TestFuzzEditPage:
         http_flow = http_flows[0]
 
         assert http_flow.type == 'editor_fuzz'
-        assert http_flow.request.form_data['url'] == 'http://www.wonderbill.com/login.php?username=${payload:usernames}&password=${payload:passwords}'
+        assert http_flow.request.form_data['url'] == 'http://www.synack.com/login.php?username=${payload:usernames}&password=${payload:passwords}'
         assert http_flow.request.form_data['fuzz_data']['payload_files'] == [
             {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 2, 'description': ''},
             {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 2, 'description': ''}

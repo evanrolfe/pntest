@@ -65,7 +65,7 @@ class TestEditorPage:
         qtbot.waitForWindowShown(widget)
 
         # Enter form data
-        widget.ui.urlInput.setText("https://www.google.com")
+        widget.ui.urlInput.setText("https://www.synack.com")
 
         # Click send button
         button = widget.ui.sendButton

@@ -57,15 +57,15 @@ def http_flow_editor_fuzz(faker):
 def http_request_proxy(faker):
     return {
         'http_version': 'HTTP/1.1',
-        'headers': '{"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}',
+        'headers': '{"Host": "synack.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}',
         'timestamp_start': 1641555291.54401,
         'timestamp_end': 1641555291.54628,
-        'host': 'wonderbill.com',
+        'host': 'synack.com',
         'port': 80,
         'method': 'GET',
         'scheme': 'http',
         'path': '/',
-        'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Host": "wonderbill.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}, "content": ""}
+        'form_data': {"method": "GET", "url": "http://synack.com/", "headers": {"Host": "synack.com", "User-Agent": "curl/7.68.0", "Accept": "*/*", "Proxy-Connection": "Keep-Alive"}, "content": ""}
     }
 
 @factory.define_as(HttpRequest, 'editor')
@@ -75,12 +75,12 @@ def http_request_editor(faker):
         'headers': '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}',
         'timestamp_start': 1641555291.54401,
         'timestamp_end': 1641555291.54628,
-        'host': 'wonderbill.com',
+        'host': 'synack.com',
         'port': 80,
         'method': 'GET',
         'scheme': 'http',
         'path': '/',
-        'form_data': {"method": "GET", "url": "http://wonderbill.com/", "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}, "content": ""}
+        'form_data': {"method": "GET", "url": "http://synack.com/", "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}, "content": ""}
     }
 
 
@@ -90,14 +90,14 @@ def generate_fuzz_request(fuzz_type):
         'headers': '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}',
         'timestamp_start': 1641555291.54401,
         'timestamp_end': 1641555291.54628,
-        'host': 'wonderbill.com',
+        'host': 'synack.com',
         'port': 80,
         'method': 'POST',
         'scheme': 'http',
         'path': '/',
         'form_data': {
             "method": "GET",
-            "url": "http://www.wonderbill.com/login.php",
+            "url": "http://www.synack.com/login.php",
             "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"},
             "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
             "fuzz_data": {

@@ -10,11 +10,11 @@ class TestHttpRequest:
             'trailers': None,
             'timestamp_start': 1643967316.7360358,
             'timestamp_end': 1643967316.7370074,
-            'host': 'wonderbill.com',
+            'host': 'synack.com',
             'port': 443,
             'method': 'GET',
             'scheme': 'https',
-            'authority': 'wonderbill.com',
+            'authority': 'synack.com',
             'path': '/',
             'flow_uuid': '9c5d6853-bec8-4997-9d2f-daa27ce597f4',
             'type': 'request',
@@ -29,40 +29,40 @@ class TestHttpRequest:
 
     def test_get_url_http(self, database, cleanup_database):
         http_request = factory(HttpRequest, 'editor').make(
-            host='wonderbill.com',
+            host='synack.com',
             port=80,
             path='/index.html',
             scheme='http'
         )
         http_request.save()
 
-        assert http_request.get_url() == 'http://wonderbill.com/index.html'
+        assert http_request.get_url() == 'http://synack.com/index.html'
 
     def test_get_url_https(self, database, cleanup_database):
         http_request = factory(HttpRequest, 'editor').make(
-            host='wonderbill.com',
+            host='synack.com',
             port=443,
             path='/index.html',
             scheme='https'
         )
         http_request.save()
 
-        assert http_request.get_url() == 'https://wonderbill.com/index.html'
+        assert http_request.get_url() == 'https://synack.com/index.html'
 
     def test_get_url_weird_port(self, database, cleanup_database):
         http_request = factory(HttpRequest, 'editor').make(
-            host='wonderbill.com',
+            host='synack.com',
             port=1234,
             path='/index.html',
             scheme='http'
         )
         http_request.save()
 
-        assert http_request.get_url() == 'http://wonderbill.com:1234/index.html'
+        assert http_request.get_url() == 'http://synack.com:1234/index.html'
 
     def test_overwrite_calculated_headers(self, database, cleanup_database):
         http_request = factory(HttpRequest, 'proxy').make(
-            headers='{"Content-Length": 1234, "Host": "wonderbill.com", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}'
+            headers='{"Content-Length": 1234, "Host": "synack.com", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}'
         )
         http_request.overwrite_calculated_headers()
 
