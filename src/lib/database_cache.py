@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Optional
 
 class DatabaseCache():
@@ -6,7 +7,7 @@ class DatabaseCache():
     cached_records: dict[str, dict[int, Any]]
 
     @staticmethod
-    def get_instance():
+    def get_instance() -> DatabaseCache:
         # Static access method.
         if DatabaseCache.__instance is None:
             return DatabaseCache()
@@ -32,3 +33,6 @@ class DatabaseCache():
             return None
 
         return self.cached_records[table_name].get(id, None)
+
+    def clear(self):
+        self.cached_records = {}

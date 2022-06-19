@@ -23,6 +23,7 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.requestsTableWidget.request_selected.connect(self.select_request)
         self.ui.requestsTableWidget.delete_requests.connect(self.delete_requests)
         self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests)
+        self.ui.requestsTableWidget.display_filters_saved.connect(self.reload)
         self.ui.requestsTableWidget.send_flow_to_editor.connect(self.send_flow_to_editor)
 
         self.ui.toggleButton.clicked.connect(self.toggle_page)

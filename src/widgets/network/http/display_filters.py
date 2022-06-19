@@ -4,6 +4,8 @@ from views._compiled.network.http.ui_display_filters import Ui_DisplayFilters
 from models.data.settings import Settings
 
 class DisplayFilters(QtWidgets.QDialog):
+    display_filters_saved = QtCore.Signal()
+
     def __init__(self, parent=None):
         super(DisplayFilters, self).__init__(parent)
 
@@ -51,6 +53,7 @@ class DisplayFilters(QtWidgets.QDialog):
         display_filters['path_setting'] = path_setting
 
         self.settings.save()
+        self.display_filters_saved.emit()
 
         self.close()
 

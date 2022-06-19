@@ -6,6 +6,7 @@ from lib.http_request import HttpRequest as HttpRequestLib
 from models.data.http_request import HttpRequest, Headers
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
+from models.data.settings import Settings
 
 class HttpFlow(OratorModel):
     __table__ = 'http_flows'
@@ -18,7 +19,21 @@ class HttpFlow(OratorModel):
 
     @classmethod
     def find_for_table(cls):
-        return cls.with_('request', 'response').where('type', '=', cls.TYPE_PROXY).order_by('id', 'desc').get()
+        settings = Settings.get_from_cache()
+        filters = settings.parsed()['display_filters']
+
+        query = cls \
+            .with_('request', 'response') \
+            .join('http_requests', 'http_flows.request_id', '=', 'http_requests.id') \
+            .where('type', '=', cls.TYPE_PROXY) \
+            .order_by('id', 'desc')
+
+        if filters['host_setting'] == 'include':
+            query.where_in('http_requests.host', filters['host_list'])
+        elif filters['host_setting'] == 'exclude':
+            query.where_not_in('http_requests.host', filters['host_list'])
+
+        return query.get()
 
     @classmethod
     def create_for_editor(cls, type):

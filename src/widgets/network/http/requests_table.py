@@ -11,6 +11,7 @@ class RequestsTable(QtWidgets.QWidget):
     delete_requests = QtCore.Signal(list)
     search_text_changed = QtCore.Signal(str)
     send_flow_to_editor = QtCore.Signal(HttpFlow)
+    display_filters_saved = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         super(RequestsTable, self).__init__(*args, **kwargs)
@@ -45,8 +46,10 @@ class RequestsTable(QtWidgets.QWidget):
 
         # Display & Capture Filters:
         self.network_display_filters = DisplayFilters(self)
-        self.network_capture_filters = CaptureFilters(self)
+        self.network_display_filters.display_filters_saved.connect(self.display_filters_saved)
         self.ui.displayFiltersButton.clicked.connect(lambda: self.network_display_filters.show())
+
+        self.network_capture_filters = CaptureFilters(self)
         self.ui.captureFiltersButton.clicked.connect(lambda: self.network_capture_filters.show())
 
         # Set row selection behaviour:

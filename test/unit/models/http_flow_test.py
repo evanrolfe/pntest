@@ -1,6 +1,7 @@
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
+from models.data.settings import Settings
 from support.factories import factory
 
 class TestHttpFlow:
@@ -94,3 +95,28 @@ class TestHttpFlow:
         # TODO:
         assert 1 == 1
 
+    def test_find_for_table_host(self, database, cleanup_database):
+        http_request = factory(HttpRequest, 'proxy').make()
+        http_request.save()
+
+        http_flow = factory(HttpFlow, 'proxy').make(request_id=http_request.id, client_id=1)
+        http_flow.save()
+
+        Settings.create_defaults()
+        settings = Settings.get()
+
+        # Test including hosts
+        settings.parsed()['display_filters']['host_list'] = ['synack.com']
+        settings.parsed()['display_filters']['host_setting'] = 'include'
+        settings.save()
+
+        result = HttpFlow.find_for_table()
+        assert len(result) == 1
+
+        # Test excluding hosts
+        settings.parsed()['display_filters']['host_list'] = ['synack.com']
+        settings.parsed()['display_filters']['host_setting'] = 'exclude'
+        settings.save()
+
+        result = HttpFlow.find_for_table()
+        assert len(result) == 0

@@ -5,7 +5,9 @@ from models.data.capture_filter import CaptureFilter
 from models.data.settings import Settings
 # from models.data.editor_request import EditorRequest
 from models.data.editor_item import EditorItem
-
+from models.data.http_flow import HttpFlow
+from models.data.http_request import HttpRequest
+from models.data.http_response import HttpResponse
 @pytest.fixture(scope="session")
 def database():
     database = Database('test/tmp.db')
@@ -18,4 +20,8 @@ def cleanup_database():
     EditorItem.truncate()
     CaptureFilter.truncate()
     Settings.truncate()
+    HttpFlow.truncate()
+    HttpRequest.truncate()
+    HttpResponse.truncate()
+
     yield

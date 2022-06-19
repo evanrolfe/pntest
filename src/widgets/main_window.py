@@ -8,6 +8,7 @@ from PySide2 import QtXml # noqa F401
 from views._compiled.ui_main_window import Ui_MainWindow
 from lib.app_settings import AppSettings
 from lib.database import Database
+from lib.database_cache import DatabaseCache
 from lib.stylesheet_loader import StyleheetLoader
 from widgets.network.network_page import NetworkPage
 from widgets.intercept.intercept_page import InterceptPage
@@ -183,6 +184,9 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         print(f'Opening {db_path}')
+        database_cache = DatabaseCache.get_instance()
+        database_cache.clear()
+
         database = Database.get_instance()
         database.reload_with_new_database(db_path)
 
