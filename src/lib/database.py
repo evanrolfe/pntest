@@ -3,7 +3,6 @@ import os
 import logging
 from orator import DatabaseManager, Model
 
-from models.data.capture_filter import CaptureFilter
 from models.data.settings import Settings
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 
@@ -73,7 +72,6 @@ class Database:
         for query_str in queries:
             self.db.insert(query_str)
 
-        CaptureFilter.create_defaults()
         Settings.create_defaults()
 
     def reload_with_new_database(self, new_db_path):

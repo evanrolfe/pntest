@@ -18,3 +18,7 @@ class OratorModel(Model):
     @classmethod
     def count(cls) -> int:
         pass
+
+    @classmethod
+    def truncate(cls) -> None:
+        pass
