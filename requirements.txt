@@ -42,7 +42,6 @@ packaging==20.9
 passlib==1.7.4
 pastel==0.1.1
 pendulum==1.5.1
-pkg-resources==0.0.0
 pluggy==0.13.1
 plumbum==1.7.0
 ply==3.4
