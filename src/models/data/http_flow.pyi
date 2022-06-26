@@ -41,7 +41,7 @@ class HttpFlow(OratorModel):
 
     # Class & Instance Methods:
     @classmethod
-    def find_for_table(cls) -> list[HttpFlow]:
+    def find_for_table(cls, search_text: Optional[str] = None) -> list[HttpFlow]:
         pass
 
     @classmethod

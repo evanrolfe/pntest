@@ -1,5 +1,4 @@
 from PySide2 import QtCore, QtWidgets
-from models.data.http_flow_search import HttpFlowSearch
 from views._compiled.network.ui_http_page import Ui_HttpPage
 
 from lib.background_worker import BackgroundWorker
@@ -17,14 +16,14 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Setup the request model
-        http_flows = HttpFlow.find_for_table()
+        http_flows = HttpFlow.find_for_table(None)
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
         self.ui.requestsTableWidget.request_selected.connect(self.select_request)
         self.ui.requestsTableWidget.delete_requests.connect(self.delete_requests)
-        self.ui.requestsTableWidget.search_text_changed.connect(self.search_requests_async)
-        self.ui.requestsTableWidget.display_filters_saved.connect(self.reload)
+        self.ui.requestsTableWidget.search_text_changed.connect(self.search_flows_async)
+        self.ui.requestsTableWidget.display_filters_saved.connect(self.load_flows_async)
         self.ui.requestsTableWidget.send_flow_to_editor.connect(self.send_flow_to_editor)
 
         self.ui.toggleButton.clicked.connect(self.toggle_page)
@@ -35,34 +34,24 @@ class HttpPage(QtWidgets.QWidget):
         self.restore_layout_state()
         self.threadpool = QtCore.QThreadPool()
 
-    # TODO: We should combine filtering by display filters with the search params
-    def reload(self):
-        self.ui.requestViewWidget.clear_request()
-        http_flows = HttpFlow.find_for_table()
-        self.table_model = RequestsTableModel(http_flows)
-        self.ui.requestsTableWidget.setTableModel(self.table_model)
-
-    @QtCore.Slot()  # type:ignore
-    def search_requests_async(self, search_text):
-        print(f'Searching async for {search_text}')
+    def load_flows_async(self):
         self.show_loader()
-        self.search_text = search_text
-
-        self.worker = BackgroundWorker(self.search_requests)
+        self.worker = BackgroundWorker(self.load_flows)
         self.worker.signals.result.connect(self.update_table)
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.finished.connect(self.hide_loader)
         self.threadpool.start(self.worker)
 
-    def search_requests(self, signals):
+    @QtCore.Slot()  # type:ignore
+    def search_flows_async(self, search_text: str):
+        print(f'Searching async for {search_text}')
+        self.search_text = search_text
+        self.load_flows_async()
+
+    def load_flows(self, signals):
         print(f'Searching for {self.search_text}')
 
-        if len(self.search_text) == 0:
-            http_flows = HttpFlow.find_for_table()
-        else:
-            # NOTE: * is used to perform a partial text search rather than trying to match the whole word
-            flow_ids = HttpFlowSearch.search('"' + self.search_text + '"*')
-            http_flows = HttpFlow.find_by_ids(flow_ids)
+        http_flows = HttpFlow.find_for_table(self.search_text)
 
         return http_flows
 

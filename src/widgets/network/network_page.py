@@ -35,6 +35,7 @@ class NetworkPage(QtWidgets.QWidget):
         self.http_page.save_layout_state()
         self.ws_page.save_layout_state()
 
-    def reload(self):
-        self.http_page.reload()
-        self.ws_page.reload()
+    # TODO: Remove this i think its unused
+    # def reload(self):
+    #     self.http_page.reload()
+    #     self.ws_page.reload()

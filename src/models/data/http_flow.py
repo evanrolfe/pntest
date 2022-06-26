@@ -3,6 +3,7 @@ from lib.background_worker import WorkerSignals
 from models.data.orator_model import OratorModel
 from orator.orm import has_one, has_many
 from lib.http_request import HttpRequest as HttpRequestLib
+from models.data.http_flow_search import HttpFlowSearch
 from models.data.http_request import HttpRequest, Headers
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
@@ -18,7 +19,7 @@ class HttpFlow(OratorModel):
     TYPE_EDITOR_FUZZ = 'editor_fuzz'
 
     @classmethod
-    def find_for_table(cls):
+    def find_for_table(cls, search_text):
         settings = Settings.get_from_cache()
         filters = settings.parsed()['display_filters']
 
@@ -32,6 +33,11 @@ class HttpFlow(OratorModel):
             query.where_in('http_requests.host', filters['host_list'])
         elif filters['host_setting'] == 'exclude':
             query.where_not_in('http_requests.host', filters['host_list'])
+
+        if search_text is not None and len(search_text) > 0:
+            # NOTE: * is used to perform a partial text search rather than trying to match the whole word
+            flow_ids = HttpFlowSearch.search(f'"{search_text}"*')
+            query.where_in('http_flows.id', flow_ids)
 
         return query.get()
 
