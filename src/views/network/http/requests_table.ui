@@ -57,7 +57,7 @@
        <item>
         <widget class="QLineEdit" name="searchBox">
          <property name="placeholderText">
-          <string>Search</string>
+          <string>Press enter to search</string>
          </property>
         </widget>
        </item>

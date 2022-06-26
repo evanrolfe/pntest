@@ -42,7 +42,7 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.hover_index_changed.connect(delegate.highlight_index)
 
         # Search box:
-        self.ui.searchBox.textEdited.connect(self.search_text_edited)
+        self.ui.searchBox.returnPressed.connect(self.search_text_edited)
 
         # Display & Capture Filters:
         self.network_display_filters = DisplayFilters(self)
@@ -110,5 +110,5 @@ class RequestsTable(QtWidgets.QWidget):
         print("You clicked me!")
 
     @QtCore.Slot()  # type:ignore
-    def search_text_edited(self, new_text):
-        self.search_text_changed.emit(new_text)
+    def search_text_edited(self):
+        self.search_text_changed.emit(self.ui.searchBox.text())

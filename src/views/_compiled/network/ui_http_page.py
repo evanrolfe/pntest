@@ -14,6 +14,7 @@ from PySide2.QtWidgets import *
 
 from widgets.network.http.requests_table import RequestsTable
 from widgets.shared.flow_view import FlowView
+from widgets.shared.loader import Loader
 
 
 class Ui_HttpPage(object):
@@ -62,7 +63,9 @@ class Ui_HttpPage(object):
         self.requestsTableAndViewSplitter = QSplitter(HttpPage)
         self.requestsTableAndViewSplitter.setObjectName(u"requestsTableAndViewSplitter")
         self.requestsTableAndViewSplitter.setOrientation(Qt.Horizontal)
-        self.requestsTableWidget = RequestsTable(self.requestsTableAndViewSplitter)
+        self.stackedWidget = QStackedWidget(self.requestsTableAndViewSplitter)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.requestsTableWidget = RequestsTable()
         self.requestsTableWidget.setObjectName(u"requestsTableWidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -70,7 +73,11 @@ class Ui_HttpPage(object):
         sizePolicy1.setHeightForWidth(self.requestsTableWidget.sizePolicy().hasHeightForWidth())
         self.requestsTableWidget.setSizePolicy(sizePolicy1)
         self.requestsTableWidget.setMinimumSize(QSize(740, 0))
-        self.requestsTableAndViewSplitter.addWidget(self.requestsTableWidget)
+        self.stackedWidget.addWidget(self.requestsTableWidget)
+        self.loaderWidget = Loader()
+        self.loaderWidget.setObjectName(u"loaderWidget")
+        self.stackedWidget.addWidget(self.loaderWidget)
+        self.requestsTableAndViewSplitter.addWidget(self.stackedWidget)
         self.requestViewWidget = FlowView(self.requestsTableAndViewSplitter)
         self.requestViewWidget.setObjectName(u"requestViewWidget")
         sizePolicy1.setHeightForWidth(self.requestViewWidget.sizePolicy().hasHeightForWidth())

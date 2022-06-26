@@ -81,7 +81,7 @@ class Ui_RequestsTable(object):
 
     def retranslateUi(self, RequestsTable):
         RequestsTable.setWindowTitle(QCoreApplication.translate("RequestsTable", u"Form", None))
-        self.searchBox.setPlaceholderText(QCoreApplication.translate("RequestsTable", u"Search", None))
+        self.searchBox.setPlaceholderText(QCoreApplication.translate("RequestsTable", u"Press enter to search", None))
         self.displayFiltersButton.setText(QCoreApplication.translate("RequestsTable", u"Display", None))
         self.captureFiltersButton.setText(QCoreApplication.translate("RequestsTable", u"Capture", None))
     # retranslateUi

@@ -1,6 +1,5 @@
 from PySide2 import QtCore, QtWidgets
 from models.data.http_flow_search import HttpFlowSearch
-
 from views._compiled.network.ui_http_page import Ui_HttpPage
 
 from lib.app_settings import AppSettings
@@ -46,10 +45,10 @@ class HttpPage(QtWidgets.QWidget):
             self.reload()
             return
 
+        # TODO: Make this async so we can show/hide the loader while searching
         print(f'Searching for {search_text}')
         # NOTE: * is used to perform a partial text search rather than trying to match the whole word
         flow_ids = HttpFlowSearch.search('"' + search_text + '"*')
-        print(f'Got {len(flow_ids)} search results')
 
         http_flows = HttpFlow.find_by_ids(flow_ids)
         self.table_model = RequestsTableModel(http_flows)
@@ -103,3 +102,9 @@ class HttpPage(QtWidgets.QWidget):
     @QtCore.Slot()  # type:ignore
     def flow_updated(self, flow):
         self.table_model.update_flow(flow)
+
+    def show_loader(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
+
+    def hide_loader(self):
+        self.ui.stackedWidget.setCurrentWidget(self.ui.requestsTableWidget)
