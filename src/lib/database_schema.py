@@ -1,4 +1,4 @@
-NUM_TABLES = 11
+NUM_TABLES = 14
 SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   parent_id INTEGER,
@@ -7,18 +7,6 @@ SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   item_id INTEGER,
   created_at INTEGER,
   updated_at INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS capture_filters(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  filters TEXT NOT NULL,
-  created_at INTEGER,
-  updated_at INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS intercept_filters(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  filters TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS clients(
@@ -109,4 +97,22 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
   created_at INTEGER,
   updated_at INTEGER
 );
+
+CREATE VIEW v_http_flows_search AS
+    SELECT f.id, f.request_id, f.response_id, req.method, req.host, req.path, resp.status_code
+    FROM http_flows f
+    INNER JOIN http_requests req ON req.id=f.request_id
+    LEFT JOIN http_responses resp ON resp.id=f.response_id;
+
+CREATE VIRTUAL TABLE http_flows_fts USING fts5(
+    id,
+    request_id,
+    response_id,
+    method,
+    host,
+    path,
+    status_code,
+    content='v_http_flows_search',
+    content_rowid='id'
+)
 """

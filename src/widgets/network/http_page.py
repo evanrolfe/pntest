@@ -1,4 +1,5 @@
 from PySide2 import QtCore, QtWidgets
+from models.data.http_flow_search import HttpFlowSearch
 
 from views._compiled.network.ui_http_page import Ui_HttpPage
 
@@ -36,6 +37,21 @@ class HttpPage(QtWidgets.QWidget):
     def reload(self):
         self.ui.requestViewWidget.clear_request()
         http_flows = HttpFlow.find_for_table()
+        self.table_model = RequestsTableModel(http_flows)
+        self.ui.requestsTableWidget.setTableModel(self.table_model)
+
+    @QtCore.Slot()  # type:ignore
+    def search_requests(self, search_text):
+        if len(search_text) == 0:
+            self.reload()
+            return
+
+        print(f'Searching for {search_text}')
+        # NOTE: * is used to perform a partial text search rather than trying to match the whole word
+        flow_ids = HttpFlowSearch.search('"' + search_text + '"*')
+        print(f'Got {len(flow_ids)} search results')
+
+        http_flows = HttpFlow.find_by_ids(flow_ids)
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
@@ -79,18 +95,6 @@ class HttpPage(QtWidgets.QWidget):
 
         if response == QtWidgets.QMessageBox.Yes:
             self.table_model.delete_requests(request_ids)
-
-    @QtCore.Slot()  # type:ignore
-    def search_requests(self, search_text):
-        return True
-        # requests = HttpFlow.search({'search': search_text})
-        # self.table_model.requests = requests
-        # self.table_model.refresh()
-        # self.request_data = RequestData()
-        # self.request_data.set_filter_param('search', search_text)
-        # self.request_data.load_requests()
-        # self.table_model.requests = self.request_data.requests
-        # self.table_model.refresh()
 
     @QtCore.Slot()  # type:ignore
     def flow_created(self, flow):

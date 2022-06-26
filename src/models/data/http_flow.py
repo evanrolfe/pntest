@@ -36,6 +36,17 @@ class HttpFlow(OratorModel):
         return query.get()
 
     @classmethod
+    def find_by_ids(cls, flow_ids):
+        query = cls \
+            .with_('request', 'response') \
+            .join('http_requests', 'http_flows.request_id', '=', 'http_requests.id') \
+            .where('type', '=', cls.TYPE_PROXY) \
+            .where_in('http_flows.id', flow_ids) \
+            .order_by('http_flows.id', 'desc')
+
+        return query.get()
+
+    @classmethod
     def create_for_editor(cls, type):
         request = HttpRequest()
         request.set_blank_values_for_editor()

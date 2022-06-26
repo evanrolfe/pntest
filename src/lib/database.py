@@ -42,7 +42,7 @@ class Database:
 
     def delete_existing_db(self):
         if os.path.isfile(self.db_path):
-            print('[Gui] found existing db, deleting.')
+            print(f'[Gui] found existing db at {self.db_path}, deleting.')
             os.remove(self.db_path)
 
     def load_or_create(self):
@@ -71,6 +71,44 @@ class Database:
 
         for query_str in queries:
             self.db.insert(query_str)
+
+        # When a flow is inserted:
+        trigger1_query = """
+            CREATE TRIGGER http_flows_insert AFTER INSERT ON http_flows BEGIN
+                INSERT INTO http_flows_fts (id, request_id, method, host, path)
+                VALUES (
+                    new.id,
+                    new.request_id,
+                    (SELECT method FROM http_requests WHERE http_requests.id = new.request_id),
+                    (SELECT host FROM http_requests WHERE http_requests.id = new.request_id),
+                    (SELECT path FROM http_requests WHERE http_requests.id = new.request_id)
+                );
+            END;
+        """
+        # When a flow is updated with a response:
+        trigger2_query = """
+            CREATE TRIGGER http_flows_update AFTER UPDATE ON http_flows BEGIN
+                INSERT INTO http_flows_fts (http_flows_fts, rowid, request_id, response_id)
+                VALUES ('delete', old.id, old.request_id, old.response_id);
+
+                INSERT INTO http_flows_fts (rowid, response_id, status_code)
+                VALUES (
+                    new.id,
+                    new.response_id,
+                    (SELECT status_code FROM http_responses WHERE http_responses.id = new.response_id)
+                );
+            END;
+        """
+        # When a flow is deleted:
+        trigger3_query = """
+            CREATE TRIGGER http_flows_delete AFTER DELETE ON http_flows BEGIN
+                INSERT INTO http_flows_fts (http_flows_fts, rowid)
+                VALUES ('delete', old.id);
+            END;
+        """
+        self.db.insert(trigger1_query)
+        self.db.insert(trigger2_query)
+        self.db.insert(trigger3_query)
 
         Settings.create_defaults()
 

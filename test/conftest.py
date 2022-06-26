@@ -1,6 +1,7 @@
 import pytest
 
 from lib.database import Database
+from models.data.http_flow_search import HttpFlowSearch
 from models.data.settings import Settings
 # from models.data.editor_request import EditorRequest
 from models.data.editor_item import EditorItem
@@ -15,7 +16,6 @@ def database():
 
 @pytest.fixture(scope="function")
 def cleanup_database():
-    # EditorRequest.truncate()
     EditorItem.truncate()
     Settings.truncate()
     HttpFlow.truncate()
