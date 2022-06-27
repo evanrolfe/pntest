@@ -110,7 +110,7 @@ class TestHttpFlow:
         settings.parsed()['display_filters']['host_setting'] = 'include'
         settings.save()
 
-        result = HttpFlow.find_for_table()
+        result = HttpFlow.find_for_table(None)
         assert len(result) == 1
 
         # Test excluding hosts
@@ -118,5 +118,5 @@ class TestHttpFlow:
         settings.parsed()['display_filters']['host_setting'] = 'exclude'
         settings.save()
 
-        result = HttpFlow.find_for_table()
+        result = HttpFlow.find_for_table(None)
         assert len(result) == 0
