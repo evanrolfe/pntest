@@ -34,6 +34,10 @@ class HttpPage(QtWidgets.QWidget):
         self.restore_layout_state()
         self.threadpool = QtCore.QThreadPool()
 
+    def reload(self):
+        self.search_text = None
+        self.load_flows_async()
+
     def load_flows_async(self):
         self.show_loader()
         self.worker = BackgroundWorker(self.load_flows)
