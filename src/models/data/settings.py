@@ -3,7 +3,7 @@ import json
 from typing import Optional
 from lib.database_cache import DatabaseCache
 from models.data.orator_model import OratorModel
-from proxy.common_types import SettingsJson, CaptureFilterSettings, DisplayFilterSettings
+from proxy.common_types import SettingsJson, CaptureFilterSettings, DisplayFilterSettings, ProxySettings
 
 class Settings(OratorModel):
     __table__ = 'settings'
@@ -34,9 +34,13 @@ class Settings(OratorModel):
             'path_list': [],
             'path_setting': '',
         }
+        proxy_settings: ProxySettings = {
+            'ports_available': [8080, 8081, 8082, 8083, 8084, 8085, 8086, 8087, 8088, 8089],
+        }
         settings_json: SettingsJson = {
             'capture_filters': capture_filters,
             'display_filters': display_filters,
+            'proxy': proxy_settings,
         }
         setting.json = json.dumps(settings_json)
         setting.save()

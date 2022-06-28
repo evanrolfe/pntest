@@ -39,8 +39,9 @@ pyside2-uic src/views/shared/code_editor.ui > src/views/_compiled/shared/ui_code
 pyside2-uic src/views/shared/flow_view.ui > src/views/_compiled/shared/ui_flow_view.py
 pyside2-uic src/views/shared/variables_popup.ui > src/views/_compiled/shared/ui_variables_popup.py
 
-# Mainwindow:
+# Root:
 pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
+pyside2-uic src/views/preferences_window.ui > src/views/_compiled/ui_preferences_window.py
 
 # HACK: pyside2-uic does not import the QWebEngineView so we have to add this line manually:
 # BE CAREFUL when changing this file as this line will easily break!

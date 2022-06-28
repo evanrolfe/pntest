@@ -56,13 +56,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 1200, 22))
-        self.menuFile = QMenu(self.menuBar)
-        self.menuFile.setObjectName(u"menuFile")
-        self.menuEdit = QMenu(self.menuBar)
-        self.menuEdit.setObjectName(u"menuEdit")
-        self.menuHelp = QMenu(self.menuBar)
-        self.menuHelp.setObjectName(u"menuHelp")
+        self.menuBar.setGeometry(QRect(0, 0, 1200, 24))
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QToolBar(MainWindow)
         self.toolBar.setObjectName(u"toolBar")
@@ -72,16 +66,6 @@ class Ui_MainWindow(object):
         self.statusBar.setObjectName(u"statusBar")
         MainWindow.setStatusBar(self.statusBar)
 
-        self.menuBar.addAction(self.menuFile.menuAction())
-        self.menuBar.addAction(self.menuEdit.menuAction())
-        self.menuBar.addAction(self.menuHelp.menuAction())
-        self.menuFile.addAction(self.actionOpen)
-        self.menuFile.addAction(self.actionSave)
-        self.menuFile.addSeparator()
-        self.menuFile.addAction(self.actionExit)
-        self.menuEdit.addAction(self.actionPreferences)
-        self.menuHelp.addAction(self.actionAbout_PnTest)
-
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -89,13 +73,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"PnTest", None))
-        self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open project", None))
+        self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open project xxx", None))
         self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save project as", None))
         self.actionExit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
         self.actionPreferences.setText(QCoreApplication.translate("MainWindow", u"Preferences", None))
         self.actionAbout_PnTest.setText(QCoreApplication.translate("MainWindow", u"About PnTest", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"Edit", None))
-        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
     # retranslateUi
 

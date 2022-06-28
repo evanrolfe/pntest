@@ -14,6 +14,7 @@ from widgets.network.network_page import NetworkPage
 from widgets.intercept.intercept_page import InterceptPage
 from widgets.clients.clients_page import ClientsPage
 from widgets.editor.editor_page import EditorPage
+from widgets.preferences_window import PreferencesWindow
 
 # pyside2-rcc assets/assets.qrc > assets_compiled/assets.py
 import assets._compiled.assets # noqa F401
@@ -56,6 +57,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Shortcut for closing app
         self.network_page.send_flow_to_editor.connect(self.editor_page.send_flow_to_editor)
         self.network_page.send_flow_to_editor.connect(self.show_editor_page)
+
+        # Prefrences Window
+        self.preferences_window = PreferencesWindow(self)
 
         # Menubar:
         self.setup_menu_actions()
@@ -215,6 +219,18 @@ class MainWindow(QtWidgets.QMainWindow):
         database.load_new_database(new_db_path)
         self.reload()
 
+    @QtCore.Slot()  # type:ignore
+    def show_preferences(self):
+        self.preferences_window.show()
+
     def setup_menu_actions(self):
-        self.ui.actionOpen.triggered.connect(self.open_project)
-        self.ui.actionSave.triggered.connect(self.save_project_as)
+        # File menu
+        fileMenu = self.menuBar().addMenu("&File")
+
+        action_open = fileMenu.addAction("Open project")
+        action_save = fileMenu.addAction("Save project as")
+        action_preferences = fileMenu.addAction("Preferences")
+
+        action_open.triggered.connect(self.open_project)
+        action_save.triggered.connect(self.save_project_as)
+        action_preferences.triggered.connect(self.show_preferences)

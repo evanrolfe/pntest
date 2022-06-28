@@ -16,9 +16,13 @@ class DisplayFilterSettings(TypedDict):
     path_list: list[str]
     path_setting: str
 
+class ProxySettings(TypedDict):
+    ports_available: list[int]
+
 class SettingsJson(TypedDict):
     capture_filters: CaptureFilterSettings
     display_filters: DisplayFilterSettings
+    proxy: ProxySettings
 
 class ProxyRequest(TypedDict):
     http_version: str
