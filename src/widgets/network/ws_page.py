@@ -38,8 +38,10 @@ class WsPage(QtWidgets.QWidget):
         splitterState = settings.get("WsPage.messagesTableAndViewSplitter", None)
         splitterState2 = settings.get("WsPage.messageViewSplitterState", None)
 
-        self.ui.messagesTableAndViewSplitter.restoreState(splitterState)
-        self.ui.messageViewWidget.ui.splitter.restoreState(splitterState2)
+        if splitterState is not None:
+            self.ui.messagesTableAndViewSplitter.restoreState(splitterState)
+        if splitterState2 is not None:
+            self.ui.messageViewWidget.ui.splitter.restoreState(splitterState2)
 
     def save_layout_state(self):
         splitter_state = self.ui.messagesTableAndViewSplitter.saveState()

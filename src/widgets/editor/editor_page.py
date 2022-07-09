@@ -43,7 +43,8 @@ class EditorPage(QtWidgets.QWidget):
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
         splitter_state = settings.get("EditorPage.splitter", None)
-        self.ui.editorSplitter.restoreState(splitter_state)
+        if splitter_state is not None:
+            self.ui.editorSplitter.restoreState(splitter_state)
 
     def save_layout_state(self):
         splitter_state = self.ui.editorSplitter.saveState()

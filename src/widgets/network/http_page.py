@@ -72,8 +72,10 @@ class HttpPage(QtWidgets.QWidget):
         splitterState = settings.get("HttpPage.requestsTableAndViewSplitterState", None)
         splitterState2 = settings.get("HttpPage.requestsViewSplitterState", None)
 
-        self.ui.requestsTableAndViewSplitter.restoreState(splitterState)
-        self.ui.requestViewWidget.ui.splitter.restoreState(splitterState2)
+        if splitterState is not None:
+            self.ui.requestsTableAndViewSplitter.restoreState(splitterState)
+        if splitterState2 is not None:
+            self.ui.requestViewWidget.ui.splitter.restoreState(splitterState2)
 
     def save_layout_state(self):
         splitter_state = self.ui.requestsTableAndViewSplitter.saveState()

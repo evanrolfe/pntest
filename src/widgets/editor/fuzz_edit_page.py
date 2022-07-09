@@ -207,7 +207,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         # splitter_state2 = self.settings.get("FuzzEditPage.splitter2", None)
 
         # self.ui.requestEditSplitter.restoreState(splitter_state)
-        # self.ui.splitter2.restoreState(splitter_state2)
+        # if splitter_state2 is not None:
+        #   self.ui.splitter2.restoreState(splitter_state2)
 
     def save_layout_state(self):
         return None
