@@ -27,6 +27,7 @@ $ cd pntest
 $ virtualenv -p /usr/bin/python3.9 venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
+$ pip install -r dev-requirements.txt
 
 ```
 Mac:
@@ -35,7 +36,9 @@ $ git clone git@github.com:evanrolfe/pntest.git
 $ cd pntest
 $ pip3 install virtualenv
 $ python3 -m virtualenv -p /usr/local/bin/python3 venv
+$ source venv/bin/activate
 $ pip install -r requirements.txt
+$ pip install -r dev-requirements.txt
 ```
 
 Always run `source venv/bin/activate` at the start to load the virtual env, then start the app in developer mode:

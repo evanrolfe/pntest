@@ -19,8 +19,6 @@ a = Analysis(
         ('src/style/dark_theme.qss', 'style/'),
         ('src/style/light.qss', 'style/'),
         ('src/assets/icons', 'assets/icons'),
-        ('venv/lib/python3.9/site-packages/PyQt6/Qt6/lib/QtWebEngineCore.framework/Resources/', 'PyQt6/Qt6'),
-        ('venv/lib/python3.9/site-packages/PyQt6/Qt6/lib/QtOpenGL.framework/Resources/', 'PyQt6/Qt6')
     ],
     hiddenimports=[],
     hookspath=[],
