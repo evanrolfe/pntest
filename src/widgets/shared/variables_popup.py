@@ -1,6 +1,6 @@
-from PySide2 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
-from views._compiled.shared.ui_variables_popup import Ui_VariablesPopup
+from views._compiled.shared.variables_popup import Ui_VariablesPopup
 from models.qt.vars_table_model import VarsTableModel
 from models.data.variable import Variable
 
@@ -18,20 +18,19 @@ class VariablesPopup(QtWidgets.QDialog):
         # Configure Table
         horizontalHeader = self.ui.varsTable.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
-        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Interactive)
         horizontalHeader.setHighlightSections(False)
 
         verticalHeader = self.ui.varsTable.verticalHeader()
-        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
-        self.ui.varsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.ui.varsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        self.ui.varsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.ui.varsTable.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
 
         self.load_variables()
 
-    @QtCore.Slot()
     def save(self):
         for var in self.table_model.variables:
             if not var.is_blank():

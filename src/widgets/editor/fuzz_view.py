@@ -1,16 +1,16 @@
 # from html5print import HTMLBeautifier
-from PySide2 import QtWidgets
-from PySide2 import QtCore
+from PyQt6 import QtWidgets
+from PyQt6 import QtCore
 from models.data.http_request import HttpRequest
 
-from views._compiled.editor.ui_fuzz_view import Ui_FuzzView
+from views._compiled.editor.fuzz_view import Ui_FuzzView
 from lib.types import Headers
 from models.qt.payloads_files_table_model import PayloadFilesTableModel
 from models.data.payload_file import PayloadFile
 
 class FuzzView(QtWidgets.QWidget):
-    save_example_clicked = QtCore.Signal()
-    cancel_clicked = QtCore.Signal()
+    save_example_clicked = QtCore.pyqtSignal()
+    cancel_clicked = QtCore.pyqtSignal()
 
     FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
 
@@ -25,16 +25,16 @@ class FuzzView(QtWidgets.QWidget):
         # Configure Table
         horizontalHeader = self.ui.payloadsTable.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
-        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Interactive)
         horizontalHeader.setHighlightSections(False)
 
         verticalHeader = self.ui.payloadsTable.verticalHeader()
-        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
-        self.ui.payloadsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.ui.payloadsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        self.ui.payloadsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.ui.payloadsTable.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
 
         self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.hide_loader)
         self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_clicked)
@@ -87,7 +87,6 @@ class FuzzView(QtWidgets.QWidget):
         self.table_model = PayloadFilesTableModel(request.payload_files())
         self.ui.payloadsTable.setModel(self.table_model)
 
-    @QtCore.Slot()  # type:ignore
     def delay_type_changed(self, index: int):
         if index == 0:
             self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationDisabled)
@@ -96,7 +95,6 @@ class FuzzView(QtWidgets.QWidget):
         elif index == 2:
             self.ui.delayDurationStack.setCurrentWidget(self.ui.delayRangeForm)
 
-    @QtCore.Slot()  # type:ignore
     def add_payload(self):
         file = QtWidgets.QFileDialog.getOpenFileName(
             self,
@@ -114,10 +112,8 @@ class FuzzView(QtWidgets.QWidget):
         self.table_model.insert_payload(payload)
         print(f'adding payload from {file_path}')
 
-    @QtCore.Slot()  # type:ignore
     def show_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
 
-    @QtCore.Slot()  # type:ignore
     def hide_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.requestTabs)

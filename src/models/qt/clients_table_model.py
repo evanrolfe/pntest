@@ -1,10 +1,10 @@
 from typing import Optional, Union
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from models.data.client import Client
 
 class ClientsTableModel(QtCore.QAbstractTableModel):
-    dataChanged: QtCore.SignalInstance
-    layoutChanged: QtCore.SignalInstance
+    # dataChanged: QtCore.SignalInstance
+    # layoutChanged: QtCore.SignalInstance
     headers: list[str]
     clients: list[Client]
 
@@ -16,7 +16,7 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
 
     def set_clients(self, clients: list[Client]) -> None:
         self.clients = clients
-        self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
 
     # def roleNames(self):
@@ -26,7 +26,7 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
     #     return roles
 
     def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: int) -> Union[None, str]:
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             return self.headers[section]
 
         return None
@@ -38,7 +38,7 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
         return len(self.clients)
 
     def data(self, index: QtCore.QModelIndex, role: int) -> Union[None, str]:
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             if not index.isValid():
                 return None
 
@@ -60,6 +60,5 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
             elif (index.column() == 5):
                 return str(client.browser_port)
 
-    @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
         return self.headers

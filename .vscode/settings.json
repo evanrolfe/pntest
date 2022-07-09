@@ -1,13 +1,5 @@
 {
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": false,
-  "python.linting.flake8Enabled": true,
-  "python.pythonPath": "/home/evan/Code/pntest/venv/bin/python3.9",
-  "editor.detectIndentation": false,
-  "editor.tabSize": 4,
-  "python.languageServer": "Pylance",
   "python.analysis.extraPaths": [
-      "src",
-      "test"
-  ],
+    "./src"
+  ]
 }

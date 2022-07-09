@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional
 from lib.background_worker import WorkerSignals
 from models.data.orator_model import OratorModel
@@ -8,10 +9,12 @@ from models.data.http_request import HttpRequest, Headers
 from models.data.http_response import HttpResponse
 from models.data.websocket_message import WebsocketMessage
 from models.data.settings import Settings
+from proxy.common_types import ProxyRequest, ProxyResponse
 
 class HttpFlow(OratorModel):
     __table__ = 'http_flows'
     __fillable__ = ['*']
+    __timestamps__ = ['created_at']
 
     TYPE_PROXY = 'proxy'
     TYPE_EDITOR = 'editor'
@@ -66,6 +69,7 @@ class HttpFlow(OratorModel):
         return flow
 
     @classmethod
+    # TODO: Type check the ProxyRequest
     def create_from_proxy_request(cls, proxy_request):
         request = HttpRequest.from_state(proxy_request)
         request.save()
@@ -80,7 +84,7 @@ class HttpFlow(OratorModel):
         return flow
 
     @classmethod
-    def update_from_proxy_response(cls, proxy_response):
+    def update_from_proxy_response(cls, proxy_response: ProxyResponse):
         flow = HttpFlow.where('uuid', '=', proxy_response['flow_uuid']).first()
         if flow is None:
             return
@@ -88,7 +92,7 @@ class HttpFlow(OratorModel):
         response = HttpResponse.from_state(proxy_response)
         response.save()
 
-        flow.response_id = response.id
+        flow.response = response
         flow.save()
 
         return flow

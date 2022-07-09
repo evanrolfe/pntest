@@ -1,15 +1,14 @@
 import sys
 import traceback
-from typing import cast
-from PySide2 import QtCore
+from PyQt6 import QtCore
 
 class WorkerSignals(QtCore.QObject):
-    finished = QtCore.Signal()
-    error = QtCore.Signal(tuple)
-    result = QtCore.Signal(object)
+    finished = QtCore.pyqtSignal()
+    error = QtCore.pyqtSignal(tuple)
+    result = QtCore.pyqtSignal(object)
 
     # Only used by FuzzHttpRequest
-    response_received = QtCore.Signal(object)
+    response_received = QtCore.pyqtSignal(object)
 
 class BackgroundWorker(QtCore.QRunnable):
     def __init__(self, fn, *args, **kwargs):
@@ -25,7 +24,6 @@ class BackgroundWorker(QtCore.QRunnable):
     def kill(self):
         self.alive = False
 
-    @QtCore.Slot()  # type: ignore
     def run(self):
         # Retrieve args/kwargs here; and fire processing using them
         try:
@@ -36,9 +34,9 @@ class BackgroundWorker(QtCore.QRunnable):
                 return
         except:  # noqa: E722
             exctype, value = sys.exc_info()[:2]
-            cast(QtCore.SignalInstance, self.signals.error).emit((exctype, value, traceback.format_exc()))
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             # Return the result of the processing
-            cast(QtCore.SignalInstance, self.signals.result).emit(result)
+            self.signals.result.emit(result)
         finally:
-            cast(QtCore.SignalInstance, self.signals.finished).emit()
+            self.signals.finished.emit()

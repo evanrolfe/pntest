@@ -1,10 +1,10 @@
-from PySide2 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
-from views._compiled.network.http.ui_display_filters import Ui_DisplayFilters
+from views._compiled.network.http.display_filters import Ui_DisplayFilters
 from models.data.settings import Settings
 
 class DisplayFilters(QtWidgets.QDialog):
-    display_filters_saved = QtCore.Signal()
+    display_filters_saved = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(DisplayFilters, self).__init__(parent)
@@ -36,7 +36,6 @@ class DisplayFilters(QtWidgets.QDialog):
         self.ui.hostsText.setPlainText("\n".join(display_filters['host_list']))
         self.ui.pathsText.setPlainText("\n".join(display_filters['path_list']))
 
-    @QtCore.Slot()  # type:ignore
     def save(self):
         host_setting_index = self.ui.hostSettingDropdown.currentIndex()
         host_setting = self.index_to_setting(host_setting_index)
@@ -57,26 +56,24 @@ class DisplayFilters(QtWidgets.QDialog):
 
         self.close()
 
-    @QtCore.Slot()  # type:ignore
     def host_setting_changed(self, index):
         self.ui.hostsText.setDisabled((index == 0))
 
-    @QtCore.Slot()  # type:ignore
     def path_setting_changed(self, index):
         self.ui.pathsText.setDisabled((index == 0))
 
-    def setting_to_index(self, setting):
-        if setting == '':
-            return 0
-        elif setting == 'include':
+    def setting_to_index(self, setting: str) -> int:
+        if setting == 'include':
             return 1
         elif setting == 'exclude':
             return 2
 
-    def index_to_setting(self, index):
-        if index == 0:
-            return ''
-        elif index == 1:
+        return 0
+
+    def index_to_setting(self, index: int) -> str:
+        if index == 1:
             return 'include'
         elif index == 2:
             return 'exclude'
+
+        return ''

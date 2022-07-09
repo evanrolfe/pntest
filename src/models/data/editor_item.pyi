@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 
-from PySide2 import QtGui
+from PyQt6 import QtGui
 from models.data.orator_model import OratorModel
 from models.data.http_flow import HttpFlow
 

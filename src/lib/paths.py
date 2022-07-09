@@ -1,12 +1,12 @@
 import sys
 import pathlib
 import os
-from PySide2.QtCore import QStandardPaths
+from PyQt6.QtCore import QStandardPaths
 
 from lib.utils import is_dev_mode
 
 def get_app_config_path():
-    return QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)[0]  # type: ignore
+    return QStandardPaths.standardLocations(QStandardPaths.StandardLocation.AppConfigLocation)[0]
 
 def get_app_path():
     return pathlib.Path(__file__).parent.parent.absolute()

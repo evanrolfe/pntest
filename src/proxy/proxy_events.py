@@ -104,7 +104,7 @@ class ProxyEvents:
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
         request_state['intercepted'] = self.__should_intercept_request(flow)
-
+        request_state['content'] = flow.request.text or ''
         self.__send_message(request_state)
 
         if request_state['intercepted']:
@@ -120,8 +120,8 @@ class ProxyEvents:
         response_state = cast(ProxyResponse, convert_dict_bytes_to_strings(flow.response.get_state()))
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
-        response_state['content'] = flow.response.text or ''.encode()
         response_state['intercepted'] = intercept_response
+        response_state['content'] = flow.response.text or ''
 
         self.__send_message(response_state)
 

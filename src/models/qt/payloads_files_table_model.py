@@ -1,10 +1,10 @@
 from typing import Dict, Optional, cast, Any
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from models.data.payload_file import PayloadFile
 
 class PayloadFilesTableModel(QtCore.QAbstractTableModel):
-    dataChanged: QtCore.SignalInstance
-    layoutChanged: QtCore.SignalInstance
+    # dataChanged: QtCore.pyqtSignalInstance
+    # layoutChanged: QtCore.pyqtSignalInstance
 
     headers: list[str]
     payloads: list[PayloadFile]
@@ -16,19 +16,19 @@ class PayloadFilesTableModel(QtCore.QAbstractTableModel):
 
     def insert_payload(self, payload: PayloadFile):
         count = len(self.payloads)
-        self.beginInsertRows(QtCore.QModelIndex(), count, count)  # type: ignore
+        self.beginInsertRows(QtCore.QModelIndex(), count, count)
         self.payloads.append(payload)
         self.endInsertRows()
 
     def roleNames(self) -> Dict[int, str]:
         roles = {}
         for i, header in enumerate(self.headers):
-            user_role_int = cast(int, QtCore.Qt.UserRole)
+            user_role_int = cast(int, QtCore.Qt.ItemDataRole.UserRole)
             roles[user_role_int + i + 1] = str(header.encode())
         return roles
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             return self.headers[section]
 
         return None
@@ -39,16 +39,16 @@ class PayloadFilesTableModel(QtCore.QAbstractTableModel):
     def rowCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.payloads)
 
-    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlags:
+    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlag:
         if index.column() in [0, 3]:
-            return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled  # type: ignore
+            return QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled
 
-        return QtCore.Qt.ItemFlags()
+        return QtCore.Qt.ItemFlag.NoItemFlags
 
-    def setData(self, index: QtCore.QModelIndex, value: Any, role: QtCore.Qt = QtCore.Qt.EditRole) -> bool:
+    def setData(self, index: QtCore.QModelIndex, value: Any, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.EditRole) -> bool:
         col = index.column()
 
-        if role == QtCore.Qt.EditRole and col in [0, 3]:
+        if role == QtCore.Qt.ItemDataRole.EditRole and col in [0, 3]:
             payload = self.payloads[index.row()]
 
             if col == 0:
@@ -61,7 +61,7 @@ class PayloadFilesTableModel(QtCore.QAbstractTableModel):
         return False
 
     def data(self, index: QtCore.QModelIndex, role: QtCore.Qt) -> Any:
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole or role == QtCore.Qt.ItemDataRole.EditRole:
             if not index.isValid():
                 return None
 
@@ -77,6 +77,5 @@ class PayloadFilesTableModel(QtCore.QAbstractTableModel):
             ]
             return row_values[index.column()]
 
-    @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
         return self.headers

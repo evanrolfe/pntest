@@ -1,13 +1,13 @@
-from PySide2 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
-from views._compiled.network.ui_ws_page import Ui_WsPage
+from views._compiled.network.ws_page import Ui_WsPage
 
 from lib.app_settings import AppSettings
 from models.qt.messages_table_model import MessagesTableModel
 from models.data.websocket_message import WebsocketMessage
 
 class WsPage(QtWidgets.QWidget):
-    toggle_page = QtCore.Signal()
+    toggle_page = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(WsPage, self).__init__(*args, **kwargs)
@@ -49,7 +49,6 @@ class WsPage(QtWidgets.QWidget):
         settings.save("WsPage.messagesTableAndViewSplitter", splitter_state)
         settings.save("WsPage.messageViewSplitterState", splitter_state2)
 
-    @QtCore.Slot()  # type:ignore
     def select_message(self, selected, deselected):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
@@ -57,7 +56,6 @@ class WsPage(QtWidgets.QWidget):
             message = WebsocketMessage.find(selected_id)
             self.ui.messageViewWidget.set_message(message)
 
-    @QtCore.Slot()  # type:ignore
     def delete_messages(self, message_ids):
         if len(message_ids) > 1:
             message = f'Are you sure you want to delete {len(message_ids)} websocket messages?'
@@ -67,18 +65,16 @@ class WsPage(QtWidgets.QWidget):
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('PNTest')
         message_box.setText(message)
-        message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        message_box.setDefaultButton(QtWidgets.QMessageBox.Yes)
-        response = message_box.exec_()
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
+        response = message_box.exec()
 
-        if response == QtWidgets.QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_messages(message_ids)
 
-    @QtCore.Slot()  # type:ignore
     def websocket_message_created(self, websocket_message):
         self.table_model.add_message(websocket_message)
 
-    # @QtCore.Slot()  # type:ignore
     # def search_requests(self, search_text):
     #     # requests = HttpFlow.search({'search': search_text})
     #     # self.table_model.requests = requests

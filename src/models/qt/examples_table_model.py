@@ -1,12 +1,12 @@
 from typing import Optional
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from models.data.http_flow import HttpFlow
 
 class ExamplesTableModel(QtCore.QAbstractTableModel):
     headers: list[str]
     flows: list[HttpFlow]
 
-    def __init__(self, flows: list[HttpFlow], parent: QtCore.QObject = None):
+    def __init__(self, flows: list[HttpFlow], parent: Optional[QtCore.QObject] = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['Title', 'Status', 'Response Length']
         self.flows = flows
@@ -21,14 +21,14 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
     #         roles[QtCore.Qt.UserRole + i + 1] = header.encode()
     #     return roles
 
-    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlags:
+    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlag:
         if index.column() == 0 and index.row() > 0:
-            return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable  # type: ignore
+            return QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
         else:
-            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable  # type: ignore
+            return QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             return self.headers[section]
 
         return None
@@ -40,7 +40,7 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
         return len(self.flows)
 
     def data(self, index: QtCore.QModelIndex, role: QtCore.Qt) -> Optional[str]:
-        if role in [QtCore.Qt.EditRole, QtCore.Qt.DisplayRole]:
+        if role in [QtCore.Qt.ItemDataRole.EditRole, QtCore.Qt.ItemDataRole.DisplayRole]:
             if not index.isValid():
                 return None
 
@@ -75,8 +75,8 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
                 else:
                     return None
 
-    def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt = QtCore.Qt.EditRole) -> bool:
-        if role == QtCore.Qt.EditRole:
+    def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.EditRole) -> bool:
+        if role == QtCore.Qt.ItemDataRole.EditRole:
             if value != '':
                 flow = self.flows[index.row()]
                 flow.title = value
@@ -86,6 +86,5 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
 
         return False
 
-    @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
         return self.headers

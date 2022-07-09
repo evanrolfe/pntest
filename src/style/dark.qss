@@ -336,7 +336,7 @@ QComboBox::drop-down {
   border-top-right-radius: 3px; /* same radius as the QComboBox */
   border-bottom-right-radius: 3px;
 
-  image: url(":/icons/dark/icons8-sort-down-18.png");
+  image: url("assets:icons/dark/icons8-sort-down-18.png");
 }
 
 #modifiedDropdown, #responseModifiedDropdown, #responseFormatDropdown {

@@ -169,7 +169,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="responseBodyPreviewTab">
+       <!-- <widget class="QWidget" name="responseBodyPreviewTab">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -193,7 +193,7 @@
           <widget class="QWebEngineView" name="responseBodyPreview" native="true"/>
          </item>
         </layout>
-       </widget>
+       </widget> -->
       </widget>
       <widget class="Loader" name="loaderWidget"/>
      </widget>
@@ -202,11 +202,11 @@
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
+<!--  <customwidget>
    <class>QWebEngineView</class>
    <extends>QWidget</extends>
    <header>qwebengineview.h</header>
-  </customwidget>
+  </customwidget> -->
   <customwidget>
    <class>CodeEditor</class>
    <extends>QWidget</extends>

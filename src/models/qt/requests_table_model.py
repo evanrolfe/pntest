@@ -1,11 +1,11 @@
 from typing import Dict, Optional, cast, Any
-from PySide2 import QtCore
+from PyQt6 import QtCore
 
 from models.data.http_flow import HttpFlow
 
 class RequestsTableModel(QtCore.QAbstractTableModel):
-    dataChanged: QtCore.SignalInstance
-    layoutChanged: QtCore.SignalInstance
+    # dataChanged: QtCore.pyqtSignalInstance
+    # layoutChanged: QtCore.pyqtSignalInstance
 
     headers: list[str]
     flows: list[HttpFlow]
@@ -18,7 +18,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
     def add_flow(self, flow: HttpFlow) -> None:
         rowIndex = 0
         # TODO: Use self.index() here
-        self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)  # type: ignore
+        self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)
         self.flows.insert(0, flow)
         self.endInsertRows()
 
@@ -40,7 +40,10 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         row_index = self.get_index_of(request_ids[0])
         row_index2 = self.get_index_of(request_ids[-1])
 
-        self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)  # type: ignore
+        if row_index is None or row_index2 is None:
+            return
+
+        self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
         HttpFlow.destroy(*request_ids)
         self.flows = list(filter(lambda r: r.id not in request_ids, self.flows))
         self.endRemoveRows()
@@ -48,12 +51,12 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
     def roleNames(self) -> Dict[int, str]:
         roles = {}
         for i, header in enumerate(self.headers):
-            user_role_int = cast(int, QtCore.Qt.UserRole)
+            user_role_int = cast(int, QtCore.Qt.ItemDataRole.UserRole)
             roles[user_role_int + i + 1] = str(header.encode())
         return roles
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             return self.headers[section]
 
         return None
@@ -65,7 +68,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         return len(self.flows)
 
     def data(self, index: QtCore.QModelIndex, role: QtCore.Qt) -> Any:
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             if not index.isValid():
                 return None
 
@@ -78,7 +81,6 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
 
             return row_values[index.column()]
 
-    @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
         return self.headers
 
@@ -86,12 +88,12 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         self.sortOrder = order
         self.sortColumn = column
 
-        if (order == QtCore.Qt.AscendingOrder):
+        if (order == QtCore.Qt.SortOrder.AscendingOrder):
             print(f"Sorting column {column} ASC")
-        elif (order == QtCore.Qt.DescendingOrder):
+        elif (order == QtCore.Qt.SortOrder.DescendingOrder):
             print(f"Sorting column {column} DESC")
 
-        reverse = (order == QtCore.Qt.DescendingOrder)
+        reverse = (order == QtCore.Qt.SortOrder.DescendingOrder)
 
         if (column == 0):
             self.flows = sorted(self.flows, key=lambda flow: flow.id, reverse=reverse)
@@ -108,7 +110,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         elif (column == 6):
             self.flows = sorted(self.flows, key=self.response_status_sort_key, reverse=reverse)
 
-        self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
 
     def response_status_sort_key(self, flow: HttpFlow) -> tuple[int, int]:
         # TODO: Fix this:

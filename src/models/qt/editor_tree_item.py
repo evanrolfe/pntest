@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from PySide2 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 from models.data.editor_item import EditorItem
 
 class EditorTreeItem:
@@ -41,7 +41,7 @@ class EditorTreeItem:
         return 0
 
     def childIndicatorPolicy(self):
-        return QtWidgets.QTreeWidgetItem.ShowIndicator
+        return QtWidgets.QTreeWidgetItem.ChildIndicatorPolicy.ShowIndicator
 
     def columnCount(self) -> int:
         return 1
@@ -75,8 +75,8 @@ class EditorTreeItem:
 
         for row in range(count):
             removed_item = self.childItems.pop(position)
-            if delete and self.editor_item is not None:
-                removed_item.editor_item.delete_everything()  # type: ignore
+            if delete and self.editor_item is not None and removed_item.editor_item is not None:
+                removed_item.editor_item.delete_everything()
 
         return True
 

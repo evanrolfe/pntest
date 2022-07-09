@@ -1,9 +1,0 @@
-Package: pntest
-Version: 1.0
-Section: custom
-Priority: optional
-Architecture: all
-Essential: no
-Installed-Size: 1024
-Maintainer: Evan Rolfe
-Description: web app penetration testing software

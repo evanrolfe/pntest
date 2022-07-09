@@ -1,5 +1,5 @@
-from PySide2 import QtCore, QtWidgets
-from views._compiled.network.ui_http_page import Ui_HttpPage
+from PyQt6 import QtCore, QtWidgets
+from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.background_worker import BackgroundWorker
 from lib.app_settings import AppSettings
@@ -7,8 +7,8 @@ from models.qt.requests_table_model import RequestsTableModel
 from models.data.http_flow import HttpFlow
 
 class HttpPage(QtWidgets.QWidget):
-    toggle_page = QtCore.Signal()
-    send_flow_to_editor = QtCore.Signal(object)
+    toggle_page = QtCore.pyqtSignal()
+    send_flow_to_editor = QtCore.pyqtSignal(object)
 
     def __init__(self, *args, **kwargs):
         super(HttpPage, self).__init__(*args, **kwargs)
@@ -46,7 +46,6 @@ class HttpPage(QtWidgets.QWidget):
         self.worker.signals.finished.connect(self.hide_loader)
         self.threadpool.start(self.worker)
 
-    @QtCore.Slot()  # type:ignore
     def search_flows_async(self, search_text: str):
         print(f'Searching async for {search_text}')
         self.search_text = search_text
@@ -64,7 +63,6 @@ class HttpPage(QtWidgets.QWidget):
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
-    @QtCore.Slot()  # type:ignore
     def request_error(self, error):
         exctype, value, traceback = error
         print(value)
@@ -85,7 +83,6 @@ class HttpPage(QtWidgets.QWidget):
         settings.save("HttpPage.requestsTableAndViewSplitterState", splitter_state)
         settings.save("HttpPage.requestsViewSplitterState", splitter_state2)
 
-    @QtCore.Slot()  # type:ignore
     def select_request(self, selected, deselected):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
@@ -93,7 +90,6 @@ class HttpPage(QtWidgets.QWidget):
             flow = HttpFlow.find(selected_id)
             self.ui.requestViewWidget.set_flow(flow)
 
-    @QtCore.Slot()  # type:ignore
     def delete_requests(self, request_ids):
         if len(request_ids) > 1:
             message = f'Are you sure you want to delete {len(request_ids)} requests?'
@@ -103,18 +99,16 @@ class HttpPage(QtWidgets.QWidget):
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('PNTest')
         message_box.setText(message)
-        message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        message_box.setDefaultButton(QtWidgets.QMessageBox.Yes)
-        response = message_box.exec_()
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
+        response = message_box.exec()
 
-        if response == QtWidgets.QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_requests(request_ids)
 
-    @QtCore.Slot()  # type:ignore
     def flow_created(self, flow):
         self.table_model.add_flow(flow)
 
-    @QtCore.Slot()  # type:ignore
     def flow_updated(self, flow):
         self.table_model.update_flow(flow)
 

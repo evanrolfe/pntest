@@ -21,5 +21,6 @@ def cleanup_database():
     HttpFlow.truncate()
     HttpRequest.truncate()
     HttpResponse.truncate()
+    HttpFlowSearch.truncate()
 
     yield

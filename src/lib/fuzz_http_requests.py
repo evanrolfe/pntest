@@ -1,4 +1,4 @@
-from PySide2 import QtCore
+from PyQt6 import QtCore
 import itertools
 from typing import cast
 from lib.background_worker import WorkerSignals
@@ -55,7 +55,7 @@ class FuzzHttpRequests:
             example_flow.make_request_and_save()
 
             # 2.4 Emit a signal
-            cast(QtCore.SignalInstance, signals.response_received).emit(example_flow)
+            signals.response_received.emit(example_flow)
 
     def start_cartesian(self, signals: WorkerSignals) -> None:
         # 1. Load all payloads
@@ -87,4 +87,4 @@ class FuzzHttpRequests:
             example_flow.make_request_and_save()
 
             # 2.4 Emit a signal
-            cast(QtCore.SignalInstance, signals.response_received).emit(example_flow)
+            signals.response_received.emit(example_flow)

@@ -1,4 +1,4 @@
-from PySide2 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
     def __init__(self, parent=None):
@@ -6,7 +6,6 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
         self.parent = parent
         super(RowStyleDelegate, self).__init__(parent=None)
 
-    @QtCore.Slot()  # type:ignore
     def highlight_index(self, index):
         if index is None:
             self.hovered_row = None

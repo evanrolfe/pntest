@@ -1,6 +1,5 @@
 import json
-from typing import cast
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from lib.process_manager import ProcessManager
 from models.data.http_flow import HttpFlow
 
@@ -8,7 +7,7 @@ from models.data.http_flow import HttpFlow
 # and waits for a decision one at a time from the intercept page
 
 class InterceptQueue(QtCore.QObject):
-    decision_required = QtCore.Signal(HttpFlow)
+    decision_required = QtCore.pyqtSignal(HttpFlow)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -16,9 +15,8 @@ class InterceptQueue(QtCore.QObject):
         self.awaiting_decision = False
 
         self.process_manager = ProcessManager.get_instance()
-        cast(QtCore.SignalInstance, self.process_manager.flow_intercepted).connect(self.flow_intercepted)
+        self.process_manager.flow_intercepted.connect(self.flow_intercepted)
 
-    @QtCore.Slot()  # type: ignore
     def flow_intercepted(self, flow):
         print(f'[InterceptQueue] received intercepted flow {flow.uuid}')
         self.queue.append(flow)
@@ -28,7 +26,7 @@ class InterceptQueue(QtCore.QObject):
 
     def request_decision(self, flow):
         self.awaiting_decision = True
-        cast(QtCore.SignalInstance, self.decision_required).emit(flow)
+        self.decision_required.emit(flow)
 
     def forward_flow(self, flow, intercept_response):
         self.process_manager.forward_flow(flow, intercept_response)

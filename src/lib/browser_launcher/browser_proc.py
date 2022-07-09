@@ -1,12 +1,15 @@
 import os
 import signal
-from typing import cast
-from PySide2 import QtCore
+import subprocess
+from typing import Callable
+from PyQt6 import QtCore
 
 class WorkerSignals(QtCore.QObject):
-    exited = QtCore.Signal(object)
+    exited = QtCore.pyqtSignal(object)
 
 class BrowserProc(QtCore.QRunnable):
+    process: subprocess.Popen
+
     def __init__(self, client, fn):
         super(BrowserProc, self).__init__()
 
@@ -14,14 +17,12 @@ class BrowserProc(QtCore.QRunnable):
         self.fn = fn
         self.signals = WorkerSignals()
 
-    @QtCore.Slot()  # type: ignore
     def run(self):
-        self.process = self.fn()
-        stdout, stderr = self.process.communicate()
+        self.process: subprocess.Popen = self.fn()
+        stdout, stderr = self.process.communicate(input=None, timeout=None)
         exit_code = self.process.wait()
-
         print(stdout, stderr, exit_code)
-        cast(QtCore.SignalInstance, self.signals.exited).emit(self.client)
+        self.signals.exited.emit(self.client)
 
     def kill(self):
         os.kill(self.process.pid, signal.SIGTERM)

@@ -1,7 +1,7 @@
 from typing import Optional
-from orator import Model
+from models.data.orator_model import OratorModel
 
-class WebsocketMessage(Model):
+class WebsocketMessage(OratorModel):
     id: int
     http_flow_id: int
     direction: str

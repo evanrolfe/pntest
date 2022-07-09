@@ -1,4 +1,4 @@
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from models.data.http_flow import HttpFlow
 from support.fixtures import load_fixtures
 
@@ -12,7 +12,7 @@ class TestEditorPage:
         editor_item = EditorItemUnsaved()
         widget = RequestEditPage(editor_item)
         qtbot.addWidget(widget)
-        qtbot.waitForWindowShown(widget)
+        qtbot.waitExposed(widget)
 
         # Enter form data
         widget.ui.urlInput.setText("http://${var:host}:8080/${var:apiVersion}/accounts")
@@ -28,7 +28,7 @@ class TestEditorPage:
 
         # Click save button
         button = widget.ui.saveButton
-        qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+        qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
         http_flows = HttpFlow.order_by('id', 'desc').get()
         http_flow = http_flows[0]
@@ -62,21 +62,21 @@ class TestEditorPage:
         editor_item = EditorItemUnsaved()
         widget = RequestEditPage(editor_item)
         qtbot.addWidget(widget)
-        qtbot.waitForWindowShown(widget)
+        qtbot.waitExposed(widget)
 
         # Enter form data
         widget.ui.urlInput.setText("https://www.synack.com")
 
         # Click send button
         button = widget.ui.sendButton
-        qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+        qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
         with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
             pass
 
         # Click save as example button
         button2 = widget.ui.flowView.save_example_button
-        qtbot.mouseClick(button2, QtCore.Qt.LeftButton, pos=button2.rect().center())
+        qtbot.mouseClick(button2, QtCore.Qt.MouseButton.LeftButton, pos=button2.rect().center())
 
         example_flows = widget.ui.examplesTable.table_model.flows
         original_flow = example_flows[0]

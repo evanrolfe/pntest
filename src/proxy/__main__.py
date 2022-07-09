@@ -62,6 +62,12 @@ while True:
 
     if sockets:
         message_raw = socket.recv()
+
+        # ZMQ typing is not accurate here
+        if type(message_raw) is not bytes:
+            raise Exception(f'[Proxy] Could not parse message of type {type(message_raw)}')
+
+        message_raw_str = message_raw.decode('utf-8')
         message = json.loads(message_raw)
 
         if message['type'] in ['forward', 'forward_and_intercept']:

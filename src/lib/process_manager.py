@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import subprocess
 import signal
-import atexit
 import os
 import sys
-from typing import cast
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from models.data.http_flow import HttpFlow
 from models.data.settings import Settings
 from models.data.websocket_message import WebsocketMessage
@@ -18,11 +16,11 @@ from lib.browser_launcher.browser_proc import BrowserProc
 from proxy.common_types import SettingsJson
 
 class ProcessManager(QtCore.QObject):
-    clients_changed = QtCore.Signal()
-    flow_created = QtCore.Signal(HttpFlow)
-    flow_updated = QtCore.Signal(HttpFlow)
-    flow_intercepted = QtCore.Signal(HttpFlow)
-    websocket_message_created = QtCore.Signal(WebsocketMessage)
+    clients_changed = QtCore.pyqtSignal()
+    flow_created = QtCore.pyqtSignal(HttpFlow)
+    flow_updated = QtCore.pyqtSignal(HttpFlow)
+    flow_intercepted = QtCore.pyqtSignal(HttpFlow)
+    websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
 
     # Singleton method stuff:
     __instance = None
@@ -54,14 +52,10 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.start()
         self.set_settings(Settings.get().parsed())
 
-        cast(QtCore.SignalInstance, self.proxy_handler.signals.flow_created).connect(self.flow_created)
-        cast(QtCore.SignalInstance, self.proxy_handler.signals.flow_updated).connect(self.flow_updated)
-        cast(QtCore.SignalInstance, self.proxy_handler.signals.flow_intercepted).connect(self.flow_intercepted)
-        cast(QtCore.SignalInstance, self.proxy_handler.signals.websocket_message_created).connect(self.websocket_message_created)
-
-        atexit.register(self.on_exit)
-        signal.signal(signal.SIGTERM, self.on_exit)  # type: ignore
-        signal.signal(signal.SIGINT, self.on_exit)  # type: ignore
+        self.proxy_handler.signals.flow_created.connect(self.flow_created)
+        self.proxy_handler.signals.flow_updated.connect(self.flow_updated)
+        self.proxy_handler.signals.flow_intercepted.connect(self.flow_intercepted)
+        self.proxy_handler.signals.websocket_message_created.connect(self.websocket_message_created)
 
     def on_exit(self):
         print("[ProcessManager] killing all processes...")
@@ -86,7 +80,6 @@ class ProcessManager(QtCore.QObject):
         process['worker'].kill()
         self.processes.remove(process)
 
-    @QtCore.Slot()  # type: ignore
     def browser_was_closed(self, client):
         print(f"[ProcessManager] browser {client.id} closed, closing proxy")
         browser_process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
@@ -95,7 +88,7 @@ class ProcessManager(QtCore.QObject):
         self.close_proxy(client)
         client.open = False
         client.save()
-        cast(QtCore.SignalInstance, self.clients_changed).emit()
+        self.clients_changed.emit()
 
     def launch_browser(self, client, browser_command):
         if client.type in ['chrome', 'chromium']:
@@ -105,7 +98,7 @@ class ProcessManager(QtCore.QObject):
         else:
             return
 
-        cast(QtCore.SignalInstance, worker.signals.exited).connect(self.browser_was_closed)
+        worker.signals.exited.connect(self.browser_was_closed)
         self.threadpool.start(worker)
         self.processes.append({'client': client, 'type': 'browser', 'worker': worker})
 

@@ -1,24 +1,33 @@
-from PySide2 import QtWidgets, QtCore, QtGui
+from ast import For
+from typing import Optional
+from PyQt6 import QtWidgets, QtCore, QtGui
 from models.data.http_flow import HttpFlow
+from models.data.http_response import HttpResponse
 
-from views._compiled.editor.ui_request_edit_page import Ui_RequestEditPage
-
+from views._compiled.editor.request_edit_page import Ui_RequestEditPage
+from models.data.http_request import FormData
+from models.data.editor_item import EditorItem
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
 
 class RequestEditPage(QtWidgets.QWidget):
     flow: HttpFlow
+    editor_item: EditorItem
+    latest_response: Optional[HttpResponse]
 
-    form_input_changed = QtCore.Signal(bool)
-    request_saved = QtCore.Signal()
+    form_input_changed = QtCore.pyqtSignal(bool)
+    request_saved = QtCore.pyqtSignal(EditorItem)
 
     METHODS = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD']
 
-    def __init__(self, editor_item):
+    def __init__(self, editor_item: EditorItem):
         super(RequestEditPage, self).__init__()
 
         self.editor_item = editor_item
-        self.flow = self.editor_item.item()
+        flow = self.editor_item.item()
+        if flow is None:
+            raise Exception("RequestEditPage needs an editor item with a flow!")
+        self.flow = flow
 
         self.ui = Ui_RequestEditPage()
         self.ui.setupUi(self)
@@ -59,13 +68,11 @@ class RequestEditPage(QtWidgets.QWidget):
         # self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
         # Keyboard shortcuts:
-        self.connect(
-            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_S), self),
-            QtCore.SIGNAL('activated()'),
-            self.save_request
-        )
-        # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
-        #  QtCore.SIGNAL('activated()'), self.send_request_async)
+        keyseq_ctrl_s = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
+        keyseq_ctrl_s.activated.connect(self.save_request)
+
+        keyseq_ctrl_enter = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+Enter'), self)
+        keyseq_ctrl_enter.activated.connect(self.send_request_async)
 
         self.ui.examplesTable.example_selected.connect(self.show_example)
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)
@@ -83,13 +90,11 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.sendButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
 
-    @QtCore.Slot()  # type:ignore
     def show_example(self, flow):
         self.flow = flow
         self.show_request()
         self.set_send_save_buttons_enabled(not self.flow.is_example())
 
-    @QtCore.Slot()  # type:ignore
     def delete_examples(self, flows):
         example_flows = [f for f in flows if f.is_example()]
 
@@ -101,7 +106,6 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.reload()
 
-    @QtCore.Slot()  # type:ignore
     def save_request(self):
         self.update_request_with_values_from_form()
         if hasattr(self.flow, 'id'):
@@ -113,38 +117,37 @@ class RequestEditPage(QtWidgets.QWidget):
             self.ui.examplesTable.set_flow(self.flow)
 
         self.form_input_changed.emit(False)
-        self.request_saved.emit()
+        self.request_saved.emit(self.editor_item)
 
-    @QtCore.Slot()  # type:ignore
     def save_example(self):
         # 1. Save the HttpResponse (without a flow)
         self.save_request()
 
         # 3. Create the example HttpFlow
+        if self.latest_response is None:
+            return
+
         self.flow.duplicate_for_example(self.latest_response)
 
         # 4. Update GUI
         self.ui.examplesTable.reload()
         self.ui.flowView.set_save_as_example_enabled(False)
 
-    @QtCore.Slot()  # type:ignore
     def response_received(self, http_response):
         self.latest_response = http_response
         self.ui.flowView.set_response_from_editor(self.latest_response)
         self.ui.flowView.set_save_as_example_enabled(True)
 
-    @QtCore.Slot()  # type:ignore
     def request_error(self, error):
         exctype, value, traceback = error
 
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('Error')
         message_box.setText(str(value))
-        message_box.exec_()
+        message_box.exec()
 
     # TODO: Close the request:
     # https://stackoverflow.com/questions/10115126/python-requests-close-http-connection
-    @QtCore.Slot()  # type:ignore
     def send_request_async(self):
         print('Sending the request!')
         self.ui.flowView.show_loader()
@@ -167,20 +170,19 @@ class RequestEditPage(QtWidgets.QWidget):
         url = self.ui.urlInput.text()
         headers = self.ui.flowView.get_request_headers()
         content = self.ui.flowView.get_request_payload()
-
-        self.flow.request.set_form_data({
+        form_data: FormData = {
             'method': method,
             'url': url,
             'headers': headers,
-            'content': content
-        })
+            'content': content,
+            'fuzz_data': None
+        }
+        self.flow.request.set_form_data(form_data)
 
-    @QtCore.Slot()  # type:ignore
     def cancel_request(self):
         self.worker.kill()
         self.ui.flowView.hide_loader()
 
-    @QtCore.Slot()  # type:ignore
     def form_field_changed(self):
         request_on_form = {
             'method': self.ui.methodInput.currentText(),
@@ -194,7 +196,6 @@ class RequestEditPage(QtWidgets.QWidget):
         self.request_is_modified = (request_on_form != original_request)
         self.form_input_changed.emit(self.request_is_modified)
 
-    @QtCore.Slot()  # type:ignore
     def toggle_examples_table(self):
         visible = not self.ui.examplesTable.isVisible()
         self.ui.examplesTable.setVisible(visible)
