@@ -13,18 +13,32 @@ An HTTP (and Websockets) proxy for performing penetration tests against web appl
 - Intercept and modify requests and responses
 
 ## Install
+
+(TODO)
+
+## Develop
+
+Setup your dev environment:
+
+Linux:
 ```bash
 $ git clone git@github.com:evanrolfe/pntest.git
 $ cd pntest
 $ virtualenv -p /usr/bin/python3.9 venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
+
+```
+Mac:
+```bash
+$ git clone git@github.com:evanrolfe/pntest.git
+$ cd pntest
+$ pip3 install virtualenv
+$ python3 -m virtualenv -p /usr/local/bin/python3 venv
+$ pip install -r requirements.txt
 ```
 
-## Develop
-Always run `source venv/bin/activate` at the start to load the Python virtual env.
-
-Run the app in developer mode:
+Always run `source venv/bin/activate` at the start to load the virtual env, then start the app in developer mode:
 ```bash
 $ bin/dev
 ```
@@ -37,19 +51,20 @@ $ bin/compile_views
 Run the linter with `flake8`.
 
 ## Test
-Run the test suite with:
+Run the tests with:
 ```
-$ bin/test
+$ bin/test test/unit
+$ bin/test test/integration
 ```
 
 ## Build
 First build the proxy, copy it to include, then build the final binary:
 ```
-$ bin/build_proxy
-$ mv dist/pntest_proxy include/pntest_proxy
 $ bin/build
 ```
 Which outputs a binary to `dist/pntest/`.
+
+(Mac) run `bin/build_dmg`
 
 ## Notes
 Icons come from:
