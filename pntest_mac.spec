@@ -6,7 +6,6 @@ block_cipher = None
 #===============================================================================
 # pntest (MAC)
 #===============================================================================
-# On Mac it looks for QtWebEngine resources in ./PySide2/Qt, hence why its included in datas
 a = Analysis(
     ['src/__main__.py'],
     pathex=['src'],
@@ -19,7 +18,9 @@ a = Analysis(
         ('src/style/dark.qss', 'style/'),
         ('src/style/dark_theme.qss', 'style/'),
         ('src/style/light.qss', 'style/'),
-        ('venv/lib/python3.9/site-packages/PySide2/Qt/lib/QtWebEngineCore.framework/Resources/', 'PySide2/Qt')
+        ('src/assets/icons', 'assets/icons'),
+        ('venv/lib/python3.9/site-packages/PyQt6/Qt6/lib/QtWebEngineCore.framework/Resources/', 'PyQt6/Qt6'),
+        ('venv/lib/python3.9/site-packages/PyQt6/Qt6/lib/QtOpenGL.framework/Resources/', 'PyQt6/Qt6')
     ],
     hiddenimports=[],
     hookspath=[],

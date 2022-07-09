@@ -1,6 +1,6 @@
 from __future__ import annotations
-
-from PySide2 import QtGui
+from typing import Optional
+from PyQt6 import QtGui
 
 from models.data.orator_model import OratorModel
 from models.data.http_flow import HttpFlow
@@ -74,19 +74,22 @@ class EditorItem(OratorModel):
 
         return editor_item
 
-    def icon(self):
+    # TODO: This should probably be moved elsewhere cause the data model shouldn't have QtGui as a dependency
+    def icon(self) -> QtGui.QIcon:
         if self.item_type == self.TYPE_FUZZ:
-            return QtGui.QIcon(QtGui.QPixmap(f":/icons/dark/methods/fuzz.png"))
+            return QtGui.QIcon(f"assets:icons/dark/methods/fuzz.png")
 
         if self.item_type == self.TYPE_HTTP_FLOW:
             icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
 
             item = self.item()
             if item is None:
-                return
+                raise Exception("No item found for editor item")
 
             method = item.request.method.lower()
             if method not in icon_methods:
                 method = 'other'
 
-            return QtGui.QIcon(QtGui.QPixmap(f":/icons/dark/methods/{method}.png"))
+            return QtGui.QIcon(f"assets:icons/dark/methods/{method}.png")
+
+        raise Exception("No item found for editor item")

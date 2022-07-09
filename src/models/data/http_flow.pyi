@@ -20,7 +20,6 @@ class HttpFlow(OratorModel):
     original_response_id: Optional[int]
     http_flow_id: int
     created_at: int
-    updated_at: Optional[int]
 
     # Associations:
     request: HttpRequest
@@ -81,7 +80,7 @@ class HttpFlow(OratorModel):
     def duplicate_for_editor(self) -> HttpFlow:
         pass
 
-    def duplicate_for_example(self, request: HttpRequest, response: HttpResponse) -> HttpFlow:
+    def duplicate_for_example(self, response: HttpResponse) -> HttpFlow:
         pass
 
     def duplicate_for_fuzz_example(self, num: int) -> HttpFlow:

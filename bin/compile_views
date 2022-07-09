@@ -1,69 +1,24 @@
-#!/bin/bash
+#! venv/bin/python
 
-# Clients Page:
-pyside2-uic src/views/clients/clients_page.ui > src/views/_compiled/clients/ui_clients_page.py
-pyside2-uic src/views/clients/clients_table.ui > src/views/_compiled/clients/ui_clients_table.py
-pyside2-uic src/views/clients/client_view.ui > src/views/_compiled/clients/ui_client_view.py
+import os
 
-# Crawls Page:
-pyside2-uic src/views/crawls/crawls_page.ui > src/views/_compiled/crawls/ui_crawls_page.py
-pyside2-uic src/views/crawls/crawls_table.ui > src/views/_compiled/crawls/ui_crawls_table.py
-pyside2-uic src/views/crawls/crawl_view.ui > src/views/_compiled/crawls/ui_crawl_view.py
-pyside2-uic src/views/crawls/new_crawl.ui > src/views/_compiled/crawls/ui_new_crawl.py
+# NOTE: You need to install pyqt6rc for this
 
-# Network Page:
-pyside2-uic src/views/network/http_page.ui > src/views/_compiled/network/ui_http_page.py
-pyside2-uic src/views/network/http/requests_table.ui > src/views/_compiled/network/http/ui_requests_table.py
-pyside2-uic src/views/network/http/display_filters.ui > src/views/_compiled/network/http/ui_display_filters.py
-pyside2-uic src/views/network/http/capture_filters.ui > src/views/_compiled/network/http/ui_capture_filters.py
+def compile_dir(start_dir):
+    for item in os.scandir(start_dir):
+        if item.is_dir():
+            view_dir_arr = item.path.split('/')[2:]
+            view_dir = '/'.join(view_dir_arr)
 
-pyside2-uic src/views/network/ws_page.ui > src/views/_compiled/network/ui_ws_page.py
-pyside2-uic src/views/network/ws/messages_table.ui > src/views/_compiled/network/ws/ui_messages_table.py
-pyside2-uic src/views/network/ws/message_view.ui > src/views/_compiled/network/ws/ui_message_view.py
+            if view_dir == '_compiled':
+                continue
 
-# Intercept Page:
-pyside2-uic src/views/intercept/intercept_page.ui > src/views/_compiled/intercept/ui_intercept_page.py
+            from_dir = 'src/views/' + view_dir
+            to_dir = 'src/views/_compiled/' + view_dir
+            print(f'Converting from {from_dir} to {to_dir}')
 
-# Editor Page:
-pyside2-uic src/views/editor/request_edit_page.ui > src/views/_compiled/editor/ui_request_edit_page.py
-pyside2-uic src/views/editor/fuzz_edit_page.ui > src/views/_compiled/editor/ui_fuzz_edit_page.py
-pyside2-uic src/views/editor/editor_page.ui > src/views/_compiled/editor/ui_editor_page.py
-pyside2-uic src/views/editor/examples_table.ui > src/views/_compiled/editor/ui_examples_table.py
-pyside2-uic src/views/editor/fuzz_view.ui > src/views/_compiled/editor/ui_fuzz_view.py
+            os.system(f'pyqt6rc {from_dir} -o {to_dir}')
+            compile_dir(item.path)
 
-# Shared:
-pyside2-uic src/views/shared/loader.ui > src/views/_compiled/shared/ui_loader.py
-pyside2-uic src/views/shared/headers_form.ui > src/views/_compiled/shared/ui_headers_form.py
-pyside2-uic src/views/shared/request_body_form.ui > src/views/_compiled/shared/ui_request_body_form.py
-pyside2-uic src/views/shared/code_editor.ui > src/views/_compiled/shared/ui_code_editor.py
-pyside2-uic src/views/shared/flow_view.ui > src/views/_compiled/shared/ui_flow_view.py
-pyside2-uic src/views/shared/variables_popup.ui > src/views/_compiled/shared/ui_variables_popup.py
-
-# Root:
-pyside2-uic src/views/main_window.ui > src/views/_compiled/ui_main_window.py
-pyside2-uic src/views/preferences_window.ui > src/views/_compiled/ui_preferences_window.py
-
-# HACK: pyside2-uic does not import the QWebEngineView so we have to add this line manually:
-# BE CAREFUL when changing this file as this line will easily break!
-
-# 1. Ui_FlowView
-line=`sed "15q;d" src/views/_compiled/shared/ui_flow_view.py`
-if ! [[ $line =~ "qwebengineview" ]]; then
-  echo "WARNING: src/views/_compiled/shared/ui_flow_view.py does not contain qwebengineview on line 15 as expected.";
-fi
-sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/shared/ui_flow_view.py
-
-# 2. Ui_FuzzView
-# line=`sed "15q;d" src/views/_compiled/editor/ui_fuzz_view.py`
-# if ! [[ $line =~ "qwebengineview" ]]; then
-#   echo "WARNING: src/views/_compiled/editor/ui_fuzz_view.py does not contain qwebengineview on line 15 as expected.";
-# fi
-# sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/editor/ui_fuzz_view.py
-
-# 3. Ui_CodeEditor
-line=`sed "15q;d" src/views/_compiled/shared/ui_code_editor.py`
-if ! [[ $line =~ "qwebengineview" ]]; then
-  echo "WARNING: src/views/_compiled/shared/ui_code_editor.py does not contain qwebengineview on line 15 as expected.";
-fi
-sed -i '15s/.*/from PySide2.QtWebEngineWidgets import QWebEngineView/' src/views/_compiled/shared/ui_code_editor.py
-# /HACK
+compile_dir('src/views')
+os.system(f'pyqt6rc src/views -o src/views/_compiled')

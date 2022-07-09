@@ -1,4 +1,4 @@
-from PySide2 import QtCore
+from PyQt6 import QtCore
 from models.data.http_flow import HttpFlow
 from support.fixtures import load_fixtures
 from models.data.editor_item import EditorItem
@@ -16,7 +16,7 @@ class TestFuzzEditPage:
 
         widget = FuzzEditPage(editor_item)
         qtbot.addWidget(widget)
-        qtbot.waitForWindowShown(widget)
+        qtbot.waitExposed(widget)
 
         # Enter form data
         widget.ui.urlInput.setText("http://www.synack.com/login.php?username=${payload:usernames}&password=${payload:passwords}")
@@ -34,7 +34,7 @@ class TestFuzzEditPage:
 
         # Click save button
         button = widget.ui.saveButton
-        qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+        qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
         http_flows = HttpFlow.order_by('id', 'desc').get()
         http_flow = http_flows[0]
@@ -49,7 +49,7 @@ class TestFuzzEditPage:
         assert http_flow.request.form_data['fuzz_data']['delay_type'] == 'disabled'
 
         # button = widget.ui.fuzzButton
-        # qtbot.mouseClick(button, QtCore.Qt.LeftButton, pos=button.rect().center())
+        # qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
         # with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
         #     pass

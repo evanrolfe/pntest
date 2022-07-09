@@ -8,7 +8,7 @@ class TestEditorPage:
 
         widget = EditorPage()
         qtbot.addWidget(widget)
-        qtbot.waitForWindowShown(widget)
+        qtbot.waitExposed(widget)
 
         # widget.show()
         # qtbot.waitForWindowShown(widget)

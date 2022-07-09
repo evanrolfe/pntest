@@ -1,4 +1,4 @@
-from PySide2 import QtGui
+from PyQt6 import QtGui
 
 from models.data.editor_item import EditorItem
 from models.data.http_flow_unsaved import HttpFlowUnsaved

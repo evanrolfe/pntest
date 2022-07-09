@@ -1,6 +1,6 @@
-from PySide2 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
-from views._compiled.editor.ui_editor_page import Ui_EditorPage
+from views._compiled.editor.editor_page import Ui_EditorPage
 from widgets.shared.variables_popup import VariablesPopup
 from lib.app_settings import AppSettings
 from models.data.editor_item import EditorItem
@@ -26,17 +26,15 @@ class EditorPage(QtWidgets.QWidget):
         self.ui.varsButton.clicked.connect(lambda: self.variables_popup.show())
 
         # Keyboard shortcuts:
-        self.connect(
-            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_N), self),
-            QtCore.SIGNAL('activated()'),
-            self.ui.editorTabs.open_blank_item
-        )
+        keyseq_ctrl_n = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+N'), self)
+        keyseq_ctrl_n.activated.connect(self.ui.editorTabs.open_blank_item)
 
-        self.connect(
-            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_W), self),
-            QtCore.SIGNAL('activated()'),
-            self.ui.editorTabs.close_current_tab
-        )
+        keyseq_ctrl_w = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'), self)
+        keyseq_ctrl_w.activated.connect(self.ui.editorTabs.close_current_tab)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key.Key_Escape.value:
+            self.close()
 
     def reload(self):
         self.ui.editorTabs.clear()
@@ -45,7 +43,8 @@ class EditorPage(QtWidgets.QWidget):
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
         splitter_state = settings.get("EditorPage.splitter", None)
-        self.ui.editorSplitter.restoreState(splitter_state)
+        if splitter_state is not None:
+            self.ui.editorSplitter.restoreState(splitter_state)
 
     def save_layout_state(self):
         splitter_state = self.ui.editorSplitter.saveState()
@@ -54,7 +53,6 @@ class EditorPage(QtWidgets.QWidget):
 
         # self.ui.requestGroupView.save_layout_state()
 
-    @QtCore.Slot()  # type:ignore
     def send_flow_to_editor(self, flow):
         new_flow = flow.duplicate_for_editor()
         editor_item = EditorItem.create_for_http_flow(new_flow)

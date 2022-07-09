@@ -1,14 +1,14 @@
 from typing import cast, Optional, Any
-from PySide2 import QtCore
+from PyQt6 import QtCore, QtGui
 import json
 
 from models.data.editor_item import EditorItem
 from models.qt.editor_tree_item import EditorTreeItem
 
 class EditorTreeModel(QtCore.QAbstractItemModel):
-    item_renamed = QtCore.Signal(EditorItem)
-    change_selection = QtCore.Signal(QtCore.QModelIndex)
-    layoutChanged: QtCore.SignalInstance
+    item_renamed = QtCore.pyqtSignal(EditorItem)
+    change_selection = QtCore.pyqtSignal(QtCore.QModelIndex)
+    # layoutChanged: QtCore.pyqtSignalInstance
 
     def __init__(self, header, editor_items, parent=None):
         super(EditorTreeModel, self).__init__(parent)
@@ -16,8 +16,8 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
         self.rootItem = EditorTreeItem(header, None, True)
         self.setup_model_data(editor_items, self.rootItem)
 
-    def supportedDropActions(self) -> QtCore.Qt.DropActions:
-        return QtCore.Qt.MoveAction | QtCore.Qt.CopyAction  # type: ignore
+    def supportedDropActions(self) -> QtCore.Qt.DropAction:
+        return QtCore.Qt.DropAction.MoveAction | QtCore.Qt.DropAction.CopyAction
 
     def columnCount(self, parent: QtCore.QModelIndex) -> int:
         return self.rootItem.columnCount()
@@ -26,18 +26,17 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return None
 
-        if role != QtCore.Qt.DisplayRole and role != QtCore.Qt.EditRole and role != QtCore.Qt.DecorationRole:
+        if role != QtCore.Qt.ItemDataRole.DisplayRole and role != QtCore.Qt.ItemDataRole.EditRole and role != QtCore.Qt.ItemDataRole.DecorationRole:
             return None
 
         item = self.getItem(index)
-
-        if role == QtCore.Qt.DecorationRole:
+        if role == QtCore.Qt.ItemDataRole.DecorationRole:
             return item.icon()
         else:
             return item.data()
 
-    def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt = QtCore.Qt.EditRole) -> bool:
-        if role == QtCore.Qt.EditRole:
+    def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.EditRole) -> bool:
+        if role == QtCore.Qt.ItemDataRole.EditRole:
             item = self.getItem(index)
             item.setLabel(value)
 
@@ -46,12 +45,12 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
             new_selected_index = self.createIndex(item.childNumber(), 0, item)
 
             self.layoutChanged.emit()
-            cast(QtCore.SignalInstance, self.change_selection).emit(new_selected_index)
+            self.change_selection.emit(new_selected_index)
             if not item.is_dir:
-                cast(QtCore.SignalInstance, self.item_renamed).emit(item.editor_item)
+                self.item_renamed.emit(item.editor_item)
 
             return True
-        elif role == QtCore.Qt.DisplayRole:
+        elif role == QtCore.Qt.ItemDataRole.DisplayRole:
             self.layoutChanged.emit()
             return True
 
@@ -66,7 +65,7 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
         encoded_json = json.dumps(index_data).encode()
         mimeData = QtCore.QMimeData()
-        mimeData.setData('text/index-json-array', QtCore.QByteArray(encoded_json))  # type: ignore
+        mimeData.setData('text/index-json-array', QtCore.QByteArray(encoded_json)) # type: ignore (DO NOT CHANGE THIS, IT IS ACTUALLY CORRECT)
         return mimeData
 
     def canDropMimeData(
@@ -123,11 +122,11 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
         return (indexes, tree_items)
 
-    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlags:
+    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlag:
         if not index.isValid():
-            return QtCore.Qt.NoItemFlags | QtCore.Qt.ItemIsDropEnabled  # type: ignore
+            return QtCore.Qt.ItemFlag.ItemIsDropEnabled # TODO: Is this right? Think it prob should be NoItemFlags
 
-        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled  # type: ignore
+        return QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled | QtCore.Qt.ItemFlag.ItemIsDropEnabled
 
     def getItem(self, index: QtCore.QModelIndex) -> EditorTreeItem:
         if index.isValid():
@@ -137,15 +136,15 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
         return self.rootItem
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole) -> Optional[str]:
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+    def headerData(self, section, orientation, role=QtCore.Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+        if orientation == QtCore.Qt.Orientation.Horizontal and role == QtCore.Qt.ItemDataRole.DisplayRole:
             return self.rootItem.data()
 
         return None
 
-    def index(self, row: int, column: int, parent_index: QtCore.QModelIndex = ...):
+    def index(self, row: int, column: int, parent_index: QtCore.QModelIndex = ...) -> QtCore.QModelIndex:
         if parent_index.isValid() and parent_index.column() != 0:
-            return QtCore.QModelIndex
+            return QtCore.QModelIndex()
 
         parentItem = self.getItem(parent_index)
         childItem = parentItem.child(row)
@@ -153,7 +152,7 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
         if childItem:
             return self.createIndex(row, column, childItem)
         else:
-            return QtCore.QModelIndex
+            return QtCore.QModelIndex()
 
     # TODO: Make this call self.insertChildren()
     def insertChild(self, child, parent: QtCore.QModelIndex = ...):
@@ -177,13 +176,13 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
     def parent(self, index: QtCore.QModelIndex):
         if not index.isValid():
-            return QtCore.QModelIndex()  # type: ignore
+            return QtCore.QModelIndex()
 
         childItem = self.getItem(index)
         parentItem = childItem.parent
 
         if parentItem == self.rootItem or childItem == self.rootItem:
-            return QtCore.QModelIndex()  # type: ignore
+            return QtCore.QModelIndex()
 
         if parentItem is not None:
             return self.createIndex(parentItem.childNumber(), 0, parentItem)

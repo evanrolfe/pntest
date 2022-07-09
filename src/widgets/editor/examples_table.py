@@ -1,15 +1,15 @@
-from PySide2 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets, QtGui
 
-from views._compiled.editor.ui_examples_table import Ui_ExamplesTable
+from views._compiled.editor.examples_table import Ui_ExamplesTable
 from models.qt.examples_table_model import ExamplesTableModel
 from models.data.http_flow import HttpFlow
 
 class ExamplesTable(QtWidgets.QWidget):
-    example_selected = QtCore.Signal(HttpFlow)
-    delete_examples = QtCore.Signal(list)
-    # open_client_clicked = QtCore.Signal(Client)
-    # close_client_clicked = QtCore.Signal(Client)
-    # bring_to_front_client_clicked = QtCore.Signal(Client)
+    example_selected = QtCore.pyqtSignal(HttpFlow)
+    delete_examples = QtCore.pyqtSignal(list)
+    # open_client_clicked = QtCore.pyqtSignal(Client)
+    # close_client_clicked = QtCore.pyqtSignal(Client)
+    # bring_to_front_client_clicked = QtCore.pyqtSignal(Client)
 
     def __init__(self, *args, **kwargs):
         super(ExamplesTable, self).__init__(*args, **kwargs)
@@ -18,8 +18,8 @@ class ExamplesTable(QtWidgets.QWidget):
 
         horizontalHeader = self.ui.table.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
-        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
-        horizontalHeader.setSortIndicator(0, QtCore.Qt.DescendingOrder)
+        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Interactive)
+        horizontalHeader.setSortIndicator(0, QtCore.Qt.SortOrder.DescendingOrder)
         # self.ui.table.setSortingEnabled(True)
 
         # self.ui.table.setColumnWidth(2, 250)
@@ -27,15 +27,15 @@ class ExamplesTable(QtWidgets.QWidget):
         # self.ui.table.setColumnWidth(2, 50)
 
         verticalHeader = self.ui.table.verticalHeader()
-        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
         # Set row selection behaviour:
-        self.ui.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         # # Set right-click behaviour:
-        self.ui.table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.ui.table.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.ui.table.customContextMenuRequested.connect(self.right_clicked)
         self.selected_flows = []
 
@@ -46,7 +46,6 @@ class ExamplesTable(QtWidgets.QWidget):
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
         self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
 
-    @QtCore.Slot()  # type:ignore
     def selection_changed(self, selected, deselected):
         try:
             selected_index = selected.indexes()[0]
@@ -62,13 +61,11 @@ class ExamplesTable(QtWidgets.QWidget):
         self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
         self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
 
-    @QtCore.Slot()  # type:ignore
     def set_selected_flows(self, selected, deselected):
         selected_q_indexes = self.ui.table.selectionModel().selectedRows()
         selected_flows = [self.table_model.flows[i.row()] for i in selected_q_indexes]
         self.selected_flows = selected_flows
 
-    @QtCore.Slot()  # type:ignore
     def right_clicked(self, position):
         index = self.ui.table.indexAt(position)
         index_col0 = index.siblingAtColumn(0)
@@ -76,15 +73,15 @@ class ExamplesTable(QtWidgets.QWidget):
         menu = QtWidgets.QMenu()
 
         if (len(self.selected_flows) > 1):
-            action = QtWidgets.QAction(f"Delete {len(self.selected_flows)} selected examples")
+            action = QtGui.QAction(f"Delete {len(self.selected_flows)} selected examples")
             menu.addAction(action)
             action.triggered.connect(lambda: self.delete_examples.emit(self.selected_flows))
         else:
-            send_action = QtWidgets.QAction("Rename")
+            send_action = QtGui.QAction("Rename")
             menu.addAction(send_action)
             send_action.triggered.connect(lambda: self.ui.table.edit(index_col0))
 
-            del_action = QtWidgets.QAction("Delete example")
+            del_action = QtGui.QAction("Delete example")
             menu.addAction(del_action)
             del_action.triggered.connect(lambda: self.delete_examples.emit([flow]))
 
@@ -92,4 +89,6 @@ class ExamplesTable(QtWidgets.QWidget):
                 send_action.setEnabled(False)
                 del_action.setEnabled(False)
 
-        menu.exec_(self.sender().mapToGlobal(position))
+        # NOTE: The generated types seem to be in correct, QObject does indeed have mapToGlobal() as a method
+        position = self.sender().mapToGlobal(position) # type: ignore
+        menu.exec(position)

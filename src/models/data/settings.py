@@ -48,6 +48,10 @@ class Settings(OratorModel):
     @classmethod
     def get(cls) -> Settings:
         settings = cls.find(1)
+
+        if settings is None:
+            raise Exception("Settings should have been created by now!")
+
         cache = DatabaseCache.get_instance()
         cache.cache_record('settings', settings.id, settings)
 

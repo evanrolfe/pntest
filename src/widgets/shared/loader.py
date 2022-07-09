@@ -1,6 +1,6 @@
-from PySide2 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui, QtCore
 
-from views._compiled.shared.ui_loader import Ui_Loader
+from views._compiled.shared.loader import Ui_Loader
 from widgets.qt.waiting_spinner import QtWaitingSpinner
 
 class Loader(QtWidgets.QWidget):
@@ -19,6 +19,7 @@ class Loader(QtWidgets.QWidget):
         spinner.setLineWidth(5)
         spinner.setInnerRadius(10)
         spinner.setRevolutionsPerSecond(0.75)
-        spinner.setColor(QtGui.QColor('#D4D4D4'))
+        # TODO: Change this to QtGui.QColor('#D4D4D4')
+        spinner.setColor(QtCore.Qt.GlobalColor.white)
 
         spinner.start()

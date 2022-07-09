@@ -1,19 +1,19 @@
-from PySide2 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 class HeaderViewFilter(QtCore.QObject):
-    headers_hovered = QtCore.Signal()
+    headers_hovered = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, *args):
         super(HeaderViewFilter, self).__init__(parent, *args)
 
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseMove:
+        if event.type() == QtCore.QEvent.Type.MouseMove:
             self.headers_hovered.emit()
 
         return False
 
 class HoverableQTableView(QtWidgets.QTableView):
-    hover_index_changed = QtCore.Signal(object)
+    hover_index_changed = QtCore.pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(HoverableQTableView, self).__init__(parent)

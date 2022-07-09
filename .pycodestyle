@@ -1,4 +1,0 @@
-[pep8]
-ignore = E302,E305,F541,W504,E501
-exclude = .git,__pycache__,_compiled,build,dist,include,venv
-max-line-length = 60

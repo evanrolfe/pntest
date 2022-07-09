@@ -17,12 +17,10 @@ class TestHttpFlowSearch:
         http_request2 = factory(HttpRequest, 'proxy').make()
         http_request2.save()
 
-        http_flow2 = factory(HttpFlow, 'proxy').make(request_id=http_request2.id, client_id=1)
-        http_flow2.save()
-
         http_response2 = factory(HttpResponse, 'http_response').make()
         http_response2.save()
-        http_flow2.response_id = http_response2.id
+
+        http_flow2 = factory(HttpFlow, 'proxy').make(request_id=http_request2.id, response_id=http_response2.id, client_id=1)
         http_flow2.save()
 
         search_results = HttpFlowSearch.search('"syn"*')

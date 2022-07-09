@@ -1,18 +1,21 @@
-from PySide2 import QtCore
+from __future__ import annotations
+
+from PyQt6 import QtCore
 
 class AppSettings:
     # Singleton method stuff:
     __instance = None
 
     @staticmethod
-    def get_instance():
+    def get_instance() -> AppSettings:
         # Static access method.
-        if AppSettings.__instance is None:
-            AppSettings()
-        return AppSettings.__instance
+        if AppSettings.__instance is not None:
+            return AppSettings.__instance
+
+        return AppSettings()
 
     def __init__(self):
-        self.qsettings = QtCore.QSettings("Pntest", "Pntest")  # type: ignore
+        self.qsettings = QtCore.QSettings("Pntest", "Pntest")
 
         # Virtually private constructor.
         if AppSettings.__instance is not None:

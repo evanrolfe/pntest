@@ -27,7 +27,7 @@ class SettingsJson(TypedDict):
 class ProxyRequest(TypedDict):
     http_version: str
     headers: list[tuple[str, str]]
-    content: bytes
+    content: str
     trailers: Any
     timestamp_start: float
     timestamp_end: float
@@ -45,7 +45,7 @@ class ProxyRequest(TypedDict):
 class ProxyResponse(TypedDict):
     http_version: str
     headers: list[tuple[str, str]]
-    content: bytes
+    content: str
     trailers: Any
     timestamp_start: float
     timestamp_end: float

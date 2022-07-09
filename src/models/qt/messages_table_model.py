@@ -1,24 +1,24 @@
 from typing import Any, Optional
-from PySide2 import QtCore
+from PyQt6 import QtCore
 
 from lib.utils import format_timestamp
 from models.data.websocket_message import WebsocketMessage
 
 class MessagesTableModel(QtCore.QAbstractTableModel):
-    dataChanged: QtCore.SignalInstance
-    layoutChanged: QtCore.SignalInstance
+    # dataChanged: QtCore.pyqtSignalInstance
+    # layoutChanged: QtCore.pyqtSignalInstance
 
     headers: list[str]
     messages: list[WebsocketMessage]
 
-    def __init__(self, messages: list[WebsocketMessage], parent: QtCore.QObject = None):
+    def __init__(self, messages: list[WebsocketMessage], parent: Optional[QtCore.QObject] = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Request', 'Direction', 'Time', 'Modified']
         self.messages = list(messages)
 
     def add_message(self, message: WebsocketMessage) -> None:
         rowIndex = 0
-        self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)  # type: ignore
+        self.beginInsertRows(QtCore.QModelIndex(), rowIndex, rowIndex)
         self.messages.insert(0, message)
         self.endInsertRows()
 
@@ -36,7 +36,10 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
         row_index = self.get_index_of(message_ids[0])
         row_index2 = self.get_index_of(message_ids[-1])
 
-        self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)  # type: ignore
+        if row_index is None or row_index2 is None:
+            return
+
+        self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
         WebsocketMessage.destroy(*message_ids)
         self.messages = list(filter(lambda r: r.id not in message_ids, self.messages))
         self.endRemoveRows()
@@ -47,20 +50,20 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
     #         roles[QtCore.Qt.UserRole + i + 1] = header.encode()
     #     return roles
 
-    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt = QtCore.Qt.DisplayRole) -> Optional[str]:
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             return self.headers[section]
 
         return None
 
-    def columnCount(self, parent: QtCore.QObject = None) -> int:
+    def columnCount(self, parent: Optional[QtCore.QObject] = None) -> int:
         return len(self.headers)
 
-    def rowCount(self, parent: QtCore.QObject = None) -> int:
+    def rowCount(self, parent: Optional[QtCore.QObject] = None) -> int:
         return len(self.messages)
 
     def data(self, index: QtCore.QModelIndex, role: QtCore.Qt) -> Any:
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             if not index.isValid():
                 return None
 
@@ -79,7 +82,6 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
 
             return row_values[index.column()]
 
-    @QtCore.Slot(result="QVariantList")  # type: ignore
     def roleNameArray(self) -> list[str]:
         return self.headers
 
@@ -87,12 +89,12 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
         self.sortOrder = order
         self.sortColumn = column
 
-        if (order == QtCore.Qt.AscendingOrder):
+        if (order == QtCore.Qt.SortOrder.AscendingOrder):
             print(f"Sorting column {column} ASC")
-        elif (order == QtCore.Qt.DescendingOrder):
+        elif (order == QtCore.Qt.SortOrder.DescendingOrder):
             print(f"Sorting column {column} DESC")
 
-        reverse = (order == QtCore.Qt.DescendingOrder)
+        reverse = (order == QtCore.Qt.SortOrder.DescendingOrder)
 
         if (column == 0):
             self.messages = sorted(self.messages, key=lambda r: r.id, reverse=reverse)
@@ -103,7 +105,7 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
         elif (column == 3):
             self.messages = sorted(self.messages, key=lambda r: r.created_at, reverse=reverse)
 
-        self.dataChanged.emit(QtCore.QModelIndex, QtCore.QModelIndex)
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
 
     def refresh(self) -> None:
         self.layoutChanged.emit()

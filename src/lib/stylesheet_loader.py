@@ -1,7 +1,7 @@
 import os
 import re
 
-from PySide2 import QtCore
+from PyQt6 import QtCore
 
 class StyleheetLoader:
     def __init__(self, style_dir_path):
@@ -20,8 +20,8 @@ class StyleheetLoader:
         else:
             return
 
-        file = QtCore.QFile(style_path)  # type: ignore
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)  # type: ignore
+        file = QtCore.QFile(style_path)
+        file.open(QtCore.QIODeviceBase.OpenModeFlag.ReadOnly | QtCore.QIODeviceBase.OpenModeFlag.Text)
         stream = QtCore.QTextStream(file)
 
         stylesheet = stream.readAll()
@@ -36,7 +36,7 @@ class StyleheetLoader:
 
     def get_theme_vars(self, theme_path):
         file = QtCore.QFile(theme_path)
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)  # type: ignore
+        file.open(QtCore.QIODeviceBase.OpenModeFlag.ReadOnly | QtCore.QIODeviceBase.OpenModeFlag.Text)
         stream = QtCore.QTextStream(file)
         theme_str = stream.readAll()
 

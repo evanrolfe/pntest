@@ -1,6 +1,6 @@
-from PySide2 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
-from views._compiled.clients.ui_clients_page import Ui_ClientsPage
+from views._compiled.clients.clients_page import Ui_ClientsPage
 
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
@@ -25,10 +25,10 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.clientsTable.bring_to_front_client_clicked.connect(self.bring_to_front_client_clicked)
 
         # Add Icons:
-        self.ui.chromiumButton.setIcon(QtGui.QIcon(':/icons/icons8-chromium.svg'))
-        self.ui.chromeButton.setIcon(QtGui.QIcon(':/icons/icons8-chrome.svg'))
-        self.ui.firefoxButton.setIcon(QtGui.QIcon(':/icons/icons8-firefox.svg'))
-        self.ui.anythingButton.setIcon(QtGui.QIcon(':/icons/icons8-question-mark.png'))
+        self.ui.chromiumButton.setIcon(QtGui.QIcon('assets:icons/icons8-chromium.svg'))
+        self.ui.chromeButton.setIcon(QtGui.QIcon('assets:icons/icons8-chrome.svg'))
+        self.ui.firefoxButton.setIcon(QtGui.QIcon('assets:icons/icons8-firefox.svg'))
+        self.ui.anythingButton.setIcon(QtGui.QIcon('assets:icons/icons8-question-mark.png'))
 
         # Connect client buttons:
         self.ui.chromiumButton.clicked.connect(lambda: self.create_client('chromium'))
@@ -57,11 +57,6 @@ class ClientsPage(QtWidgets.QWidget):
         clients = Client.all()
         self.clients_table_model.set_clients(clients)
 
-    @QtCore.Slot()  # type:ignore
-    def new_client_click(self):
-        self.new_client_modal.show()
-
-    @QtCore.Slot()  # type:ignore
     def create_client(self, client_type):
         ports = Client.get_next_port_available()
 
@@ -100,18 +95,15 @@ class ClientsPage(QtWidgets.QWidget):
 
         # return client_info
 
-    @QtCore.Slot()  # type:ignore
     def open_client_clicked(self, client):
         client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
 
         client.launch(client_info)
         self.reload_table_data()
 
-    @QtCore.Slot()  # type:ignore
     def close_client_clicked(self, client):
         client.close()
         self.reload_table_data()
 
-    @QtCore.Slot()  # type:ignore
     def bring_to_front_client_clicked(self, client):
         print(f'============> bring to front client {client}')

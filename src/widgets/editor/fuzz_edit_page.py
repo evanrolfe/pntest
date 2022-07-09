@@ -1,8 +1,8 @@
-from PySide2 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 from lib.fuzz_http_requests import FuzzHttpRequests
 from models.data.http_flow import HttpFlow
 
-from views._compiled.editor.ui_fuzz_edit_page import Ui_FuzzEditPage
+from views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
@@ -12,8 +12,8 @@ class FuzzEditPage(QtWidgets.QWidget):
     flow: HttpFlow
     fuzzer: FuzzHttpRequests
 
-    form_input_changed = QtCore.Signal(bool)
-    request_saved = QtCore.Signal()
+    form_input_changed = QtCore.pyqtSignal(bool)
+    request_saved = QtCore.pyqtSignal()
 
     METHODS = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD']
 
@@ -61,11 +61,12 @@ class FuzzEditPage(QtWidgets.QWidget):
         # self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
         # Keyboard shortcuts:
-        self.connect(
-            QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_S), self),
-            QtCore.SIGNAL('activated()'),
-            self.save_request
-        )
+        # TODO:
+        # self.connect(
+        #     QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_S), self),
+        #     QtCore.SIGNAL('activated()'),
+        #     self.save_request
+        # )
         # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
         #  QtCore.SIGNAL('activated()'), self.send_request_async)
 
@@ -78,7 +79,6 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.set_method_on_form(form_data['method'])
         self.ui.fuzzView.set_flow(self.flow)
 
-    @QtCore.Slot()  # type:ignore
     def start_fuzzing_async(self):
         print('Fuzzing...')
         self.save_request()
@@ -91,7 +91,6 @@ class FuzzEditPage(QtWidgets.QWidget):
 
         self.threadpool.start(self.worker)
 
-    @QtCore.Slot()  # type:ignore
     def example_response_received(self, example_flow: HttpFlow):
         if not self.ui.examplesTable.isVisible():
             self.toggle_examples_table()
@@ -101,11 +100,9 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.show_examples()
         print(f'Got response for example: {example_flow.request.get_url()}')
 
-    @QtCore.Slot()  # type:ignore
     def fuzz_finished(self):
         print('Finished!')
 
-    @QtCore.Slot()  # type:ignore
     def loader_cancel_clicked(self):
         self.fuzzer.cancel()
 
@@ -116,13 +113,11 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.ui.fuzzButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
 
-    @QtCore.Slot()  # type:ignore
     def show_example(self, flow):
         self.flow = flow
         self.show_request()
         self.set_send_save_buttons_enabled(not self.flow.is_example())
 
-    @QtCore.Slot()  # type:ignore
     def delete_examples(self, flows):
         example_flows = [f for f in flows if f.is_example()]
 
@@ -134,7 +129,6 @@ class FuzzEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.reload()
 
-    @QtCore.Slot()  # type:ignore
     def save_request(self):
         self.update_request_with_values_from_form()
         if hasattr(self.flow, 'id'):
@@ -149,14 +143,13 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.form_input_changed.emit(False)
         self.request_saved.emit()
 
-    @QtCore.Slot()  # type:ignore
     def request_error(self, error):
         exctype, value, traceback = error
 
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('Error')
         message_box.setText(str(value))
-        message_box.exec_()
+        message_box.exec()
 
     # Get the request values (method, url, header, content) from the form and set them on the
     # HttpRequest object, but dont save it
@@ -183,7 +176,6 @@ class FuzzEditPage(QtWidgets.QWidget):
         }
         self.flow.request.set_form_data(form_data)
 
-    @QtCore.Slot()  # type:ignore
     def form_field_changed(self):
         request_on_form = {
             'method': self.ui.methodInput.currentText(),
@@ -197,7 +189,6 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.request_is_modified = (request_on_form != original_request)
         self.form_input_changed.emit(self.request_is_modified)
 
-    @QtCore.Slot()  # type:ignore
     def toggle_examples_table(self):
         visible = not self.ui.examplesTable.isVisible()
         self.ui.examplesTable.setVisible(visible)
@@ -216,7 +207,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         # splitter_state2 = self.settings.get("FuzzEditPage.splitter2", None)
 
         # self.ui.requestEditSplitter.restoreState(splitter_state)
-        # self.ui.splitter2.restoreState(splitter_state2)
+        # if splitter_state2 is not None:
+        #   self.ui.splitter2.restoreState(splitter_state2)
 
     def save_layout_state(self):
         return None

@@ -1,4 +1,5 @@
 # import time
+from py import process
 from pytestqt.qtbot import QtBot
 from support.fixtures import load_fixtures
 from lib.process_manager import ProcessManager
@@ -14,7 +15,7 @@ class TestMainWindow:
         widget.set_process_manager(process_manager)
 
         qtbot.addWidget(widget)
-        qtbot.waitForWindowShown(widget)
+        qtbot.waitExposed(widget)
 
         # QtBot is unable to click context menus, so we simulate the right-click by triggering the signal here directly:
         proxy_flow = widget.network_page.http_page.ui.requestsTableWidget.table_model.flows[0]
@@ -31,3 +32,5 @@ class TestMainWindow:
         assert len(editor_flows) == 1
         assert editor_flow.id != proxy_flow.id
         assert editor_flow.request.id != proxy_flow.request.id
+
+        process_manager.on_exit()

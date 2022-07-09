@@ -1,14 +1,14 @@
 import json
 # from html5print import HTMLBeautifier
 from bs4 import BeautifulSoup
-from PySide2 import QtWidgets
-from PySide2 import QtCore
+from PyQt6 import QtWidgets
+from PyQt6 import QtCore
 
-from views._compiled.shared.ui_flow_view import Ui_FlowView
+from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers
 
 class FlowView(QtWidgets.QWidget):
-    save_example_clicked = QtCore.Signal()
+    save_example_clicked = QtCore.pyqtSignal()
 
     FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
 
@@ -80,7 +80,6 @@ class FlowView(QtWidgets.QWidget):
     def set_save_as_example_enabled(self, enabled):
         self.save_example_button.setEnabled(enabled)
 
-    @QtCore.Slot(int)
     def show_modified_request_change(self, index):
         if index == 0:  # Modified
             self.show_modified_request = True
@@ -89,7 +88,6 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_request(self.flow)
 
-    @QtCore.Slot(int)
     def show_modified_response_change(self, index):
         if index == 0:  # Modified
             self.show_modified_response = True
@@ -113,7 +111,7 @@ class FlowView(QtWidgets.QWidget):
         # Response:
         self.ui.responseRaw.set_value('')
         self.ui.responseRendered.set_value('')
-        self.ui.responseBodyPreview.setHtml(None)
+        # self.ui.responseBodyPreview.setHtml('')
 
     def set_flow(self, flow):
         self.flow = flow
@@ -149,7 +147,7 @@ class FlowView(QtWidgets.QWidget):
             self.ui.responseHeaders.set_header_line('')
             self.ui.responseHeaders.set_headers(None)
             self.ui.responseRaw.set_value('')
-            self.ui.responseBodyPreview.setHtml(None)
+            # self.ui.responseBodyPreview.setHtml('')
             return
 
         self.ui.responseHeaders.set_header_line(response.get_header_line())
@@ -164,10 +162,10 @@ class FlowView(QtWidgets.QWidget):
         content_type = headers.get('Content-Type', '')
         # mime_type = content_type.split(';')[0]
 
-        if 'html' in content_type:
-            self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
-        else:
-            self.ui.responseBodyPreview.setHtml('')
+        # if 'html' in content_type:
+        #     self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
+        # else:
+        #     self.ui.responseBodyPreview.setHtml('')
 
     # This method does not need the response to be saved to the DB:
     def set_response_from_editor(self, response):
@@ -183,27 +181,30 @@ class FlowView(QtWidgets.QWidget):
         content_type = headers.get('Content-Type', '')
         # mime_type = content_type.split(';')[0]
 
-        if 'html' in content_type:
-            self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=self.flow.request.get_url())
-        else:
-            self.ui.responseBodyPreview.setHtml('')
+        # if 'html' in content_type:
+        #     self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=self.flow.request.get_url())
+        # else:
+        #     self.ui.responseBodyPreview.setHtml('')
 
     def set_modified_dropdown(self, flow):
+        if self.request_modified_dropdown is None:
+            return
+
         self.request_modified_dropdown.setCurrentIndex(0)
         self.request_modified_dropdown.setVisible(flow.request_modified())
+
+        if self.response_modified_dropdown is None:
+            return
 
         self.response_modified_dropdown.setCurrentIndex(0)
         self.response_modified_dropdown.setVisible(flow.response_modified())
 
-    @QtCore.Slot()  # type:ignore
     def show_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
 
-    @QtCore.Slot()  # type:ignore
     def hide_loader(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
 
-    @QtCore.Slot()  # type:ignore
     def change_response_body_format(self, index):
         self.selected_format = self.FORMATS[index]
 

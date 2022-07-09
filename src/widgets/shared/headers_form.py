@@ -1,8 +1,9 @@
 from copy import deepcopy
-from PySide2 import QtWidgets, QtCore
+from typing import Optional
+from PyQt6 import QtWidgets, QtCore
 
-from views._compiled.shared.ui_headers_form import Ui_HeadersForm
-from models.qt.request_headers_table_model import RequestHeadersTableModel
+from views._compiled.shared.headers_form import Ui_HeadersForm
+from models.qt.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
 from lib.types import Headers
 
 class HeadersForm(QtWidgets.QWidget):
@@ -29,14 +30,14 @@ class HeadersForm(QtWidgets.QWidget):
         self.set_headers({})
 
         self.ui.headersTable.setModel(self.table_model)
-        self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
 
         horizontalHeader = self.ui.headersTable.horizontalHeader()
         horizontalHeader.setStretchLastSection(True)
-        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+        horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Interactive)
 
         verticalHeader = self.ui.headersTable.verticalHeader()
-        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
 
@@ -56,20 +57,19 @@ class HeadersForm(QtWidgets.QWidget):
         headers = self.DEFAULT_HEADERS[:] + [self.EMPTY_HEADER]
         self.table_model.set_headers(deepcopy(headers))
 
-    def set_headers(self, headers: Headers):
+    def set_headers(self, headers: Optional[Headers]):
         if headers is None:
-            headers = []
+            new_headers: list[HeaderTuple] = []
         else:
-            headers = [(True, key, value) for key, value in headers.items()]
+            new_headers = [(True, key, value) for key, value in headers.items()]
 
         if self.editable:
-            headers.append(deepcopy(self.EMPTY_HEADER))
+            new_headers.append(deepcopy(self.EMPTY_HEADER))
 
-        self.table_model.set_headers(headers)
+        self.table_model.set_headers(new_headers)
 
-    @QtCore.Slot()  # type:ignore
     def show_generated_headers(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.CheckState.Checked:
             self.ui.headersTable.showRow(0)
             self.ui.headersTable.showRow(1)
         else:

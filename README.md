@@ -29,12 +29,7 @@ Run the app in developer mode:
 $ bin/dev
 ```
 
-Compile Qt assets to python with:
-```bash
-$ bin/compile_assets
-```
-
-Compile Qt UI files to python with:
+Compile Qt UI files to python with: (requires pyqt6rc which should be installed outside of the venv because of version conflicts)
 ```bash
 $ bin/compile_views
 ```

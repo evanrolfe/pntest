@@ -27,7 +27,7 @@ DEFAULT_CHROME_OPTIONS = [
     '--noerrdialogs http://pntest'
 ]
 
-def launch_chrome_or_chromium(client, browser_command):
+def launch_chrome_or_chromium(client, browser_command: str) -> subprocess.Popen:
     options = get_options_chrome_or_chromium(client)
     process = subprocess.Popen(
         [browser_command] + options + ['http://pntest'],
@@ -35,7 +35,7 @@ def launch_chrome_or_chromium(client, browser_command):
     )
     return process
 
-def launch_firefox(client, browser_command):
+def launch_firefox(client, browser_command: str) -> subprocess.Popen:
     options = get_options_firefox(client, browser_command)
 
     process = subprocess.Popen(
