@@ -139,6 +139,7 @@ QListWidget#sideBar {
 
 QListWidget::item#sideBar {
   padding: 5px;
+  color: $text;
 }
 
 QListWidget::item::!selected#sideBar {

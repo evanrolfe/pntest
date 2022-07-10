@@ -24,11 +24,18 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QPlainTextEdit" name="code"/>
+    <widget class="MyScintilla" name="code"/>
    </item>
   </layout>
  </widget>
- <customwidgets/>
+ <customwidgets>
+  <customwidget>
+   <class>MyScintilla</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.my_scintilla.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

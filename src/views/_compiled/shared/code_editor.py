@@ -16,7 +16,7 @@ class Ui_CodeEditor(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(CodeEditor)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.code = QtWidgets.QPlainTextEdit(CodeEditor)
+        self.code = MyScintilla(CodeEditor)
         self.code.setObjectName("code")
         self.verticalLayout.addWidget(self.code)
 
@@ -25,3 +25,4 @@ class Ui_CodeEditor(object):
 
     def retranslateUi(self, CodeEditor):
         pass
+from widgets.shared.my_scintilla import MyScintilla
