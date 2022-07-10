@@ -52,7 +52,7 @@ class CodeEditor(QtWidgets.QWidget):
         self.ui.code.setText(value)
 
     def get_value(self) -> str:
-        return '' # self.ui.code.toPlainText()
+        return self.ui.code.text()
 
     # NOTE: See mu/interface/main.py line 1280 (def replace_text) for an implementation of "replace all"
     def show_finder(self):
