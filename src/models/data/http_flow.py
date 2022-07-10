@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from lib.background_worker import WorkerSignals
+from lib.database import Database
 from models.data.orator_model import OratorModel
 from orator.orm import has_one, has_many
 from lib.http_request import HttpRequest as HttpRequestLib
@@ -86,16 +87,19 @@ class HttpFlow(OratorModel):
     @classmethod
     def update_from_proxy_response(cls, proxy_response: ProxyResponse):
         flow = HttpFlow.where('uuid', '=', proxy_response['flow_uuid']).first()
+        print(f'-------------> Found flow {flow.id}')
         if flow is None:
             return
 
         response = HttpResponse.from_state(proxy_response)
         response.save()
 
-        flow.response = response
-        flow.save()
+        # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
+        database = Database.get_instance()
+        database.db.table('http_flows').where('id', flow.id).update(response_id=response.id)
 
-        return flow
+        flow2 = HttpFlow.find(flow.id)
+        return flow2
 
     @classmethod
     def create_from_proxy_websocket_message(cls, proxy_websocket_message):
