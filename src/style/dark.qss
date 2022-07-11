@@ -348,7 +348,7 @@ QComboBox::drop-down {
 }
 
 /*------------------------------------------------------------------------------*
- * TextArea & LineEdit
+ * TextArea, LineEdit, LineScintilla
  *------------------------------------------------------------------------------*/
  QTextEdit, QPlainTextEdit {
   background-color: $bg-extra-dark;
@@ -377,4 +377,9 @@ QLineEdit:focus {
 #headerLine {
     border-width: 0;
     background-color: $bg-dark;
+}
+
+LineScintilla {
+  border: 1 solid $bg-input;
+  background-color: $bg-dark;
 }

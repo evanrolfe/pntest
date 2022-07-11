@@ -1,10 +1,26 @@
 from copy import deepcopy
 from typing import Optional
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from views._compiled.shared.headers_form import Ui_HeadersForm
 from models.qt.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
+from widgets.shared.line_scintilla import LineScintilla
 from lib.types import Headers
+
+class MyDelegate(QtWidgets.QItemDelegate):
+    def __init__(self, parent = None):
+        super(MyDelegate, self).__init__(parent)
+
+    def createEditor(self, parent: QtWidgets.QWidget, option: QtWidgets.QStyleOptionViewItem, index: QtCore.QModelIndex):
+        return LineScintilla(parent)
+
+    def setModelData(self, editor: LineScintilla, model: RequestHeadersTableModel, index: QtCore.QModelIndex):
+        value = editor.text()
+        model.setData(index, value, QtCore.Qt.ItemDataRole.EditRole)
+
+    def setEditorData(self, editor: LineScintilla, index: QtCore.QModelIndex):
+        value = index.model().data(index, QtCore.Qt.ItemDataRole.EditRole)
+        editor.setText(value)
 
 class HeadersForm(QtWidgets.QWidget):
     CALCULATED_TEXT = '<calculated when request is sent>'
@@ -30,6 +46,9 @@ class HeadersForm(QtWidgets.QWidget):
         self.set_headers({})
 
         self.ui.headersTable.setModel(self.table_model)
+        delegate = MyDelegate()
+        self.ui.headersTable.setItemDelegate(delegate)
+
         self.ui.headersTable.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
 
         horizontalHeader = self.ui.headersTable.horizontalHeader()

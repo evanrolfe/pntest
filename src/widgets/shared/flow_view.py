@@ -160,8 +160,8 @@ class FlowView(QtWidgets.QWidget):
         #     self.ui.responseRendered.set_value(response_body_rendered or '')
         headers = flow.response.get_headers()
         content_type = headers.get('Content-Type', '')
-        # mime_type = content_type.split(';')[0]
-
+        mime_type = content_type.split(';')[0]
+        print(f"--------------> mime type received is: {mime_type}")
         # if 'html' in content_type:
         #     self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
         # else:

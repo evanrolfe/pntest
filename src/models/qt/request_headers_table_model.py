@@ -68,7 +68,9 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
     def setData(self, index: QtCore.QModelIndex, value: Any, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.EditRole) -> bool:
         if role == QtCore.Qt.ItemDataRole.CheckStateRole and index.column() == 0:
             header = self.headers[index.row()]
-            checked = (value == QtCore.Qt.CheckState.Checked)
+
+            check_state = QtCore.Qt.CheckState(value)
+            checked = (check_state == QtCore.Qt.CheckState.Checked)
             self.headers[index.row()] = (checked, header[1], header[2])
             return True
 
