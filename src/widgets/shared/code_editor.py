@@ -6,6 +6,8 @@ from views._compiled.shared.code_editor import Ui_CodeEditor
 class CodeEditor(QtWidgets.QWidget):
     set_code = QtCore.pyqtSignal(str, str)
 
+    FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
+
     def __init__(self, *args, **kwargs):
         super(CodeEditor, self).__init__(*args, **kwargs)
         self.ui = Ui_CodeEditor()
@@ -17,7 +19,13 @@ class CodeEditor(QtWidgets.QWidget):
         keyseq_ctrl_f = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+F'), self)
         keyseq_ctrl_f.activated.connect(self.show_finder)
 
-    def set_value(self, value, format=''):
+    def set_value(self, value, format = None):
+        if format != None:
+            if format not in self.FORMATS:
+                raise Exception(f'Unknown format {format}')
+
+            self.ui.code.set_format(format)
+
         self.ui.code.setText(value)
 
     def get_value(self) -> str:

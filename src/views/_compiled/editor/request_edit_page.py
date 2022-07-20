@@ -49,8 +49,9 @@ class Ui_RequestEditPage(object):
         self.methodInput = QtWidgets.QComboBox(self.layoutWidget)
         self.methodInput.setObjectName("methodInput")
         self.requestActionsLayout.addWidget(self.methodInput)
-        self.urlInput = QtWidgets.QLineEdit(self.layoutWidget)
-        self.urlInput.setMinimumSize(QtCore.QSize(300, 0))
+        self.urlInput = LineScintilla(self.layoutWidget)
+        self.urlInput.setMinimumSize(QtCore.QSize(300, 32))
+        self.urlInput.setMaximumSize(QtCore.QSize(9999, 32))
         self.urlInput.setObjectName("urlInput")
         self.requestActionsLayout.addWidget(self.urlInput)
         self.sendButton = QtWidgets.QPushButton(self.layoutWidget)
@@ -87,3 +88,4 @@ class Ui_RequestEditPage(object):
         self.saveButton.setText(_translate("RequestEditPage", "Save"))
 from widgets.editor.examples_table import ExamplesTable
 from widgets.shared.flow_view import FlowView
+from widgets.shared.line_scintilla import LineScintilla

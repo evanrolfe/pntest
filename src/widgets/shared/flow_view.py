@@ -6,11 +6,10 @@ from PyQt6 import QtCore
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers
+from widgets.shared.code_editor import CodeEditor
 
 class FlowView(QtWidgets.QWidget):
     save_example_clicked = QtCore.pyqtSignal()
-
-    FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
 
     def __init__(self, *args, **kwargs):
         super(FlowView, self).__init__(*args, **kwargs)
@@ -21,7 +20,7 @@ class FlowView(QtWidgets.QWidget):
         self.show_modified_request = False
         self.show_modified_response = False
         self.editable = False
-        self.selected_format = self.FORMATS[len(self.FORMATS) - 1]
+        self.selected_format = CodeEditor.FORMATS[len(CodeEditor.FORMATS) - 1]
 
         # Setup Request Corner Widget:
         self.request_modified_dropdown = QtWidgets.QComboBox()
@@ -42,9 +41,9 @@ class FlowView(QtWidgets.QWidget):
 
         self.response_format_dropdown = QtWidgets.QComboBox()
         self.response_format_dropdown.setContentsMargins(10, 10, 10, 10)
-        self.response_format_dropdown.insertItems(0, self.FORMATS)
+        self.response_format_dropdown.insertItems(0, CodeEditor.FORMATS)
         self.response_format_dropdown.setObjectName('responseFormatDropdown')
-        self.response_format_dropdown.setCurrentIndex(len(self.FORMATS) - 1)
+        self.response_format_dropdown.setCurrentIndex(len(CodeEditor.FORMATS) - 1)
         self.response_format_dropdown.currentIndexChanged.connect(self.change_response_body_format)
 
         self.save_example_button = QtWidgets.QPushButton('Save as Example')
@@ -206,7 +205,7 @@ class FlowView(QtWidgets.QWidget):
         self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
 
     def change_response_body_format(self, index):
-        self.selected_format = self.FORMATS[index]
+        self.selected_format = CodeEditor.FORMATS[index]
 
         if self.flow.response:
             content = self.flow.response.content
@@ -249,5 +248,5 @@ class FlowView(QtWidgets.QWidget):
         else:
             self.selected_format = 'Unformatted'
 
-        index = self.FORMATS.index(self.selected_format)
+        index = CodeEditor.FORMATS.index(self.selected_format)
         self.response_format_dropdown.setCurrentIndex(index)

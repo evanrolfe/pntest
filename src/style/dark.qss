@@ -12,22 +12,25 @@ QWidget {
 /*------------------------------------------------------------------------------*
  * Tabs
  *------------------------------------------------------------------------------*/
+
 QTabBar::tab {
   color: $text;
   border: 0 transparent black;
   border-top: 0 solid $border-light;
+  border-bottom: 1 solid $border-dark;
   background-color: $bg-mid;
   padding-left: 6px;
   padding-right: 6px;
   min-width: 80px;
   min-height: 25px;
-  margin-right: 2px;
+  margin-right: 0px;
 }
 
 QTabBar::tab:selected {
   color: $text;
   border: 0 transparent black;
   border-top: 0 solid $border-light;
+  border-bottom: 1 solid $border-dark;
   background-color: $bg-extra-dark;
   border-top: 2px solid $item-bright;
 }
@@ -380,6 +383,19 @@ QLineEdit:focus {
 }
 
 LineScintilla {
+  /* Border here matches the background so is only here as a placeholder to allow the focus border to appear */
+  border: 1 solid $bg-dark;
+  background-color: $bg-input;
+  padding-left: 5px;
+}
+
+/* NOTE: The hover and focus background colours are also implemented with python in the LineScintilla widget */
+LineScintilla:hover {
+  background-color: $bg-input-hover;
+}
+
+LineScintilla:focus {
   border: 1 solid $bg-input;
   background-color: $bg-dark;
+  border: 1 solid $bg-input;
 }

@@ -1,16 +1,10 @@
 import re
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 
+from widgets.shared.code_themes import DarkTheme
+
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
-
-class DarkTheme:
-    default_bg = "#1E1E1E"
-    default_color = "#D4D4D4"
-    key_color = "#823FF1"
-    operator_color = "#569CD6"
-    invalid_color = "#f14721"
-    selected_secondary_color = "#4E5256"
 
 class MyScintilla(Qsci.QsciScintilla):
     def __init__(self, *args, **kwargs):
@@ -40,8 +34,7 @@ class MyScintilla(Qsci.QsciScintilla):
         self.setIndicatorDrawUnder(True)
 
         self.theme = DarkTheme
-        self.set_colours()
-
+        self.apply_theme()
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
@@ -101,7 +94,7 @@ class MyScintilla(Qsci.QsciScintilla):
         * Ignore anything less than one word
         """
         selected_range = line0, col0, line1, col1 = self.getSelection()
-        print(f'Selection changed {col0} {col1}')
+
         #
         # If there's no selection, do nothing
         #
@@ -174,7 +167,7 @@ class MyScintilla(Qsci.QsciScintilla):
                     "col_end": col_end,
                 }
             )
-            print(f'Calling fillIndicatorRange line_start: {line_start}, line_end: {line_end}, col_start: {col_start}, col_end: {col_end}, id: {indicators["id"]}')
+
             self.fillIndicatorRange(
                 line_start, col_start, line_end, col_end, indicators["id"]
             )
@@ -205,13 +198,31 @@ class MyScintilla(Qsci.QsciScintilla):
                 )
             self.search_indicators[indicator]["positions"] = []
 
+    def set_format(self, format: str):
+        if format == 'JSON':
+            lexer = self.theme.new_json_lexer()
+            self.setLexer(lexer)
+        elif format in ['XML', 'HTML']:
+            lexer = self.theme.new_html_lexer()
+            self.setLexer(lexer)
+        elif format == 'Javascript':
+            lexer = self.theme.new_js_lexer()
+            self.setLexer(lexer)
 
-    def set_colours(self):
-        self.setMarginsBackgroundColor(QtGui.QColor(self.theme.default_bg))
-        self.setMarginsForegroundColor(QtGui.QColor(self.theme.default_color))
+    def apply_theme(self):
+        self.setPaper(QtGui.QColor(self.theme.default_bg))
+        self.setColor(QtGui.QColor(self.theme.default_color))
         self.setCaretForegroundColor(QtGui.QColor(self.theme.default_color))
 
+        self.setMarginsBackgroundColor(QtGui.QColor(self.theme.default_bg))
+        self.setMarginsForegroundColor(QtGui.QColor(self.theme.darker_color))
+
+        self.setIndentationGuidesBackgroundColor(QtGui.QColor(self.theme.darker_color))
+
         for type_ in self.search_indicators:
+            self.setMatchedBraceForegroundColor(QtGui.QColor(self.theme.default_color))
+            self.setMatchedBraceBackgroundColor(QtGui.QColor(self.theme.selected_secondary_color))
+
             self.setIndicatorForegroundColor(QtGui.QColor(self.theme.selected_secondary_color), self.search_indicators[type_]["id"])
             self.setIndicatorHoverStyle(Qsci.QsciScintilla.IndicatorStyle.FullBoxIndicator, self.search_indicators[type_]["id"])
 
@@ -219,63 +230,3 @@ class MyScintilla(Qsci.QsciScintilla):
             self.SendScintilla(
                 Qsci.QsciScintilla.SCI_INDICSETSTYLE, self.search_indicators[type_]["id"], 16
             )
-
-        lexer = self.new_html_lexer()
-        self.setLexer(lexer)
-
-    def new_html_lexer(self):
-        lexer = Qsci.QsciLexerHTML()
-
-        lexer.setDefaultPaper(QtGui.QColor(self.theme.default_bg))
-        lexer.setDefaultColor(QtGui.QColor(self.theme.default_color))
-
-        lexer.setColor(QtGui.QColor(self.theme.key_color), Qsci.QsciLexerHTML.Tag)
-        lexer.setColor(QtGui.QColor(self.theme.key_color), Qsci.QsciLexerHTML.UnknownTag)
-        lexer.setColor(QtGui.QColor(self.theme.key_color), Qsci.QsciLexerHTML.Attribute)
-        lexer.setColor(QtGui.QColor(self.theme.key_color), Qsci.QsciLexerHTML.UnknownAttribute)
-
-        lexer.setColor(QtGui.QColor(self.theme.operator_color), Qsci.QsciLexerHTML.XMLStart)
-        lexer.setColor(QtGui.QColor(self.theme.operator_color), Qsci.QsciLexerHTML.XMLEnd)
-
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.OtherInTag)
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.HTMLNumber)
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.HTMLDoubleQuotedString)
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.HTMLSingleQuotedString)
-
-        lexer.setPaper(QtGui.QColor(self.theme.default_bg), Qsci.QsciLexerHTML.JavaScriptDefault)
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.JavaScriptDefault)
-        lexer.setPaper(QtGui.QColor(self.theme.default_bg), Qsci.QsciLexerHTML.Script)
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.Script)
-
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerHTML.Default)
-
-        lexer.setFont(self.get_font())
-        return lexer
-
-    def new_json_lexer(self):
-        lexer = Qsci.QsciLexerJSON()
-
-        lexer.setHighlightEscapeSequences(False)
-
-        lexer.setDefaultPaper(QtGui.QColor(self.theme.default_bg))
-        lexer.setDefaultColor(QtGui.QColor(self.theme.default_color))
-
-        lexer.setPaper(QtGui.QColor(self.theme.default_bg), Qsci.QsciLexerJSON.Error)
-        lexer.setColor(QtGui.QColor(self.theme.invalid_color), Qsci.QsciLexerJSON.Error)
-        lexer.setPaper(QtGui.QColor(self.theme.default_bg), Qsci.QsciLexerJSON.UnclosedString)
-        lexer.setColor(QtGui.QColor(self.theme.invalid_color), Qsci.QsciLexerJSON.UnclosedString)
-
-        lexer.setColor(QtGui.QColor(self.theme.key_color), Qsci.QsciLexerJSON.Property)
-        lexer.setColor(QtGui.QColor(self.theme.default_color), Qsci.QsciLexerJSON.String)
-        lexer.setColor(QtGui.QColor(self.theme.operator_color), Qsci.QsciLexerJSON.Operator)
-
-        lexer.setColor(QtGui.QColor(self.theme.invalid_color), Qsci.QsciLexerJSON.UnclosedString)
-
-        lexer.setFont(self.get_font())
-        return lexer
-
-    def get_font(self) -> QtGui.QFont:
-        # fonts = QtGui.QFontDatabase.families()
-        # TODO: Search through the fonts and find one that matches
-        font = QtGui.QFontDatabase.font('Menlo', 'Regular', 12)
-        return font

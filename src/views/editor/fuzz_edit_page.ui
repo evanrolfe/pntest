@@ -107,11 +107,17 @@
           <widget class="QComboBox" name="methodInput"/>
          </item>
          <item>
-          <widget class="QLineEdit" name="urlInput">
+          <widget class="LineScintilla" name="urlInput">
            <property name="minimumSize">
             <size>
              <width>300</width>
-             <height>0</height>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>9999</width>
+             <height>32</height>
             </size>
            </property>
           </widget>
@@ -181,6 +187,12 @@
    <class>ExamplesTable</class>
    <extends>QWidget</extends>
    <header>widgets.editor.examples_table.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LineScintilla</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.line_scintilla.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

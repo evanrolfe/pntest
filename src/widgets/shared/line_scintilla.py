@@ -1,21 +1,16 @@
 import re
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 
+from widgets.shared.code_themes import DarkTheme
+
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
 
-class DarkTheme:
-    default_bg = "#1E1E1E"
-    default_color = "#D4D4D4"
-    key_color = "#823FF1"
-    operator_color = "#569CD6"
-    invalid_color = "#f14721"
-    selected_secondary_color = "#4E5256"
-
-    bg_dark = "#252526"
-    border_color = "#404040"
-
 class LineScintilla(Qsci.QsciScintilla):
+    # TODO: Implement these signals
+    enter_pressed = QtCore.pyqtSignal()
+    text_changed = QtCore.pyqtSignal()
+
     def __init__(self, *args, **kwargs):
         super(LineScintilla, self).__init__(*args, **kwargs)
 
@@ -41,7 +36,14 @@ class LineScintilla(Qsci.QsciScintilla):
         self.setIndicatorDrawUnder(True)
 
         self.theme = DarkTheme
-        self.set_colours()
+        self.apply_theme()
+
+        #self.SendScintilla(Qsci.QsciScintilla.SCI_STYLESETSIZE, 16)
+        font = QtGui.QFontDatabase.font('Menlo', 'Regular', 12)
+        self.setFont(font)
+
+        self.SendScintilla(Qsci.QsciScintilla.SCI_SETEXTRAASCENT, 10)
+        self.focused = False
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
@@ -70,10 +72,16 @@ class LineScintilla(Qsci.QsciScintilla):
             self.SendScintilla(Qsci.QsciScintilla.SCI_SETSELECTIONSTART, start_pos)
             self.SendScintilla(Qsci.QsciScintilla.SCI_SETSELECTIONEND, end_pos)
         elif 'Return' in key_name:
+            self.enter_pressed.emit()
             # Disabled because we dont handle multiple lines here
             return
         else:
+            old_text = self.text()
             super().keyPressEvent(e)
+            new_text = self.text()
+
+            if new_text != old_text:
+                self.text_changed.emit()
 
     def get_font(self) -> QtGui.QFont:
         # fonts = QtGui.QFontDatabase.families()
@@ -81,7 +89,37 @@ class LineScintilla(Qsci.QsciScintilla):
         font = QtGui.QFontDatabase.font('Menlo', 'Regular', 12)
         return font
 
-    def set_colours(self):
-        self.setPaper(QtGui.QColor(self.theme.bg_dark))
+    def apply_theme(self):
+        self.bg_default = QtGui.QColor(self.theme.bg_input)
+        self.bg_hover = QtGui.QColor(self.theme.bg_input_hover)
+        self.bg_focus = QtGui.QColor(self.theme.bg_dark)
+
+        self.setPaper(self.bg_default)
         self.setColor(QtGui.QColor(self.theme.default_color))
         self.setCaretForegroundColor(QtGui.QColor(self.theme.default_color))
+
+    # Hover
+    def enterEvent(self, event):
+        if not self.focused:
+            self.setPaper(self.bg_hover)
+        super(LineScintilla, self).enterEvent(event)
+
+    # Un-Hover
+    def leaveEvent(self, event):
+        if not self.focused:
+            self.setPaper(self.bg_default)
+        super(LineScintilla, self).leaveEvent(event)
+
+    def focusInEvent(self, event):
+        self.focused = True
+        self.setPaper(self.bg_focus)
+        # Show the cursor:
+        self.SendScintilla(Qsci.QsciScintilla.SCI_SETCARETSTYLE, Qsci.QsciScintilla.CARETSTYLE_LINE)
+        super(LineScintilla, self).focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.focused = False
+        self.setPaper(self.bg_default)
+        # Hide the cursor:
+        self.SendScintilla(Qsci.QsciScintilla.SCI_SETCARETSTYLE, Qsci.QsciScintilla.CARETSTYLE_INVISIBLE)
+        super(LineScintilla, self).focusInEvent(event)
