@@ -306,11 +306,12 @@ class HttpFlow(OratorModel):
         return http_response
 
     def make_request_and_save(self):
-        http_response = self.make_request()
-        http_response.save()
+        response = self.make_request()
+        response.save()
 
-        self.response_id = http_response.id
-        self.save()
+        # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
+        database = Database.get_instance()
+        database.db.table('http_flows').where('id', self.id).update(response_id=response.id)
 
 class HttpFlowObserver:
     def deleted(self, flow):
