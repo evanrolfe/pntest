@@ -1,5 +1,7 @@
 # PnTest
 
+[![PnTest](https://circleci.com/gh/evanrolfe/pntest.svg?style=shield)](https://app.circleci.com/pipelines/github/evanrolfe/pntest) ![](https://img.shields.io/badge/python-3.10-blue) ![](https://img.shields.io/badge/Qt-6-blue)
+
 An HTTP (and Websockets) proxy for performing penetration tests against web applications, with advanced capabilities for handling single-page-applications. This repo contains the frontend GUI application based on Python 3.9 and PySide2.
 
 ![](./screenshot.png)
