@@ -74,14 +74,34 @@ class RequestEditPage(QtWidgets.QWidget):
         keyseq_ctrl_enter = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+Enter'), self)
         keyseq_ctrl_enter.activated.connect(self.send_request_async)
 
-        self.ui.examplesTable.example_selected.connect(self.show_example)
+        self.ui.examplesTable.example_selected.connect(self.example_selected)
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)
 
+    # TODO: This logic is spread all over the place here and in self.ui.flowView, it needs to be
+    # cleaned up and encapsulated (probably most of the logic should go in FlowView)
     def show_request(self):
+        self.set_send_save_buttons_enabled(True)
+
         form_data = self.flow.request.form_data
         self.ui.urlInput.setText(form_data['url'])
         self.set_method_on_form(form_data['method'])
         self.ui.flowView.set_flow(self.flow)
+
+    def show_request_example(self):
+        self.set_send_save_buttons_enabled(False)
+        self.ui.flowView.set_flow(self.flow)
+
+        self.ui.urlInput.setText(self.flow.request.get_url())
+        self.ui.flowView.show_real_request()
+
+    # When an example is selected it can either be the original request or an example
+    def example_selected(self, flow):
+        self.flow = flow
+
+        if self.flow.is_example():
+            self.show_request_example()
+        else:
+            self.show_request()
 
     def show_examples(self):
         self.ui.examplesTable.set_flow(self.flow)
@@ -89,11 +109,6 @@ class RequestEditPage(QtWidgets.QWidget):
     def set_send_save_buttons_enabled(self, enabled):
         self.ui.sendButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
-
-    def show_example(self, flow):
-        self.flow = flow
-        self.show_request()
-        self.set_send_save_buttons_enabled(not self.flow.is_example())
 
     def delete_examples(self, flows):
         example_flows = [f for f in flows if f.is_example()]

@@ -166,6 +166,17 @@ class FlowView(QtWidgets.QWidget):
         # else:
         #     self.ui.responseBodyPreview.setHtml('')
 
+    def show_real_request(self):
+        request = self.flow.request
+
+        self.ui.requestHeaders.set_header_line(request.get_header_line())
+        headers = request.get_headers()
+
+        if headers:
+            self.ui.requestHeaders.set_headers(request.get_headers())
+
+        self.ui.requestBody.set_value(request.content or '')
+
     # This method does not need the response to be saved to the DB:
     def set_response_from_editor(self, response):
         self.editor_response = response
