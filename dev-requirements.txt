@@ -1,3 +1,4 @@
 pytest
 pytest-qt
 pyinstaller==5.0
+pytest-httpserver

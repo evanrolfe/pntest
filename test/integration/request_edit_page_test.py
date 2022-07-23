@@ -1,4 +1,6 @@
 from PyQt6 import QtCore
+import requests
+from pytest_httpserver import HTTPServer
 from models.data.http_flow import HttpFlow
 from support.fixtures import load_fixtures
 
@@ -15,7 +17,7 @@ class TestEditorPage:
         qtbot.waitExposed(widget)
 
         # Enter form data
-        widget.ui.urlInput.setText("http://${var:host}:8080/${var:apiVersion}/accounts")
+        widget.ui.urlInput.setText("http://${var:host}:8080/${var:apiVersion}/accounts?hello=${b64url:world}")
         widget.ui.flowView.ui.requestBody.set_value('{ "account_name": "${var:account_name}" }')
 
         # Set the headers via the table model because QtBot is rubbish
@@ -41,10 +43,10 @@ class TestEditorPage:
         assert http_flow.request.method == 'GET'
         assert http_flow.request.scheme == 'http'
         assert http_flow.request.authority is None
-        assert http_flow.request.path == '/v2/accounts'
+        assert http_flow.request.path == '/v2/accounts?hello=d29ybGQ='
 
         assert http_flow.request.form_data['method'] == 'GET'
-        assert http_flow.request.form_data['url'] == 'http://${var:host}:8080/${var:apiVersion}/accounts'
+        assert http_flow.request.form_data['url'] == 'http://${var:host}:8080/${var:apiVersion}/accounts?hello=${b64url:world}'
         assert http_flow.request.form_data['headers'] == {
             'Content-Length': '<calculated when request is sent>',
             'Host': '<calculated when request is sent>',
@@ -56,8 +58,10 @@ class TestEditorPage:
         }
         assert http_flow.request.form_data['content'] == '{ "account_name": "${var:account_name}" }'
 
-    def test_editor_page_sending_a_request_and_saving_example(self, database, qtbot):
+    def test_editor_page_sending_a_request_and_saving_example(self, database, qtbot, httpserver: HTTPServer):
         load_fixtures()
+
+        httpserver.expect_request("/v2/accounts/aGVsbG8gd29ybGQ=").respond_with_data("helloworld")
 
         editor_item = EditorItemUnsaved()
         widget = RequestEditPage(editor_item)
@@ -65,7 +69,7 @@ class TestEditorPage:
         qtbot.waitExposed(widget)
 
         # Enter form data
-        widget.ui.urlInput.setText("https://www.synack.com")
+        widget.ui.urlInput.setText(httpserver.url_for("/") + "${var:apiVersion}/accounts/${b64:hello world}")
 
         # Click send button
         button = widget.ui.sendButton
@@ -85,7 +89,11 @@ class TestEditorPage:
         assert original_flow.id == example_flow.http_flow_id
 
         assert original_flow.request.id is not None
+        # assert original_flow.request.get_url() == "..."
         assert not original_flow.response
 
         assert example_flow.request.id is not None
+        assert "/v2/accounts/aGVsbG8gd29ybGQ=" in example_flow.request.get_url()
+
         assert example_flow.response.id is not None  # type: ignore
+        assert example_flow.response.content == "helloworld"  # type: ignore

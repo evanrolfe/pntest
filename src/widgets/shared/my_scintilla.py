@@ -2,6 +2,7 @@ import re
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 
 from widgets.shared.code_themes import DarkTheme
+from lib.input_parsing.parse import get_available_encoders
 
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
@@ -22,6 +23,10 @@ class MyScintilla(Qsci.QsciScintilla):
         self.setMarginWidth(0, 50)
         self.setBraceMatching(Qsci.QsciScintilla.BraceMatch.SloppyBraceMatch)
         # self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
+
+        # Right click behaviour
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.right_clicked)
 
         self.search_indicators = {"selection": {"id": 21, "positions": []}}
         self.previous_selection = {
@@ -230,3 +235,22 @@ class MyScintilla(Qsci.QsciScintilla):
             self.SendScintilla(
                 Qsci.QsciScintilla.SCI_INDICSETSTYLE, self.search_indicators[type_]["id"], 16
             )
+
+    def right_clicked(self, position: QtCore.QPoint):
+        menu = self.createStandardContextMenu()
+
+        # Add Encode sub-menu
+        if self.hasSelectedText():
+            encoding_menu = menu.addMenu("Encode")
+            for encoder in get_available_encoders():
+                encoding_menu.addAction(encoder.name, lambda encoder=encoder.key: self.encode(encoder))
+
+        # NOTE: The generated types seem to be in correct, QObject does indeed have mapToGlobal() as a method
+        position = self.sender().mapToGlobal(position) # type: ignore
+        menu.exec(position)
+
+    def encode(self, encoder: str):
+        selected_text = self.selectedText()
+        encoded_text = "${" + encoder + ":" + selected_text + "}"
+        self.replaceSelectedText(encoded_text)
+        return

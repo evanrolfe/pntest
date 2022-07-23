@@ -1,10 +1,7 @@
-import re
-from copy import deepcopy
 from typing import Optional
 from requests import Request, Response, Session
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
-from models.data.variable import Variable
 
 class HttpRequest:
     method: str
@@ -13,12 +10,11 @@ class HttpRequest:
     body: Optional[str]
 
     def __init__(self, method: str, url: str, headers: Headers, body: Optional[str]):
-        self.method = self.replace_variables(method)
-        self.url = self.replace_variables(url)
-        self.headers = self.replace_variables_in_headers(headers)
-
+        self.method = method
+        self.url = url
+        self.headers = headers
         if body:
-            self.body = self.replace_variables(body)
+            self.body = body
 
     def send(self) -> Response:
         print(f'Requesting {self.method} {self.url}')
@@ -39,24 +35,3 @@ class HttpRequest:
 
         return parsed_headers
 
-    def replace_variables_in_headers(self, headers: Headers) -> Headers:
-        new_headers = deepcopy(headers)
-
-        for key, value in new_headers.items():
-            new_headers[key] = self.replace_variables(value)
-
-        return new_headers
-
-    def replace_variables(self, value: str) -> str:
-        for match in re.finditer(r'\${var:(\w+)\}', value):
-            key = match[1]
-            var = Variable.find_by_key(key)
-
-            if var:
-                new_value = var.value
-            else:
-                new_value = ''
-
-            value = value.replace(match[0], new_value)
-
-        return value

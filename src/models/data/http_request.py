@@ -7,7 +7,8 @@ from models.data.payload_file import PayloadFile, PayloadFileSerialised
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
-from lib.input_parsing import parse_value, parse_headers, parse_payload_values
+from lib.input_parsing.parse import parse_value, parse_payload_values
+from copy import deepcopy
 
 class FuzzFormData(TypedDict):
     payload_files: list[PayloadFileSerialised]
@@ -194,7 +195,10 @@ class HttpRequest(Model):
         self.content = parse_value(str(form_data['content']))
 
         # 4. Set headers
-        parsed_headers = parse_headers(cast(Headers, form_data['headers']))
+        parsed_headers = deepcopy(form_data['headers'])
+        for key, value in form_data['headers'].items():
+            parsed_headers[key] = parse_value(value)
+
         self.set_headers(parsed_headers)
 
     def save(self, *args, **kwargs):
