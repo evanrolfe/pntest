@@ -46,7 +46,8 @@ class MyScintilla(Qsci.QsciScintilla):
         self.apply_theme()
 
         self.encoders_popup = EncodersPopup(self)
-        self.encoders_popup.encode_pressed.connect(self.encode_selection)
+        self.encoders_popup.encode.connect(self.encode_selection)
+        self.encoders_popup.decode.connect(self.decode_selection)
         #self.encoders_popup.show()
 
     # This is necessary for mac os x
@@ -253,9 +254,14 @@ class MyScintilla(Qsci.QsciScintilla):
             for encoder in get_available_encoders():
                 encoding_menu.addAction(encoder.name, lambda encoder=encoder: self.encode_selection(encoder))
 
-            encoding_menu.addAction("Try all encoders", self.show_encoders_popup)
+        # Add Decode sub-menu
+        if self.hasSelectedText():
+            decoding_menu = menu.addMenu("Decode")
+            for encoder in get_available_encoders():
+                decoding_menu.addAction(encoder.name, lambda encoder=encoder: self.decode_selection(encoder))
 
-        # NOTE: The generated types seem to be in correct, QObject does indeed have mapToGlobal() as a method
+        menu.addAction("Encode/Decode/Hash", self.show_encoders_popup)
+
         position = self.sender().mapToGlobal(position) # type: ignore
         menu.exec(position)
 
@@ -263,9 +269,15 @@ class MyScintilla(Qsci.QsciScintilla):
         if text_to_encode is None:
             text_to_encode = self.selectedText()
 
+        # TODO: Move this syntax to a function in lib.input_parsing.parse
         encoded_text = "${" + encoder.key + ":" + text_to_encode + "}"
         self.replaceSelectedText(encoded_text)
-        return
+
+    def decode_selection(self, encoder: Encoder, text_to_decode: Optional[str] = None):
+        if text_to_decode is None:
+            text_to_decode = self.selectedText()
+
+        self.replaceSelectedText(encoder.decode(text_to_decode))
 
     def show_encoders_popup(self):
         self.encoders_popup.set_input(self.selectedText())

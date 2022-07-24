@@ -104,6 +104,25 @@
        </property>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Decode</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="decodersLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>Hash</string>
@@ -155,7 +174,7 @@
      <item>
       <widget class="QPushButton" name="saveButton">
        <property name="text">
-        <string>Encode</string>
+        <string>Apply</string>
        </property>
       </widget>
      </item>

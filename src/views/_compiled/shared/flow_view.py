@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file './src/views/shared/flow_view.ui'
+# Form implementation generated from reading ui file 'src/views/shared/flow_view.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #
