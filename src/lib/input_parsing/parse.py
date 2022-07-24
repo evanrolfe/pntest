@@ -27,17 +27,17 @@ def get_available_encoders() -> list[Encoder]:
 # from the request edit form
 def parse_value(value: str) -> str:
     value = replace_variables(value)
-    value = replace_encoded_value(EncodeBase64, value)
-    value = replace_encoded_value(EncodeBase64Url, value)
-    value = replace_encoded_value(EncodeUrl, value)
-    value = replace_encoded_value(EncodeUrlFull, value)
-    value = replace_encoded_value(EncodeAsciiHex, value)
-    value = replace_encoded_value(EncodeHTML, value)
-    value = replace_encoded_value(EncodeJs, value)
+    value = replace_encoded_value(EncodeBase64(), value)
+    value = replace_encoded_value(EncodeBase64Url(), value)
+    value = replace_encoded_value(EncodeUrl(), value)
+    value = replace_encoded_value(EncodeUrlFull(), value)
+    value = replace_encoded_value(EncodeAsciiHex(), value)
+    value = replace_encoded_value(EncodeHTML(), value)
+    value = replace_encoded_value(EncodeJs(), value)
 
     return value
 
-def replace_encoded_value(encoder, value: str):
+def replace_encoded_value(encoder: Encoder, value: str):
     regex = r'\${' + encoder.key + ':(.+)}'
     for match in re.finditer(regex, value):
         value_to_encode = match[1]
