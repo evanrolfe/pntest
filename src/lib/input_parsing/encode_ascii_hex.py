@@ -1,13 +1,13 @@
 import codecs
+from lib.input_parsing.encoder import Encoder
 
-class EncodeAsciiHex:
-    name = "ASCII Hex Encode"
-    key = "ascii"
+class EncodeAsciiHex(Encoder):
+    def __init__(self):
+        self.name = "ASCII Hex Encode"
+        self.key = "ascii"
 
-    @staticmethod
-    def encode(value: str) -> str:
+    def encode(self, value: str) -> str:
         return codecs.encode(value.encode("utf-8"), "hex").decode('utf-8')
 
-    @staticmethod
-    def decode(str):
+    def decode(self, str: str) -> str:
         return str

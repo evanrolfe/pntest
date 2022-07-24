@@ -1,12 +1,13 @@
-class EncodeJs:
-    name = "Javascript Encode"
-    key = "js"
+from lib.input_parsing.encoder import Encoder
 
-    @staticmethod
-    def encode(value: str) -> str:
+class EncodeJs(Encoder):
+    def __init__(self):
+        self.name = "Javascript Encode"
+        self.key = "js"
+
+    def encode(self, value: str) -> str:
         # TODO:
         return value
 
-    @staticmethod
-    def decode(str):
+    def decode(self, str):
         return str

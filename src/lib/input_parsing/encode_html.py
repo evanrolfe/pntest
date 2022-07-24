@@ -1,12 +1,13 @@
-class EncodeHTML:
-    name = "HTML Encode"
-    key = "html"
+from lib.input_parsing.encoder import Encoder
 
-    @staticmethod
-    def encode(value: str) -> str:
+class EncodeHTML(Encoder):
+    def __init__(self):
+        self.name = "HTML Encode"
+        self.key = "html"
+
+    def encode(self, value: str) -> str:
         # TODO:
         return value
 
-    @staticmethod
-    def decode(str):
+    def decode(self, str):
         return str

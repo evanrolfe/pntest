@@ -1,8 +1,12 @@
+from optparse import Option
 import re
+from typing import Optional
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 
 from widgets.shared.code_themes import DarkTheme
+from widgets.shared.encoders_popup import EncodersPopup
 from lib.input_parsing.parse import get_available_encoders
+from lib.input_parsing.encoder import Encoder
 
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
@@ -40,6 +44,10 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.theme = DarkTheme
         self.apply_theme()
+
+        self.encoders_popup = EncodersPopup(self)
+        self.encoders_popup.encode_pressed.connect(self.encode_selection)
+        #self.encoders_popup.show()
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
@@ -243,14 +251,22 @@ class MyScintilla(Qsci.QsciScintilla):
         if self.hasSelectedText():
             encoding_menu = menu.addMenu("Encode")
             for encoder in get_available_encoders():
-                encoding_menu.addAction(encoder.name, lambda encoder=encoder.key: self.encode(encoder))
+                encoding_menu.addAction(encoder.name, lambda encoder=encoder: self.encode_selection(encoder))
+
+            encoding_menu.addAction("Try all encoders", self.show_encoders_popup)
 
         # NOTE: The generated types seem to be in correct, QObject does indeed have mapToGlobal() as a method
         position = self.sender().mapToGlobal(position) # type: ignore
         menu.exec(position)
 
-    def encode(self, encoder: str):
-        selected_text = self.selectedText()
-        encoded_text = "${" + encoder + ":" + selected_text + "}"
+    def encode_selection(self, encoder: Encoder, text_to_encode: Optional[str] = None):
+        if text_to_encode is None:
+            text_to_encode = self.selectedText()
+
+        encoded_text = "${" + encoder.key + ":" + text_to_encode + "}"
         self.replaceSelectedText(encoded_text)
         return
+
+    def show_encoders_popup(self):
+        self.encoders_popup.set_input(self.selectedText())
+        self.encoders_popup.show()

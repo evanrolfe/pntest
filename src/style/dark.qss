@@ -12,12 +12,15 @@ QWidget {
 /*------------------------------------------------------------------------------*
  * Tabs
  *------------------------------------------------------------------------------*/
+QTabWidget::pane {
+    border-top: 1 solid $border-dark;
+}
 
 QTabBar::tab {
   color: $text;
   border: 0 transparent black;
   border-top: 0 solid $border-light;
-  border-bottom: 1 solid $border-dark;
+  border-bottom: 0;
   background-color: $bg-mid;
   padding-left: 6px;
   padding-right: 6px;
@@ -30,7 +33,7 @@ QTabBar::tab:selected {
   color: $text;
   border: 0 transparent black;
   border-top: 0 solid $border-light;
-  border-bottom: 1 solid $border-dark;
+  border-bottom: 0;
   background-color: $bg-extra-dark;
   border-top: 2px solid $item-bright;
 }
@@ -351,12 +354,35 @@ QComboBox::drop-down {
 }
 
 /*------------------------------------------------------------------------------*
+ * QRadioButton
+ *------------------------------------------------------------------------------*/
+QRadioButton::indicator {
+  border: 1 solid $bg-input;
+  color: white;
+}
+
+QRadioButton::indicator::unchecked{
+  border: 1px solid $bg-input;
+  border-radius: 5px;
+  width: 11px;
+  height: 11px;
+}
+
+QRadioButton::indicator::checked{
+  border: 1px solid $bg-input;
+  border-radius: 6px;
+  background-color: $item-selected;
+  width: 7px;
+  height: 7px;
+}
+
+/*------------------------------------------------------------------------------*
  * TextArea, LineEdit, LineScintilla
  *------------------------------------------------------------------------------*/
  QTextEdit, QPlainTextEdit {
-  background-color: $bg-extra-dark;
   color: $text;
-  border-radius: 0;
+  border: 1 solid $bg-input;
+  background-color: $bg-extra-dark;
 }
 
 QLineEdit {
@@ -398,4 +424,11 @@ LineScintilla:focus {
   border: 1 solid $bg-input;
   background-color: $bg-dark;
   border: 1 solid $bg-input;
+}
+
+/*------------------------------------------------------------------------------*
+ * TextArea, LineEdit, LineScintilla
+ *------------------------------------------------------------------------------*/
+QWidget#EncoderFormfield[selected="true"] {
+  border: 1 solid red;
 }

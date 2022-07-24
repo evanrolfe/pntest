@@ -1,13 +1,13 @@
 import urllib.parse
+from lib.input_parsing.encoder import Encoder
 
-class EncodeUrlFull:
-    name = "URL Encode Full"
-    key = "urlfull"
+class EncodeUrlFull(Encoder):
+    def __init__(self):
+        self.name = "URL Encode Full"
+        self.key = "urlfull"
 
-    @staticmethod
-    def encode(value: str) -> str:
+    def encode(self, value: str) -> str:
         return urllib.parse.quote(value)
 
-    @staticmethod
-    def decode(str):
+    def decode(self, str):
         return str

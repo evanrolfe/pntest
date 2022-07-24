@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'src/views/shared/flow_view.ui'
+# Form implementation generated from reading ui file './src/views/shared/flow_view.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #
@@ -15,6 +15,7 @@ class Ui_FlowView(object):
         FlowView.resize(590, 678)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(FlowView)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setSpacing(10)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.splitter = QtWidgets.QSplitter(FlowView)
         self.splitter.setOrientation(QtCore.Qt.Orientation.Vertical)

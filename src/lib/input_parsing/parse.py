@@ -1,4 +1,5 @@
 import re
+import typing
 from lib.input_parsing.replace_variables import replace_variables
 from lib.input_parsing.encode_base64 import EncodeBase64
 from lib.input_parsing.encode_base64_url import EncodeBase64Url
@@ -7,18 +8,19 @@ from lib.input_parsing.encode_url_full import EncodeUrlFull
 from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
 from lib.input_parsing.encode_html import EncodeHTML
 from lib.input_parsing.encode_js import EncodeJs
+from lib.input_parsing.encoder import Encoder
 
 PAYLOAD_REGEX = r'\${payload:(\w+)\}'
 
-def get_available_encoders():
+def get_available_encoders() -> list[Encoder]:
     return [
-        EncodeBase64,
-        EncodeBase64Url,
-        EncodeUrl,
-        EncodeUrlFull,
-        EncodeAsciiHex,
-        EncodeHTML,
-        EncodeJs,
+        EncodeBase64(),
+        EncodeBase64Url(),
+        EncodeUrl(),
+        EncodeUrlFull(),
+        EncodeAsciiHex(),
+        EncodeHTML(),
+        EncodeJs(),
     ]
 
 # parse_value replace variables, encodings, hashes etc. it is called when an HttpRequest is saved
