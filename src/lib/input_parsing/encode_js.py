@@ -1,3 +1,4 @@
+import json
 from lib.input_parsing.encoder import Encoder
 
 class EncodeJs(Encoder):
@@ -6,8 +7,7 @@ class EncodeJs(Encoder):
         self.key = "js"
 
     def encode(self, value: str) -> str:
-        # TODO:
-        return value
+        return json.dumps(value).strip('"')
 
-    def decode(self, str):
-        return str
+    def decode(self, value: str) -> str:
+        return value.encode().decode("unicode-escape")

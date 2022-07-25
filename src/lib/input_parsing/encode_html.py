@@ -1,3 +1,4 @@
+import html
 from lib.input_parsing.encoder import Encoder
 
 class EncodeHTML(Encoder):
@@ -6,8 +7,7 @@ class EncodeHTML(Encoder):
         self.key = "html"
 
     def encode(self, value: str) -> str:
-        # TODO:
-        return value
+        return html.escape(value)
 
-    def decode(self, str):
-        return str
+    def decode(self, value: str) -> str:
+        return html.unescape(value)

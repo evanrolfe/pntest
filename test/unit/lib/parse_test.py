@@ -29,13 +29,13 @@ class TestFuzzHttpRequests:
         result = parse_value("the value: ${ascii:hello world} is encoded")
         assert result == "the value: 68656c6c6f20776f726c64 is encoded"
 
-    # def test_parsing_html_encode(self, database, cleanup_database):
-    #     result = parse_value("the value: ${b64:hello world} is encoded")
-    #     assert result == "the value: aGVsbG8gd29ybGQ= is encoded"
+    def test_parsing_html_encode(self, database, cleanup_database):
+        result = parse_value("the value: ${html:<hello>} is encoded")
+        assert result == "the value: &lt;hello&gt; is encoded"
 
-    # def test_parsing_js_encode(self, database, cleanup_database):
-    #     result = parse_value("the value: ${b64:hello world} is encoded")
-    #     assert result == "the value: aGVsbG8gd29ybGQ= is encoded"
+    def test_parsing_js_encode(self, database, cleanup_database):
+        result = parse_value("the value: ${js:hello£} is encoded")
+        assert result == "the value: hello\\u00a3 is encoded"
 
     # Decoding Tests
     def test_parsing_base64_decode(self, database, cleanup_database):
@@ -57,3 +57,11 @@ class TestFuzzHttpRequests:
     def test_parsing_ascii_hex_decode(self, database, cleanup_database):
         result = EncodeAsciiHex().decode("68656c6c6f20776f726c64")
         assert result == "hello world"
+
+    def test_parsing_html_decode(self, database, cleanup_database):
+        result = EncodeHTML().decode("&lt;hello&gt;")
+        assert result == "<hello>"
+
+    def test_parsing_js_decode(self, database, cleanup_database):
+        result = EncodeJs().decode("hello\\u00a3")
+        assert result == "hello£"
