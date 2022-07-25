@@ -112,7 +112,31 @@ def generate_fuzz_request(fuzz_type):
 
 @factory.define_as(HttpRequest, 'fuzz_one_to_one')
 def http_request_fuzz_one_to_one(faker):
-    return generate_fuzz_request(HttpRequest.FUZZ_TYPE_KEYS[0])
+    return {
+        'http_version': 'HTTP/1.1',
+        'headers': '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"}',
+        'timestamp_start': 1641555291.54401,
+        'timestamp_end': 1641555291.54628,
+        'host': 'synack.com',
+        'port': 80,
+        'method': 'POST',
+        'scheme': 'http',
+        'path': '/',
+        'form_data': {
+            "method": "GET",
+            "url": "http://www.synack.com/login.php",
+            "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"},
+            "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
+            "fuzz_data": {
+                "payload_files": [
+                    {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 2, 'description': ''},
+                    {'file_path': './test/support/passwords.txt', 'key': 'passwords', 'num_items': 2, 'description': ''}
+                ],
+                "fuzz_type": HttpRequest.FUZZ_TYPE_KEYS[0]
+            }
+        }
+    }
+    #return generate_fuzz_request(HttpRequest.FUZZ_TYPE_KEYS[0])
 
 @factory.define_as(HttpRequest, 'fuzz_cartesian')
 def http_request_fuzz_cartesian(faker):
