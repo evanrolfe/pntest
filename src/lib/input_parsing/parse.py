@@ -10,6 +10,10 @@ from lib.input_parsing.encode_html import EncodeHTML
 from lib.input_parsing.encode_js import EncodeJs
 from lib.input_parsing.encoder import Encoder
 
+from lib.input_parsing.hash_md5 import HashMD5
+from lib.input_parsing.hash_sha1 import HashSHA1
+from lib.input_parsing.hash_sha256 import HashSHA256
+
 PAYLOAD_REGEX = r'\${payload:(\w+)\}'
 
 def get_available_encoders() -> list[Encoder]:
@@ -23,6 +27,13 @@ def get_available_encoders() -> list[Encoder]:
         EncodeJs(),
     ]
 
+def get_available_hashers() -> list[Encoder]:
+    return [
+        HashMD5(),
+        HashSHA1(),
+        HashSHA256(),
+    ]
+
 # parse_value replace variables, encodings, hashes etc. it is called when an HttpRequest is saved
 # from the request edit form
 def parse_value(value: str) -> str:
@@ -34,6 +45,10 @@ def parse_value(value: str) -> str:
     value = replace_encoded_value(EncodeAsciiHex(), value)
     value = replace_encoded_value(EncodeHTML(), value)
     value = replace_encoded_value(EncodeJs(), value)
+
+    value = replace_encoded_value(HashMD5(), value)
+    value = replace_encoded_value(HashSHA1(), value)
+    value = replace_encoded_value(HashSHA256(), value)
 
     return value
 

@@ -127,6 +127,20 @@
       <attribute name="title">
        <string>Hash</string>
       </attribute>
+      <layout class="QVBoxLayout" name="hashersLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
      </widget>
     </widget>
    </item>

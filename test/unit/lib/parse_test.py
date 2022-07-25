@@ -65,3 +65,16 @@ class TestFuzzHttpRequests:
     def test_parsing_js_decode(self, database, cleanup_database):
         result = EncodeJs().decode("hello\\u00a3")
         assert result == "hello£"
+
+    # Hasher Tests
+    def test_parsing_md5_hash(self, database, cleanup_database):
+        result = parse_value("the value: ${md5:123} is encoded")
+        assert result == "the value: 202cb962ac59075b964b07152d234b70 is encoded"
+
+    def test_parsing_sha1_hash(self, database, cleanup_database):
+        result = parse_value("the value: ${sha1:123} is encoded")
+        assert result == "the value: 40bd001563085fc35165329ea1ff5c5ecbdbbeef is encoded"
+
+    def test_parsing_sha256_hash(self, database, cleanup_database):
+        result = parse_value("the value: ${sha256:123} is encoded")
+        assert result == "the value: a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3 is encoded"

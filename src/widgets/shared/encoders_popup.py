@@ -3,7 +3,7 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 
 from views._compiled.shared.encoders_popup import Ui_EncodersPopup
 from views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
-from lib.input_parsing.parse import get_available_encoders
+from lib.input_parsing.parse import get_available_encoders, get_available_hashers
 from lib.input_parsing.encoder import Encoder
 
 class EncoderFormField(QtWidgets.QDialog):
@@ -42,9 +42,11 @@ class EncodersPopup(QtWidgets.QDialog):
 
     encoder_widgets: dict[str, EncoderFormField]
     decoder_widgets: dict[str, EncoderFormField]
+    hasher_widgets: dict[str, EncoderFormField]
 
     selected_encoder: Optional[Encoder]
     selected_decoder: Optional[Encoder]
+    selected_hasher: Optional[Encoder]
 
     def __init__(self, parent=None):
         super(EncodersPopup, self).__init__(parent)
@@ -59,6 +61,8 @@ class EncodersPopup(QtWidgets.QDialog):
 
         self.encoder_widgets = {}
         self.decoder_widgets = {}
+        self.hasher_widgets = {}
+
         for encoder in get_available_encoders():
             # Setup encoder form input
             formfield = EncoderFormField(encoder)
@@ -72,13 +76,23 @@ class EncodersPopup(QtWidgets.QDialog):
             self.decoder_widgets[encoder.key] = formfield_decode
             self.ui.decodersLayout.addWidget(formfield_decode)
 
+        for hasher in get_available_hashers():
+            # Setup encoder form input
+            formfield = EncoderFormField(hasher)
+            formfield.clicked.connect(self.select_hasher)
+            self.hasher_widgets[hasher.key] = formfield
+            self.ui.hashersLayout.addWidget(formfield)
+
         self.ui.tabWidget.currentChanged.connect(self.refresh_apply_button_enabled)
         self.ui.inputText.textChanged.connect(self.input_text_changed)
+
         self.selected_encoder = None
         self.selected_decoder = None
+        self.selected_hasher = None
 
     def select_encoding(self, selected_key: str):
         self.clear_selected_decoding()
+        self.clear_selected_hasher()
 
         for key, widget in self.encoder_widgets.items():
             if key == selected_key:
@@ -93,10 +107,26 @@ class EncodersPopup(QtWidgets.QDialog):
 
     def select_decoding(self, selected_key: str):
         self.clear_selected_encoding()
+        self.clear_selected_hasher()
 
         for key, widget in self.decoder_widgets.items():
             if key == selected_key:
                 self.selected_decoder = widget.encoder
+                widget.ui.radioButton.setChecked(True)
+                widget.setStyleSheet("QWidget#EncoderFormfield { border: 1 solid #FC6A0C; }")
+            else:
+                widget.ui.radioButton.setChecked(False)
+                widget.setStyleSheet("QWidget#EncoderFormfield { border: 0; }")
+
+        self.refresh_apply_button_enabled()
+
+    def select_hasher(self, selected_key: str):
+        self.clear_selected_encoding()
+        self.clear_selected_decoding()
+
+        for key, widget in self.hasher_widgets.items():
+            if key == selected_key:
+                self.selected_hasher = widget.encoder
                 widget.ui.radioButton.setChecked(True)
                 widget.setStyleSheet("QWidget#EncoderFormfield { border: 1 solid #FC6A0C; }")
             else:
@@ -119,11 +149,20 @@ class EncodersPopup(QtWidgets.QDialog):
             widget.ui.radioButton.setChecked(False)
             widget.setStyleSheet("QWidget#EncoderFormfield { border: 0; }")
 
+    def clear_selected_hasher(self):
+        self.selected_hasher = None
+
+        for _, widget in self.hasher_widgets.items():
+            widget.ui.radioButton.setChecked(False)
+            widget.setStyleSheet("QWidget#EncoderFormfield { border: 0; }")
+
     def save(self):
         if self.encode_tab_selected():
             self.encode.emit(self.selected_encoder, self.get_input())
         elif self.decode_tab_selected():
             self.decode.emit(self.selected_decoder, self.get_input())
+        elif self.hash_tab_selected():
+            self.encode.emit(self.selected_hasher, self.get_input())
 
         self.clear_selected_encoding()
         self.clear_selected_decoding()
@@ -137,24 +176,34 @@ class EncodersPopup(QtWidgets.QDialog):
         return self.ui.tabWidget.currentIndex() == 1
 
     def hash_tab_selected(self) -> bool:
-        return self.ui.tabWidget.currentIndex() == 0
+        return self.ui.tabWidget.currentIndex() == 2
 
     def refresh_apply_button_enabled(self):
         if self.encode_tab_selected():
             self.ui.saveButton.setEnabled(self.selected_encoder is not None)
 
-        if self.decode_tab_selected():
+        elif self.decode_tab_selected():
             self.ui.saveButton.setEnabled(self.selected_decoder is not None)
+
+        elif self.hash_tab_selected():
+            self.ui.saveButton.setEnabled(self.selected_hasher is not None)
 
     # def showEvent(self, event):
     #     self.load_encoders()
 
     def input_text_changed(self):
+        input = self.get_input()
+        if len(input) == 0:
+            return
+
         for _, widget in self.encoder_widgets.items():
-            widget.set_text_to_encode(self.get_input())
+            widget.set_text_to_encode(input)
 
         for _, widget in self.decoder_widgets.items():
-            widget.set_text_to_decode(self.get_input())
+            widget.set_text_to_decode(input)
+
+        for _, widget in self.hasher_widgets.items():
+            widget.set_text_to_encode(input)
 
     def set_input(self, input: str):
         self.ui.inputText.setPlainText(input)
