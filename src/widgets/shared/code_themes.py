@@ -199,5 +199,5 @@ class DarkTheme:
     def get_font(cls) -> QtGui.QFont:
         # fonts = QtGui.QFontDatabase.families()
         # TODO: Search through the fonts and find one that matches
-        font = QtGui.QFontDatabase.font('Menlo', 'Regular', 12)
+        font = QtGui.QFontDatabase.font('Menlo', 'Regular', 13)
         return font

@@ -44,7 +44,7 @@ class Ui_RequestEditPage(object):
         self.layout1.addItem(spacerItem)
         self.verticalLayout.addLayout(self.layout1)
         self.requestActionsLayout = QtWidgets.QHBoxLayout()
-        self.requestActionsLayout.setContentsMargins(10, 10, 10, 20)
+        self.requestActionsLayout.setContentsMargins(10, 10, 10, 10)
         self.requestActionsLayout.setObjectName("requestActionsLayout")
         self.methodInput = QtWidgets.QComboBox(self.layoutWidget)
         self.methodInput.setObjectName("methodInput")

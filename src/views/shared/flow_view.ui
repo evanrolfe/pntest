@@ -92,7 +92,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="QStackedWidget" name="responseStackedWidget">
       <widget class="QTabWidget" name="responseTabs">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">

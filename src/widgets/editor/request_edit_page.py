@@ -60,6 +60,7 @@ class RequestEditPage(QtWidgets.QWidget):
         # self.ui.responseTabs.setCornerWidget(save_response_button)
 
         # Form inputs:
+        self.ui.urlInput.centre_text_vertically()
         self.ui.urlInput.enter_pressed.connect(self.send_request_async)
         self.ui.urlInput.text_changed.connect(self.form_field_changed)
         self.ui.methodInput.currentIndexChanged.connect(self.form_field_changed)

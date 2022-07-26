@@ -19,7 +19,9 @@ QTabWidget::pane {
 QTabBar::tab {
   color: $text;
   border: 0 transparent black;
-  border-top: 0 solid $border-light;
+  border-left: 1 solid $border-dark;
+  border-right: 1 solid $border-dark;
+  border-top: 1 solid $border-dark;
   border-bottom: 0;
   background-color: $bg-mid;
   padding-left: 6px;
@@ -27,6 +29,11 @@ QTabBar::tab {
   min-width: 80px;
   min-height: 25px;
   margin-right: 0px;
+  margin-left: -1px;
+}
+
+QStackedWidget#responseStackedWidget {
+  margin-top: 20px;
 }
 
 QTabBar::tab:selected {
@@ -57,6 +64,7 @@ QTabBar::tab:disabled {
  QTreeView {
   selection-background-color: $item-selected;
   background-color: $bg-extra-dark;
+  font-size: 13px;
 }
 
 QTreeView::item {
@@ -78,6 +86,8 @@ QHeaderView::section {
   border-right: 1px solid $bg-extra-dark;
   text-align: left;
   font-weight: normal;
+  font-size: 13px;
+  height: 25px;
 }
 
 QHeaderView::section#itemExplorerHeader {

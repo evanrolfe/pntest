@@ -245,6 +245,9 @@ class MyScintilla(Qsci.QsciScintilla):
                 Qsci.QsciScintilla.SCI_INDICSETSTYLE, self.search_indicators[type_]["id"], 16
             )
 
+        font = self.theme.get_font()
+        self.setFont(font)
+
     def right_clicked(self, position: QtCore.QPoint):
         menu = self.createStandardContextMenu()
 

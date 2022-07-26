@@ -210,10 +210,10 @@ class FlowView(QtWidgets.QWidget):
         self.response_modified_dropdown.setVisible(flow.response_modified())
 
     def show_loader(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.loaderWidget)
+        self.ui.responseStackedWidget.setCurrentWidget(self.ui.loaderWidget)
 
     def hide_loader(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.responseTabs)
+        self.ui.responseStackedWidget.setCurrentWidget(self.ui.responseTabs)
 
     def change_response_body_format(self, index):
         self.selected_format = CodeEditor.FORMATS[index]

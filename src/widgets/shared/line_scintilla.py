@@ -38,11 +38,6 @@ class LineScintilla(Qsci.QsciScintilla):
         self.theme = DarkTheme
         self.apply_theme()
 
-        #self.SendScintilla(Qsci.QsciScintilla.SCI_STYLESETSIZE, 16)
-        font = QtGui.QFontDatabase.font('Menlo', 'Regular', 12)
-        self.setFont(font)
-
-        self.SendScintilla(Qsci.QsciScintilla.SCI_SETEXTRAASCENT, 10)
         self.focused = False
 
     # This is necessary for mac os x
@@ -83,12 +78,6 @@ class LineScintilla(Qsci.QsciScintilla):
             if new_text != old_text:
                 self.text_changed.emit()
 
-    def get_font(self) -> QtGui.QFont:
-        # fonts = QtGui.QFontDatabase.families()
-        # TODO: Search through the fonts and find one that matches
-        font = QtGui.QFontDatabase.font('Menlo', 'Regular', 12)
-        return font
-
     def apply_theme(self):
         self.bg_default = QtGui.QColor(self.theme.bg_input)
         self.bg_hover = QtGui.QColor(self.theme.bg_input_hover)
@@ -97,6 +86,9 @@ class LineScintilla(Qsci.QsciScintilla):
         self.setPaper(self.bg_default)
         self.setColor(QtGui.QColor(self.theme.default_color))
         self.setCaretForegroundColor(QtGui.QColor(self.theme.default_color))
+
+        font = self.theme.get_font()
+        self.setFont(font)
 
     # Hover
     def enterEvent(self, event):
@@ -123,3 +115,7 @@ class LineScintilla(Qsci.QsciScintilla):
         # Hide the cursor:
         self.SendScintilla(Qsci.QsciScintilla.SCI_SETCARETSTYLE, Qsci.QsciScintilla.CARETSTYLE_INVISIBLE)
         super(LineScintilla, self).focusInEvent(event)
+
+    # This is used by the URL input because its too big
+    def centre_text_vertically(self):
+        self.SendScintilla(Qsci.QsciScintilla.SCI_SETEXTRAASCENT, 10)
