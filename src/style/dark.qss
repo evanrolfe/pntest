@@ -317,13 +317,6 @@ QPushButton#saveButton {
   font-weight: 600;
 }
 
-QPushButton#saveAsExample {
-  margin-top: 5px;
-  margin-right: 10px;
-  font-size: 12px;
-  padding-right: 10px;
-  padding-left: 10px;
-}
 /*------------------------------------------------------------------------------*
  * QComboBox
  *------------------------------------------------------------------------------*/
@@ -356,7 +349,7 @@ QComboBox::drop-down {
   image: url("assets:icons/dark/icons8-sort-down-18.png");
 }
 
-#modifiedDropdown, #responseModifiedDropdown, #responseFormatDropdown {
+#modifiedDropdown, #responseModifiedDropdown {
     margin-top: 5px;
     margin-bottom: 5px;
     margin-right: 10px;
@@ -441,4 +434,39 @@ LineScintilla:focus {
  *------------------------------------------------------------------------------*/
 QWidget#EncoderFormfield[selected="true"] {
   border: 1 solid red;
+}
+
+/*------------------------------------------------------------------------------*
+ * FlowView related stuff
+ *------------------------------------------------------------------------------*/
+QComboBox#responseFormatDropdown {
+    margin: 3px;
+    font-size: 10px;
+}
+
+QPushButton#saveAsExample {
+  margin: 3px;
+  font-size: 12px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+QLabel#responseStatusLabel {
+  border: 1 solid $bg-extra-dark;
+  margin: 3px;
+}
+QLabel#responseStatusLabel[status="5"] {
+  background-color: #d04444;
+}
+QLabel#responseStatusLabel[status="4"] {
+  background-color: #d07502;
+}
+QLabel#responseStatusLabel[status="3"] {
+  background-color: #1c90b4;
+}
+QLabel#responseStatusLabel[status="2"] {
+  background-color: #59a210;
+}
+QLabel#responseStatusLabel[status="1"] {
+  background-color: #7d69cb;
 }

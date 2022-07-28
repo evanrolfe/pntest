@@ -1,12 +1,16 @@
 import json
+from typing import Optional
 # from html5print import HTMLBeautifier
 from bs4 import BeautifulSoup
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
+from models.data.http_flow import HttpFlow
+from models.data.http_response import HttpResponse
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers
 from widgets.shared.code_editor import CodeEditor
+from constants import HTTP_STATUS_CODE_DESCRIPTIONS
 
 class FlowView(QtWidgets.QWidget):
     save_example_clicked = QtCore.pyqtSignal()
@@ -50,9 +54,13 @@ class FlowView(QtWidgets.QWidget):
         self.save_example_button.setObjectName('saveAsExample')
         self.save_example_button.setEnabled(False)
 
+        self.response_status_label = QtWidgets.QLabel()
+        self.response_status_label.setObjectName("responseStatusLabel")
+
         self.response_corner_widget = QtWidgets.QWidget()
         layout = QtWidgets.QHBoxLayout(self.response_corner_widget)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.response_status_label)
         layout.addWidget(self.response_format_dropdown)
         layout.addWidget(self.response_modified_dropdown)
         layout.addWidget(self.save_example_button)
@@ -134,7 +142,7 @@ class FlowView(QtWidgets.QWidget):
         self.ui.requestBody.set_value(request.form_data['content'] or '')
 
     # Requires the flow,request and response to be saved to the DB (used by the network page)
-    def set_response(self, flow):
+    def set_response(self, flow: HttpFlow):
         if self.show_modified_response and flow.response_modified():
             response = flow.response
         elif not self.show_modified_response and flow.response_modified():
@@ -155,16 +163,34 @@ class FlowView(QtWidgets.QWidget):
         self.set_format_from_headers(response.get_headers())
         formatted_content = self.format_text(response.content)
         self.ui.responseRaw.set_value(formatted_content or '', self.selected_format)
-        # if self.show_rendered:
-        #     self.ui.responseRendered.set_value(response_body_rendered or '')
-        headers = flow.response.get_headers()
-        content_type = headers.get('Content-Type', '')
-        mime_type = content_type.split(';')[0]
-        print(f"--------------> mime type received is: {mime_type}")
-        # if 'html' in content_type:
-        #     self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=flow.request.get_url())
-        # else:
-        #     self.ui.responseBodyPreview.setHtml('')
+
+        self.set_response_status_label(response)
+
+    def set_response_status_label(self, response: HttpResponse):
+        status = str(response.status_code)
+
+        if response.reason is None or response.reason == "":
+            label_msg = " " + HTTP_STATUS_CODE_DESCRIPTIONS[status]
+        else:
+            label_msg = " " + response.reason
+        print("----> ", label_msg)
+        # NOTE: I tried to get this to work using properties and QSS but could not get the QLabel to be
+        # re-drawn so the colour never changed. Hence why I am setting this in python:
+        if status[0] == "1":
+            bg_color = "#7d69cb"
+        elif status[0] == "2":
+            bg_color = "#59a210"
+        elif status[0] == "3":
+            bg_color = "#1c90b4"
+        elif status[0] == "4":
+            bg_color = "#d07502"
+        elif status[0] == "5":
+            bg_color = "#d04444"
+        else:
+            bg_color = ""
+
+        self.response_status_label.setStyleSheet("background-color: "+bg_color)
+        self.response_status_label.setText(status + label_msg)
 
     def show_real_request(self):
         request = self.flow.request
@@ -178,7 +204,7 @@ class FlowView(QtWidgets.QWidget):
         self.ui.requestBody.set_value(request.content or '')
 
     # This method does not need the response to be saved to the DB:
-    def set_response_from_editor(self, response):
+    def set_response_from_editor(self, response: HttpResponse):
         self.editor_response = response
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
@@ -187,14 +213,7 @@ class FlowView(QtWidgets.QWidget):
         formatted_content = self.format_text(response.content)
         self.ui.responseRaw.set_value(formatted_content or '', self.selected_format)
 
-        headers = response.get_headers()
-        content_type = headers.get('Content-Type', '')
-        # mime_type = content_type.split(';')[0]
-
-        # if 'html' in content_type:
-        #     self.ui.responseBodyPreview.setHtml(response.content_for_preview(), baseUrl=self.flow.request.get_url())
-        # else:
-        #     self.ui.responseBodyPreview.setHtml('')
+        self.set_response_status_label(response)
 
     def set_modified_dropdown(self, flow):
         if self.request_modified_dropdown is None:

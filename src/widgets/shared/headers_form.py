@@ -33,6 +33,7 @@ class HeadersForm(QtWidgets.QWidget):
         (True, 'User-Agent', 'pntest/0.1'),
     ]
     EMPTY_HEADER = (False, '', '')
+    # TODO: Add a headers_changed signal
 
     def __init__(self, *args, **kwargs):
         super(HeadersForm, self).__init__(*args, **kwargs)
