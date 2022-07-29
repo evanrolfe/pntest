@@ -74,6 +74,19 @@ class HttpFlow(OratorModel):
     def has_response(self) -> bool:
         pass
 
+    def is_type_proxy(self) -> bool:
+        pass
+
+    def is_type_editor(self) -> bool:
+        pass
+
+    def is_type_editor_example(self) -> bool:
+        pass
+
+    def is_type_editor_fuzz(self) -> bool:
+        pass
+
+
     def values_for_table(self) -> list[Any]:
         pass
 

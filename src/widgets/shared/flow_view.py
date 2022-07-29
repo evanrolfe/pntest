@@ -8,7 +8,7 @@ from models.data.http_flow import HttpFlow
 from models.data.http_response import HttpResponse
 
 from views._compiled.shared.flow_view import Ui_FlowView
-from lib.types import Headers
+from lib.types import Headers, get_content_type
 from widgets.shared.code_editor import CodeEditor
 from constants import HTTP_STATUS_CODE_DESCRIPTIONS
 
@@ -24,7 +24,7 @@ class FlowView(QtWidgets.QWidget):
         self.show_modified_request = False
         self.show_modified_response = False
         self.editable = False
-        self.selected_format = CodeEditor.FORMATS[len(CodeEditor.FORMATS) - 1]
+        self.selected_response_format = CodeEditor.FORMATS[len(CodeEditor.FORMATS) - 1]
 
         # Setup Request Corner Widget:
         self.request_modified_dropdown = QtWidgets.QComboBox()
@@ -67,6 +67,9 @@ class FlowView(QtWidgets.QWidget):
 
         self.ui.responseTabs.setCornerWidget(self.response_corner_widget)
 
+        # Headers
+        self.ui.requestHeaders.headers_changed.connect(self.update_syntax_highlighting_for_request)
+
     def set_editable(self, editable):
         self.editable = editable
         self.ui.requestHeaders.set_editable(editable)
@@ -87,7 +90,7 @@ class FlowView(QtWidgets.QWidget):
     def set_save_as_example_enabled(self, enabled):
         self.save_example_button.setEnabled(enabled)
 
-    def show_modified_request_change(self, index):
+    def show_modified_request_change(self, index: int):
         if index == 0:  # Modified
             self.show_modified_request = True
         elif index == 1:  # Original
@@ -95,7 +98,7 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_request(self.flow)
 
-    def show_modified_response_change(self, index):
+    def show_modified_response_change(self, index: int):
         if index == 0:  # Modified
             self.show_modified_response = True
         elif index == 1:  # Original
@@ -120,26 +123,35 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseRendered.set_value('')
         # self.ui.responseBodyPreview.setHtml('')
 
-    def set_flow(self, flow):
+    def set_flow(self, flow: HttpFlow):
         self.flow = flow
         self.set_modified_dropdown(flow)
         self.set_request(flow)
         self.set_response(flow)
 
-    def set_request(self, flow):
-        if self.show_modified_request and flow.request_modified():
-            request = flow.request
-        elif not self.show_modified_request and flow.request_modified():
+    def set_request(self, flow: HttpFlow):
+        request = flow.request
+
+        if flow.request_modified() and not self.show_modified_request and flow.original_request is not None:
             request = flow.original_request
-        else:
-            request = flow.request
 
         self.ui.requestHeaders.set_header_line(request.get_header_line())
         if request.form_data['headers']:
             self.ui.requestHeaders.set_headers(request.form_data['headers'])
         else:
             self.ui.requestHeaders.set_default_headers()
+
+        # Don't use a formatter if this is an editor request becuase the request body will have been written by the user
+        self.set_request_format_from_headers(request.get_headers() or Headers())
+        self.ui.requestBody.set_auto_format_enabled(flow.is_type_proxy())
         self.ui.requestBody.set_value(request.form_data['content'] or '')
+
+    # Automatically change the syntax highlighting based on the Content-Type header (request editor only)
+    def update_syntax_highlighting_for_request(self):
+        if self.flow.is_type_editor():
+            self.set_request_format_from_headers(self.ui.requestHeaders.get_headers())
+            # Hack to force CodeEditor and Scintilla to redraw itself and therefore show syntax highlighting
+            self.ui.requestBody.set_value(self.ui.requestBody.get_value())
 
     # Requires the flow,request and response to be saved to the DB (used by the network page)
     def set_response(self, flow: HttpFlow):
@@ -160,9 +172,9 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
 
-        self.set_format_from_headers(response.get_headers())
-        formatted_content = self.format_text(response.content)
-        self.ui.responseRaw.set_value(formatted_content or '', self.selected_format)
+        self.set_response_format_from_headers(response.get_headers() or Headers())
+        self.ui.responseRaw.set_auto_format_enabled(True)
+        self.ui.responseRaw.set_value(response.content or '')
 
         self.set_response_status_label(response)
 
@@ -173,7 +185,7 @@ class FlowView(QtWidgets.QWidget):
             label_msg = " " + HTTP_STATUS_CODE_DESCRIPTIONS[status]
         else:
             label_msg = " " + response.reason
-        print("----> ", label_msg)
+
         # NOTE: I tried to get this to work using properties and QSS but could not get the QLabel to be
         # re-drawn so the colour never changed. Hence why I am setting this in python:
         if status[0] == "1":
@@ -209,9 +221,9 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
 
-        self.set_format_from_headers(response.get_headers())
-        formatted_content = self.format_text(response.content)
-        self.ui.responseRaw.set_value(formatted_content or '', self.selected_format)
+        self.set_response_format_from_headers(response.get_headers() or Headers())
+        self.ui.responseRaw.set_auto_format_enabled(True)
+        self.ui.responseRaw.set_value(response.content or '')
 
         self.set_response_status_label(response)
 
@@ -235,48 +247,50 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseStackedWidget.setCurrentWidget(self.ui.responseTabs)
 
     def change_response_body_format(self, index):
-        self.selected_format = CodeEditor.FORMATS[index]
+        format = CodeEditor.FORMATS[index]
+        self.ui.responseRaw.set_format(format)
 
         if self.flow.response:
             content = self.flow.response.content
         else:
+            # TODO: The editor should just create an HttpResponse that isn't saved and pass it to FlowView
             content = self.editor_response.content
 
-        formatted_content = self.format_text(content)
-        self.ui.responseRaw.set_value(formatted_content, self.selected_format)
+        if content is None:
+            return
 
-    def format_text(self, text):
+        formatted_content = self.format_text(content)
+        self.ui.responseRaw.set_value(formatted_content)
+
+    def format_text(self, text: str) -> str:
         # TODO: Format javascript
-        if self.selected_format == 'JSON':
+        if self.selected_response_format == 'JSON':
             try:
                 formatted_content = json.dumps(json.loads(text), indent=2)
             except json.decoder.JSONDecodeError:
                 formatted_content = text
-        elif self.selected_format == 'XML':
+        elif self.selected_response_format == 'XML':
             formatted_content = BeautifulSoup(text, 'xml.parser').prettify()
-        elif self.selected_format == 'HTML':
+        elif self.selected_response_format == 'HTML':
             formatted_content = BeautifulSoup(text, 'html.parser').prettify()
         else:
             formatted_content = text
 
         return formatted_content
 
-    def set_format_from_headers(self, headers):
-        lower_case_headers = {k.lower(): v for k, v in headers.items()}
-        content_type = lower_case_headers.get('content-type')
+    def set_request_format_from_headers(self, headers: Headers):
+        format = get_content_type(headers)
+        if format is None:
+            return
 
-        if content_type is None:
-            self.selected_format = 'Unformatted'
-        elif 'json' in content_type:
-            self.selected_format = 'JSON'
-        elif 'xml' in content_type:
-            self.selected_format = 'XML'
-        elif 'html' in content_type:
-            self.selected_format = 'HTML'
-        elif 'javascript' in content_type:
-            self.selected_format = 'Javascript'
-        else:
-            self.selected_format = 'Unformatted'
+        self.ui.requestBody.set_format(format)
 
-        index = CodeEditor.FORMATS.index(self.selected_format)
+    def set_response_format_from_headers(self, headers: Headers):
+        format = get_content_type(headers)
+        if format is None:
+            return
+
+        self.ui.responseRaw.set_format(format)
+
+        index = CodeEditor.FORMATS.index(self.selected_response_format)
         self.response_format_dropdown.setCurrentIndex(index)

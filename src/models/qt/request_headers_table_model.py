@@ -1,11 +1,11 @@
 from typing import Any, Optional, Union, cast
 from PyQt6 import QtCore
+from lib.types import Headers
 
 HeaderTuple = tuple[bool, str, str]
 
 class RequestHeadersTableModel(QtCore.QAbstractTableModel):
-    # dataChanged: QtCore.pyqtSignalInstance
-    # layoutChanged: QtCore.pyqtSignalInstance
+    headers_changed = QtCore.pyqtSignal()
 
     row_headers: list[str]
     headers: list[HeaderTuple]
@@ -30,9 +30,9 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
 
-    def get_headers(self):
+    def get_headers(self) -> Headers:
         header_arrays = [h[1:3] for h in self.headers if h[0] is True]
-        headers = {}
+        headers: Headers = {}
         for header_arr in header_arrays:
             headers[header_arr[0]] = header_arr[1]
         return headers
@@ -72,6 +72,7 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
             check_state = QtCore.Qt.CheckState(value)
             checked = (check_state == QtCore.Qt.CheckState.Checked)
             self.headers[index.row()] = (checked, header[1], header[2])
+            self.headers_changed.emit()
             return True
 
         if role == QtCore.Qt.ItemDataRole.EditRole:
@@ -80,6 +81,7 @@ class RequestHeadersTableModel(QtCore.QAbstractTableModel):
                 self.insert_blank_row()
 
             self.modify_header(index.row(), index.column(), value)
+            self.headers_changed.emit()
             return True
 
         return False

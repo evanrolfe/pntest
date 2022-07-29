@@ -87,7 +87,6 @@ class HttpFlow(OratorModel):
     @classmethod
     def update_from_proxy_response(cls, proxy_response: ProxyResponse):
         flow = HttpFlow.where('uuid', '=', proxy_response['flow_uuid']).first()
-        print(f'-------------> Found flow {flow.id}')
         if flow is None:
             return
 
@@ -151,6 +150,18 @@ class HttpFlow(OratorModel):
 
     def has_response(self) -> bool:
         return hasattr(self, 'response_id')
+
+    def is_type_proxy(self) -> bool:
+        return self.type == HttpFlow.TYPE_PROXY
+
+    def is_type_editor(self) -> bool:
+        return self.type == HttpFlow.TYPE_EDITOR
+
+    def is_type_editor_example(self) -> bool:
+        return self.type == HttpFlow.TYPE_EDITOR_EXAMPLE
+
+    def is_type_editor_fuzz(self) -> bool:
+        return self.type == HttpFlow.TYPE_EDITOR_FUZZ
 
     def values_for_table(self):
         if getattr(self, 'response_id', None):
@@ -290,7 +301,6 @@ class HttpFlow(OratorModel):
             return [host, None]
 
     def is_editable(self):
-        # Note: this would be false for navigation requests, which we dont have at the moment
         return True
 
     def make_request(self, signals: Optional[WorkerSignals] = None):

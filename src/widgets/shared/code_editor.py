@@ -1,9 +1,15 @@
+import json
 import re
+from typing import Optional
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from bs4 import BeautifulSoup
 
 from views._compiled.shared.code_editor import Ui_CodeEditor
 
 class CodeEditor(QtWidgets.QWidget):
+    selected_format: Optional[str]
+    auto_format_enabled: bool
+
     set_code = QtCore.pyqtSignal(str, str)
 
     FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
@@ -19,12 +25,24 @@ class CodeEditor(QtWidgets.QWidget):
         keyseq_ctrl_f = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+F'), self)
         keyseq_ctrl_f.activated.connect(self.show_finder)
 
-    def set_value(self, value, format = None):
-        if format != None:
-            if format not in self.FORMATS:
-                raise Exception(f'Unknown format {format}')
+        self.selected_format = None
+        self.auto_format_enabled = False
 
-            self.ui.code.set_format(format)
+    def set_format(self, format: str):
+        if format not in self.FORMATS:
+            raise Exception(f'Unknown format {format}')
+
+        self.selected_format = format
+
+    def set_auto_format_enabled(self, value: bool):
+        self.auto_format_enabled = value
+
+    def set_value(self, value: str):
+        if self.selected_format != None:
+            self.ui.code.set_format(self.selected_format)
+
+        if self.auto_format_enabled:
+            value = self.format_text(value)
 
         self.ui.code.setText(value)
 
@@ -49,3 +67,20 @@ class CodeEditor(QtWidgets.QWidget):
         )  # More POSIX compatible RegEx
 
         self.ui.code.replaceSelectedText("somethingelse!")
+
+    def format_text(self, text: str) -> str:
+        print("Formatting text to: ", self.selected_format)
+        # TODO: Format javascript
+        if self.selected_format == 'JSON':
+            try:
+                formatted_content = json.dumps(json.loads(text), indent=2)
+            except json.decoder.JSONDecodeError:
+                formatted_content = text
+        elif self.selected_format == 'XML':
+            formatted_content = BeautifulSoup(text, 'xml.parser').prettify()
+        elif self.selected_format == 'HTML':
+            formatted_content = BeautifulSoup(text, 'html.parser').prettify()
+        else:
+            formatted_content = text
+
+        return formatted_content

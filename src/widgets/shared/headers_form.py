@@ -23,6 +23,8 @@ class MyDelegate(QtWidgets.QItemDelegate):
         editor.setText(value)
 
 class HeadersForm(QtWidgets.QWidget):
+    headers_changed = QtCore.pyqtSignal()
+
     CALCULATED_TEXT = '<calculated when request is sent>'
     DEFAULT_HEADERS = [
         (True, 'Content-Length', CALCULATED_TEXT),
@@ -43,6 +45,8 @@ class HeadersForm(QtWidgets.QWidget):
 
         self.editable = False
         self.table_model = RequestHeadersTableModel([])
+        self.table_model.headers_changed.connect(self.headers_changed)
+
         self.set_header_line('')
         self.set_headers({})
 
