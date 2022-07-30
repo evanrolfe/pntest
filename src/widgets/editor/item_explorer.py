@@ -125,7 +125,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.insertChild(editor_item, QtCore.QModelIndex())
         self.item_created.emit(editor_item)
 
-    def new_request_clicked(self, parent_index):
+    def new_request_clicked(self, parent_index: QtCore.QModelIndex):
         child_editor_item = EditorItem()
         child_editor_item.name = 'New HTTP Request'
         child_editor_item.item_type = EditorItem.TYPE_HTTP_FLOW
@@ -133,14 +133,14 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.insertChild(child_editor_item, parent_index)
         self.item_created.emit(child_editor_item)
 
-    def new_dir_clicked(self, parent_index):
+    def new_dir_clicked(self, parent_index: QtCore.QModelIndex):
         child_editor_item = EditorItem()
         child_editor_item.name = 'New Folder'
         child_editor_item.item_type = 'dir'
 
         self.insertChild(child_editor_item, parent_index)
 
-    def new_fuzz_clicked(self, parent_index):
+    def new_fuzz_clicked(self, parent_index: QtCore.QModelIndex):
         child_editor_item = EditorItem()
         child_editor_item.name = 'New Fuzz Request'
         child_editor_item.item_type = EditorItem.TYPE_FUZZ
@@ -148,17 +148,17 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.insertChild(child_editor_item, parent_index)
         self.item_created.emit(child_editor_item)
 
-    def copy_clicked(self, parent_index):
+    def copy_clicked(self, parent_index: QtCore.QModelIndex):
         tree_item = self.tree_model.getItem(parent_index)
         if tree_item.editor_item is None:
             return
         self.copied_editor_item = tree_item.editor_item.duplicate()
 
-    def paste_clicked(self, parent_index):
+    def paste_clicked(self, parent_index: QtCore.QModelIndex):
         self.insertChild(self.copied_editor_item, parent_index)
         self.item_created.emit(self.copied_editor_item)
 
-    def delete_clicked(self, index):
+    def delete_clicked(self, index: QtCore.QModelIndex):
         tree_item = self.tree_model.getItem(index)
 
         if tree_item.is_dir:
@@ -175,7 +175,7 @@ class ItemExplorer(QtWidgets.QTreeView):
 
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.tree_model.removeRows(index.row(), 1, index.parent(), True)
-            self.item_deleted.emit(tree_item)
+            self.item_deleted.emit(tree_item.editor_item)
 
     def multi_delete_clicked(self, indexes):
         tree_items = [self.tree_model.getItem(i) for i in indexes]
