@@ -243,7 +243,8 @@ QMenu::item:selected {
  *------------------------------------------------------------------------------*/
 /* QPushButton
 {
-  padding: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
   outline: none;
   color: $text;
   border: 1 solid $border-light;
@@ -256,7 +257,6 @@ QPushButton {
   border: 0 solid $border-light;
   border-radius: 3px;
   height: 30px;
-  min-width: 100px;
 }
 
 QPushButton:hover {
@@ -283,6 +283,7 @@ QPushButton#sendButton {
   background-color: $button-bright;
   font-size: 13px;
   font-weight: 600;
+  width: 100px;
 }
 
 QPushButton#sendButton:hover {
@@ -308,9 +309,10 @@ QPushButton#fuzzButton:pressed {
   background-color: #8B37C3;
 }
 
-QPushButton#saveButton {
+QPushButton#saveButton, #cancelButton {
   font-size: 13px;
   font-weight: 600;
+  width: 100px;
 }
 
 /*------------------------------------------------------------------------------*

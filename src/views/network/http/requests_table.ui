@@ -53,6 +53,16 @@
       <number>10</number>
      </property>
      <item>
+      <widget class="QPushButton" name="siteMapButton">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QLineEdit" name="searchBox">
@@ -75,6 +85,12 @@
            <property name="text">
             <string>Display</string>
            </property>
+           <property name="minimumSize">
+             <size>
+             <width>75</width>
+             <height>16777215</height>
+             </size>
+           </property>
           </widget>
          </item>
          <item>
@@ -84,6 +100,12 @@
            </property>
            <property name="text">
             <string>Capture</string>
+           </property>
+           <property name="minimumSize">
+             <size>
+             <width>75</width>
+             <height>16777215</height>
+             </size>
            </property>
           </widget>
          </item>

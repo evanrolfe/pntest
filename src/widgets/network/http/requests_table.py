@@ -60,6 +60,12 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.customContextMenuRequested.connect(self.right_clicked)
         self.selected_request_ids = []
 
+        # SiteMap button
+        icon = QtGui.QIcon("assets:icons/dark/icons8-sitemap-32.png")
+        self.ui.siteMapButton.setIcon(icon)
+        self.ui.siteMapButton.setIconSize(QtCore.QSize(25, 25))
+        self.ui.siteMapButton.setText(">>")
+
     def setTableModel(self, model):
         self.table_model = model
         self.ui.requestsTable.setModel(model)

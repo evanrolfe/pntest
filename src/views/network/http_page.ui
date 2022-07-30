@@ -108,22 +108,41 @@
       <enum>Qt::Horizontal</enum>
      </property>
 
-     <widget class="QStackedWidget" name="stackedWidget">
-      <widget class="RequestsTable" name="requestsTableWidget" native="true">
+     <widget class="QSplitter" name="tableAndSiteMapSplitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="ItemExplorer" name="siteMap">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>740</width>
-         <height>0</height>
-        </size>
-       </property>
+        <property name="minimumSize">
+         <size>
+          <width>125</width>
+          <height>0</height>
+         </size>
+        </property>
       </widget>
-      <widget class="Loader" name="loaderWidget"/>
+      <widget class="QStackedWidget" name="stackedWidget">
+       <widget class="RequestsTable" name="requestsTableWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>650</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="Loader" name="loaderWidget"/>
+      </widget>
      </widget>
 
      <widget class="FlowView" name="requestViewWidget" native="true">
@@ -155,6 +174,12 @@
    <class>Loader</class>
    <extends>QWidget</extends>
    <header>widgets.shared.loader.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ItemExplorer</class>
+   <extends>QTreeView</extends>
+   <header>widgets.editor.item_explorer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

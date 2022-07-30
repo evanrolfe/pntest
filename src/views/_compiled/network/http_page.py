@@ -46,7 +46,18 @@ class Ui_HttpPage(object):
         self.requestsTableAndViewSplitter = QtWidgets.QSplitter(HttpPage)
         self.requestsTableAndViewSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.requestsTableAndViewSplitter.setObjectName("requestsTableAndViewSplitter")
-        self.stackedWidget = QtWidgets.QStackedWidget(self.requestsTableAndViewSplitter)
+        self.tableAndSiteMapSplitter = QtWidgets.QSplitter(self.requestsTableAndViewSplitter)
+        self.tableAndSiteMapSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        self.tableAndSiteMapSplitter.setObjectName("tableAndSiteMapSplitter")
+        self.siteMap = ItemExplorer(self.tableAndSiteMapSplitter)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.siteMap.sizePolicy().hasHeightForWidth())
+        self.siteMap.setSizePolicy(sizePolicy)
+        self.siteMap.setMinimumSize(QtCore.QSize(125, 0))
+        self.siteMap.setObjectName("siteMap")
+        self.stackedWidget = QtWidgets.QStackedWidget(self.tableAndSiteMapSplitter)
         self.stackedWidget.setObjectName("stackedWidget")
         self.requestsTableWidget = RequestsTable()
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
@@ -54,7 +65,7 @@ class Ui_HttpPage(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.requestsTableWidget.sizePolicy().hasHeightForWidth())
         self.requestsTableWidget.setSizePolicy(sizePolicy)
-        self.requestsTableWidget.setMinimumSize(QtCore.QSize(740, 0))
+        self.requestsTableWidget.setMinimumSize(QtCore.QSize(650, 0))
         self.requestsTableWidget.setObjectName("requestsTableWidget")
         self.stackedWidget.addWidget(self.requestsTableWidget)
         self.loaderWidget = Loader()
@@ -77,6 +88,7 @@ class Ui_HttpPage(object):
         HttpPage.setWindowTitle(_translate("HttpPage", "Form"))
         self.label.setText(_translate("HttpPage", "NETWORK - HTTP"))
         self.toggleButton.setText(_translate("HttpPage", "WEBSOCKET"))
+from widgets.editor.item_explorer import ItemExplorer
 from widgets.network.http.requests_table import RequestsTable
 from widgets.shared.flow_view import FlowView
 from widgets.shared.loader import Loader

@@ -26,6 +26,10 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.requestsTableWidget.display_filters_saved.connect(self.load_flows_async)
         self.ui.requestsTableWidget.send_flow_to_editor.connect(self.send_flow_to_editor)
 
+        # Site Map
+        self.ui.siteMap.setVisible(False)
+        self.ui.requestsTableWidget.ui.siteMapButton.clicked.connect(self.toggle_sitemap)
+
         self.ui.toggleButton.clicked.connect(self.toggle_page)
         self.ui.requestViewWidget.set_show_rendered(True)
         self.ui.requestViewWidget.set_save_as_example_visible(False)
@@ -33,6 +37,16 @@ class HttpPage(QtWidgets.QWidget):
 
         self.restore_layout_state()
         self.threadpool = QtCore.QThreadPool()
+
+    def toggle_sitemap(self):
+        visible = not self.ui.siteMap.isVisible()
+        self.ui.siteMap.setVisible(visible)
+
+        if (visible):
+            self.ui.requestsTableWidget.ui.siteMapButton.setText("<<")
+        else:
+            self.ui.requestsTableWidget.ui.siteMapButton.setText(">>")
+
 
     def reload(self):
         self.search_text = None
