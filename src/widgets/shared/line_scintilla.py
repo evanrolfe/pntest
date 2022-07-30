@@ -2,11 +2,12 @@ import re
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 
 from widgets.shared.code_themes import DarkTheme
+from widgets.shared.my_scintilla import MyScintilla
 
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
 
-class LineScintilla(Qsci.QsciScintilla):
+class LineScintilla(MyScintilla):
     # TODO: Implement these signals
     enter_pressed = QtCore.pyqtSignal()
     text_changed = QtCore.pyqtSignal()
