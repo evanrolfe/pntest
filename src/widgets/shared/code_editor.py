@@ -34,6 +34,9 @@ class CodeEditor(QtWidgets.QWidget):
 
         self.selected_format = format
 
+    def clear_formatting(self):
+        self.selected_format = None
+
     def set_auto_format_enabled(self, value: bool):
         self.auto_format_enabled = value
 
@@ -42,7 +45,10 @@ class CodeEditor(QtWidgets.QWidget):
             self.ui.code.set_format(self.selected_format)
 
         if self.auto_format_enabled:
-            value = self.format_text(value)
+            try:
+                value = self.format_text(value)
+            except Exception as ex:
+                print("[CodeEditor] formatting error: ", ex)
 
         self.ui.code.setText(value)
 
@@ -69,7 +75,6 @@ class CodeEditor(QtWidgets.QWidget):
         self.ui.code.replaceSelectedText("somethingelse!")
 
     def format_text(self, text: str) -> str:
-        print("Formatting text to: ", self.selected_format)
         # TODO: Format javascript
         if self.selected_format == 'JSON':
             try:

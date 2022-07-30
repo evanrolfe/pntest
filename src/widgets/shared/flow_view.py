@@ -24,7 +24,6 @@ class FlowView(QtWidgets.QWidget):
         self.show_modified_request = False
         self.show_modified_response = False
         self.editable = False
-        self.selected_response_format = CodeEditor.FORMATS[len(CodeEditor.FORMATS) - 1]
 
         # Setup Request Corner Widget:
         self.request_modified_dropdown = QtWidgets.QComboBox()
@@ -259,28 +258,12 @@ class FlowView(QtWidgets.QWidget):
         if content is None:
             return
 
-        formatted_content = self.format_text(content)
-        self.ui.responseRaw.set_value(formatted_content)
-
-    def format_text(self, text: str) -> str:
-        # TODO: Format javascript
-        if self.selected_response_format == 'JSON':
-            try:
-                formatted_content = json.dumps(json.loads(text), indent=2)
-            except json.decoder.JSONDecodeError:
-                formatted_content = text
-        elif self.selected_response_format == 'XML':
-            formatted_content = BeautifulSoup(text, 'xml.parser').prettify()
-        elif self.selected_response_format == 'HTML':
-            formatted_content = BeautifulSoup(text, 'html.parser').prettify()
-        else:
-            formatted_content = text
-
-        return formatted_content
+        self.ui.responseRaw.set_value(content)
 
     def set_request_format_from_headers(self, headers: Headers):
         format = get_content_type(headers)
         if format is None:
+            self.ui.requestBody.clear_formatting()
             return
 
         self.ui.requestBody.set_format(format)
@@ -288,9 +271,11 @@ class FlowView(QtWidgets.QWidget):
     def set_response_format_from_headers(self, headers: Headers):
         format = get_content_type(headers)
         if format is None:
+            self.ui.responseRaw.clear_formatting()
+            self.response_format_dropdown.setCurrentIndex(len(CodeEditor.FORMATS) - 1)
             return
 
         self.ui.responseRaw.set_format(format)
 
-        index = CodeEditor.FORMATS.index(self.selected_response_format)
+        index = CodeEditor.FORMATS.index(format)
         self.response_format_dropdown.setCurrentIndex(index)
