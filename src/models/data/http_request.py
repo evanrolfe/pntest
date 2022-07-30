@@ -184,6 +184,12 @@ class HttpRequest(Model):
 
         if url_data.port:
             self.port = url_data.port
+        else:
+            if url_data.scheme == "https":
+                self.port = 443
+            else:
+                self.port = 80
+
         self.scheme = url_data.scheme
 
         if url_data.query == '':
