@@ -194,8 +194,8 @@ class ItemExplorer(QtWidgets.QTreeView):
 
             self.tree_model.removeRows(
                 rows[0], diff + 1, indexes[0].parent(), True)
-            for item in tree_items:
-                self.item_deleted.emit(item)
+            for tree_item in tree_items:
+                self.item_deleted.emit(tree_item.editor_item)
 
     # TODO: Most of this method's logic should be in EditorTreeModel, not here.
     def insertChild(self, child_editor_item, parent_index):

@@ -7,7 +7,6 @@ from models.data.http_request import HttpRequest
 from support.fixtures import load_fixtures
 from widgets.editor.editor_page import EditorPage
 
-
 class TestEditorPage:
     def test_deleting_an_item(self, database, qtbot):
         widget = EditorPage()
@@ -37,9 +36,9 @@ class TestEditorPage:
         print("Delete clicked...")
         widget.ui.itemExplorer.delete_clicked(index)
 
-        widget.show()
-        qtbot.waitForWindowShown(widget)
-        time.sleep(2)
+        # widget.show()
+        # qtbot.waitForWindowShown(widget)
+        # time.sleep(3)
 
         # TODO:
         assert EditorItem.count() == 0

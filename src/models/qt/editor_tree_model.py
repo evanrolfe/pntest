@@ -155,7 +155,7 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
             return QtCore.QModelIndex()
 
     # TODO: Make this call self.insertChildren()
-    def insertChild(self, child, parent: QtCore.QModelIndex = ...):
+    def insertChild(self, child: EditorTreeItem, parent: QtCore.QModelIndex = ...):
         parentItem = self.getItem(parent)
         position = parentItem.childCount()
 
@@ -165,12 +165,11 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
         return success
 
-    def insertChildren(self, child_items, parent_index: QtCore.QModelIndex = ...) -> None:
+    def insertChildren(self, child_items: list[EditorTreeItem], parent_index: QtCore.QModelIndex = ...) -> None:
         parentItem = self.getItem(parent_index)
         position = parentItem.childCount()
 
-        self.beginInsertRows(parent_index, position,
-                             position + len(child_items))
+        self.beginInsertRows(parent_index, position, position + len(child_items))
         parentItem.insertChildren(child_items)
         self.endInsertRows()
 
@@ -189,7 +188,6 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
     def removeRows(self, row: int, count: int, parent_index: QtCore.QModelIndex = ..., delete=False) -> bool:
         parentItem = self.getItem(parent_index)
-
         self.beginRemoveRows(parent_index, row, row + count)
         success = parentItem.removeChildren(row, count, delete)
         self.endRemoveRows()

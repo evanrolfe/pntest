@@ -75,7 +75,7 @@ class EditorTreeItem:
 
         for row in range(count):
             removed_item = self.childItems.pop(position)
-            if delete and self.editor_item is not None and removed_item.editor_item is not None:
+            if delete and removed_item.editor_item is not None:
                 removed_item.editor_item.delete_everything()
 
         return True

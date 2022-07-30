@@ -53,9 +53,10 @@ class Tabs(QtWidgets.QTabWidget):
     def close_tab(self, index):
         self.removeTab(index)
 
-    def close_item(self, tree_item):
-        index = self.get_index_for_editor_item(tree_item.editor_item)
-        if index:
+    def close_item(self, editor_item: EditorItem):
+        index = self.get_index_for_editor_item(editor_item)
+
+        if index is not None:
             self.removeTab(index)
 
     def change_item(self, editor_item):
