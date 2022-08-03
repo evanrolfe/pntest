@@ -1,7 +1,7 @@
 import re
 from models.data.variable import Variable
 
-VAR_REGEX = r'\${var:(\w+)\}'
+VAR_REGEX = r'\${var:([^}]+)}'
 
 # parse_value replace variables, encodings, hashes etc. it is called when an HttpRequest is saved
 # from the request edit form

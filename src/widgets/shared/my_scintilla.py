@@ -1,17 +1,32 @@
 from optparse import Option
 import re
-from typing import Optional
+from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
-from lib.input_parsing.parse import get_available_encoders
+from lib.input_parsing.parse import get_available_encoders, match_values, parse_value
 from lib.input_parsing.encoder import Encoder
 
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
 
+class IndicatorRange(TypedDict):
+    line_start: int
+    col_start: int
+    line_end: int
+    col_end: int
+
+class IndicatorRecord(TypedDict):
+    ranges: list[IndicatorRange]
+
 class MyScintilla(Qsci.QsciScintilla):
+    INDICATOR_ENCODING_ID = 1
+    INDICATOR_SEARCH_ID = 2
+
+    previous_selection: IndicatorRange
+    indicators: dict[int, IndicatorRecord]
+
     def __init__(self, *args, **kwargs):
         super(MyScintilla, self).__init__(*args, **kwargs)
 
@@ -32,7 +47,10 @@ class MyScintilla(Qsci.QsciScintilla):
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.right_clicked)
 
-        self.search_indicators = {"selection": {"id": 21, "positions": []}}
+        self.indicators = {}
+        self.indicators[self.INDICATOR_ENCODING_ID] = { "ranges": [] }
+        self.indicators[self.INDICATOR_SEARCH_ID] = { "ranges": [] }
+
         self.previous_selection = {
             "line_start": 0,
             "col_start": 0,
@@ -48,7 +66,29 @@ class MyScintilla(Qsci.QsciScintilla):
         self.encoders_popup = EncodersPopup(self)
         self.encoders_popup.encode.connect(self.encode_selection)
         self.encoders_popup.decode.connect(self.decode_selection)
-        #self.encoders_popup.show()
+
+        self.indicatorClicked.connect(self.indicator_clicked)
+        self.textChanged.connect(self.apply_encoding_indicators)
+
+    def apply_encoding_indicators(self):
+        self.reset_encoding_indicators()
+
+        text = self.text()
+        matches = match_values(text)
+
+        for match in matches:
+            position_start,position_end  = match.span()
+            range = position_end - position_start
+
+            range = self.range_from_positions(*match.span())
+            self.highlight_with_indicator(range, self.INDICATOR_ENCODING_ID)
+
+            # self.SendScintilla(Qsci.QsciScintilla.SCI_SETINDICATORCURRENT, self.INDICATOR_ENCODING_ID)
+            # self.SendScintilla(Qsci.QsciScintilla.SCI_SETINDICATORVALUE, 123)
+            # self.SendScintilla(Qsci.QsciScintilla.SCI_INDICATORFILLRANGE, position_start, range)
+
+    def indicator_clicked(self, line, index, keys):
+        print("line: ", line, ", index: ", index, ", keys: ", keys)
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
@@ -96,69 +136,40 @@ class MyScintilla(Qsci.QsciScintilla):
             self.reset_search_indicators()
             self.highlight_selected_matches()
 
+    # Checks the current selection, if it is a single word it then searches and highlights all matches.
+    # Since we're interested in exactly one word:
+    # * Ignore an empty selection
+    # * Ignore anything which spans more than one line
+    # * Ignore more than one word
+    # * Ignore anything less than one word
     def highlight_selected_matches(self):
-        """
-        Checks the current selection, if it is a single word it then searches
-        and highlights all matches.
-
-        Since we're interested in exactly one word:
-        * Ignore an empty selection
-        * Ignore anything which spans more than one line
-        * Ignore more than one word
-        * Ignore anything less than one word
-        """
         selected_range = line0, col0, line1, col1 = self.getSelection()
 
-        #
-        # If there's no selection, do nothing
-        #
-        if selected_range == (-1, -1, -1, -1):
+        if selected_range == (-1, -1, -1, -1): # If there's no selection, do nothing
             return
 
-        #
-        # Ignore anything which spans two or more lines
-        #
-        if line0 != line1:
+        if line0 != line1: # Ignore anything which spans two or more lines
             return
 
-        #
-        # Ignore if no text is selected or the selected text is not at most one
-        # valid identifier-type word.
-        #
+        # Ignore if no text is selected or the selected text is not at most one valid identifier-type word.
         selected_text = self.selectedText()
         if not RE_VALID_WORD.match(selected_text):
             return
 
-        #
         # Ignore anything which is not a whole word.
-        # NB Although Scintilla defines a SCI_ISRANGEWORD message,
-        # it's not exposed by QSciScintilla. Instead, we
-        # ask Scintilla for the start end end position of
-        # the word we're in and test whether our range end points match
-        # those or not.
-        #
         pos0 = self.positionFromLineIndex(line0, col0)
-        word_start_pos = self.SendScintilla(
-            Qsci.QsciScintilla.SCI_WORDSTARTPOSITION, pos0, 1
-        )
+        word_start_pos = self.SendScintilla(Qsci.QsciScintilla.SCI_WORDSTARTPOSITION, pos0, 1)
         _, start_offset = self.lineIndexFromPosition(word_start_pos)
         if col0 != start_offset:
             return
 
         pos1 = self.positionFromLineIndex(line1, col1)
-        word_end_pos = self.SendScintilla(
-            Qsci.QsciScintilla.SCI_WORDENDPOSITION, pos1, 1
-        )
+        word_end_pos = self.SendScintilla(Qsci.QsciScintilla.SCI_WORDENDPOSITION, pos1, 1)
         _, end_offset = self.lineIndexFromPosition(word_end_pos)
         if col1 != end_offset:
             return
 
-        #
-        # For each matching word within the editor text, add it to
-        # the list of highlighted indicators and fill it according
-        # to the current theme.
-        #
-        indicators = self.search_indicators["selection"]
+        # Add each matching word to the list of highlighted indicators and highlight it
         encoding = "utf8" if self.isUtf8() else "latin1"
         text_bytes = self.text().encode(encoding)
         selected_text_bytes = selected_text.encode(encoding)
@@ -166,51 +177,58 @@ class MyScintilla(Qsci.QsciScintilla):
         for match in re.finditer(selected_text_bytes, text_bytes):
             range = self.range_from_positions(*match.span())
 
-            #
             # Don't highlight the text we've selected
-            #
             if range == selected_range:
                 continue
 
-            line_start, col_start, line_end, col_end = range
-            indicators["positions"].append(
-                {
-                    "line_start": line_start,
-                    "col_start": col_start,
-                    "line_end": line_end,
-                    "col_end": col_end,
-                }
-            )
+            self.highlight_with_indicator(range, self.INDICATOR_SEARCH_ID)
 
-            self.fillIndicatorRange(
-                line_start, col_start, line_end, col_end, indicators["id"]
-            )
+    def highlight_with_indicator(self, range: IndicatorRange, indicator_id: int):
+        indicator = self.indicators[indicator_id]
+        indicator["ranges"].append(range)
+        self.fillIndicatorRange(
+            range["line_start"],
+            range["col_start"],
+            range["line_end"],
+            range["col_end"],
+            indicator_id
+        )
 
-    def range_from_positions(self, start_position, end_position):
-        """Given a start-end pair, such as are provided by a regex match,
-        return the corresponding Scintilla line-offset pairs which are
-        used for searches, indicators etc.
-
-        NOTE: Arguments must be byte offsets into the underlying text bytes.
-        """
+    # Given a start-end pair, such as are provided by a regex match,
+    # return the corresponding Scintilla line-offset pairs which are
+    # used for searches, indicators etc.
+    # NOTE: Arguments must be byte offsets into the underlying text bytes.
+    def range_from_positions(self, start_position, end_position) -> IndicatorRange:
         start_line, start_offset = self.lineIndexFromPosition(start_position)
         end_line, end_offset = self.lineIndexFromPosition(end_position)
-        return start_line, start_offset, end_line, end_offset
+        return {
+            "line_start": start_line,
+            "col_start": start_offset,
+            "line_end": end_line,
+            "col_end": end_offset,
+        }
 
     def reset_search_indicators(self):
-        """
-        Clears all the text indicators from the search functionality.
-        """
-        for indicator in self.search_indicators:
-            for position in self.search_indicators[indicator]["positions"]:
-                self.clearIndicatorRange(
-                    position["line_start"],
-                    position["col_start"],
-                    position["line_end"],
-                    position["col_end"],
-                    self.search_indicators[indicator]["id"],
-                )
-            self.search_indicators[indicator]["positions"] = []
+        for range in self.indicators[self.INDICATOR_SEARCH_ID]["ranges"]:
+            self.clearIndicatorRange(
+                range["line_start"],
+                range["col_start"],
+                range["line_end"],
+                range["col_end"],
+                self.INDICATOR_SEARCH_ID,
+            )
+        self.indicators[self.INDICATOR_SEARCH_ID]["ranges"] = []
+
+    def reset_encoding_indicators(self):
+        for range in self.indicators[self.INDICATOR_ENCODING_ID]["ranges"]:
+            self.clearIndicatorRange(
+                range["line_start"],
+                range["col_start"],
+                range["line_end"],
+                range["col_end"],
+                self.INDICATOR_ENCODING_ID,
+            )
+        self.indicators[self.INDICATOR_ENCODING_ID]["ranges"] = []
 
     def set_format(self, format: str):
         if format == 'JSON':
@@ -233,20 +251,24 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.setIndentationGuidesBackgroundColor(QtGui.QColor(self.theme.darker_color))
 
-        for type_ in self.search_indicators:
-            self.setMatchedBraceForegroundColor(QtGui.QColor(self.theme.default_color))
-            self.setMatchedBraceBackgroundColor(QtGui.QColor(self.theme.selected_secondary_color))
+        # Set Search Indicator Style
+        self.setMatchedBraceForegroundColor(QtGui.QColor(self.theme.default_color))
+        self.setMatchedBraceBackgroundColor(QtGui.QColor(self.theme.selected_secondary_color))
 
-            self.setIndicatorForegroundColor(QtGui.QColor(self.theme.selected_secondary_color), self.search_indicators[type_]["id"])
-            self.setIndicatorHoverStyle(Qsci.QsciScintilla.IndicatorStyle.FullBoxIndicator, self.search_indicators[type_]["id"])
+        self.setIndicatorForegroundColor(QtGui.QColor(self.theme.selected_secondary_color), self.INDICATOR_SEARCH_ID)
+        self.setIndicatorHoverStyle(Qsci.QsciScintilla.IndicatorStyle.FullBoxIndicator, self.INDICATOR_SEARCH_ID)
 
-            # https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETSTYLE
-            self.SendScintilla(
-                Qsci.QsciScintilla.SCI_INDICSETSTYLE, self.search_indicators[type_]["id"], 16
-            )
+        # https://www.scintilla.org/ScintillaDoc.html#SCI_INDICSETSTYLE
+        self.SendScintilla(Qsci.QsciScintilla.SCI_INDICSETSTYLE, self.INDICATOR_SEARCH_ID, 16)
 
         font = self.theme.get_font()
         self.setFont(font)
+
+        self.setIndicatorForegroundColor(QtGui.QColor("#1c90b4"), self.INDICATOR_ENCODING_ID)
+        self.SendScintilla(Qsci.QsciScintilla.SCI_INDICSETSTYLE, self.INDICATOR_ENCODING_ID, 15)
+
+        self.setIndicatorHoverForegroundColor(QtGui.QColor("#404040"), self.INDICATOR_ENCODING_ID)
+        self.setIndicatorHoverStyle(Qsci.QsciScintilla.IndicatorStyle.FullBoxIndicator, self.INDICATOR_ENCODING_ID)
 
     def right_clicked(self, position: QtCore.QPoint):
         menu = self.createStandardContextMenu()
