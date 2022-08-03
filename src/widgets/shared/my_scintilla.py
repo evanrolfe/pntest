@@ -67,7 +67,7 @@ class MyScintilla(Qsci.QsciScintilla):
         self.encoders_popup.encode.connect(self.encode_selection)
         self.encoders_popup.decode.connect(self.decode_selection)
 
-        self.indicatorClicked.connect(self.indicator_clicked)
+        self.indicatorReleased.connect(self.indicator_clicked)
         self.textChanged.connect(self.apply_encoding_indicators)
 
     def apply_encoding_indicators(self):
@@ -83,12 +83,10 @@ class MyScintilla(Qsci.QsciScintilla):
             range = self.range_from_positions(*match.span())
             self.highlight_with_indicator(range, self.INDICATOR_ENCODING_ID)
 
-            # self.SendScintilla(Qsci.QsciScintilla.SCI_SETINDICATORCURRENT, self.INDICATOR_ENCODING_ID)
-            # self.SendScintilla(Qsci.QsciScintilla.SCI_SETINDICATORVALUE, 123)
-            # self.SendScintilla(Qsci.QsciScintilla.SCI_INDICATORFILLRANGE, position_start, range)
-
     def indicator_clicked(self, line, index, keys):
         print("line: ", line, ", index: ", index, ", keys: ", keys)
+        # TODO: Get the value of the encoding and set it on the EncoderPopup
+        self.encoders_popup.show()
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
