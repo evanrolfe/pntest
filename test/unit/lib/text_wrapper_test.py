@@ -8,7 +8,7 @@ class TestTextWrapper:
         factory(Variable, 'global').create(key='otherVar', value='world')
 
         value = '{"this is var:": "${b64:${var:myVar} - ${var:otherVar}}","asdf": "another one!"}'
-
         text_wrapper = TextWrapper(value)
         result = text_wrapper.get_parsed_text()
+
         assert result == '{"this is var:": "aGVsbG8gLSB3b3JsZA==","asdf": "another one!"}'

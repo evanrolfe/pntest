@@ -7,7 +7,8 @@ from models.data.payload_file import PayloadFile, PayloadFileSerialised
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
-from lib.input_parsing.parse import parse_value, parse_payload_values
+from lib.input_parsing.parse import parse_payload_values
+from lib.input_parsing.text_wrapper import parse_text
 from copy import deepcopy
 
 class FuzzFormData(TypedDict):
@@ -177,7 +178,7 @@ class HttpRequest(Model):
         self.method = str(self.form_data['method'])
 
         # 2. Set URL related attributes
-        parsed_url = parse_value(str(self.form_data['url']))
+        parsed_url = parse_text(str(self.form_data['url']))
         url_data = urlsplit(parsed_url)
         if url_data.hostname:
             self.host = url_data.hostname
@@ -198,12 +199,12 @@ class HttpRequest(Model):
             self.path = url_data.path + '?' + url_data.query
 
         # 3. Set content
-        self.content = parse_value(str(form_data['content']))
+        self.content = parse_text(str(form_data['content']))
 
         # 4. Set headers
         parsed_headers = deepcopy(form_data['headers'])
         for key, value in form_data['headers'].items():
-            parsed_headers[key] = parse_value(value)
+            parsed_headers[key] = parse_text(value)
 
         self.set_headers(parsed_headers)
 

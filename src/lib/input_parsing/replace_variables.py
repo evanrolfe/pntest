@@ -3,7 +3,7 @@ from models.data.variable import Variable
 
 VAR_REGEX = r'\${var:([^}]+)}'
 
-# parse_value replace variables, encodings, hashes etc. it is called when an HttpRequest is saved
+# replace_variables replace variables, encodings, hashes etc. it is called when an HttpRequest is saved
 # from the request edit form
 def replace_variables(value: str) -> str:
     for match in re.finditer(VAR_REGEX, value):

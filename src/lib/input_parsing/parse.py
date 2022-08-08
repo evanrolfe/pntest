@@ -14,6 +14,8 @@ from lib.input_parsing.hash_md5 import HashMD5
 from lib.input_parsing.hash_sha1 import HashSHA1
 from lib.input_parsing.hash_sha256 import HashSHA256
 
+from lib.input_parsing.transform_var import TransformVar
+
 PAYLOAD_REGEX = r'\${payload:(\w+)\}'
 
 def get_available_encoders() -> list[Encoder]:
@@ -34,54 +36,6 @@ def get_available_hashers() -> list[Encoder]:
         HashSHA256(),
     ]
 
-# parse_value replace variables, encodings, hashes etc. it is called when an HttpRequest is saved
-# from the request edit form
-def parse_value(value: str) -> str:
-    value = replace_variables(value)
-    value = replace_encoded_value(EncodeBase64(), value)
-    value = replace_encoded_value(EncodeBase64Url(), value)
-    value = replace_encoded_value(EncodeUrl(), value)
-    value = replace_encoded_value(EncodeUrlFull(), value)
-    value = replace_encoded_value(EncodeAsciiHex(), value)
-    value = replace_encoded_value(EncodeHTML(), value)
-    value = replace_encoded_value(EncodeJs(), value)
-
-    value = replace_encoded_value(HashMD5(), value)
-    value = replace_encoded_value(HashSHA1(), value)
-    value = replace_encoded_value(HashSHA256(), value)
-
-    return value
-
-# match_values only returns the matches found in the value, without replacing them
-def match_values(value: str) -> list[re.Match]:
-    matches = match_encoded_value(EncodeBase64(), value)
-    matches += match_encoded_value(EncodeBase64Url(), value)
-    matches += match_encoded_value(EncodeUrl(), value)
-    matches += match_encoded_value(EncodeUrlFull(), value)
-    matches += match_encoded_value(EncodeAsciiHex(), value)
-    matches += match_encoded_value(EncodeHTML(), value)
-    matches += match_encoded_value(EncodeJs(), value)
-
-    matches += match_encoded_value(HashMD5(), value)
-    matches += match_encoded_value(HashSHA1(), value)
-    matches += match_encoded_value(HashSHA256(), value)
-
-    return matches
-
-def replace_encoded_value(encoder: Encoder, value: str) -> str:
-    regex = r'\${' + encoder.key + ':([^}]+)}'
-    matches = list(re.finditer(regex, value))
-
-    for match in matches:
-        value_to_encode = match[1]
-        value = value.replace(match[0], encoder.encode(value_to_encode))
-
-    return value
-
-def match_encoded_value(encoder: Encoder, value: str) -> list[re.Match]:
-    regex = r'\${' + encoder.key + ':([^}]+)}'
-    return list(re.finditer(regex, value))
-
 # parse_payload_values replaces payload values and is called at a different time than parse_value is.
 # it is called only when the fuzz button is clicked (lib.FuzzHttpRequests)
 def parse_payload_values(value: str, payload_values: dict[str, str]) -> str:
@@ -91,3 +45,17 @@ def parse_payload_values(value: str, payload_values: dict[str, str]) -> str:
         value = value.replace(match[0], payload_value)
 
     return value
+
+def parse(transformer_key: str, value: str) -> str:
+    transformers: dict[str, Encoder] = {}
+    all_transformers = get_available_encoders() + get_available_hashers()
+    for transformer in all_transformers:
+        transformers[transformer.key] = transformer
+
+    transformers['var'] = TransformVar()
+
+    chosen_transformer = transformers.get(transformer_key, None)
+    if chosen_transformer is None:
+        return value
+
+    return chosen_transformer.encode(value)

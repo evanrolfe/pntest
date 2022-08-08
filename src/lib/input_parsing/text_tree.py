@@ -6,22 +6,37 @@ OPENING_CHAR1 = "{"
 CLOSING_CHAR = "}"
 
 class TreeNode:
-    raw_text: str
+    sub_str: str
     children: list[TreeNode]
+    start_index: int
+    end_index: int
 
-    def __init__(self, raw_text: str):
-        self.raw_text = raw_text
+    def __init__(self, sub_str: str, start_index: int, end_index: int):
+        self.sub_str = sub_str
+        self.start_index = start_index
+        self.end_index = end_index
         self.children = []
 
     def debug(self, level = 1):
         tabs = level * "-"
-        print(tabs, self.raw_text)
+        print(tabs, self.sub_str)
 
         for child in self.children:
             child.debug(level + 1)
 
     def add_child(self, child: TreeNode):
         self.children.append(child)
+
+    def is_leaf_node(self) -> bool:
+        return len(self.children) == 0
+
+    def get_leaves(self):
+        if self.is_leaf_node():
+            yield self
+
+        for child in self.children:
+            for leaf in child.get_leaves():
+                yield leaf
 
 def find_closing_chars_index(input: str, start_index: int, end_index: int):
     if (start_index > end_index):
@@ -63,7 +78,7 @@ def tree_node_from_string(input: str, start_index: int, end_index: int) -> Optio
 
     sub_string = input[start_index:end_index]
 
-    root = TreeNode(sub_string)
+    root = TreeNode(sub_string, start_index, end_index)
 
     i = start_index
     while i < end_index:

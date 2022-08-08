@@ -2,10 +2,11 @@ from optparse import Option
 import re
 from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from lib.input_parsing.text_wrapper import get_matches_for_indicators
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
-from lib.input_parsing.parse import get_available_encoders, match_values, parse_value
+from lib.input_parsing.parse import get_available_encoders
 from lib.input_parsing.encoder import Encoder
 
 # Regular Expression for valid individual code 'words'
@@ -74,16 +75,12 @@ class MyScintilla(Qsci.QsciScintilla):
         self.reset_encoding_indicators()
 
         text = self.text()
-        matches = match_values(text)
-
-        for match in matches:
-            position_start,position_end  = match.span()
-            range = position_end - position_start
-
-            range = self.range_from_positions(*match.span())
+        for match in get_matches_for_indicators(text):
+            # Subtract 2 from start and add 1 to end because of the "${" and "}" chars
+            range = self.range_from_positions(match.start_index - 2, match.end_index + 1)
             self.highlight_with_indicator(range, self.INDICATOR_ENCODING_ID)
 
-    def indicator_clicked(self, line, index, keys):
+    def indicator_clicked(self, line: int, index: int, keys: QtCore.Qt.KeyboardModifier):
         print("line: ", line, ", index: ", index, ", keys: ", keys)
         # TODO: Get the value of the encoding and set it on the EncoderPopup
         self.encoders_popup.show()
@@ -196,7 +193,7 @@ class MyScintilla(Qsci.QsciScintilla):
     # return the corresponding Scintilla line-offset pairs which are
     # used for searches, indicators etc.
     # NOTE: Arguments must be byte offsets into the underlying text bytes.
-    def range_from_positions(self, start_position, end_position) -> IndicatorRange:
+    def range_from_positions(self, start_position: int, end_position: int) -> IndicatorRange:
         start_line, start_offset = self.lineIndexFromPosition(start_position)
         end_line, end_offset = self.lineIndexFromPosition(end_position)
         return {
