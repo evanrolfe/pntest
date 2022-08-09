@@ -7,8 +7,7 @@ from models.data.payload_file import PayloadFile, PayloadFileSerialised
 
 from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
-from lib.input_parsing.parse import parse_payload_values
-from lib.input_parsing.text_wrapper import parse_text
+from lib.input_parsing.text_wrapper import parse_text, parse_text_with_payload_values
 from copy import deepcopy
 
 class FuzzFormData(TypedDict):
@@ -152,9 +151,9 @@ class HttpRequest(Model):
         self.set_headers(headers)
 
     def apply_payload_values(self, payload_values: dict[str, str]) -> None:
-        method = parse_payload_values(str(self.form_data['method']), payload_values)
-        url = parse_payload_values(str(self.form_data['url']), payload_values)
-        content = parse_payload_values(str(self.form_data['content']), payload_values)
+        method = parse_text_with_payload_values(str(self.form_data['method']), payload_values)
+        url = parse_text_with_payload_values(str(self.form_data['url']), payload_values)
+        content = parse_text_with_payload_values(str(self.form_data['content']), payload_values)
 
         # TODO:
         headers = self.form_data['headers']

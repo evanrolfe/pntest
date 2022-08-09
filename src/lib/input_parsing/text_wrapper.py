@@ -6,27 +6,32 @@ from lib.input_parsing.parse import parse
 from lib.input_parsing.text_tree import TreeNode, tree_node_from_string
 
 def parse_text(value: str) -> str:
-    text_wrapper = TextWrapper(value)
+    text_wrapper = TextWrapper(value, {})
+    return text_wrapper.get_parsed_text()
+
+def parse_text_with_payload_values(value: str, payload_values: dict[str, str]) -> str:
+    text_wrapper = TextWrapper(value, payload_values)
     return text_wrapper.get_parsed_text()
 
 def get_matches_for_indicators(value: str) -> list[TreeNode]:
-    text_wrapper = TextWrapper(value)
+    text_wrapper = TextWrapper(value, {})
     return text_wrapper.get_immediate_children()
 
 class TextWrapper:
     raw_text: str
     parsed_text: str
+    payload_values: dict[str, str]
 
-    def __init__(self, raw_text: str):
+    def __init__(self, raw_text: str, payload_values: dict[str, str]):
         self.raw_text = raw_text
         self.parsed_text = raw_text
+        self.payload_values = payload_values
 
     def set_text(self, raw_text: str):
         self.raw_text = raw_text
 
     def get_immediate_children(self) -> list[TreeNode]:
         root_node = self.get_text_tree(self.parsed_text)
-
         if root_node is None:
             return []
 
@@ -65,5 +70,5 @@ class TextWrapper:
         str_type = matches[1]
         value = matches[2]
 
-        parsed_value = parse(str_type, value)
+        parsed_value = parse(str_type, value, self.payload_values)
         self.parsed_text = self.parsed_text.replace("${" + sub_str + "}", parsed_value)
