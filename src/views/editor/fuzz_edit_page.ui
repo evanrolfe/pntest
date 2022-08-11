@@ -159,13 +159,16 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="FuzzView" name="fuzzView" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+          <widget class="QStackedWidget" name="fuzzViewStackedWidget">
+           <widget class="FuzzView" name="fuzzView" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+           <widget class="Loader" name="loaderWidget"/>
           </widget>
          </item>
         </layout>
@@ -193,6 +196,12 @@
    <class>LineScintilla</class>
    <extends>QWidget</extends>
    <header>widgets.shared.line_scintilla.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Loader</class>
+   <extends>QWidget</extends>
+   <header>widgets.shared.loader.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

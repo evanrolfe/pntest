@@ -299,6 +299,7 @@ QPushButton#fuzzButton {
   background-color: #7A30AB;
   font-size: 13px;
   font-weight: 600;
+  width: 100px;
 }
 
 QPushButton#fuzzButton:hover {

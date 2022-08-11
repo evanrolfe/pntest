@@ -8,6 +8,7 @@ from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
 from lib.input_parsing.parse import get_available_encoders
 from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.text_wrapper import TextWrapper
 
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
@@ -81,8 +82,21 @@ class MyScintilla(Qsci.QsciScintilla):
             self.highlight_with_indicator(range, self.INDICATOR_ENCODING_ID)
 
     def indicator_clicked(self, line: int, index: int, keys: QtCore.Qt.KeyboardModifier):
-        print("line: ", line, ", index: ", index, ", keys: ", keys)
-        # TODO: Get the value of the encoding and set it on the EncoderPopup
+        position = self.positionFromLineIndex(line, index)
+        print("line: ", line, ", index: ", index, ", position: ", position)
+
+        text_wrapper = TextWrapper(self.text(), {})
+        node = text_wrapper.find_node_containing_index(position)
+        if node is None:
+            return
+
+        print("=> Found node with start:", node.start_index, ", end:", node.end_index)
+
+        encoding_values = node.get_encoding_values()
+        if encoding_values is None:
+            return
+
+        self.encoders_popup.set_input(encoding_values[1])
         self.encoders_popup.show()
 
     # This is necessary for mac os x

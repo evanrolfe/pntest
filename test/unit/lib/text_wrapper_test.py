@@ -22,3 +22,12 @@ class TestTextWrapper:
         result = text_wrapper.get_parsed_text()
 
         assert result == '{"this is var:": "hey","asdf": "another one!"}'
+
+    def test_finding_the_node_containing_index(self, database, cleanup_database):
+        value = '{"this is var:": "${b64:${var:myVar} - ${var:otherVar}}","asdf": "another one!"}'
+        text_wrapper = TextWrapper(value, {})
+
+        var_node = text_wrapper.find_node_containing_index(54)
+
+        assert var_node is not None
+        assert var_node.sub_str == 'b64:${var:myVar} - ${var:otherVar}'

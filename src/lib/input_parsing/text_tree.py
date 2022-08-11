@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Optional
+import re
+from typing import Optional, Tuple
 
 OPENING_CHAR0 = "$"
 OPENING_CHAR1 = "{"
@@ -37,6 +38,24 @@ class TreeNode:
         for child in self.children:
             for leaf in child.get_leaves():
                 yield leaf
+
+    def find_node_containing_index(self, index: int) -> Optional[TreeNode]:
+        for child in self.children:
+            if index >= child.start_index and index <= child.end_index:
+                return child
+            else:
+                child.find_node_containing_index(index)
+
+    def get_encoding_values(self) -> Optional[Tuple[str, str]]:
+        REGEX = r'(\w+):(.*)'
+        matches = re.match(REGEX, self.sub_str)
+        if matches is None:
+            return
+
+        str_type = matches[1]
+        value = matches[2]
+
+        return (str_type, value)
 
 def find_closing_chars_index(input: str, start_index: int, end_index: int):
     if (start_index > end_index):

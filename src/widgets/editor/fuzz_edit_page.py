@@ -37,13 +37,13 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.restore_layout_state()
 
         self.ui.toggleExamplesButton.clicked.connect(self.toggle_examples_table)
-        self.ui.fuzzButton.clicked.connect(self.ui.fuzzView.show_loader)
+        self.ui.fuzzButton.clicked.connect(self.show_loader)
         self.ui.fuzzButton.clicked.connect(self.start_fuzzing_async)
 
         self.ui.saveButton.clicked.connect(self.save_request)
         self.ui.methodInput.insertItems(0, self.METHODS)
 
-        self.ui.fuzzView.cancel_clicked.connect(self.loader_cancel_clicked)
+        self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.loader_cancel_clicked)
 
         self.show_request()
         self.show_examples()
@@ -62,33 +62,24 @@ class FuzzEditPage(QtWidgets.QWidget):
         # self.ui.loaderWidget.ui.cancelButton.clicked.connect(self.cancel_request)
 
         # Keyboard shortcuts:
-        # TODO:
-        # self.connect(
-        #     QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_S), self),
-        #     QtCore.SIGNAL('activated()'),
-        #     self.save_request
-        # )
-        # TODO: self.connect(QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter), self),
-        #  QtCore.SIGNAL('activated()'), self.send_request_async)
+        keyseq_ctrl_s = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
+        keyseq_ctrl_s.activated.connect(self.save_request)
 
         self.ui.examplesTable.example_selected.connect(self.show_example)
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)
 
-    def show_request(self):
-        form_data = self.flow.request.form_data
-        self.ui.urlInput.setText(form_data['url'])
-        self.set_method_on_form(form_data['method'])
-        self.ui.fuzzView.set_flow(self.flow)
-
     def start_fuzzing_async(self):
         print('Fuzzing...')
+        if not self.ui.examplesTable.isVisible():
+            self.toggle_examples_table()
+
         self.save_request()
         self.fuzzer = FuzzHttpRequests(self.flow)
         self.worker = BackgroundWorker(self.fuzzer.start)
         self.worker.signals.result.connect(self.fuzz_finished)
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.response_received.connect(self.example_response_received)
-        self.worker.signals.finished.connect(self.ui.fuzzView.hide_loader)
+        self.worker.signals.finished.connect(self.hide_loader)
 
         self.threadpool.start(self.worker)
 
@@ -105,6 +96,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         print('Finished!')
 
     def loader_cancel_clicked(self):
+        print("Cancelling..")
+        self.hide_loader()
         self.fuzzer.cancel()
 
     def show_examples(self):
@@ -114,10 +107,35 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.ui.fuzzButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
 
+    # When an example is selected it can either be the original request or an example
     def show_example(self, flow):
         self.flow = flow
-        self.show_request()
-        self.set_send_save_buttons_enabled(not self.flow.is_example())
+
+        if self.flow.is_example():
+            self.show_request_example()
+        else:
+            self.show_request()
+
+    def show_request(self):
+        self.ui.fuzzView.set_editable(True)
+        self.set_send_save_buttons_enabled(True)
+        self.ui.fuzzView.show_response(False)
+        self.ui.fuzzView.show_fuzzing_options(True)
+
+        form_data = self.flow.request.form_data
+        self.ui.urlInput.setText(form_data['url'])
+        self.set_method_on_form(form_data['method'])
+        self.ui.fuzzView.set_flow(self.flow)
+
+    def show_request_example(self):
+        self.ui.fuzzView.set_editable(False)
+        self.set_send_save_buttons_enabled(False)
+        self.ui.fuzzView.show_response(True)
+        self.ui.fuzzView.show_fuzzing_options(False)
+
+        self.ui.fuzzView.set_flow(self.flow)
+        self.ui.urlInput.setText(self.flow.request.get_url())
+        # self.ui.fuzzView.show_real_request()
 
     def delete_examples(self, flows):
         example_flows = [f for f in flows if f.is_example()]
@@ -158,7 +176,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         method = self.ui.methodInput.currentText()
         url = self.ui.urlInput.text()
         headers = self.ui.fuzzView.get_request_headers()
-        content = self.ui.fuzzView.get_request_body()
+        content = self.ui.fuzzView.get_request_payload()
+
         payload_files = self.ui.fuzzView.get_request_payload_files()
         payload_files_serialised = [p.serialise() for p in payload_files]
         fuzz_type = self.ui.fuzzView.get_fuzz_type()
@@ -226,3 +245,9 @@ class FuzzEditPage(QtWidgets.QWidget):
             index = self.METHODS.index(method)
 
         self.ui.methodInput.setCurrentIndex(index)
+
+    def show_loader(self):
+        self.ui.fuzzViewStackedWidget.setCurrentWidget(self.ui.loaderWidget)
+
+    def hide_loader(self):
+        self.ui.fuzzViewStackedWidget.setCurrentWidget(self.ui.fuzzView)

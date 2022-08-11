@@ -30,7 +30,15 @@ class TextWrapper:
     def set_text(self, raw_text: str):
         self.raw_text = raw_text
 
+    def find_node_containing_index(self, index: int) -> Optional[TreeNode]:
+        root_node = self.get_text_tree(self.raw_text)
+        if root_node is None:
+            return None
+
+        return root_node.find_node_containing_index(index)
+
     def get_immediate_children(self) -> list[TreeNode]:
+        # TODO: This should probably use raw_text shouldn't it?
         root_node = self.get_text_tree(self.parsed_text)
         if root_node is None:
             return []
@@ -61,6 +69,7 @@ class TextWrapper:
     def get_text_tree(self, text: str) -> Optional[TreeNode]:
         return tree_node_from_string(text, 0, len(text))
 
+    # TODO: Should this be moved to the TreeNode class?
     def parse_sub_string(self, sub_str: str):
         REGEX = r'(\w+):(.*)'
         matches = re.match(REGEX, sub_str)

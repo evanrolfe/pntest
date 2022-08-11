@@ -66,14 +66,20 @@ class Ui_FuzzEditPage(object):
         self.layout2 = QtWidgets.QHBoxLayout()
         self.layout2.setContentsMargins(0, 0, 0, 0)
         self.layout2.setObjectName("layout2")
-        self.fuzzView = FuzzView(self.layoutWidget)
+        self.fuzzViewStackedWidget = QtWidgets.QStackedWidget(self.layoutWidget)
+        self.fuzzViewStackedWidget.setObjectName("fuzzViewStackedWidget")
+        self.fuzzView = FuzzView()
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.fuzzView.sizePolicy().hasHeightForWidth())
         self.fuzzView.setSizePolicy(sizePolicy)
         self.fuzzView.setObjectName("fuzzView")
-        self.layout2.addWidget(self.fuzzView)
+        self.fuzzViewStackedWidget.addWidget(self.fuzzView)
+        self.loaderWidget = Loader()
+        self.loaderWidget.setObjectName("loaderWidget")
+        self.fuzzViewStackedWidget.addWidget(self.loaderWidget)
+        self.layout2.addWidget(self.fuzzViewStackedWidget)
         self.verticalLayout.addLayout(self.layout2)
         self.horizontalLayout.addWidget(self.fuzzEditSplitter)
 
@@ -89,3 +95,4 @@ class Ui_FuzzEditPage(object):
 from widgets.editor.examples_table import ExamplesTable
 from widgets.editor.fuzz_view import FuzzView
 from widgets.shared.line_scintilla import LineScintilla
+from widgets.shared.loader import Loader
