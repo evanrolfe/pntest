@@ -237,5 +237,16 @@ class EncodersPopup(QtWidgets.QDialog):
     def get_input(self) -> str:
         return self.ui.inputText.toPlainText()
 
+    def set_transformer(self, transformer: Encoder):
+        if transformer.type == Encoder.TYPE_ENCODER:
+            self.ui.tabWidget.setCurrentIndex(0)
+            self.select_encoding(transformer.key)
+
+        if transformer.type == Encoder.TYPE_HASHER:
+            print("-------------------> SELECTING HASHER")
+            self.ui.tabWidget.setCurrentIndex(2)
+            self.select_hasher(transformer.key)
+
     def set_tree_node(self, tree_node: TreeNode):
         self.tree_node = tree_node
+

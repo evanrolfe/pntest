@@ -1,3 +1,4 @@
+from typing import Optional
 from lib.input_parsing.encode_base64 import EncodeBase64
 from lib.input_parsing.encode_base64_url import EncodeBase64Url
 from lib.input_parsing.encode_url import EncodeUrl
@@ -33,6 +34,13 @@ def get_available_hashers() -> list[Encoder]:
         HashSHA1(),
         HashSHA256(),
     ]
+
+def get_transformer_from_key(key: str) -> Optional[Encoder]:
+    all_transformers = get_available_encoders() + get_available_hashers() + [TransformVar()]
+
+    for transformer in all_transformers:
+        if transformer.key == key:
+            return transformer
 
 def parse(transformer_key: str, value: str, payload_values: dict[str, str]) -> str:
     transformers: dict[str, Encoder] = {}

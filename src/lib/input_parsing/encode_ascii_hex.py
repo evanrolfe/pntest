@@ -6,6 +6,7 @@ class EncodeAsciiHex(Encoder):
         self.name = "ASCII Hex Encode"
         self.decode_name = "ASCII Hex Decode"
         self.key = "ascii"
+        self.type = self.TYPE_ENCODER
 
     def encode(self, value: str) -> str:
         return codecs.encode(value.encode("utf-8"), "hex").decode('utf-8')

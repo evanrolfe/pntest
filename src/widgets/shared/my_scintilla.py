@@ -7,7 +7,7 @@ from lib.input_parsing.text_wrapper import get_matches_for_indicators
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
-from lib.input_parsing.parse import get_available_encoders, get_available_hashers
+from lib.input_parsing.parse import get_available_encoders, get_available_hashers, get_transformer_from_key
 from lib.input_parsing.encoder import Encoder
 from lib.input_parsing.text_wrapper import TextWrapper
 
@@ -94,8 +94,13 @@ class MyScintilla(Qsci.QsciScintilla):
         print("=> Found node with start:", node.start_index, ", end:", node.end_index)
         all_transformers = get_available_encoders() + get_available_hashers()
 
-        if node.get_type() in [t.key for t in all_transformers]:
-            self.show_encoders_popup_for_tree_node(node)
+        # TODO: the node should return the Encoder object itself
+        transformer = get_transformer_from_key(node.get_type() or '')
+        if transformer is None:
+            return
+
+        if transformer.type in [Encoder.TYPE_ENCODER, Encoder.TYPE_DECODER, Encoder.TYPE_HASHER]:
+            self.show_encoders_popup_for_tree_node(node, transformer)
         else:
             print("TODO: Need to implement something for type: ", node.get_type())
 
@@ -313,7 +318,7 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.replaceSelectedText(encoder.decode(text_to_decode))
 
-    def show_encoders_popup_for_tree_node(self, tree_node: TreeNode):
+    def show_encoders_popup_for_tree_node(self, tree_node: TreeNode, transformer: Encoder):
         encoding_values = tree_node.get_encoding_values()
         if encoding_values is None:
             return
@@ -321,6 +326,7 @@ class MyScintilla(Qsci.QsciScintilla):
         self.encoders_popup.clear_all()
         self.encoders_popup.set_decoders_visible(False) # You can't edit a decoding
         self.encoders_popup.set_tree_node(tree_node)
+        self.encoders_popup.set_transformer(transformer)
         self.encoders_popup.set_input(encoding_values[1])
         self.encoders_popup.show()
 

@@ -10,6 +10,7 @@ class TransformPayload(Encoder):
         self.decode_name = ""
         self.key = "payload"
         self.payload_values = payload_values
+        self.type = self.TYPE_PAYLOAD
 
     def encode(self, key: str) -> str:
         return self.payload_values.get(key) or ""

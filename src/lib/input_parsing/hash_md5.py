@@ -6,6 +6,7 @@ class HashMD5(Encoder):
         self.name = "MD5"
         self.decode_name = ""
         self.key = "md5"
+        self.type = self.TYPE_HASHER
 
     def encode(self, value: str) -> str:
         return hashlib.md5(value.encode("utf-8")).hexdigest()

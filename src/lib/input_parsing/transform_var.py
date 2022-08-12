@@ -7,6 +7,7 @@ class TransformVar(Encoder):
         self.name = "Variable"
         self.decode_name = ""
         self.key = "var"
+        self.type = self.TYPE_VAR
 
     def encode(self, key: str) -> str:
         var = Variable.find_by_key(key)

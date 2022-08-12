@@ -6,6 +6,7 @@ class EncodeUrl(Encoder):
         self.name = "URL Encode"
         self.decode_name = "URL Decode"
         self.key = "url"
+        self.type = self.TYPE_ENCODER
 
     def encode(self, value: str) -> str:
         return urllib.parse.quote_plus(value)

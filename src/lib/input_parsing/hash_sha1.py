@@ -6,6 +6,7 @@ class HashSHA1(Encoder):
         self.name = "SHA1"
         self.decode_name = ""
         self.key = "sha1"
+        self.type = self.TYPE_HASHER
 
     def encode(self, value: str) -> str:
         return hashlib.sha1(value.encode("utf-8")).hexdigest()

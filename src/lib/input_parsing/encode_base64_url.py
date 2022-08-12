@@ -6,6 +6,7 @@ class EncodeBase64Url(Encoder):
         self.name = "Base64 URL"
         self.decode_name = "Base64 URL"
         self.key = "b64url"
+        self.type = self.TYPE_ENCODER
 
     def encode(self, value: str) -> str:
         return base64.urlsafe_b64encode(bytes(value, 'utf-8')).decode('utf-8')
