@@ -38,8 +38,7 @@ class TextWrapper:
         return root_node.find_node_containing_index(index)
 
     def get_immediate_children(self) -> list[TreeNode]:
-        # TODO: This should probably use raw_text shouldn't it?
-        root_node = self.get_text_tree(self.parsed_text)
+        root_node = self.get_text_tree(self.raw_text)
         if root_node is None:
             return []
 

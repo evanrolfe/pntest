@@ -2,11 +2,12 @@ from optparse import Option
 import re
 from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from lib.input_parsing.text_tree import TreeNode
 from lib.input_parsing.text_wrapper import get_matches_for_indicators
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
-from lib.input_parsing.parse import get_available_encoders
+from lib.input_parsing.parse import get_available_encoders, get_available_hashers
 from lib.input_parsing.encoder import Encoder
 from lib.input_parsing.text_wrapper import TextWrapper
 
@@ -91,13 +92,12 @@ class MyScintilla(Qsci.QsciScintilla):
             return
 
         print("=> Found node with start:", node.start_index, ", end:", node.end_index)
+        all_transformers = get_available_encoders() + get_available_hashers()
 
-        encoding_values = node.get_encoding_values()
-        if encoding_values is None:
-            return
-
-        self.encoders_popup.set_input(encoding_values[1])
-        self.encoders_popup.show()
+        if node.get_type() in [t.key for t in all_transformers]:
+            self.show_encoders_popup_for_tree_node(node)
+        else:
+            print("TODO: Need to implement something for type: ", node.get_type())
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
@@ -294,7 +294,7 @@ class MyScintilla(Qsci.QsciScintilla):
             for encoder in get_available_encoders():
                 decoding_menu.addAction(encoder.name, lambda encoder=encoder: self.decode_selection(encoder))
 
-        menu.addAction("Encode/Decode/Hash", self.show_encoders_popup)
+        menu.addAction("Encode/Decode/Hash", self.show_encoders_popup_for_selection)
 
         position = self.sender().mapToGlobal(position) # type: ignore
         menu.exec(position)
@@ -313,6 +313,19 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.replaceSelectedText(encoder.decode(text_to_decode))
 
-    def show_encoders_popup(self):
+    def show_encoders_popup_for_tree_node(self, tree_node: TreeNode):
+        encoding_values = tree_node.get_encoding_values()
+        if encoding_values is None:
+            return
+
+        self.encoders_popup.clear_all()
+        self.encoders_popup.set_decoders_visible(False) # You can't edit a decoding
+        self.encoders_popup.set_tree_node(tree_node)
+        self.encoders_popup.set_input(encoding_values[1])
+        self.encoders_popup.show()
+
+    def show_encoders_popup_for_selection(self):
+        self.encoders_popup.clear_all()
+        self.encoders_popup.set_decoders_visible(True)
         self.encoders_popup.set_input(self.selectedText())
         self.encoders_popup.show()

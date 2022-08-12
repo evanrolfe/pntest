@@ -57,6 +57,11 @@ class TreeNode:
 
         return (str_type, value)
 
+    def get_type(self) -> Optional[str]:
+        values = self.get_encoding_values()
+        if values is not None:
+            return values[0]
+
 def find_closing_chars_index(input: str, start_index: int, end_index: int):
     if (start_index > end_index):
         return -1
@@ -64,6 +69,9 @@ def find_closing_chars_index(input: str, start_index: int, end_index: int):
     # Inbuilt stack
     s = []
     for i in range(start_index, end_index + 1):
+        if i >= len(input):
+            return -1
+
         # if open parenthesis, push it
         if (input[i] == OPENING_CHAR1 and get_prev_char(input, i) == OPENING_CHAR0):
             s.append(input[i])
@@ -104,6 +112,9 @@ def tree_node_from_string(input: str, start_index: int, end_index: int) -> Optio
         if input[i] == OPENING_CHAR1 and get_prev_char(input, i) == OPENING_CHAR0:
             opening_chars_index = i
             closing_chars_index = find_closing_chars_index(input, opening_chars_index, end_index)
+
+            if closing_chars_index == -1:
+                return root
 
             child = tree_node_from_string(input, opening_chars_index+1, closing_chars_index)
             if child is not None:

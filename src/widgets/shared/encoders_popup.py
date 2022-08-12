@@ -1,10 +1,12 @@
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets, QtGui
+from lib.input_parsing.text_tree import TreeNode
 
 from views._compiled.shared.encoders_popup import Ui_EncodersPopup
 from views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers
 from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.text_wrapper import parse_text
 
 class EncoderFormField(QtWidgets.QDialog):
     clicked = QtCore.pyqtSignal(str)
@@ -36,6 +38,9 @@ class EncoderFormField(QtWidgets.QDialog):
 
         self.ui.encodedText.setPlainText(decoded_value)
 
+    def clear(self):
+        self.ui.encodedText.setPlainText("")
+
 class EncodersPopup(QtWidgets.QDialog):
     encode = QtCore.pyqtSignal(Encoder, str)
     decode = QtCore.pyqtSignal(Encoder, str)
@@ -47,6 +52,8 @@ class EncodersPopup(QtWidgets.QDialog):
     selected_encoder: Optional[Encoder]
     selected_decoder: Optional[Encoder]
     selected_hasher: Optional[Encoder]
+
+    tree_node: Optional[TreeNode]
 
     def __init__(self, parent=None):
         super(EncodersPopup, self).__init__(parent)
@@ -135,6 +142,21 @@ class EncodersPopup(QtWidgets.QDialog):
 
         self.refresh_apply_button_enabled()
 
+    def clear_all(self):
+        self.clear_selected_decoding()
+        self.clear_selected_encoding()
+        self.clear_selected_hasher()
+        self.set_input("")
+
+        for _, widget in self.encoder_widgets.items():
+            widget.clear()
+
+        for _, widget in self.decoder_widgets.items():
+            widget.clear()
+
+        for _, widget in self.hasher_widgets.items():
+            widget.clear()
+
     def clear_selected_encoding(self):
         self.selected_encoder = None
 
@@ -188,6 +210,9 @@ class EncodersPopup(QtWidgets.QDialog):
         elif self.hash_tab_selected():
             self.ui.saveButton.setEnabled(self.selected_hasher is not None)
 
+    def set_decoders_visible(self, visible: bool):
+        self.ui.tabWidget.setTabVisible(1, visible)
+
     # def showEvent(self, event):
     #     self.load_encoders()
 
@@ -196,17 +221,21 @@ class EncodersPopup(QtWidgets.QDialog):
         if len(input) == 0:
             return
 
+        parsed_input = parse_text(input)
         for _, widget in self.encoder_widgets.items():
-            widget.set_text_to_encode(input)
+            widget.set_text_to_encode(parsed_input)
 
         for _, widget in self.decoder_widgets.items():
-            widget.set_text_to_decode(input)
+            widget.set_text_to_decode(parsed_input)
 
         for _, widget in self.hasher_widgets.items():
-            widget.set_text_to_encode(input)
+            widget.set_text_to_encode(parsed_input)
 
     def set_input(self, input: str):
         self.ui.inputText.setPlainText(input)
 
     def get_input(self) -> str:
         return self.ui.inputText.toPlainText()
+
+    def set_tree_node(self, tree_node: TreeNode):
+        self.tree_node = tree_node
