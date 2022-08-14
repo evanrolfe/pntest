@@ -42,8 +42,9 @@ class EncoderFormField(QtWidgets.QDialog):
         self.ui.encodedText.setPlainText("")
 
 class EncodersPopup(QtWidgets.QDialog):
-    encode = QtCore.pyqtSignal(Encoder, str)
-    decode = QtCore.pyqtSignal(Encoder, str)
+    encode_selection = QtCore.pyqtSignal(Encoder, str)
+    decode_selection = QtCore.pyqtSignal(Encoder, str)
+    encode_existing = QtCore.pyqtSignal(Encoder, TreeNode, str)
 
     encoder_widgets: dict[str, EncoderFormField]
     decoder_widgets: dict[str, EncoderFormField]
@@ -180,13 +181,20 @@ class EncodersPopup(QtWidgets.QDialog):
 
     def save(self):
         if self.encode_tab_selected():
-            self.encode.emit(self.selected_encoder, self.get_input())
-        elif self.decode_tab_selected():
-            self.decode.emit(self.selected_decoder, self.get_input())
+            if self.tree_node:
+                self.encode_existing.emit(self.selected_encoder, self.tree_node, self.get_input())
+            else:
+                self.encode_selection.emit(self.selected_encoder, self.get_input())
         elif self.hash_tab_selected():
-            self.encode.emit(self.selected_hasher, self.get_input())
+            if self.tree_node:
+                self.encode_existing.emit(self.selected_hasher, self.tree_node, self.get_input())
+            else:
+                self.encode_selection.emit(self.selected_hasher, self.get_input())
+        elif self.decode_tab_selected():
+            self.decode_selection.emit(self.selected_decoder, self.get_input())
 
         self.clear_selected_encoding()
+        self.clear_selected_hasher()
         self.clear_selected_decoding()
 
         self.close()

@@ -67,8 +67,9 @@ class MyScintilla(Qsci.QsciScintilla):
         self.apply_theme()
 
         self.encoders_popup = EncodersPopup(self)
-        self.encoders_popup.encode.connect(self.encode_selection)
-        self.encoders_popup.decode.connect(self.decode_selection)
+        self.encoders_popup.encode_selection.connect(self.encode_selection)
+        self.encoders_popup.decode_selection.connect(self.decode_selection)
+        self.encoders_popup.encode_existing.connect(self.encode_existing)
 
         self.indicatorReleased.connect(self.indicator_clicked)
         self.textChanged.connect(self.apply_encoding_indicators)
@@ -317,6 +318,20 @@ class MyScintilla(Qsci.QsciScintilla):
             text_to_decode = self.selectedText()
 
         self.replaceSelectedText(encoder.decode(text_to_decode))
+
+    def encode_existing(self, encoder: Encoder, node: TreeNode, text_to_encode: str):
+        encoded_text = encoder.key + ":" + text_to_encode
+        text = self.text()
+        new_text = self.delete_range_from_string(text, node.start_index, node.end_index)
+        self.setText(new_text)
+
+        line_num, line_index = self.lineIndexFromPosition(node.start_index)
+        self.insertAt(encoded_text, line_num, line_index)
+
+        return
+
+    def delete_range_from_string(self, value: str, start_index: int, end_index: int) -> str:
+        return value[0:start_index] + value[end_index:]
 
     def show_encoders_popup_for_tree_node(self, tree_node: TreeNode, transformer: Encoder):
         encoding_values = tree_node.get_encoding_values()
