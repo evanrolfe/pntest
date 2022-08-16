@@ -14,6 +14,10 @@ from lib.input_parsing.text_wrapper import TextWrapper
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
 
+class Position(TypedDict):
+    line: int
+    col: int
+
 class IndicatorRange(TypedDict):
     line_start: int
     col_start: int
@@ -29,6 +33,9 @@ class MyScintilla(Qsci.QsciScintilla):
 
     previous_selection: IndicatorRange
     indicators: dict[int, IndicatorRecord]
+    previous_cursor_position: Position
+
+    autocomplete_sequence_entered = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(MyScintilla, self).__init__(*args, **kwargs)
@@ -54,6 +61,7 @@ class MyScintilla(Qsci.QsciScintilla):
         self.indicators[self.INDICATOR_ENCODING_ID] = { "ranges": [] }
         self.indicators[self.INDICATOR_SEARCH_ID] = { "ranges": [] }
 
+        self.previous_cursor_position = { "line": 0, "col": 0 }
         self.previous_selection = {
             "line_start": 0,
             "col_start": 0,
@@ -73,6 +81,9 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.indicatorReleased.connect(self.indicator_clicked)
         self.textChanged.connect(self.apply_encoding_indicators)
+        # self.textChanged.connect(self.show_autocomplete_maybe)
+        # self.cursorPositionChanged.connect(self.cursor_position_changed)
+        # self.autocomplete_sequence_entered.connect(self.show_autocomplete)
 
     def apply_encoding_indicators(self):
         self.reset_encoding_indicators()
@@ -84,15 +95,10 @@ class MyScintilla(Qsci.QsciScintilla):
             self.highlight_with_indicator(range, self.INDICATOR_ENCODING_ID)
 
     def indicator_clicked(self, line: int, index: int, keys: QtCore.Qt.KeyboardModifier):
-        position = self.positionFromLineIndex(line, index)
-        print("line: ", line, ", index: ", index, ", position: ", position)
-
-        text_wrapper = TextWrapper(self.text(), {})
-        node = text_wrapper.find_node_containing_index(position)
+        node = self.get_tree_node(line, index)
         if node is None:
             return
 
-        print("=> Found node with start:", node.start_index, ", end:", node.end_index)
         all_transformers = get_available_encoders() + get_available_hashers()
 
         # TODO: the node should return the Encoder object itself
@@ -104,6 +110,38 @@ class MyScintilla(Qsci.QsciScintilla):
             self.show_encoders_popup_for_tree_node(node, transformer)
         else:
             print("TODO: Need to implement something for type: ", node.get_type())
+
+    def get_tree_node(self, line: int, index: int) -> Optional[TreeNode]:
+        position = self.positionFromLineIndex(line, index)
+
+        # TODO: Memoise the tree so we dont keep calculating it everytime theres a click or cursor position change
+        text_wrapper = TextWrapper(self.text(), {})
+        return text_wrapper.find_node_containing_index(position)
+
+    # def cursor_position_changed(self, line: int, index: int):
+    #     prev_cur = self.previous_cursor_position
+
+    #     if line == prev_cur["line"] and index == prev_cur["col"]:
+    #         return
+
+    #     prev_cur["line"] = line
+    #     prev_cur["col"] = index
+
+    #     position = self.positionFromLineIndex(line, index)
+
+    #     text_wrapper = TextWrapper(self.text(), {})
+    #     node = text_wrapper.find_node_containing_index(position)
+    #     if node is None:
+    #         return
+
+    #     # If the cursor is right before the ${, or right after the }
+    #     if position == node.start_index - 2 or position == node.end_index + 1:
+    #         return
+
+    #     print("We are here")
+    #     # print("position ", position, " Node: ", node.sub_str, " Start_Index: ", node.start_index, " End_Index: ", node.end_index)
+    #     self.setCursorPosition(0, 0)
+    #     return
 
     # This is necessary for mac os x
     # More info see: https://www.scintilla.org/ScintillaDoc.html#keyDefinition
@@ -131,6 +169,9 @@ class MyScintilla(Qsci.QsciScintilla):
 
             self.SendScintilla(Qsci.QsciScintilla.SCI_SETSELECTIONSTART, start_pos)
             self.SendScintilla(Qsci.QsciScintilla.SCI_SETSELECTIONEND, end_pos)
+        elif key_name == "Shift+{":
+            super().keyPressEvent(e)
+            self.show_autocomplete_maybe()
         else:
             super().keyPressEvent(e)
 
@@ -246,6 +287,8 @@ class MyScintilla(Qsci.QsciScintilla):
         self.indicators[self.INDICATOR_ENCODING_ID]["ranges"] = []
 
     def set_format(self, format: str):
+        lexer = None
+
         if format == 'JSON':
             lexer = self.theme.new_json_lexer()
             self.setLexer(lexer)
@@ -255,6 +298,32 @@ class MyScintilla(Qsci.QsciScintilla):
         elif format == 'Javascript':
             lexer = self.theme.new_js_lexer()
             self.setLexer(lexer)
+
+        if lexer is None:
+            return
+
+        # Set up auto-completion
+        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionCaseSensitivity(True)
+        self.setAutoCompletionReplaceWord(True)
+        self.setAutoCompletionSource(Qsci.QsciScintilla.AutoCompletionSource.AcsAPIs)
+        # self.setAutoCompletionUseSingle(Qsci.QsciScintilla.AutoCompletionUseSingle.AcusExplicit)
+
+        # https://www.scintilla.org/ScintillaDoc.html#SCN_AUTOCSELECTION
+        self.SCN_AUTOCSELECTION.connect(self.selection_chosen)
+
+    def show_autocomplete(self):
+        self.SendScintilla(
+            Qsci.QsciScintilla.SCI_AUTOCSHOW,
+            str.encode("varbaseUrl varusername varpassword encoding encasing ecapsulate")
+        )
+
+    def selection_chosen(self, selection: bytes, position: int, ch: int, method: int):
+        print("omg you selected something!!!", selection, " pos: ", position, " ch: ", ch, " method: ", method)
+        selection_str = selection.decode("utf-8")
+        if selection_str == "encoding":
+            self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
+            self.show_encoders_popup_for_selection()
 
     def apply_theme(self):
         self.setPaper(QtGui.QColor(self.theme.default_bg))
@@ -269,7 +338,6 @@ class MyScintilla(Qsci.QsciScintilla):
         # Set Search Indicator Style
         self.setMatchedBraceForegroundColor(QtGui.QColor(self.theme.default_color))
         self.setMatchedBraceBackgroundColor(QtGui.QColor(self.theme.selected_secondary_color))
-
         self.setIndicatorForegroundColor(QtGui.QColor(self.theme.selected_secondary_color), self.INDICATOR_SEARCH_ID)
         self.setIndicatorHoverStyle(Qsci.QsciScintilla.IndicatorStyle.FullBoxIndicator, self.INDICATOR_SEARCH_ID)
 
@@ -288,19 +356,22 @@ class MyScintilla(Qsci.QsciScintilla):
     def right_clicked(self, position: QtCore.QPoint):
         menu = self.createStandardContextMenu()
 
-        # Add Encode sub-menu
         if self.hasSelectedText():
+            # Add Encode sub-menu
             encoding_menu = menu.addMenu("Encode")
             for encoder in get_available_encoders():
                 encoding_menu.addAction(encoder.name, lambda encoder=encoder: self.encode_selection(encoder))
 
-        # Add Decode sub-menu
-        if self.hasSelectedText():
+            # Add Decode sub-menu
             decoding_menu = menu.addMenu("Decode")
             for encoder in get_available_encoders():
                 decoding_menu.addAction(encoder.name, lambda encoder=encoder: self.decode_selection(encoder))
 
-        menu.addAction("Encode/Decode/Hash", self.show_encoders_popup_for_selection)
+            menu.addAction("Encode/Decode/Hash", self.show_encoders_popup_for_selection)
+        else:
+            menu.addAction("Insert Encoding/Decoding/Hash", self.show_encoders_popup_for_selection)
+            menu.addAction("Insert Variable", self.show_insert_variable)
+            menu.addAction("Insert Payload", self.show_insert_payload)
 
         position = self.sender().mapToGlobal(position) # type: ignore
         menu.exec(position)
@@ -350,3 +421,15 @@ class MyScintilla(Qsci.QsciScintilla):
         self.encoders_popup.set_decoders_visible(True)
         self.encoders_popup.set_input(self.selectedText())
         self.encoders_popup.show()
+
+    def show_insert_variable(self):
+        self.show_autocomplete()
+
+    def show_insert_payload(self):
+        self.show_autocomplete()
+
+    def show_autocomplete_maybe(self):
+        text = self.text()
+        pos = self.SendScintilla(Qsci.QsciScintilla.SCI_GETCURRENTPOS)
+        if text[pos-2:pos] == "${":
+            self.show_autocomplete()

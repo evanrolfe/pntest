@@ -41,7 +41,8 @@ class TreeNode:
 
     def find_node_containing_index(self, index: int) -> Optional[TreeNode]:
         for child in self.children:
-            if index >= child.start_index and index <= child.end_index:
+            # NOTE: - 2 and + 1 becuase of "${"" and "}"
+            if index >= child.start_index - 2 and index <= child.end_index + 1:
                 return child
             else:
                 child.find_node_containing_index(index)

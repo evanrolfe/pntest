@@ -148,6 +148,7 @@ class EncodersPopup(QtWidgets.QDialog):
         self.clear_selected_encoding()
         self.clear_selected_hasher()
         self.set_input("")
+        self.tree_node = None
 
         for _, widget in self.encoder_widgets.items():
             widget.clear()
