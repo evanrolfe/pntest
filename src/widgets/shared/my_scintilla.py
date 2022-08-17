@@ -99,6 +99,10 @@ class MyScintilla(Qsci.QsciScintilla):
         word = self.wordAtPoint(event.pos())
         line = self.lineAt(event.pos())
 
+        autocomplete_open = self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCACTIVE)
+        if autocomplete_open:
+            return
+
         if line >= 0 and word != "":
             index = self.text(line).find(word)
             position = self.positionFromLineIndex(line, index)
@@ -455,6 +459,9 @@ class MyScintilla(Qsci.QsciScintilla):
 
     def autocomplete_selection_chosen(self, selection: bytes, position: int, ch: int, method: int):
         selection_str = selection.decode("utf-8")
+
+        # Todo: make this work when encoding is clicked for a node
+        # if self.autcomplete_node_clicked and selection_str == "encoding"
 
         if self.autcomplete_node_clicked:
             self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
