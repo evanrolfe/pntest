@@ -11,6 +11,8 @@ from lib.input_parsing.parse import get_available_encoders, get_available_hasher
 from lib.input_parsing.encoder import Encoder
 from lib.input_parsing.text_wrapper import TextWrapper
 
+from models.data.variable import Variable
+
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
 
@@ -36,6 +38,7 @@ class MyScintilla(Qsci.QsciScintilla):
     previous_cursor_position: Position
 
     autocomplete_sequence_entered = QtCore.pyqtSignal()
+    autcomplete_node_clicked = Optional[TreeNode]
 
     def __init__(self, *args, **kwargs):
         super(MyScintilla, self).__init__(*args, **kwargs)
@@ -81,9 +84,32 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.indicatorReleased.connect(self.indicator_clicked)
         self.textChanged.connect(self.apply_encoding_indicators)
-        # self.textChanged.connect(self.show_autocomplete_maybe)
-        # self.cursorPositionChanged.connect(self.cursor_position_changed)
-        # self.autocomplete_sequence_entered.connect(self.show_autocomplete)
+
+        # Set up auto-completion
+        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionCaseSensitivity(True)
+        self.setAutoCompletionReplaceWord(True)
+        self.setAutoCompletionSource(Qsci.QsciScintilla.AutoCompletionSource.AcsAPIs)
+        # self.setAutoCompletionUseSingle(Qsci.QsciScintilla.AutoCompletionUseSingle.AcusExplicit)
+        # https://www.scintilla.org/ScintillaDoc.html#SCN_AUTOCSELECTION
+        self.SCN_AUTOCSELECTION.connect(self.autocomplete_selection_chosen)
+        self.SCN_AUTOCCOMPLETED.connect(self.autocomplete_selection_inserted)
+
+    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+        word = self.wordAtPoint(event.pos())
+        line = self.lineAt(event.pos())
+
+        if line >= 0 and word != "":
+            index = self.text(line).find(word)
+            position = self.positionFromLineIndex(line, index)
+
+            node = self.get_tree_node(line, index)
+            if node:
+                self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPSHOW, position, str.encode(node.sub_str))
+        else:
+            self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPCANCEL)
+
+        super().mouseMoveEvent(event)
 
     def apply_encoding_indicators(self):
         self.reset_encoding_indicators()
@@ -109,7 +135,7 @@ class MyScintilla(Qsci.QsciScintilla):
         if transformer.type in [Encoder.TYPE_ENCODER, Encoder.TYPE_DECODER, Encoder.TYPE_HASHER]:
             self.show_encoders_popup_for_tree_node(node, transformer)
         else:
-            print("TODO: Need to implement something for type: ", node.get_type())
+            self.show_autocomplete_for_tree_node(node)
 
     def get_tree_node(self, line: int, index: int) -> Optional[TreeNode]:
         position = self.positionFromLineIndex(line, index)
@@ -302,29 +328,6 @@ class MyScintilla(Qsci.QsciScintilla):
         if lexer is None:
             return
 
-        # Set up auto-completion
-        self.setAutoCompletionThreshold(2)
-        self.setAutoCompletionCaseSensitivity(True)
-        self.setAutoCompletionReplaceWord(True)
-        self.setAutoCompletionSource(Qsci.QsciScintilla.AutoCompletionSource.AcsAPIs)
-        # self.setAutoCompletionUseSingle(Qsci.QsciScintilla.AutoCompletionUseSingle.AcusExplicit)
-
-        # https://www.scintilla.org/ScintillaDoc.html#SCN_AUTOCSELECTION
-        self.SCN_AUTOCSELECTION.connect(self.selection_chosen)
-
-    def show_autocomplete(self):
-        self.SendScintilla(
-            Qsci.QsciScintilla.SCI_AUTOCSHOW,
-            str.encode("varbaseUrl varusername varpassword encoding encasing ecapsulate")
-        )
-
-    def selection_chosen(self, selection: bytes, position: int, ch: int, method: int):
-        print("omg you selected something!!!", selection, " pos: ", position, " ch: ", ch, " method: ", method)
-        selection_str = selection.decode("utf-8")
-        if selection_str == "encoding":
-            self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
-            self.show_encoders_popup_for_selection()
-
     def apply_theme(self):
         self.setPaper(QtGui.QColor(self.theme.default_bg))
         self.setColor(QtGui.QColor(self.theme.default_color))
@@ -423,13 +426,54 @@ class MyScintilla(Qsci.QsciScintilla):
         self.encoders_popup.show()
 
     def show_insert_variable(self):
-        self.show_autocomplete()
+        self.show_autocomplete_for_insert()
 
     def show_insert_payload(self):
-        self.show_autocomplete()
+        self.show_autocomplete_for_insert()
 
     def show_autocomplete_maybe(self):
         text = self.text()
         pos = self.SendScintilla(Qsci.QsciScintilla.SCI_GETCURRENTPOS)
         if text[pos-2:pos] == "${":
-            self.show_autocomplete()
+            self.show_autocomplete_for_insert()
+
+    def show_autocomplete_for_insert(self):
+        self.autcomplete_node_clicked = None
+        self.show_autocomplete()
+
+    def show_autocomplete(self):
+        vars = Variable.all_global()
+        options = ["var:"+v.key for v in vars]
+        options.append("encoding")
+
+        self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCSHOW, str.encode(' '.join(options)))
+
+    def show_autocomplete_for_tree_node(self, node: TreeNode):
+        self.autcomplete_node_clicked = node
+        self.show_autocomplete()
+        return
+
+    def autocomplete_selection_chosen(self, selection: bytes, position: int, ch: int, method: int):
+        selection_str = selection.decode("utf-8")
+
+        if self.autcomplete_node_clicked:
+            self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
+            node = self.autcomplete_node_clicked
+            text = self.text()
+            new_text = self.delete_range_from_string(text, node.start_index, node.end_index)
+            self.setText(new_text)
+
+            line_num, line_index = self.lineIndexFromPosition(node.start_index)
+            self.insertAt(selection_str, line_num, line_index)
+
+            return
+
+        if selection_str == "encoding":
+            self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
+            self.show_encoders_popup_for_selection()
+
+    def autocomplete_selection_inserted(self, selection: bytes, position: int, ch: int, method: int):
+        # Insert the closing }
+        line, col = self.getCursorPosition()
+        self.insertAt("}", line, col)
+        self.setCursorPosition(line, col+1)
