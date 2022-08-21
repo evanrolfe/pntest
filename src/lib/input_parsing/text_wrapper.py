@@ -61,22 +61,10 @@ class TextWrapper:
 
             leaf_nodes = root_node.get_leaves()
             for leaf in leaf_nodes:
-                self.parse_sub_string(leaf.sub_str)
+                parsed_value = leaf.get_transformed_value() or ''
+                self.parsed_text = self.parsed_text.replace("${" + leaf.sub_str + "}", parsed_value)
 
         return self.parsed_text
 
     def get_text_tree(self, text: str) -> Optional[TreeNode]:
         return tree_node_from_string(text, 0, len(text))
-
-    # TODO: Should this be moved to the TreeNode class?
-    def parse_sub_string(self, sub_str: str):
-        REGEX = r'(\w+):(.*)'
-        matches = re.match(REGEX, sub_str)
-        if matches is None:
-            return
-
-        str_type = matches[1]
-        value = matches[2]
-
-        parsed_value = parse(str_type, value, self.payload_values)
-        self.parsed_text = self.parsed_text.replace("${" + sub_str + "}", parsed_value)

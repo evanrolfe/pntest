@@ -6,4 +6,10 @@ else
     test_path=$1
 fi
 
-PYTHONPATH="./src:./test" pytest -s $test_path
+if [ -z "$2" ]; then
+    test_func=""
+else
+    test_func="-k $2"
+fi
+
+PYTHONPATH="./src:./test" pytest -s $test_path $test_func

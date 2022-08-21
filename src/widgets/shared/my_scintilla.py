@@ -7,6 +7,7 @@ from lib.input_parsing.text_wrapper import get_matches_for_indicators
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
+from widgets.shared.user_action import UserAction
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers, get_transformer_from_key
 from lib.input_parsing.encoder import Encoder
 from lib.input_parsing.text_wrapper import TextWrapper
@@ -36,9 +37,7 @@ class MyScintilla(Qsci.QsciScintilla):
     previous_selection: IndicatorRange
     indicators: dict[int, IndicatorRecord]
     previous_cursor_position: Position
-
-    autocomplete_sequence_entered = QtCore.pyqtSignal()
-    autcomplete_node_clicked = Optional[TreeNode]
+    user_action_in_progress: Optional[UserAction]
 
     def __init__(self, *args, **kwargs):
         super(MyScintilla, self).__init__(*args, **kwargs)
@@ -74,13 +73,13 @@ class MyScintilla(Qsci.QsciScintilla):
         self.selectionChanged.connect(self.selection_changed)
         self.setIndicatorDrawUnder(True)
 
+
         self.theme = DarkTheme
         self.apply_theme()
 
         self.encoders_popup = EncodersPopup(self)
-        self.encoders_popup.encode_selection.connect(self.encode_selection)
+        self.encoders_popup.user_action_selected.connect(self.user_action_selected)
         self.encoders_popup.decode_selection.connect(self.decode_selection)
-        self.encoders_popup.encode_existing.connect(self.encode_existing)
 
         self.indicatorReleased.connect(self.indicator_clicked)
         self.textChanged.connect(self.apply_encoding_indicators)
@@ -90,6 +89,7 @@ class MyScintilla(Qsci.QsciScintilla):
         self.setAutoCompletionCaseSensitivity(True)
         self.setAutoCompletionReplaceWord(True)
         self.setAutoCompletionSource(Qsci.QsciScintilla.AutoCompletionSource.AcsAPIs)
+
         # self.setAutoCompletionUseSingle(Qsci.QsciScintilla.AutoCompletionUseSingle.AcusExplicit)
         # https://www.scintilla.org/ScintillaDoc.html#SCN_AUTOCSELECTION
         self.SCN_AUTOCSELECTION.connect(self.autocomplete_selection_chosen)
@@ -104,12 +104,18 @@ class MyScintilla(Qsci.QsciScintilla):
             return
 
         if line >= 0 and word != "":
+            # NOTE: This causes weird behaviour if this isn't the first occurance of the word
+            # Try implementing it like this: https://stackoverflow.com/questions/39657924/how-to-show-dialogs-at-a-certain-position-inside-a-qscintilla-widget
+            # https://www.scintilla.org/ScintillaDoc.html#SCI_CHARPOSITIONFROMPOINT
             index = self.text(line).find(word)
             position = self.positionFromLineIndex(line, index)
 
             node = self.get_tree_node(line, index)
+            # print("Position: ", position, " Found node: ", node)
             if node:
-                self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPSHOW, position, str.encode(node.sub_str))
+                value = node.get_value() or ''
+                call_tip_text = str.encode('Value: ' + value)
+                self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPSHOW, position, call_tip_text)
         else:
             self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPCANCEL)
 
@@ -123,23 +129,6 @@ class MyScintilla(Qsci.QsciScintilla):
             # Subtract 2 from start and add 1 to end because of the "${" and "}" chars
             range = self.range_from_positions(match.start_index - 2, match.end_index + 1)
             self.highlight_with_indicator(range, self.INDICATOR_ENCODING_ID)
-
-    def indicator_clicked(self, line: int, index: int, keys: QtCore.Qt.KeyboardModifier):
-        node = self.get_tree_node(line, index)
-        if node is None:
-            return
-
-        all_transformers = get_available_encoders() + get_available_hashers()
-
-        # TODO: the node should return the Encoder object itself
-        transformer = get_transformer_from_key(node.get_type() or '')
-        if transformer is None:
-            return
-
-        if transformer.type in [Encoder.TYPE_ENCODER, Encoder.TYPE_DECODER, Encoder.TYPE_HASHER]:
-            self.show_encoders_popup_for_tree_node(node, transformer)
-        else:
-            self.show_autocomplete_for_tree_node(node)
 
     def get_tree_node(self, line: int, index: int) -> Optional[TreeNode]:
         position = self.positionFromLineIndex(line, index)
@@ -360,6 +349,12 @@ class MyScintilla(Qsci.QsciScintilla):
         self.setIndicatorHoverForegroundColor(QtGui.QColor("#404040"), self.INDICATOR_ENCODING_ID)
         self.setIndicatorHoverStyle(Qsci.QsciScintilla.IndicatorStyle.FullBoxIndicator, self.INDICATOR_ENCODING_ID)
 
+        self.setCallTipsForegroundColor(QtGui.QColor(self.theme.default_color))
+        self.setCallTipsBackgroundColor(QtGui.QColor(self.theme.bg_input))
+
+    #===========================================================================
+    # User Action triggers
+    #===========================================================================
     def right_clicked(self, position: QtCore.QPoint):
         menu = self.createStandardContextMenu()
 
@@ -367,37 +362,117 @@ class MyScintilla(Qsci.QsciScintilla):
             # Add Encode sub-menu
             encoding_menu = menu.addMenu("Encode")
             for encoder in get_available_encoders():
-                encoding_menu.addAction(encoder.name, lambda encoder=encoder: self.encode_selection(encoder))
+                encoding_menu.addAction(encoder.name, lambda encoder=encoder: self.insert_encoding(encoder))
 
             # Add Decode sub-menu
             decoding_menu = menu.addMenu("Decode")
             for encoder in get_available_encoders():
+                # TODO: Make this work
+                # TODO: This should skip the encoders popup and go straight to decoding it
                 decoding_menu.addAction(encoder.name, lambda encoder=encoder: self.decode_selection(encoder))
 
-            menu.addAction("Encode/Decode/Hash", self.show_encoders_popup_for_selection)
+            user_action = UserAction(UserAction.TRIGGER_RIGHT_CLICK)
+            user_action.set_value_to_transform(self.selectedText())
+            menu.addAction("Encode/Decode/Hash", lambda user_action=user_action: self.show_encoders_popup(user_action))
         else:
-            menu.addAction("Insert Encoding/Decoding/Hash", self.show_encoders_popup_for_selection)
-            menu.addAction("Insert Variable", self.show_insert_variable)
-            menu.addAction("Insert Payload", self.show_insert_payload)
+            user_action = UserAction(UserAction.TRIGGER_RIGHT_CLICK)
+            menu.addAction("Insert Encoding/Decoding/Hash", lambda user_action=user_action: self.show_encoders_popup(user_action))
+            menu.addAction("Insert Variable", lambda user_action=user_action: self.show_autocomplete_for_user_action(user_action))
+            menu.addAction("Insert Payload", lambda: print("TODO!"))
 
         position = self.sender().mapToGlobal(position) # type: ignore
         menu.exec(position)
 
-    def encode_selection(self, encoder: Encoder, text_to_encode: Optional[str] = None):
+    def indicator_clicked(self, line: int, index: int, keys: QtCore.Qt.KeyboardModifier):
+        node = self.get_tree_node(line, index)
+        if node is None:
+            return
+
+        transformer = node.get_transformer()
+        if transformer is None:
+            return
+
+        if transformer.type in [Encoder.TYPE_ENCODER, Encoder.TYPE_DECODER, Encoder.TYPE_HASHER]:
+            user_action = UserAction(UserAction.TRIGGER_INDICATOR_CLICK, node)
+            self.show_encoders_popup(user_action)
+        else:
+            user_action = UserAction(UserAction.TRIGGER_INDICATOR_CLICK, node)
+            self.show_autocomplete_for_user_action(user_action)
+
+    #===========================================================================
+    # User Action options
+    #===========================================================================
+    def show_encoders_popup(self, user_action: UserAction):
+        self.encoders_popup.clear_all()
+        self.encoders_popup.set_user_action(user_action)
+
+        # Decoding results in a raw value, so you cannot decode a node
+        self.encoders_popup.set_decoders_visible(user_action.node is None)
+
+        if user_action.node is not None:
+            self.encoders_popup.set_tree_node(user_action.node)
+            self.encoders_popup.set_transformer(user_action.node.get_transformer()) # type: ignore
+            self.encoders_popup.set_input(user_action.node.get_value()) # type: ignore
+
+        self.encoders_popup.show()
+
+    def show_autocomplete(self):
+        vars = Variable.all_global()
+        options = ["var:"+v.key for v in vars]
+        options.append("encoding")
+
+        self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCSHOW, str.encode(' '.join(options)))
+
+    def show_autocomplete_for_user_action(self, user_action: UserAction):
+        self.user_action_in_progress = user_action
+        self.show_autocomplete()
+        return
+
+    # This is called when the { key is pressed
+    def show_autocomplete_maybe(self):
+        text = self.text()
+        pos = self.SendScintilla(Qsci.QsciScintilla.SCI_GETCURRENTPOS)
+        if text[pos-2:pos] == "${":
+            user_action = UserAction(UserAction.TRIGGER_TEXT)
+            self.show_autocomplete_for_user_action(user_action)
+
+    #===========================================================================
+    # User Action outcomes
+    #===========================================================================
+    def user_action_selected(self, user_action: UserAction):
+        print("User action selected! ", user_action)
+        if user_action.transformer is None:
+            raise Exception("no transformer has been selected")
+
+        # Insert
+        if user_action.node is None:
+            self.insert_encoding(user_action.transformer, user_action.value_to_transform)
+
+        # Update existing node
+        else:
+            self.update_encoding(user_action.transformer, user_action.node, user_action.value_to_transform)
+
+    # TODO: Maybe this should accept a UserAction instead of primitives?
+    def insert_encoding(self, encoder: Encoder, text_to_encode: Optional[str] = None):
         if text_to_encode is None:
             text_to_encode = self.selectedText()
 
-        # TODO: Move this syntax to a function in lib.input_parsing.parse
         encoded_text = "${" + encoder.key + ":" + text_to_encode + "}"
+
+        # If this is an insert
+        if self.selectedText() == "":
+            # If the previous two characters are ${ then this was probably triggered by the autocomplete
+            # so dont add another ${ on top of that
+            line, col = self.getCursorPosition()
+            position = self.positionFromLineIndex(line, col)
+            last_two_chars = self.text()[position-2:position]
+
+            if last_two_chars == "${":
+                encoded_text = encoder.key + ":" + text_to_encode + "}"
+
         self.replaceSelectedText(encoded_text)
 
-    def decode_selection(self, encoder: Encoder, text_to_decode: Optional[str] = None):
-        if text_to_decode is None:
-            text_to_decode = self.selectedText()
-
-        self.replaceSelectedText(encoder.decode(text_to_decode))
-
-    def encode_existing(self, encoder: Encoder, node: TreeNode, text_to_encode: str):
+    def update_encoding(self, encoder: Encoder, node: TreeNode, text_to_encode: str):
         encoded_text = encoder.key + ":" + text_to_encode
         text = self.text()
         new_text = self.delete_range_from_string(text, node.start_index, node.end_index)
@@ -408,64 +483,33 @@ class MyScintilla(Qsci.QsciScintilla):
 
         return
 
-    def delete_range_from_string(self, value: str, start_index: int, end_index: int) -> str:
-        return value[0:start_index] + value[end_index:]
-
-    def show_encoders_popup_for_tree_node(self, tree_node: TreeNode, transformer: Encoder):
-        encoding_values = tree_node.get_encoding_values()
-        if encoding_values is None:
-            return
-
-        self.encoders_popup.clear_all()
-        self.encoders_popup.set_decoders_visible(False) # You can't edit a decoding
-        self.encoders_popup.set_tree_node(tree_node)
-        self.encoders_popup.set_transformer(transformer)
-        self.encoders_popup.set_input(encoding_values[1])
-        self.encoders_popup.show()
-
-    def show_encoders_popup_for_selection(self):
-        self.encoders_popup.clear_all()
-        self.encoders_popup.set_decoders_visible(True)
-        self.encoders_popup.set_input(self.selectedText())
-        self.encoders_popup.show()
-
-    def show_insert_variable(self):
-        self.show_autocomplete_for_insert()
-
-    def show_insert_payload(self):
-        self.show_autocomplete_for_insert()
-
-    def show_autocomplete_maybe(self):
-        text = self.text()
-        pos = self.SendScintilla(Qsci.QsciScintilla.SCI_GETCURRENTPOS)
-        if text[pos-2:pos] == "${":
-            self.show_autocomplete_for_insert()
-
-    def show_autocomplete_for_insert(self):
-        self.autcomplete_node_clicked = None
-        self.show_autocomplete()
-
-    def show_autocomplete(self):
-        vars = Variable.all_global()
-        options = ["var:"+v.key for v in vars]
-        options.append("encoding")
-
-        self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCSHOW, str.encode(' '.join(options)))
-
-    def show_autocomplete_for_tree_node(self, node: TreeNode):
-        self.autcomplete_node_clicked = node
-        self.show_autocomplete()
-        return
-
     def autocomplete_selection_chosen(self, selection: bytes, position: int, ch: int, method: int):
         selection_str = selection.decode("utf-8")
 
-        # Todo: make this work when encoding is clicked for a node
-        # if self.autcomplete_node_clicked and selection_str == "encoding"
+        if self.user_action_in_progress is None:
+            raise Exception("autocomplete has been showed without the user_action_in_progress being set")
 
-        if self.autcomplete_node_clicked:
-            self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
-            node = self.autcomplete_node_clicked
+        # Encodings:
+        if selection_str == "encoding":
+            self.autocomplete_cancel()
+            self.show_encoders_popup(self.user_action_in_progress)
+            return
+
+        # Variables:
+        # If the autocomplete was triggered by a right click, then there will be no preceeding "${"
+        # so we need to insert it
+        if self.user_action_in_progress.trigger == UserAction.TRIGGER_RIGHT_CLICK and self.user_action_in_progress.node is None:
+            self.autocomplete_cancel()
+            selection_to_insert = "${"+selection_str + "}"
+
+            line_num, line_index = self.lineIndexFromPosition(position)
+            self.insertAt(selection_to_insert, line_num, line_index)
+            self.setCursorPosition(line_num, line_index+len(selection_to_insert))
+            return
+
+        if self.user_action_in_progress.node:
+            self.autocomplete_cancel()
+            node = self.user_action_in_progress.node
             text = self.text()
             new_text = self.delete_range_from_string(text, node.start_index, node.end_index)
             self.setText(new_text)
@@ -473,14 +517,22 @@ class MyScintilla(Qsci.QsciScintilla):
             line_num, line_index = self.lineIndexFromPosition(node.start_index)
             self.insertAt(selection_str, line_num, line_index)
 
-            return
+    #===========================================================================
 
-        if selection_str == "encoding":
-            self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
-            self.show_encoders_popup_for_selection()
+    def decode_selection(self, encoder: Encoder, text_to_decode: Optional[str] = None):
+        if text_to_decode is None:
+            text_to_decode = self.selectedText()
+
+        self.replaceSelectedText(encoder.decode(text_to_decode))
+
+    def delete_range_from_string(self, value: str, start_index: int, end_index: int) -> str:
+        return value[0:start_index] + value[end_index:]
 
     def autocomplete_selection_inserted(self, selection: bytes, position: int, ch: int, method: int):
         # Insert the closing }
         line, col = self.getCursorPosition()
         self.insertAt("}", line, col)
         self.setCursorPosition(line, col+1)
+
+    def autocomplete_cancel(self):
+        self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)

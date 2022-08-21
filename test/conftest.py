@@ -8,6 +8,7 @@ from models.data.editor_item import EditorItem
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
 from models.data.http_response import HttpResponse
+from models.data.variable import Variable
 
 @pytest.fixture(scope="session")
 def database():
@@ -23,5 +24,6 @@ def cleanup_database():
     HttpRequest.truncate()
     HttpResponse.truncate()
     HttpFlowSearch.truncate()
+    Variable.truncate()
 
     yield

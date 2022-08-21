@@ -7,6 +7,7 @@ from views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers
 from lib.input_parsing.encoder import Encoder
 from lib.input_parsing.text_wrapper import parse_text
+from widgets.shared.user_action import UserAction
 
 class EncoderFormField(QtWidgets.QDialog):
     clicked = QtCore.pyqtSignal(str)
@@ -42,9 +43,8 @@ class EncoderFormField(QtWidgets.QDialog):
         self.ui.encodedText.setPlainText("")
 
 class EncodersPopup(QtWidgets.QDialog):
-    encode_selection = QtCore.pyqtSignal(Encoder, str)
     decode_selection = QtCore.pyqtSignal(Encoder, str)
-    encode_existing = QtCore.pyqtSignal(Encoder, TreeNode, str)
+    user_action_selected = QtCore.pyqtSignal(UserAction)
 
     encoder_widgets: dict[str, EncoderFormField]
     decoder_widgets: dict[str, EncoderFormField]
@@ -55,6 +55,7 @@ class EncodersPopup(QtWidgets.QDialog):
     selected_hasher: Optional[Encoder]
 
     tree_node: Optional[TreeNode]
+    user_action: UserAction
 
     def __init__(self, parent=None):
         super(EncodersPopup, self).__init__(parent)
@@ -181,16 +182,15 @@ class EncodersPopup(QtWidgets.QDialog):
             widget.setStyleSheet("QWidget#EncoderFormfield { border: 0; }")
 
     def save(self):
-        if self.encode_tab_selected():
-            if self.tree_node:
-                self.encode_existing.emit(self.selected_encoder, self.tree_node, self.get_input())
-            else:
-                self.encode_selection.emit(self.selected_encoder, self.get_input())
-        elif self.hash_tab_selected():
-            if self.tree_node:
-                self.encode_existing.emit(self.selected_hasher, self.tree_node, self.get_input())
-            else:
-                self.encode_selection.emit(self.selected_hasher, self.get_input())
+        if self.encode_tab_selected() or self.hash_tab_selected():
+            if self.encode_tab_selected():
+                self.user_action.transformer = self.selected_encoder
+            elif self.hash_tab_selected():
+                self.user_action.transformer = self.selected_hasher
+
+            self.user_action.value_to_transform = self.get_input()
+            self.user_action_selected.emit(self.user_action)
+
         elif self.decode_tab_selected():
             self.decode_selection.emit(self.selected_decoder, self.get_input())
 
@@ -252,10 +252,13 @@ class EncodersPopup(QtWidgets.QDialog):
             self.select_encoding(transformer.key)
 
         if transformer.type == Encoder.TYPE_HASHER:
-            print("-------------------> SELECTING HASHER")
             self.ui.tabWidget.setCurrentIndex(2)
             self.select_hasher(transformer.key)
 
     def set_tree_node(self, tree_node: TreeNode):
         self.tree_node = tree_node
 
+    def set_user_action(self, user_action: UserAction):
+        self.user_action = user_action
+        if user_action.value_to_transform != "":
+            self.set_input(user_action.value_to_transform)
