@@ -109,11 +109,10 @@ class MyScintilla(Qsci.QsciScintilla):
             # https://www.scintilla.org/ScintillaDoc.html#SCI_CHARPOSITIONFROMPOINT
             index = self.text(line).find(word)
             position = self.positionFromLineIndex(line, index)
-
             node = self.get_tree_node(line, index)
-            # print("Position: ", position, " Found node: ", node)
+
             if node:
-                value = node.get_value() or ''
+                value = node.get_transformed_value() or ''
                 call_tip_text = str.encode('Value: ' + value)
                 self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPSHOW, position, call_tip_text)
         else:

@@ -50,7 +50,7 @@ class TestTextWrapper:
         print(result)
 
     # TODO: Make it handle this case correctly
-    # def test_a_weird_syntax_situation(self, database, cleanup_database):
-    #     value = '{"this is var:": "${${var:myVar}","asdf": "another one!"}'
-    #     text_wrapper = TextWrapper(value, {})
-    #     children = text_wrapper.get_immediate_children()
+    def test_a_weird_syntax_situation(self, database, cleanup_database):
+        value = '{"this is var:": "${var:myVar}","asdf": "another one!"}'
+        text_wrapper = TextWrapper(value, {})
+        children = text_wrapper.get_immediate_children()
