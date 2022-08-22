@@ -18,6 +18,18 @@ from widgets.preferences_window import PreferencesWindow
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+# https://stackoverflow.com/questions/34445507/change-background-color-of-qwidget-using-animation
+class Sidebar(QtWidgets.QListWidget):
+    def setColor(self, color: QtGui.QColor):
+        r = color.red()
+        g = color.green()
+        b = color.blue()
+
+        super().setStyleSheet("""QListWidget::item::selected#sideBar {
+            border-left: 2px solid #FC6A0C;
+            background: #FC6A0C;
+        }""")
+
 class MainWindow(QtWidgets.QMainWindow):
     # reload_style = QtCore.Signal()
 
@@ -41,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.stackedWidget.addWidget(self.intercept_page)
         self.ui.stackedWidget.addWidget(self.clients_page)
         self.ui.stackedWidget.addWidget(self.editor_page)
-        self.ui.stackedWidget.setCurrentWidget(self.clients_page)
+        self.ui.stackedWidget.setCurrentWidget(self.network_page)
 
         # Set padding on widgets:
         self.ui.centralWidget.layout().setContentsMargins(0, 0, 0, 0)
@@ -60,7 +72,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup_menu_actions()
         self.restore_layout_state()
 
-        # self.show_editor_page()
+        # For testing purposes only:
+        self.show_editor_page()
+        keyseq_ctrl_r = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+R'), self)
+        keyseq_ctrl_r.activated.connect(self.reload_style)
 
     # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
     def set_process_manager(self, process_manager):
@@ -86,7 +101,8 @@ class MainWindow(QtWidgets.QMainWindow):
         settings.save('geometry', geometry)
 
     def reload_style(self):
-        style_loader = StyleheetLoader('/home/evan/Code/pntest/src/style/')
+        print("Reloading style...")
+        style_loader = StyleheetLoader('/Users/evan/Code/pntest/src/style')
         stylesheet = style_loader.load_theme('dark')
         if stylesheet is None:
             return
@@ -137,13 +153,12 @@ class MainWindow(QtWidgets.QMainWindow):
         requests_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-compose-50.png"), "Requests", None)
         requests_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'requests')
         requests_item.setToolTip("Request Editor")
-        self.ui.sideBar.addItem(QtWidgets.QListWidgetItem(requests_item))
+        self.ui.sideBar.addItem(requests_item)
 
         # Extensions Item
         # extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-plus-math-50.png"), None)
         # extensions_item.setData(QtCore.Qt.UserRole, 'extensions')
         # self.ui.sideBar.addItem(extensions_item)
-
         self.ui.sideBar.setCurrentRow(0)
 
     def sidebar_item_clicked(self, item):

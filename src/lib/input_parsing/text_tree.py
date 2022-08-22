@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 from typing import Optional, Tuple
 
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.parse import get_transformer_from_key
 
 OPENING_CHAR0 = "$"
@@ -14,7 +14,7 @@ class TreeNode:
     children: list[TreeNode]
     start_index: int
     end_index: int
-    transformer: Optional[Encoder]
+    transformer: Optional[Transformer]
 
     def __init__(self, sub_str: str, start_index: int, end_index: int):
         self.sub_str = sub_str
@@ -22,7 +22,7 @@ class TreeNode:
         self.end_index = end_index
         self.children = []
 
-    def get_transformer(self) -> Optional[Encoder]:
+    def get_transformer(self) -> Optional[Transformer]:
         if not self.is_valid_value_node():
             return None
 

@@ -5,13 +5,13 @@ from lib.input_parsing.text_tree import TreeNode
 from views._compiled.shared.encoders_popup import Ui_EncodersPopup
 from views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_wrapper import parse_text
 from widgets.shared.user_action import UserAction
 
 class EncoderFormField(QtWidgets.QDialog):
     clicked = QtCore.pyqtSignal(str)
-    encoder: Encoder
+    encoder: Transformer
 
     def __init__(self, encoder, parent=None):
         super(EncoderFormField, self).__init__(parent)
@@ -43,16 +43,16 @@ class EncoderFormField(QtWidgets.QDialog):
         self.ui.encodedText.setPlainText("")
 
 class EncodersPopup(QtWidgets.QDialog):
-    decode_selection = QtCore.pyqtSignal(Encoder, str)
+    decode_selection = QtCore.pyqtSignal(Transformer, str)
     user_action_selected = QtCore.pyqtSignal(UserAction)
 
     encoder_widgets: dict[str, EncoderFormField]
     decoder_widgets: dict[str, EncoderFormField]
     hasher_widgets: dict[str, EncoderFormField]
 
-    selected_encoder: Optional[Encoder]
-    selected_decoder: Optional[Encoder]
-    selected_hasher: Optional[Encoder]
+    selected_encoder: Optional[Transformer]
+    selected_decoder: Optional[Transformer]
+    selected_hasher: Optional[Transformer]
 
     tree_node: Optional[TreeNode]
     user_action: UserAction
@@ -246,12 +246,12 @@ class EncodersPopup(QtWidgets.QDialog):
     def get_input(self) -> str:
         return self.ui.inputText.toPlainText()
 
-    def set_transformer(self, transformer: Encoder):
-        if transformer.type == Encoder.TYPE_ENCODER:
+    def set_transformer(self, transformer: Transformer):
+        if transformer.type == Transformer.TYPE_ENCODER:
             self.ui.tabWidget.setCurrentIndex(0)
             self.select_encoding(transformer.key)
 
-        if transformer.type == Encoder.TYPE_HASHER:
+        if transformer.type == Transformer.TYPE_HASHER:
             self.ui.tabWidget.setCurrentIndex(2)
             self.select_hasher(transformer.key)
 

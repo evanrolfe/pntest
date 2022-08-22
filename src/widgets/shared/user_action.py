@@ -1,6 +1,6 @@
 
 from typing import Optional
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_tree import TreeNode
 
 # TODO: This is not actually a widget, should probably go in models/qt
@@ -9,7 +9,7 @@ class UserAction:
     # If a user is updating an exisitn node, then this will be set:
     node: Optional[TreeNode]
     # These are the values the user selects
-    transformer: Optional[Encoder]
+    transformer: Optional[Transformer]
     value_to_transform: str
 
     TRIGGER_RIGHT_CLICK = 'right_click'
@@ -21,7 +21,7 @@ class UserAction:
         self.node = node
         self.value_to_transform = ''
 
-    def set_transformer(self, transformer: Encoder):
+    def set_transformer(self, transformer: Transformer):
         self.transformer = transformer
 
     def set_value_to_transform(self, value: str):

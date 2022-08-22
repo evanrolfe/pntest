@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 # TODO: Rename this to "Transformer"
 # Abstract class for all encoders to inherit from
-class Encoder:
+class Transformer:
     TYPE_ENCODER = "encoder"
     TYPE_DECODER = "decoder"
     TYPE_HASHER = "hasher"

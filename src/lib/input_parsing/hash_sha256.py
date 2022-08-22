@@ -1,7 +1,7 @@
 import hashlib
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class HashSHA256(Encoder):
+class HashSHA256(Transformer):
     def __init__(self):
         self.name = "SHA256"
         self.decode_name = ""

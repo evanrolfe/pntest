@@ -1,7 +1,7 @@
 import hashlib
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class HashMD5(Encoder):
+class HashMD5(Transformer):
     def __init__(self):
         self.name = "MD5"
         self.decode_name = ""

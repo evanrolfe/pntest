@@ -1,7 +1,7 @@
 import codecs
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class EncodeAsciiHex(Encoder):
+class EncodeAsciiHex(Transformer):
     def __init__(self):
         self.name = "ASCII Hex Encode"
         self.decode_name = "ASCII Hex Decode"

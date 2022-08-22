@@ -1,8 +1,8 @@
 import hashlib
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 from models.data.variable import Variable
 
-class TransformPayload(Encoder):
+class TransformPayload(Transformer):
     payload_values: dict[str,str]
 
     def __init__(self, payload_values: dict[str,str]):

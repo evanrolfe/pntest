@@ -1,7 +1,7 @@
 import base64
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class EncodeBase64Url(Encoder):
+class EncodeBase64Url(Transformer):
     def __init__(self):
         self.name = "Base64 URL"
         self.decode_name = "Base64 URL"

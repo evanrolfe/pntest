@@ -1,7 +1,7 @@
 import html
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class EncodeHTML(Encoder):
+class EncodeHTML(Transformer):
     def __init__(self):
         self.name = "HTML Encode"
         self.key = "html"

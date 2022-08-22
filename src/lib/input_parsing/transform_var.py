@@ -1,8 +1,8 @@
 import hashlib
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 from models.data.variable import Variable
 
-class TransformVar(Encoder):
+class TransformVar(Transformer):
     def __init__(self):
         self.name = "Variable"
         self.decode_name = ""

@@ -1,7 +1,7 @@
 import json
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class EncodeJs(Encoder):
+class EncodeJs(Transformer):
     def __init__(self):
         self.name = "Javascript Encode"
         self.key = "js"

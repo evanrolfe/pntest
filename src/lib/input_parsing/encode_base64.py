@@ -1,7 +1,7 @@
 import base64
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class EncodeBase64(Encoder):
+class EncodeBase64(Transformer):
     def __init__(self):
         self.name = "Base64"
         self.decode_name = "Base 64"

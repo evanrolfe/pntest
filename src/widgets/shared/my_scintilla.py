@@ -9,7 +9,7 @@ from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
 from widgets.shared.user_action import UserAction
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers, get_transformer_from_key
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_wrapper import TextWrapper
 
 from models.data.variable import Variable
@@ -119,6 +119,12 @@ class MyScintilla(Qsci.QsciScintilla):
             self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPCANCEL)
 
         super().mouseMoveEvent(event)
+
+    # NOTE: This only works if you are already focused on the Scintilla, if you are focused somewhere
+    # else, hover to get a calltip, then do alt-tab (or similar), the calltip will remain displayed
+    def focusOutEvent(self, event: QtGui.QFocusEvent):
+        self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPCANCEL)
+        super().focusOutEvent(event)
 
     def apply_encoding_indicators(self):
         self.reset_encoding_indicators()
@@ -391,7 +397,7 @@ class MyScintilla(Qsci.QsciScintilla):
         if transformer is None:
             return
 
-        if transformer.type in [Encoder.TYPE_ENCODER, Encoder.TYPE_DECODER, Encoder.TYPE_HASHER]:
+        if transformer.type in [Transformer.TYPE_ENCODER, Transformer.TYPE_DECODER, Transformer.TYPE_HASHER]:
             user_action = UserAction(UserAction.TRIGGER_INDICATOR_CLICK, node)
             self.show_encoders_popup(user_action)
         else:
@@ -452,7 +458,7 @@ class MyScintilla(Qsci.QsciScintilla):
             self.update_encoding(user_action.transformer, user_action.node, user_action.value_to_transform)
 
     # TODO: Maybe this should accept a UserAction instead of primitives?
-    def insert_encoding(self, encoder: Encoder, text_to_encode: Optional[str] = None):
+    def insert_encoding(self, encoder: Transformer, text_to_encode: Optional[str] = None):
         if text_to_encode is None:
             text_to_encode = self.selectedText()
 
@@ -471,7 +477,7 @@ class MyScintilla(Qsci.QsciScintilla):
 
         self.replaceSelectedText(encoded_text)
 
-    def update_encoding(self, encoder: Encoder, node: TreeNode, text_to_encode: str):
+    def update_encoding(self, encoder: Transformer, node: TreeNode, text_to_encode: str):
         encoded_text = encoder.key + ":" + text_to_encode
         text = self.text()
         new_text = self.delete_range_from_string(text, node.start_index, node.end_index)
@@ -518,7 +524,7 @@ class MyScintilla(Qsci.QsciScintilla):
 
     #===========================================================================
 
-    def decode_selection(self, encoder: Encoder, text_to_decode: Optional[str] = None):
+    def decode_selection(self, encoder: Transformer, text_to_decode: Optional[str] = None):
         if text_to_decode is None:
             text_to_decode = self.selectedText()
 

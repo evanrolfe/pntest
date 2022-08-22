@@ -1,7 +1,7 @@
 import urllib.parse
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
-class EncodeUrl(Encoder):
+class EncodeUrl(Transformer):
     def __init__(self):
         self.name = "URL Encode"
         self.decode_name = "URL Decode"

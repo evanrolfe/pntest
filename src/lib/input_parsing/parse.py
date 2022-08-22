@@ -6,7 +6,7 @@ from lib.input_parsing.encode_url_full import EncodeUrlFull
 from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
 from lib.input_parsing.encode_html import EncodeHTML
 from lib.input_parsing.encode_js import EncodeJs
-from lib.input_parsing.encoder import Encoder
+from lib.input_parsing.transformer import Transformer
 
 from lib.input_parsing.hash_md5 import HashMD5
 from lib.input_parsing.hash_sha1 import HashSHA1
@@ -17,7 +17,7 @@ from lib.input_parsing.transform_var import TransformVar
 
 PAYLOAD_REGEX = r'\${payload:(\w+)\}'
 
-def get_available_encoders() -> list[Encoder]:
+def get_available_encoders() -> list[Transformer]:
     return [
         EncodeBase64(),
         EncodeBase64Url(),
@@ -28,14 +28,14 @@ def get_available_encoders() -> list[Encoder]:
         EncodeJs(),
     ]
 
-def get_available_hashers() -> list[Encoder]:
+def get_available_hashers() -> list[Transformer]:
     return [
         HashMD5(),
         HashSHA1(),
         HashSHA256(),
     ]
 
-def get_transformer_from_key(key: str) -> Optional[Encoder]:
+def get_transformer_from_key(key: str) -> Optional[Transformer]:
     all_transformers = get_available_encoders() + get_available_hashers() + [TransformVar()]
 
     for transformer in all_transformers:
@@ -43,7 +43,7 @@ def get_transformer_from_key(key: str) -> Optional[Encoder]:
             return transformer
 
 def parse(transformer_key: str, value: str, payload_values: dict[str, str]) -> str:
-    transformers: dict[str, Encoder] = {}
+    transformers: dict[str, Transformer] = {}
     all_transformers = get_available_encoders() + get_available_hashers()
     for transformer in all_transformers:
         transformers[transformer.key] = transformer
