@@ -6,7 +6,7 @@ class TestTree:
     def test_tree(self):
         input = "axxx${${b}x${c${grandchild}}bbbasdf${fuckoff}}"
         #input = "axxx${b}"
-        root = tree_node_from_string(input, 0, len(input))
+        root = tree_node_from_string(input, 0, len(input), {})
         if root is None:
             return
 

@@ -15,19 +15,21 @@ class TreeNode:
     start_index: int
     end_index: int
     transformer: Optional[Transformer]
+    payload_values: dict[str, str]
 
-    def __init__(self, sub_str: str, start_index: int, end_index: int):
+    def __init__(self, sub_str: str, start_index: int, end_index: int, payload_values: dict[str, str]):
         self.sub_str = sub_str
         self.start_index = start_index
         self.end_index = end_index
         self.children = []
+        self.payload_values = payload_values
 
     def get_transformer(self) -> Optional[Transformer]:
         if not self.is_valid_value_node():
             return None
 
         transformer_key, value = self.get_encoding_values()
-        return get_transformer_from_key(transformer_key)
+        return get_transformer_from_key(transformer_key, self.payload_values)
 
     def get_value(self) -> Optional[str]:
         if not self.is_valid_value_node():
@@ -41,7 +43,7 @@ class TreeNode:
             return None
 
         transformer_key, value = self.get_encoding_values()
-        transformer = get_transformer_from_key(transformer_key)
+        transformer = get_transformer_from_key(transformer_key, self.payload_values)
 
         if transformer is None:
             return None
@@ -135,14 +137,14 @@ def find_opening_chars_index(input: str, start_index: int, end_index: int):
 def get_prev_char(input: str, i: int) -> Optional[str]:
     return input[i-1] if i-1 > 0 else None
 
-def tree_node_from_string(input: str, start_index: int, end_index: int) -> Optional[TreeNode]:
+def tree_node_from_string(input: str, start_index: int, end_index: int, payload_values: dict[str, str]) -> Optional[TreeNode]:
     # Base case
     if (start_index > end_index):
         return None
 
     sub_string = input[start_index:end_index]
 
-    root = TreeNode(sub_string, start_index, end_index)
+    root = TreeNode(sub_string, start_index, end_index, payload_values)
 
     i = start_index
     while i < end_index:
@@ -155,7 +157,7 @@ def tree_node_from_string(input: str, start_index: int, end_index: int) -> Optio
 
             child_start_i = opening_chars_index+1
             child_end_i = closing_chars_index
-            child = tree_node_from_string(input, child_start_i, child_end_i)
+            child = tree_node_from_string(input, child_start_i, child_end_i, payload_values)
 
             if child is not None and child.is_valid_value_node():
                 root.add_child(child)

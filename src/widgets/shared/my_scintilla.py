@@ -8,7 +8,7 @@ from lib.input_parsing.text_wrapper import get_matches_for_indicators
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
 from widgets.shared.user_action import UserAction
-from lib.input_parsing.parse import get_available_encoders, get_available_hashers, get_transformer_from_key
+from lib.input_parsing.parse import get_available_encoders
 from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_wrapper import TextWrapper
 

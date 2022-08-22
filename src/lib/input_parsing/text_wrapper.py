@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, Optional, TypedDict
 import re
 
-from lib.input_parsing.parse import parse
 from lib.input_parsing.text_tree import TreeNode, tree_node_from_string
 
 def parse_text(value: str) -> str:
@@ -67,4 +66,4 @@ class TextWrapper:
         return self.parsed_text
 
     def get_text_tree(self, text: str) -> Optional[TreeNode]:
-        return tree_node_from_string(text, 0, len(text))
+        return tree_node_from_string(text, 0, len(text), self.payload_values)

@@ -35,26 +35,12 @@ def get_available_hashers() -> list[Transformer]:
         HashSHA256(),
     ]
 
-def get_transformer_from_key(key: str) -> Optional[Transformer]:
+def get_transformer_from_key(key: str, payload_values: dict[str, str]) -> Optional[Transformer]:
     all_transformers = get_available_encoders() + get_available_hashers() + [TransformVar()]
+
+    if payload_values != {}:
+        all_transformers.append(TransformPayload(payload_values))
 
     for transformer in all_transformers:
         if transformer.key == key:
             return transformer
-
-def parse(transformer_key: str, value: str, payload_values: dict[str, str]) -> str:
-    transformers: dict[str, Transformer] = {}
-    all_transformers = get_available_encoders() + get_available_hashers()
-    for transformer in all_transformers:
-        transformers[transformer.key] = transformer
-
-    transformers['var'] = TransformVar()
-
-    if payload_values != {}:
-        transformers['payload'] = TransformPayload(payload_values)
-
-    chosen_transformer = transformers.get(transformer_key, None)
-    if chosen_transformer is None:
-        return value
-
-    return chosen_transformer.encode(value)
