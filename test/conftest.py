@@ -19,11 +19,11 @@ def database():
 @pytest.fixture(scope="function")
 def cleanup_database():
     EditorItem.truncate()
-    Settings.truncate()
     HttpFlow.truncate()
     HttpRequest.truncate()
     HttpResponse.truncate()
     HttpFlowSearch.truncate()
     Variable.truncate()
+    Settings.truncate()
 
     yield

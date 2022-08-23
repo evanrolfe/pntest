@@ -1,5 +1,6 @@
 # import time
 from PyQt6 import QtCore
+from pytestqt.qtbot import QtBot
 from support.fixtures import load_fixtures
 from widgets.network.http_page import HttpPage
 import time
@@ -18,7 +19,7 @@ class TestNetworkHttpPage:
         index = table.model().index(row, column)
         return table.model().data(index, QtCore.Qt.ItemDataRole.DisplayRole)
 
-    def test_network_http_page(self, database, qtbot):
+    def test_network_http_page(self, database, cleanup_database, qtbot: QtBot):
         load_fixtures()
 
         widget = HttpPage()

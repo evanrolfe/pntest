@@ -1,6 +1,7 @@
 import threading
 import time
 from PyQt6 import QtCore, QtWidgets
+from pytestqt.qtbot import QtBot
 from models.data.editor_item import EditorItem
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
@@ -8,7 +9,7 @@ from support.fixtures import load_fixtures
 from widgets.editor.editor_page import EditorPage
 
 class TestEditorPage:
-    def test_deleting_an_item(self, database, qtbot):
+    def test_deleting_an_item(self, database, cleanup_database, qtbot: QtBot):
         widget = EditorPage()
         qtbot.addWidget(widget)
         qtbot.waitExposed(widget)

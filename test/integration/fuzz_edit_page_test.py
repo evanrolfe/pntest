@@ -1,4 +1,5 @@
 from PyQt6 import QtCore
+from pytestqt.qtbot import QtBot
 from models.data.http_flow import HttpFlow
 from support.fixtures import load_fixtures
 from models.data.editor_item import EditorItem
@@ -6,7 +7,7 @@ from models.data.payload_file import PayloadFile
 from widgets.editor.fuzz_edit_page import FuzzEditPage
 
 class TestFuzzEditPage:
-    def test_saving_a_fuzz_request(self, database, qtbot):
+    def test_saving_a_fuzz_request(self, database, cleanup_database, qtbot: QtBot):
         load_fixtures()
 
         editor_item = EditorItem()

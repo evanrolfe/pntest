@@ -1,5 +1,5 @@
 from PyQt6 import QtCore
-import requests
+from pytestqt.qtbot import QtBot
 from pytest_httpserver import HTTPServer
 from models.data.http_flow import HttpFlow
 from support.fixtures import load_fixtures
@@ -8,7 +8,7 @@ from models.data.editor_item_unsaved import EditorItemUnsaved
 from widgets.editor.request_edit_page import RequestEditPage
 
 class TestEditorPage:
-    def test_editor_page_saving_a_request_with_variables(self, database, qtbot):
+    def test_editor_page_saving_a_request_with_variables(self, database, cleanup_database, qtbot: QtBot):
         load_fixtures()
 
         editor_item = EditorItemUnsaved()
