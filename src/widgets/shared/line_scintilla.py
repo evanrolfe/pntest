@@ -68,9 +68,12 @@ class LineScintilla(MyScintilla):
             self.SendScintilla(Qsci.QsciScintilla.SCI_SETSELECTIONSTART, start_pos)
             self.SendScintilla(Qsci.QsciScintilla.SCI_SETSELECTIONEND, end_pos)
         elif 'Return' in key_name:
-            self.enter_pressed.emit()
+            if super().autocomplete_is_open():
+                super().keyPressEvent(e)
+                return
+
             # Disabled because we dont handle multiple lines here
-            return
+            self.enter_pressed.emit()
         else:
             old_text = self.text()
             super().keyPressEvent(e)

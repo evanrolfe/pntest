@@ -72,8 +72,8 @@ class RequestEditPage(QtWidgets.QWidget):
         keyseq_ctrl_s = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         keyseq_ctrl_s.activated.connect(self.save_request)
 
-        keyseq_ctrl_enter = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+Enter'), self)
-        keyseq_ctrl_enter.activated.connect(self.send_request_async)
+        # keyseq_ctrl_enter = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+Enter'), self)
+        # keyseq_ctrl_enter.activated.connect(self.send_request_async)
 
         self.ui.examplesTable.example_selected.connect(self.example_selected)
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)

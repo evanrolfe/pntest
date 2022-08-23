@@ -99,8 +99,7 @@ class MyScintilla(Qsci.QsciScintilla):
         word = self.wordAtPoint(event.pos())
         line = self.lineAt(event.pos())
 
-        autocomplete_open = self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCACTIVE)
-        if autocomplete_open:
+        if self.autocomplete_is_open():
             return
 
         if line >= 0 and word != "":
@@ -538,6 +537,9 @@ class MyScintilla(Qsci.QsciScintilla):
         line, col = self.getCursorPosition()
         self.insertAt("}", line, col)
         self.setCursorPosition(line, col+1)
+
+    def autocomplete_is_open(self):
+        return self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCACTIVE)
 
     def autocomplete_cancel(self):
         self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCCANCEL)
