@@ -135,7 +135,7 @@ def find_opening_chars_index(input: str, start_index: int, end_index: int):
     return -1
 
 def get_prev_char(input: str, i: int) -> Optional[str]:
-    return input[i-1] if i-1 > 0 else None
+    return input[i-1] if i-1 >= 0 else None
 
 def tree_node_from_string(input: str, start_index: int, end_index: int, payload_values: dict[str, str]) -> Optional[TreeNode]:
     # Base case

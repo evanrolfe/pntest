@@ -54,3 +54,12 @@ class TestTextWrapper:
         value = '{"this is var:": "${var:myVar}","asdf": "another one!"}'
         text_wrapper = TextWrapper(value, {})
         children = text_wrapper.get_immediate_children()
+
+    def test_when_text_contains_a_node_and_nothing_else(self, database, cleanup_database):
+        factory(Variable, 'global').create(key='myVar', value='hello')
+
+        value = '${var:myVar}'
+        text_wrapper = TextWrapper(value, {})
+
+        result = text_wrapper.get_parsed_text()
+        assert result == "hello"
