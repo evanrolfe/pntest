@@ -2,15 +2,15 @@ from optparse import Option
 import re
 from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
-from lib.input_parsing.text_tree import TreeNode
-from lib.input_parsing.text_wrapper import get_matches_for_indicators
+from models.data.http_flow import HttpFlow
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
 from widgets.shared.user_action import UserAction
 from lib.input_parsing.parse import get_available_encoders
 from lib.input_parsing.transformer import Transformer
-from lib.input_parsing.text_wrapper import TextWrapper
+from lib.input_parsing.text_tree import TreeNode
+from lib.input_parsing.text_wrapper import TextWrapper, get_matches_for_indicators
 
 from models.data.variable import Variable
 
@@ -38,6 +38,8 @@ class MyScintilla(Qsci.QsciScintilla):
     indicators: dict[int, IndicatorRecord]
     previous_cursor_position: Position
     user_action_in_progress: Optional[UserAction]
+
+    flow: Optional[HttpFlow]
 
     def __init__(self, *args, **kwargs):
         super(MyScintilla, self).__init__(*args, **kwargs)
@@ -73,7 +75,6 @@ class MyScintilla(Qsci.QsciScintilla):
         self.selectionChanged.connect(self.selection_changed)
         self.setIndicatorDrawUnder(True)
 
-
         self.theme = DarkTheme
         self.apply_theme()
 
@@ -94,6 +95,10 @@ class MyScintilla(Qsci.QsciScintilla):
         # https://www.scintilla.org/ScintillaDoc.html#SCN_AUTOCSELECTION
         self.SCN_AUTOCSELECTION.connect(self.autocomplete_selection_chosen)
         self.SCN_AUTOCCOMPLETED.connect(self.autocomplete_selection_inserted)
+        self.flow = None
+
+    def set_flow(self, flow: HttpFlow):
+        self.flow = flow
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
         word = self.wordAtPoint(event.pos())
@@ -424,6 +429,12 @@ class MyScintilla(Qsci.QsciScintilla):
         vars = Variable.all_global()
         options = ["var:"+v.key for v in vars]
         options.append("encoding")
+
+        if self.flow is not None:
+            request = self.flow.request
+            if request is not None:
+                payload_options = ["payload:"+k for k in request.payload_keys()]
+                options.extend(payload_options)
 
         self.SendScintilla(Qsci.QsciScintilla.SCI_AUTOCSHOW, str.encode(' '.join(options)))
 

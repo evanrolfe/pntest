@@ -3,9 +3,11 @@ import re
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 from bs4 import BeautifulSoup
+from models.data.http_flow import HttpFlow
 
 from views._compiled.shared.code_editor import Ui_CodeEditor
 
+# TODO: This class should be merged into MyScintilla
 class CodeEditor(QtWidgets.QWidget):
     selected_format: Optional[str]
     auto_format_enabled: bool
@@ -33,6 +35,9 @@ class CodeEditor(QtWidgets.QWidget):
             raise Exception(f'Unknown format {format}')
 
         self.selected_format = format
+
+    def set_flow(self, flow: HttpFlow):
+        self.ui.code.set_flow(flow)
 
     def clear_formatting(self):
         self.selected_format = None

@@ -67,6 +67,7 @@ class FuzzEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.example_selected.connect(self.show_example)
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)
+        self.ui.fuzzView.payloads_changed.connect(self.update_request_with_values_from_form)
 
     def start_fuzzing_async(self):
         print('Fuzzing...')

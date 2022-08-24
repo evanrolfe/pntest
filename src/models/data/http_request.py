@@ -5,7 +5,7 @@ from typing import Optional, Any, TypedDict, cast
 from orator import Model
 from models.data.payload_file import PayloadFile, PayloadFileSerialised
 
-from widgets.shared.headers_form import HeadersForm
+from constants import CALCULATED_TEXT
 from lib.types import Headers
 from lib.input_parsing.text_wrapper import parse_text, parse_text_with_payload_values
 from copy import deepcopy
@@ -136,7 +136,7 @@ class HttpRequest(Model):
         return new_request
 
     def overwrite_calculated_headers(self) -> None:
-        calc_text = HeadersForm.CALCULATED_TEXT
+        calc_text = CALCULATED_TEXT
         headers = self.get_headers()
 
         if headers is None:
@@ -232,3 +232,11 @@ class HttpRequest(Model):
             return []
 
         return [PayloadFile.from_serialised(p) for p in fuzz_data['payload_files']]
+
+    def payload_keys(self) -> list[str]:
+        fuzz_data = self.fuzz_data()
+
+        if fuzz_data is None:
+            return []
+
+        return [p['key'] for p in fuzz_data['payload_files']]

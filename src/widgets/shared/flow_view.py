@@ -128,6 +128,8 @@ class FlowView(QtWidgets.QWidget):
         self.set_request(flow)
         self.set_response(flow)
 
+        self.ui.requestBody.set_flow(flow)
+
     def set_request(self, flow: HttpFlow):
         request = flow.request
 

@@ -1,3 +1,14 @@
+CALCULATED_TEXT = '<calculated when request is sent>'
+DEFAULT_HEADERS = [
+    (True, 'Content-Length', CALCULATED_TEXT),
+    (True, 'Host', CALCULATED_TEXT),
+    (True, 'Accept', '*/*'),
+    (True, 'Accept-Encoding', 'gzip, deflate'),
+    (True, 'Connection', 'keep-alive'),
+    (True, 'User-Agent', 'pntest/0.1'),
+]
+EMPTY_HEADER = (False, '', '')
+
 HTTP_STATUS_CODE_DESCRIPTIONS = {
     "100":	"Continue",
     "101":	"Switching protocols",

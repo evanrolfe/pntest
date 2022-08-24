@@ -6,6 +6,7 @@ from views._compiled.shared.headers_form import Ui_HeadersForm
 from models.qt.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
 from widgets.shared.line_scintilla import LineScintilla
 from lib.types import Headers
+from constants import DEFAULT_HEADERS, EMPTY_HEADER
 
 class MyDelegate(QtWidgets.QItemDelegate):
     def __init__(self, parent = None):
@@ -23,19 +24,8 @@ class MyDelegate(QtWidgets.QItemDelegate):
         editor.setText(value)
 
 class HeadersForm(QtWidgets.QWidget):
-    headers_changed = QtCore.pyqtSignal()
-
-    CALCULATED_TEXT = '<calculated when request is sent>'
-    DEFAULT_HEADERS = [
-        (True, 'Content-Length', CALCULATED_TEXT),
-        (True, 'Host', CALCULATED_TEXT),
-        (True, 'Accept', '*/*'),
-        (True, 'Accept-Encoding', 'gzip, deflate'),
-        (True, 'Connection', 'keep-alive'),
-        (True, 'User-Agent', 'pntest/0.1'),
-    ]
-    EMPTY_HEADER = (False, '', '')
     # TODO: Add a headers_changed signal
+    headers_changed = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(HeadersForm, self).__init__(*args, **kwargs)
@@ -78,7 +68,7 @@ class HeadersForm(QtWidgets.QWidget):
             self.ui.headerLine.setVisible(False)
 
     def set_default_headers(self):
-        headers = self.DEFAULT_HEADERS[:] + [self.EMPTY_HEADER]
+        headers = DEFAULT_HEADERS[:] + [EMPTY_HEADER]
         self.table_model.set_headers(deepcopy(headers))
 
     def set_headers(self, headers: Optional[Headers]):
@@ -88,7 +78,7 @@ class HeadersForm(QtWidgets.QWidget):
             new_headers = [(True, key, value) for key, value in headers.items()]
 
         if self.editable:
-            new_headers.append(deepcopy(self.EMPTY_HEADER))
+            new_headers.append(deepcopy(EMPTY_HEADER))
 
         self.table_model.set_headers(new_headers)
 

@@ -11,8 +11,9 @@ from models.data.payload_file import PayloadFile
 
 from widgets.shared.flow_view import FlowView
 
-# TODO: A lot of the code in this class is duplicated from FlowView
 class FuzzView(FlowView):
+    payloads_changed = QtCore.pyqtSignal()
+
     def __init__(self, *args, **kwargs):
         super(FuzzView, self).__init__(*args, **kwargs)
 
@@ -103,3 +104,4 @@ class FuzzView(FlowView):
 
         self.table_model.insert_payload(payload)
         print(f'adding payload from {file_path}')
+        self.payloads_changed.emit()

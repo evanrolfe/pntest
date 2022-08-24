@@ -1,7 +1,7 @@
 from typing import Optional
 from requests import Request, Response, Session
-from widgets.shared.headers_form import HeadersForm
 from lib.types import Headers
+from constants import CALCULATED_TEXT
 
 class HttpRequest:
     method: str
@@ -30,7 +30,7 @@ class HttpRequest:
         parsed_headers = {}
 
         for key, value in self.headers.items():
-            if value != HeadersForm.CALCULATED_TEXT:
+            if value != CALCULATED_TEXT:
                 parsed_headers[key] = value
 
         return parsed_headers
