@@ -435,7 +435,7 @@ class MyScintilla(Qsci.QsciScintilla):
         options = ["var:"+v.key for v in vars]
         options.append("encoding")
 
-        if self.flow is not None:
+        if self.flow is not None and self.flow.has_request():
             request = self.flow.request
             if request is not None:
                 payload_options = ["payload:"+k for k in request.payload_keys()]

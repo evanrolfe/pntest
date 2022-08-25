@@ -49,14 +49,74 @@ class TestFuzzEditPage:
         assert http_flow.request.form_data['fuzz_data']['fuzz_type'] == 'one_to_one'
         assert http_flow.request.form_data['fuzz_data']['delay_type'] == 'disabled'
 
-        # button = widget.ui.fuzzButton
-        # qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
+    def test_modifying_a_payload_in_fuzz_request(self, database, cleanup_database, qtbot: QtBot):
+        load_fixtures()
 
-        # with qtbot.waitSignal(widget.worker.signals.result, timeout=10000):
-        #     pass
+        editor_item = EditorItem()
+        editor_item.name = 'New Fuzz Request'
+        editor_item.item_type = EditorItem.TYPE_FUZZ
+        editor_item.save()
+
+        widget = FuzzEditPage(editor_item)
+        qtbot.addWidget(widget)
+        qtbot.waitExposed(widget)
+
+        # Enter form data
+        widget.ui.urlInput.setText("http://www.synack.com/login.php?username=${payload:usernames}&password=${payload:passwords}")
+
+        # Set the payloads via the table model because QtBot is rubbish
+        payload_usernames = PayloadFile('./test/support/usernames.txt', 'usernames')
+        payload_passwords = PayloadFile('./test/support/passwords.txt', 'passwords')
+
+        payload_usernames.verify_file()
+        payload_passwords.verify_file()
+
+        model = widget.ui.fuzzView.table_model
+        model.insert_payload(payload_usernames)
+        model.insert_payload(payload_passwords)
+
+        # 1. First try inserting the payloads that were just added
+        my_scintilla = widget.ui.fuzzView.ui.requestBody.ui.code
+        qtbot.keyClick(my_scintilla, "$")
+        qtbot.keyClick(my_scintilla, "{", QtCore.Qt.KeyboardModifier.ShiftModifier)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Enter)
 
         # widget.show()
         # qtbot.waitForWindowShown(widget)
         # qtbot.wait(3000)
 
-        # assert 1 == 1
+        assert my_scintilla.text() == '${payload:usernames}'
+
+        # Clear the text:
+        my_scintilla.setText("")
+
+        # 2. Modfiy the key of one of the payloads and try inserting again
+        # Click the fuzz payloads tab
+        tabs = widget.ui.fuzzView.ui.requestTabs
+        tabs.setCurrentIndex(2)
+
+        # Change the key of the first payload via the payloads table:
+        table = widget.ui.fuzzView.ui.payloadsTable
+        self.set_data_at(table, 0, 0, "newUsernames")
+
+        # Go back to request body tab and start typing to insert a payload
+        tabs.setCurrentIndex(1)
+        qtbot.keyClick(my_scintilla, "$")
+        qtbot.keyClick(my_scintilla, "{", QtCore.Qt.KeyboardModifier.ShiftModifier)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(my_scintilla, QtCore.Qt.Key.Key_Enter)
+
+        assert my_scintilla.text() == '${payload:newUsernames}'
+
+    def set_data_at(self, table, row: int, column: int, value: str):
+        index = table.model().index(row, column)
+        return table.model().setData(index, value, QtCore.Qt.ItemDataRole.EditRole)

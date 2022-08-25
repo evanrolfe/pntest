@@ -3,8 +3,7 @@ from PyQt6 import QtCore
 from models.data.payload_file import PayloadFile
 
 class PayloadFilesTableModel(QtCore.QAbstractTableModel):
-    # dataChanged: QtCore.pyqtSignalInstance
-    # layoutChanged: QtCore.pyqtSignalInstance
+    payloads_changed = QtCore.pyqtSignal()
 
     headers: list[str]
     payloads: list[PayloadFile]
@@ -19,6 +18,7 @@ class PayloadFilesTableModel(QtCore.QAbstractTableModel):
         self.beginInsertRows(QtCore.QModelIndex(), count, count)
         self.payloads.append(payload)
         self.endInsertRows()
+        self.payloads_changed.emit()
 
     def roleNames(self) -> Dict[int, str]:
         roles = {}
@@ -56,6 +56,7 @@ class PayloadFilesTableModel(QtCore.QAbstractTableModel):
             elif col == 3:
                 payload.description = value
 
+            self.payloads_changed.emit()
             return True
 
         return False

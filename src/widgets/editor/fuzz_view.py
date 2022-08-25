@@ -79,6 +79,7 @@ class FuzzView(FlowView):
 
         self.table_model = PayloadFilesTableModel(flow.request.payload_files())
         self.ui.payloadsTable.setModel(self.table_model)
+        self.table_model.payloads_changed.connect(self.payloads_changed)
 
     def delay_type_changed(self, index: int):
         if index == 0:
@@ -103,5 +104,3 @@ class FuzzView(FlowView):
         payload.verify_file()
 
         self.table_model.insert_payload(payload)
-        print(f'adding payload from {file_path}')
-        self.payloads_changed.emit()

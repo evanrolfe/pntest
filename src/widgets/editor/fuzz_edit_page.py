@@ -126,6 +126,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         form_data = self.flow.request.form_data
         self.ui.urlInput.setText(form_data['url'])
         self.set_method_on_form(form_data['method'])
+
+        self.ui.urlInput.set_flow(self.flow)
         self.ui.fuzzView.set_flow(self.flow)
 
     def show_request_example(self):

@@ -71,6 +71,9 @@ class HttpFlow(OratorModel):
     def modified(self) -> bool:
         pass
 
+    def has_request(self) -> bool:
+        pass
+
     def has_response(self) -> bool:
         pass
 

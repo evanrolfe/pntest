@@ -148,6 +148,9 @@ class HttpFlow(OratorModel):
     def modified(self):
         return self.request_modified() or self.response_modified()
 
+    def has_request(self) -> bool:
+        return hasattr(self, 'request_id')
+
     def has_response(self) -> bool:
         return hasattr(self, 'response_id')
 
