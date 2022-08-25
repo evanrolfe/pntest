@@ -2,6 +2,7 @@ from optparse import Option
 import re
 from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from lib.input_parsing.transform_payload import TransformPayload
 from models.data.http_flow import HttpFlow
 
 from widgets.shared.code_themes import DarkTheme
@@ -116,7 +117,11 @@ class MyScintilla(Qsci.QsciScintilla):
             node = self.get_tree_node(line, index)
 
             if node:
-                value = node.get_transformed_value() or ''
+                if type(node.get_transformer()) is TransformPayload:
+                    value = 'payload'
+                else:
+                    value = node.get_transformed_value() or ''
+
                 call_tip_text = str.encode('Value: ' + value)
                 self.SendScintilla(Qsci.QsciScintilla.SCI_CALLTIPSHOW, position, call_tip_text)
         else:

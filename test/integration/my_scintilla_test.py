@@ -7,7 +7,8 @@ from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
 from models.data.editor_item import EditorItem
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
-from support.fixtures import load_fixtures
+from support.fixtures import load_fixtures, build_an_editor_request_with_payloads
+from support.factories import factory
 from widgets.editor.editor_page import EditorPage
 from widgets.shared.my_scintilla import MyScintilla
 from widgets.shared.user_action import UserAction
@@ -199,13 +200,57 @@ class TestMyScintilla:
         encoding = EncodeBase64()
         widget.decode_selection(encoding)
 
-        # widget.show()
-        # qtbot.waitForWindowShown(widget)
-        # qtbot.wait(3000)
-
         assert widget.text() == 'The encoded word is: hello.'
 
     # --------------------------------------------------------------------------
     # Payloads
     # --------------------------------------------------------------------------
-    # TODO
+    def test_text_trigger_autocomplete_payload(self, database, cleanup_database, qtbot: QtBot):
+        http_request = build_an_editor_request_with_payloads()
+        http_request.save()
+
+        http_flow = factory(HttpFlow, 'editor').make(
+            request_id=http_request.id,
+        )
+        http_flow.save()
+
+        widget = MyScintilla()
+        widget.resize(500, 200)
+        widget.set_flow(http_flow)
+        qtbot.addWidget(widget)
+        qtbot.waitExposed(widget)
+
+        qtbot.keyClick(widget, "$")
+        qtbot.keyClick(widget, "{", QtCore.Qt.KeyboardModifier.ShiftModifier)
+        qtbot.keyClick(widget, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(widget, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(widget, QtCore.Qt.Key.Key_Enter)
+
+        assert widget.text() == '${payload:password}'
+
+    def test_indicator_click_trigger_autocomplete_payload(self, database, cleanup_database, qtbot: QtBot):
+        http_request = build_an_editor_request_with_payloads()
+        http_request.save()
+
+        http_flow = factory(HttpFlow, 'editor').make(
+            request_id=http_request.id,
+        )
+        http_flow.save()
+
+        widget = MyScintilla()
+        widget.setText('${payload:password}')
+        widget.resize(500, 200)
+        widget.set_flow(http_flow)
+        qtbot.addWidget(widget)
+        qtbot.waitExposed(widget)
+
+        point = QtCore.QPoint(50, 0)
+        qtbot.mouseClick(widget.viewport(), QtCore.Qt.MouseButton.LeftButton, pos=point)
+        qtbot.keyClick(widget, QtCore.Qt.Key.Key_Down)
+        qtbot.keyClick(widget, QtCore.Qt.Key.Key_Enter)
+
+        # widget.show()
+        # qtbot.waitForWindowShown(widget)
+        # qtbot.wait(3000)
+
+        assert widget.text() == '${payload:username}'

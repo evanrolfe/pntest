@@ -36,10 +36,9 @@ def get_available_hashers() -> list[Transformer]:
     ]
 
 def get_transformer_from_key(key: str, payload_values: dict[str, str]) -> Optional[Transformer]:
-    all_transformers = get_available_encoders() + get_available_hashers() + [TransformVar()]
-
-    if payload_values != {}:
-        all_transformers.append(TransformPayload(payload_values))
+    all_transformers = get_available_encoders() + \
+        get_available_hashers() + \
+        [TransformVar(), TransformPayload(payload_values)]
 
     for transformer in all_transformers:
         if transformer.key == key:
