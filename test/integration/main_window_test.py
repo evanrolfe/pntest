@@ -1,4 +1,5 @@
 # import time
+from models.data.settings import Settings
 from py import process
 from pytestqt.qtbot import QtBot
 from support.fixtures import load_fixtures
@@ -9,6 +10,7 @@ from models.data.http_flow import HttpFlow
 class TestMainWindow:
     def test_editor_page_saving_a_request(self, database, qtbot: QtBot):
         load_fixtures()
+        Settings.create_defaults()
 
         process_manager = ProcessManager('')
         widget = MainWindow()
