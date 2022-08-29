@@ -316,6 +316,12 @@ QPushButton#saveButton, #cancelButton {
   width: 100px;
 }
 
+/* Find/Replace buttons */
+QPushButton#findButton, #findPrevButton, #replaceButton, #replaceAllButton {
+  font-weight: 200;
+  width: 75px;
+}
+
 /*------------------------------------------------------------------------------*
  * QComboBox
  *------------------------------------------------------------------------------*/

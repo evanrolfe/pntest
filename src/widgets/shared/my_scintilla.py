@@ -42,6 +42,8 @@ class MyScintilla(Qsci.QsciScintilla):
 
     flow: Optional[HttpFlow]
 
+    escape_pressed = QtCore.pyqtSignal()
+
     def __init__(self, *args, **kwargs):
         super(MyScintilla, self).__init__(*args, **kwargs)
 
@@ -205,6 +207,9 @@ class MyScintilla(Qsci.QsciScintilla):
         elif key_name == "Shift+{":
             super().keyPressEvent(e)
             self.show_autocomplete_maybe()
+        elif key_name == "Esc":
+            super().keyPressEvent(e)
+            self.escape_pressed.emit()
         else:
             super().keyPressEvent(e)
 

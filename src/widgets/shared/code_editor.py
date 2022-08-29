@@ -9,6 +9,7 @@ from views._compiled.shared.code_editor import Ui_CodeEditor
 
 # TODO: This class should be merged into MyScintilla
 class CodeEditor(QtWidgets.QWidget):
+    find_in_progress: Optional[str]
     selected_format: Optional[str]
     auto_format_enabled: bool
 
@@ -24,11 +25,69 @@ class CodeEditor(QtWidgets.QWidget):
         self.ui.code.setMarginType(0, Qsci.QsciScintilla.MarginType.NumberMargin)
         self.ui.code.setMarginWidth(0, "0000")
 
+        self.hide_find_replace()
+        self.ui.findButton.clicked.connect(self.find)
+        self.ui.findPrevButton.setVisible(False)
+        self.ui.replaceButton.clicked.connect(self.replace)
+        self.ui.replaceAllButton.clicked.connect(self.replace_all)
+
         keyseq_ctrl_f = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+F'), self)
-        keyseq_ctrl_f.activated.connect(self.show_finder)
+        keyseq_ctrl_f.setContext(QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        keyseq_ctrl_f.activated.connect(self.show_find_replace)
+
+        keyseq_esc = QtGui.QShortcut(QtGui.QKeySequence('Escape'), self)
+        keyseq_esc.setContext(QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        keyseq_esc.activated.connect(self.hide_find_replace)
+        self.ui.code.escape_pressed.connect(self.hide_find_replace)
 
         self.selected_format = None
         self.auto_format_enabled = False
+        self.find_in_progress = None
+
+    def show_find_replace(self):
+        print("Showing...")
+        self.ui.findReplace.setVisible(True)
+        self.ui.findText.setFocus()
+
+    def hide_find_replace(self):
+        self.ui.code.cancelFind()
+        self.find_in_progress = None
+        self.ui.findReplace.setVisible(False)
+
+    def find(self) -> bool:
+        find_text = self.ui.findText.text()
+
+        if self.find_in_progress == find_text:
+            return self.ui.code.findNext()
+        else:
+            self.find_in_progress = find_text
+            return self.ui.code.findFirst(
+                find_text,  # Text to find,
+                False,  # Treat as regular expression
+                False,  # Case sensitive search
+                True,  # Whole word matches only
+                True,  # Wrap search
+                True,  # Forward search
+                line=-1,  # From line: -1 starts at current position
+                index=-1,  # From col: -1 starts at current position
+                show=False,  # Unfolds found text
+                posix=False,
+            )
+
+    def replace(self):
+        replace_text = self.ui.replaceText.text()
+        found = self.find()
+        if found:
+            self.ui.code.replaceSelectedText(replace_text)
+
+    def replace_all(self):
+        replace_text = self.ui.replaceText.text()
+
+        found = True
+        while found == True:
+            found = self.find()
+            if found:
+                self.ui.code.replaceSelectedText(replace_text)
 
     def set_format(self, format: str):
         if format not in self.FORMATS:
