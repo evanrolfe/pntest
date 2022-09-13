@@ -33,6 +33,7 @@ class FlowView(QtWidgets.QWidget):
         self.request_modified_dropdown.currentIndexChanged.connect(self.show_modified_request_change)
 
         self.ui.requestTabs.setCornerWidget(self.request_modified_dropdown)
+        self.ui.requestTabs.removeTab(2)
 
         # Setup Response Corner Widget:
         self.response_modified_dropdown = QtWidgets.QComboBox()

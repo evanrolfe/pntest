@@ -41,6 +41,9 @@ class FuzzView(FlowView):
         self.ui.delayTypeDropdown.currentIndexChanged.connect(self.delay_type_changed)
         self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationDisabled)
 
+        # FlowView removes this tab so we have to add it back in, joys of inheritance
+        self.ui.requestTabs.addTab(self.ui.fuzzPayloadsTab, "Fuzzing Options")
+
     # def get_request_headers(self) -> Headers:
     #     return self.ui.requestHeaders.get_headers()
 

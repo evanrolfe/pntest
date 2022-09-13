@@ -40,6 +40,10 @@ class CodeEditor(QtWidgets.QWidget):
         keyseq_esc.activated.connect(self.hide_find_replace)
         self.ui.code.escape_pressed.connect(self.hide_find_replace)
 
+        keyseq_enter = QtGui.QShortcut(QtGui.QKeySequence('Return'), self)
+        keyseq_enter.setContext(QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        keyseq_enter.activated.connect(self.find)
+
         self.selected_format = None
         self.auto_format_enabled = False
         self.find_in_progress = None

@@ -42,7 +42,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -199,8 +199,17 @@
         </item>
         <item>
          <widget class="QStackedWidget" name="delayDurationStack">
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
           <widget class="QWidget" name="delayDurationDisabled"/>
           <widget class="QWidget" name="delayDurationForm">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <layout class="QHBoxLayout" name="delayDurationLayout">
             <property name="leftMargin">
              <number>10</number>
@@ -326,19 +335,6 @@
           </widget>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </widget>
      </widget>
@@ -351,7 +347,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="responseHeadersTab">
         <attribute name="title">

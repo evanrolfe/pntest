@@ -92,6 +92,11 @@ class Ui_FlowView(object):
         self.delayDurationDisabled.setObjectName("delayDurationDisabled")
         self.delayDurationStack.addWidget(self.delayDurationDisabled)
         self.delayDurationForm = QtWidgets.QWidget()
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.delayDurationForm.sizePolicy().hasHeightForWidth())
+        self.delayDurationForm.setSizePolicy(sizePolicy)
         self.delayDurationForm.setObjectName("delayDurationForm")
         self.delayDurationLayout = QtWidgets.QHBoxLayout(self.delayDurationForm)
         self.delayDurationLayout.setContentsMargins(10, 10, 10, -1)
@@ -148,8 +153,6 @@ class Ui_FlowView(object):
         self.delayRangeLayout.addLayout(self.delayMaxLayout)
         self.delayDurationStack.addWidget(self.delayRangeForm)
         self.verticalLayout_8_body.addWidget(self.delayDurationStack)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayout_8_body.addItem(spacerItem1)
         self.requestTabs.addTab(self.fuzzPayloadsTab, "")
         self.responseStackedWidget = QtWidgets.QStackedWidget(self.splitter)
         self.responseStackedWidget.setObjectName("responseStackedWidget")
@@ -195,8 +198,9 @@ class Ui_FlowView(object):
         self.verticalLayout_2.addWidget(self.splitter)
 
         self.retranslateUi(FlowView)
-        self.requestTabs.setCurrentIndex(1)
-        self.responseTabs.setCurrentIndex(0)
+        self.requestTabs.setCurrentIndex(0)
+        self.delayDurationStack.setCurrentIndex(1)
+        self.responseTabs.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(FlowView)
 
     def retranslateUi(self, FlowView):
