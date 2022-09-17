@@ -54,7 +54,8 @@ def proxy(request):
         },
         "proxy": {"ports_available": [8000]},
     }
-    request.cls.client.launch({}, settings)
+
+    request.cls.process_manager.launch_client(request.cls.client, {}, settings)
 
     # TODO: Find a better way of waiting for the proxy to start (i.e. ProcessManager could send a proxy_started signal)
     time.sleep(2)

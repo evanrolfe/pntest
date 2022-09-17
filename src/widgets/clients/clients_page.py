@@ -11,6 +11,8 @@ from lib.process_manager import ProcessManager
 ANYTHING_CLIENT = {'name': 'anything'}
 
 class ClientsPage(QtWidgets.QWidget):
+    process_manager: ProcessManager
+
     def __init__(self, *args, **kwargs):
         super(ClientsPage, self).__init__(*args, **kwargs)
         self.ui = Ui_ClientsPage()
@@ -98,13 +100,13 @@ class ClientsPage(QtWidgets.QWidget):
 
     def open_client_clicked(self, client: Client):
         client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
-
         settings = Settings.get_from_cache()
-        client.launch(client_info, settings.parsed())
+
+        self.process_manager.launch_client(client, client_info, settings.parsed())
         self.reload_table_data()
 
     def close_client_clicked(self, client: Client):
-        client.close()
+        self.process_manager.close_client(client)
         self.reload_table_data()
 
     def bring_to_front_client_clicked(self, client: Client):

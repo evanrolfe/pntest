@@ -6,6 +6,7 @@ import signal
 import os
 import sys
 from PyQt6 import QtCore
+from models.data.client import Client
 from models.data.http_flow import HttpFlow
 from models.data.settings import Settings
 from models.data.websocket_message import WebsocketMessage
@@ -69,29 +70,48 @@ class ProcessManager(QtCore.QObject):
             if 'worker' in process_dict:
                 process_dict['worker'].kill()
 
-    def close_proxy(self, client):
+    def close_proxy(self, client: Client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'proxy'][0]
         pid = process['process'].pid
         print(f'[ProcessManager] killing process {pid}')
         os.kill(pid, signal.SIGTERM)
         self.processes.remove(process)
 
-    def close_browser(self, client):
+    def close_browser(self, client: Client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
         process['worker'].kill()
         self.processes.remove(process)
 
-    def browser_was_closed(self, client):
+    # Close the proxy when the browser is closed
+    def browser_was_closed(self, client: Client):
         print(f"[ProcessManager] browser {client.id} closed, closing proxy")
-        browser_process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
-        self.processes.remove(browser_process)
-
         self.close_proxy(client)
         client.open = False
         client.save()
         self.clients_changed.emit()
 
-    def launch_browser(self, client, browser_command):
+    def launch_client(self, client: Client, client_info, settings: SettingsJson):
+        print(f"Launching client:")
+        process_manager = ProcessManager.get_instance()
+        process_manager.launch_proxy(client, settings)
+
+        browser_command = client_info.get('command')
+        if browser_command:
+            process_manager.launch_browser(client, browser_command)
+
+        client.open = True
+        client.save()
+
+    def close_client(self, client: Client):
+        if client.type != 'anything':
+            self.close_browser(client)
+        else:
+            self.close_proxy(client)
+
+        client.open = False
+        client.save()
+
+    def launch_browser(self, client: Client, browser_command):
         if client.type in ['chrome', 'chromium']:
             worker = BrowserProc(client, lambda: launch_chrome_or_chromium(client, browser_command))
         elif client.type == 'firefox':
@@ -103,7 +123,7 @@ class ProcessManager(QtCore.QObject):
         self.threadpool.start(worker)
         self.processes.append({'client': client, 'type': 'browser', 'worker': worker})
 
-    def launch_proxy(self, client, settings: SettingsJson):
+    def launch_proxy(self, client: Client, settings: SettingsJson):
         app_path = str(get_app_path())
         print(f"[ProcessManager] Launching proxy, app_path: {app_path}")
         settings_json_b64 = base64.b64encode(bytes(json.dumps(settings), 'utf-8')).decode('utf-8')
