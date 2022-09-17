@@ -8,6 +8,7 @@ import threading
 import simplejson as json
 import time
 import zmq
+import base64
 from proxy_wrapper import ProxyWrapper
 from proxy_events import ProxyEvents
 
@@ -16,6 +17,11 @@ TIMEOUT_AFTER_SECONDS_NO_POLL = 3
 
 port_num = int(argv[1])
 client_id = int(argv[2])
+settings_raw = argv[4]
+
+# Load base64 encdoded settings
+settings_str = base64.b64decode(bytes(settings_raw, 'utf-8')).decode('utf-8')
+settings = json.loads(settings_str)
 
 print(f'Proxy server starting, port {port_num}, client_id {client_id}..')
 
@@ -33,6 +39,8 @@ proxy = ProxyWrapper(proxy_events, port_num, include_path)
 loop = asyncio.get_event_loop()
 proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.master))
 proxy_thread.start()
+
+proxy_events.set_settings(settings)
 
 # 2. Connect to the main process via ZMQ
 print('connecting ZMQ Server...')

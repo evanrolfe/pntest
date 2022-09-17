@@ -1,5 +1,6 @@
 from __future__ import annotations
-
+import json
+import base64
 import subprocess
 import signal
 import os
@@ -102,14 +103,15 @@ class ProcessManager(QtCore.QObject):
         self.threadpool.start(worker)
         self.processes.append({'client': client, 'type': 'browser', 'worker': worker})
 
-    def launch_proxy(self, client):
+    def launch_proxy(self, client, settings: SettingsJson):
         app_path = str(get_app_path())
         print(f"[ProcessManager] Launching proxy, app_path: {app_path}")
+        settings_json_b64 = base64.b64encode(bytes(json.dumps(settings), 'utf-8')).decode('utf-8')
 
         if is_dev_mode():
-            proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id}'
+            proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id} _ {settings_json_b64}'
         else:
-            proxy_command = f'{app_path}/pntest_proxy {client.proxy_port} {client.id} {app_path}/include'
+            proxy_command = f'{app_path}/pntest_proxy {client.proxy_port} {client.id} {app_path}/include {settings_json_b64}'
         print(proxy_command)
         current_env = os.environ.copy()
         process = subprocess.Popen(

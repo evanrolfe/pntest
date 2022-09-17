@@ -1,6 +1,7 @@
 from typing import Optional
 from models.data.orator_model import OratorModel
 from lib.process_manager import ProcessManager
+from proxy.common_types import SettingsJson
 
 PROXY_PORT = 8080
 BROWSER_PORT = 9222
@@ -31,11 +32,12 @@ class Client(OratorModel):
         else:
             return 'Closed'
 
-    def launch(self, client_info):
+    # TODO: Client should not have ProcessManager as a dependency
+    def launch(self, client_info, settings: SettingsJson):
         print(f"Launching client:")
         print(client_info)
         process_manager = ProcessManager.get_instance()
-        process_manager.launch_proxy(self)
+        process_manager.launch_proxy(self, settings)
 
         browser_command = client_info.get('command')
         if browser_command:

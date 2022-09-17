@@ -81,9 +81,7 @@ class ProxyEvents:
     def set_intercept_enabled(self, enabled):
         self.intercept_enabled = enabled
 
-    # TODO: Type settings
     def set_settings(self, settings: SettingsJson):
-        print(settings)
         self.settings = settings
 
     # ---------------------------------------------------------------------------

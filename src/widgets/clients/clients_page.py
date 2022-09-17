@@ -1,4 +1,5 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from models.data.settings import Settings
 
 from views._compiled.clients.clients_page import Ui_ClientsPage
 
@@ -95,15 +96,16 @@ class ClientsPage(QtWidgets.QWidget):
 
         # return client_info
 
-    def open_client_clicked(self, client):
+    def open_client_clicked(self, client: Client):
         client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
 
-        client.launch(client_info)
+        settings = Settings.get_from_cache()
+        client.launch(client_info, settings.parsed())
         self.reload_table_data()
 
-    def close_client_clicked(self, client):
+    def close_client_clicked(self, client: Client):
         client.close()
         self.reload_table_data()
 
-    def bring_to_front_client_clicked(self, client):
+    def bring_to_front_client_clicked(self, client: Client):
         print(f'============> bring to front client {client}')
