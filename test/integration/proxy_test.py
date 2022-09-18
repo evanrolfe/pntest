@@ -10,6 +10,7 @@ import asyncio
 import websockets
 import websocket
 from PyQt6 import QtCore
+from lib.browser_launcher.detect import Browser
 
 from lib.paths import get_app_path
 from lib.process_manager import ProcessManager
@@ -54,8 +55,15 @@ def proxy(request):
         },
         "proxy": {"ports_available": [8000]},
     }
-
-    request.cls.process_manager.launch_client(request.cls.client, {}, settings)
+    client_info: Browser = {
+        'name': 'anything',
+        'commands': [],
+        'regex': r'',
+        'type': 'anything',
+        'command': None,
+        'version': None
+    }
+    request.cls.process_manager.launch_client(request.cls.client, client_info, settings)
 
     # TODO: Find a better way of waiting for the proxy to start (i.e. ProcessManager could send a proxy_started signal)
     time.sleep(2)

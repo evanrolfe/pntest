@@ -89,12 +89,12 @@ class ProxyEvents:
     # ---------------------------------------------------------------------------
     def request(self, flow: http.HTTPFlow):
         print('[Proxy] HTTP request')
-
+        print(flow.get_state())
         # The default homepage at http://pntest
         if flow.request.host == 'pntest':
             flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
 
-        if not self.__should_request_be_captured(flow):
+        if not self.should_request_be_captured(flow):
             return
 
         request_state = cast(ProxyRequest, convert_dict_bytes_to_strings(flow.request.get_state()))
@@ -112,7 +112,7 @@ class ProxyEvents:
         print('[Proxy] HTTP response')
         intercept_response = getattr(flow, 'intercept_response', False)
 
-        if flow.response is None or not self.__should_request_be_captured(flow):
+        if flow.response is None or not self.should_request_be_captured(flow):
             return
 
         response_state = cast(ProxyResponse, convert_dict_bytes_to_strings(flow.response.get_state()))
@@ -171,7 +171,7 @@ class ProxyEvents:
             print(f'ERROR => Could not send message for flow {message["flow_uuid"]}')
             return
 
-    def __should_request_be_captured(self, flow: http.HTTPFlow) -> bool:
+    def should_request_be_captured(self, flow: http.HTTPFlow) -> bool:
         if self.settings is None:
             return True
 

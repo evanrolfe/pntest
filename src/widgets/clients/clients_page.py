@@ -5,13 +5,21 @@ from views._compiled.clients.clients_page import Ui_ClientsPage
 
 from models.qt.clients_table_model import ClientsTableModel
 from models.data.client import Client
-from lib.browser_launcher.detect import detect_available_browsers
+from lib.browser_launcher.detect import detect_available_browsers, Browser
 from lib.process_manager import ProcessManager
 
-ANYTHING_CLIENT = {'name': 'anything'}
+ANYTHING_CLIENT: Browser = {
+    'name': 'anything',
+    'commands': [],
+    'regex': r'',
+    'type': 'anything',
+    'command': None,
+    'version': None
+}
 
 class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager
+    enabled_clients: list[Browser]
 
     def __init__(self, *args, **kwargs):
         super(ClientsPage, self).__init__(*args, **kwargs)
@@ -75,7 +83,7 @@ class ClientsPage(QtWidgets.QWidget):
         print(client)
         self.open_client_clicked(client)
 
-    def set_enabled_clients(self, enabled_clients):
+    def set_enabled_clients(self, enabled_clients: list[Browser]):
         self.enabled_clients = enabled_clients + [ANYTHING_CLIENT]
 
         for client in self.enabled_clients:

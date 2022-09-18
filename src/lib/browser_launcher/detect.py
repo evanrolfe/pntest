@@ -1,9 +1,18 @@
 import subprocess
 import re
 import platform
+from typing import Optional, TypedDict
 from copy import deepcopy
 
-BROWSERS = [
+class Browser(TypedDict):
+    name: str
+    commands: list[str]
+    command: Optional[str]
+    version: Optional[str]
+    regex: str
+    type: str
+
+BROWSERS: list[Browser] = [
     {
         'name': 'chrome',
         'commands': [
@@ -13,12 +22,16 @@ BROWSERS = [
         ],
         'regex': r'Google Chrome (.+)',
         'type': 'chrome',
+        'command': None,
+        'version': None
     },
     {
         'name': 'chromium',
         'commands': ['chromium', 'chromium-browser'],
         'regex': r'Chromium ([0-9,\.]+) (.+)',
         'type': 'chrome',
+        'command': None,
+        'version': None
     },
     {
         'name': 'firefox',
@@ -28,6 +41,8 @@ BROWSERS = [
         ],
         'regex': r'Mozilla Firefox (.+)',
         'type': 'firefox',
+        'command': None,
+        'version': None
     },
 ]
 
@@ -38,7 +53,7 @@ def check_command(command):
     except FileNotFoundError:
         return None
 
-def check_which(browser):
+def check_which(browser: Browser) -> Browser:
     browser_copy = deepcopy(browser)
     result = None
 
@@ -57,10 +72,9 @@ def check_which(browser):
     if matches:
         browser_copy['version'] = matches[1]
 
-    del browser_copy['commands']
     return browser_copy
 
-def check(browser):
+def check(browser: Browser) -> Browser:
     pltfrm = platform.system()
 
     # if pltfrm == "Windows":
@@ -73,8 +87,8 @@ def check(browser):
         print(f"Linux/Unidentified system {pltfrm}")
         return check_which(browser)
 
-def detect_available_browsers():
-    available_browsers = []
+def detect_available_browsers() -> list[Browser]:
+    available_browsers: list[Browser] = []
 
     for browser in BROWSERS:
         result = check(browser)
@@ -83,5 +97,3 @@ def detect_available_browsers():
             available_browsers.append(result)
 
     return available_browsers
-
-print(detect_available_browsers())

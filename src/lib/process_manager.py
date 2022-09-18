@@ -6,6 +6,7 @@ import signal
 import os
 import sys
 from PyQt6 import QtCore
+from lib.browser_launcher.detect import Browser
 from models.data.client import Client
 from models.data.http_flow import HttpFlow
 from models.data.settings import Settings
@@ -90,7 +91,7 @@ class ProcessManager(QtCore.QObject):
         client.save()
         self.clients_changed.emit()
 
-    def launch_client(self, client: Client, client_info, settings: SettingsJson):
+    def launch_client(self, client: Client, client_info: Browser, settings: SettingsJson):
         print(f"Launching client:")
         process_manager = ProcessManager.get_instance()
         process_manager.launch_proxy(client, settings)
