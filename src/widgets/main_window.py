@@ -1,6 +1,6 @@
 import shutil
 from pathlib import Path
-
+import traceback
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 
 from views._compiled.main_window import Ui_MainWindow
@@ -76,6 +76,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_editor_page()
         keyseq_ctrl_r = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+R'), self)
         keyseq_ctrl_r.activated.connect(self.reload_style)
+
+    def exception_handler(self, type, exception, tb):
+        print("------------------------------------------------\nERROR\n------------------------------------------------")
+        exception_str = "\n".join(traceback.format_exception_only(exception))
+        traceback_str = "\n".join(traceback.format_tb(tb))
+
+        error_message =  exception_str + "\n" + traceback_str
+        print(error_message)
+
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('Error')
+        message_box.setText(error_message)
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
+        message_box.exec()
 
     # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
     def set_process_manager(self, process_manager):

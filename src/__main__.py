@@ -21,8 +21,6 @@ def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 def main():
-    sys.excepthook = except_hook
-
     QtCore.QCoreApplication.setApplicationName('pntest')
 
     app = QtWidgets.QApplication(sys.argv)
@@ -56,7 +54,7 @@ def main():
     main_window = MainWindow()
     main_window.set_process_manager(process_manager)
     main_window.show()
-
+    sys.excepthook = main_window.exception_handler
     # On Quit:
     app.aboutToQuit.connect(main_window.about_to_quit)
     app.aboutToQuit.connect(process_manager.on_exit)
