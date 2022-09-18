@@ -7,6 +7,7 @@ from models.data.http_flow import HttpFlow
 
 class EditorItem(OratorModel):
     __table__ = 'editor_items'
+    __timestamps__ = False
 
     TYPE_HTTP_FLOW = 'http_flow'
     TYPE_DIR = 'dir'

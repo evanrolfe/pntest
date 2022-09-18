@@ -8,6 +8,7 @@ from lib.types import Headers
 class HttpResponse(Model):
     __table__ = 'http_responses'
     __fillable__ = ['*']
+    __timestamps__ = ['created_at']
 
     id: int
     http_version: str
@@ -18,7 +19,6 @@ class HttpResponse(Model):
     status_code: int
     reason: Optional[str]
     created_at: int
-    updated_at: Optional[int]
 
     @classmethod
     # TODO: Use a TypedDict for state

@@ -4,6 +4,7 @@ from models.data.orator_model import OratorModel
 
 class Variable(OratorModel):
     __table__ = 'variables'
+    __timestamps__ = ['created_at']
 
     SOURCE_TYPE_GLOBAL = 'global'
     SOURCE_TYPE_REQUEST = 'http_request'

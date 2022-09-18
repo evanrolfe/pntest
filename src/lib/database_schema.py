@@ -5,8 +5,7 @@ SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   name TEXT NOT NULL,
   item_type TEXT NOT NULL,
   item_id INTEGER,
-  created_at INTEGER,
-  updated_at INTEGER
+  created_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS clients(
@@ -19,15 +18,13 @@ CREATE TABLE IF NOT EXISTS clients(
   browser_port INTEGER,
   open BOOLEAN DEFAULT 0,
   created_at INTEGER,
-  updated_at INTEGER,
   launched_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS settings(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   json TEXT NOT NULL,
-  created_at INTEGER,
-  updated_at INTEGER
+  created_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS http_requests(
@@ -45,8 +42,7 @@ CREATE TABLE IF NOT EXISTS http_requests(
     authority TEXT,
     path TEXT NOT NULL,
     form_data TEXT NOT NULL,
-    created_at INTEGER,
-    updated_at INTEGER
+    created_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS http_responses(
@@ -58,8 +54,7 @@ CREATE TABLE IF NOT EXISTS http_responses(
     timestamp_end REAL,
     status_code INTEGER NOT NULL,
     reason TEXT,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER
+    created_at INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS http_flows(
@@ -83,8 +78,7 @@ CREATE TABLE IF NOT EXISTS variables(
   description TEXT,
   source_type TEXT NOT NULL,
   source_id INTEGER,
-  created_at INTEGER,
-  updated_at INTEGER
+  created_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS websocket_messages(
@@ -93,8 +87,7 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
   direction TEXT NOT NULL,
   content TEXT NOT NULL,
   content_original TEXT,
-  created_at INTEGER,
-  updated_at INTEGER
+  created_at INTEGER
 );
 
 CREATE VIEW v_http_flows_search AS

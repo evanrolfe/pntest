@@ -255,9 +255,9 @@ class HttpFlow(OratorModel):
         new_request = HttpRequest.from_state(original_state)
         new_request.save()
 
-        self.original_request_id = original_request.id
-        self.request_id = new_request.id
-        self.save()
+        # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
+        database = Database.get_instance()
+        database.db.table('http_flows').where('id', self.id).update(original_request_id=original_request.id, request_id=new_request.id)
 
     def modify_response(self, modified_status_code: int, modified_headers: Headers, modified_content: str):
         original_response = self.response().first()
@@ -279,9 +279,9 @@ class HttpFlow(OratorModel):
         new_response = HttpResponse.from_state(original_state)
         new_response.save()
 
-        self.original_response_id = original_response.id
-        self.response_id = new_response.id
-        self.save()
+        # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
+        database = Database.get_instance()
+        database.db.table('http_flows').where('id', self.id).update(original_response_id=original_response.id, response_id=new_response.id)
 
     def modify_latest_websocket_message(self, modified_content):
         websocket_messages = self.websocket_messages().get()

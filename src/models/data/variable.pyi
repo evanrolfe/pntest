@@ -13,7 +13,6 @@ class Variable(OratorModel):
     source_type: str
     source_id: Optional[int]
     created_at: Optional[int]
-    updated_at: Optional[int]
 
     # Associations:
 

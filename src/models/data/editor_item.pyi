@@ -13,7 +13,6 @@ class EditorItem(OratorModel):
     item_type: str
     item_id: Optional[int]
     created_at: Optional[int]
-    updated_at: Optional[int]
 
     # Associations:
 

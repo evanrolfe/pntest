@@ -26,6 +26,7 @@ class HttpRequest(Model):
     __table__ = 'http_requests'
     __fillable__ = ['*']
     __casts__ = {'form_data': 'dict'}
+    __timestamps__ = ['created_at']
 
     id: int
     http_version: str
@@ -41,7 +42,6 @@ class HttpRequest(Model):
     authority: Optional[str]
     path: str
     created_at: int
-    updated_at: int
     form_data: FormData
 
     FUZZ_TYPE_LABELS = ['One To One', 'Cartesian Product']

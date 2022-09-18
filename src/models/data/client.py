@@ -15,7 +15,8 @@ class Client(OratorModel):
     browser_port: Optional[int]
     open: bool
     created_at: Optional[int]
-    updated_at: Optional[int]
+
+    __timestamps__ = False
 
     @classmethod
     def get_next_port_available(cls):

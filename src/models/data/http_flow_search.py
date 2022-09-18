@@ -3,6 +3,7 @@ from models.data.orator_model import OratorModel
 
 class HttpFlowSearch(OratorModel):
     __table__ = 'http_flows_fts'
+    __timestamps__ = False
 
     @classmethod
     def search(cls, search_term: str) -> list[int]:

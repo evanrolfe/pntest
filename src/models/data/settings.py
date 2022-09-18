@@ -7,11 +7,11 @@ from proxy.common_types import SettingsJson, CaptureFilterSettings, DisplayFilte
 
 class Settings(OratorModel):
     __table__ = 'settings'
+    __timestamps__ = False
 
     id: int
     json: str
     created_at: int
-    updated_at: Optional[int]
     parsedObj: SettingsJson
 
     def __init__(self, *args, **kwargs):
