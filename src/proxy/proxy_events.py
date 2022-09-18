@@ -89,7 +89,6 @@ class ProxyEvents:
     # ---------------------------------------------------------------------------
     def request(self, flow: http.HTTPFlow):
         print('[Proxy] HTTP request')
-        print(flow.get_state())
         # The default homepage at http://pntest
         if flow.request.host == 'pntest':
             flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
@@ -111,6 +110,9 @@ class ProxyEvents:
     def response(self, flow: http.HTTPFlow):
         print('[Proxy] HTTP response')
         intercept_response = getattr(flow, 'intercept_response', False)
+
+        if flow is None:
+            return
 
         if flow.response is None or not self.should_request_be_captured(flow):
             return

@@ -1,3 +1,4 @@
+from typing import Optional
 from PyQt6 import QtCore, QtWidgets
 from views._compiled.network.http_page import Ui_HttpPage
 
@@ -10,11 +11,14 @@ class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.pyqtSignal()
     send_flow_to_editor = QtCore.pyqtSignal(object)
 
+    search_text: Optional[str]
+
     def __init__(self, *args, **kwargs):
         super(HttpPage, self).__init__(*args, **kwargs)
         self.ui = Ui_HttpPage()
         self.ui.setupUi(self)
 
+        self.search_text = None
         # Setup the request model
         http_flows = HttpFlow.find_for_table(None)
         self.table_model = RequestsTableModel(http_flows)
@@ -80,6 +84,7 @@ class HttpPage(QtWidgets.QWidget):
     def request_error(self, error):
         exctype, value, traceback = error
         print(value)
+        print(traceback)
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()

@@ -118,7 +118,7 @@
      </property>
     </spacer>
    </item>
-   <item>
+   <!-- <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label_4">
@@ -212,7 +212,7 @@
       </widget>
      </item>
     </layout>
-   </item>
+   </item> -->
    <item>
     <spacer name="verticalSpacer_2">
      <property name="orientation">

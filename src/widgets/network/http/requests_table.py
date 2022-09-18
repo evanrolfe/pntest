@@ -1,4 +1,5 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
+from models.qt.requests_table_model import RequestsTableModel
 
 from views._compiled.network.http.requests_table import Ui_RequestsTable
 from widgets.network.http.display_filters import DisplayFilters
@@ -12,6 +13,8 @@ class RequestsTable(QtWidgets.QWidget):
     search_text_changed = QtCore.pyqtSignal(str)
     send_flow_to_editor = QtCore.pyqtSignal(HttpFlow)
     display_filters_saved = QtCore.pyqtSignal()
+
+    table_model: RequestsTableModel
 
     def __init__(self, *args, **kwargs):
         super(RequestsTable, self).__init__(*args, **kwargs)
@@ -66,7 +69,7 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.siteMapButton.setIconSize(QtCore.QSize(25, 25))
         self.ui.siteMapButton.setText(">>")
 
-    def setTableModel(self, model):
+    def setTableModel(self, model: RequestsTableModel):
         self.table_model = model
         self.ui.requestsTable.setModel(model)
 
