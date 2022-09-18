@@ -8,10 +8,10 @@ class WebsocketMessage(OratorModel):
     content: str
     content_original: Optional[str]
     created_at: int
-    updated_at: Optional[int]
 
     __table__ = 'websocket_messages'
     __fillable__ = ['*']
+    __timestamps__ = False
 
     @classmethod
     def from_state(cls, state):

@@ -61,7 +61,6 @@ class ClientsPage(QtWidgets.QWidget):
         self.process_manager.clients_changed.connect(self.reload)
 
     def reload(self):
-        # self.ui.clientView.clear()
         self.reload_table_data()
 
     def reload_table_data(self):

@@ -67,6 +67,9 @@ def proxy(request):
 
     # TODO: Find a better way of waiting for the proxy to start (i.e. ProcessManager could send a proxy_started signal)
     time.sleep(2)
+    # # Make the HTTP request, while waiting for the signals to be verified
+    # with qtbot.waitSignal(request.cls.process_manager.proxy_started, timeout=2000):
+    #     pass
 
     yield
 

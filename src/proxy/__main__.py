@@ -59,6 +59,8 @@ last_poll_at = int(time.time())
 poll = zmq.Poller()
 poll.register(socket, zmq.POLLIN)
 
+proxy_events.send_started_message()
+
 while True:
     sockets = dict(poll.poll(1000))
 

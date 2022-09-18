@@ -14,6 +14,7 @@ class ProxySignals(QtCore.QObject):
     flow_updated = QtCore.pyqtSignal(HttpFlow)
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
+    proxy_started = QtCore.pyqtSignal(int)
 
 class ProxyZmqServer(QtCore.QObject):
     def __init__(self, parent=None):
@@ -58,7 +59,7 @@ class ProxyZmqServer(QtCore.QObject):
                     identity_str = identity.decode('utf-8')
 
                     self.client_ids.add(int(identity_str))
-                    self.handle_message(message)
+                    self.handle_message(message, int(identity_str))
                 except Exception:  # noqa
                     exctype, value = sys.exc_info()[:2]
                     print(f'{exctype}: {value}')
@@ -70,7 +71,7 @@ class ProxyZmqServer(QtCore.QObject):
         self.socket.close()
         self.context.term()
 
-    def handle_message(self, message):
+    def handle_message(self, message, id: int):
         obj = json.loads(message)
         if (obj['type'] == 'request'):
             print(f'[ProxyZmqServer] Received http request')
@@ -81,6 +82,8 @@ class ProxyZmqServer(QtCore.QObject):
         elif (obj['type'] == 'websocket_message'):
             print(f'[ProxyZmqServer] Received websocket message')
             self.websocket_message(obj)
+        elif (obj['type'] == 'started'):
+            self.signals.proxy_started.emit(id)
 
     def request(self, request_state: ProxyRequest):
         http_flow = HttpFlow.create_from_proxy_request(request_state)

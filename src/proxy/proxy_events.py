@@ -30,6 +30,9 @@ class ProxyEvents:
     def set_socket(self, socket):
         self.socket = socket
 
+    def send_started_message(self):
+        self.__send_message({'type': 'started'})
+
     # ---------------------------------------------------------------------------
     # Actions:
     # ---------------------------------------------------------------------------

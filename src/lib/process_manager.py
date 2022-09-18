@@ -24,6 +24,7 @@ class ProcessManager(QtCore.QObject):
     flow_updated = QtCore.pyqtSignal(HttpFlow)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
+    proxy_started = QtCore.pyqtSignal(int)
 
     # Singleton method stuff:
     __instance = None
@@ -59,6 +60,8 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.signals.flow_updated.connect(self.flow_updated)
         self.proxy_handler.signals.flow_intercepted.connect(self.flow_intercepted)
         self.proxy_handler.signals.websocket_message_created.connect(self.websocket_message_created)
+        self.proxy_handler.signals.proxy_started.connect(self.proxy_started)
+        self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
 
     def on_exit(self):
         print("[ProcessManager] killing all processes...")
@@ -100,8 +103,14 @@ class ProcessManager(QtCore.QObject):
         if browser_command:
             process_manager.launch_browser(client, browser_command)
 
+    def proxy_was_launched(self, client_id: int):
+        client = Client.find(client_id)
+        if client is None:
+            return
+
         client.open = True
         client.save()
+        self.clients_changed.emit()
 
     def close_client(self, client: Client):
         if client.type != 'anything':
