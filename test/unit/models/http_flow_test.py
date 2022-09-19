@@ -86,6 +86,7 @@ class TestHttpFlow:
             response_id=http_response.id,
             client_id=1
         )
+        http_flow.save()
         http_flow.modify_response(203, {"hello": "world"}, 'Somethings-changed')
 
         assert http_flow.original_response_id == http_response.id

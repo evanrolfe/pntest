@@ -4,6 +4,7 @@ from urllib.parse import urlsplit
 from typing import Optional, Any, TypedDict, cast
 from orator import Model
 from models.data.payload_file import PayloadFile, PayloadFileSerialised
+from models.data.orator_model import OratorModel
 
 from constants import CALCULATED_TEXT
 from lib.types import Headers
@@ -22,11 +23,14 @@ class FormData(TypedDict):
     content: str
     fuzz_data: Optional[FuzzFormData]
 
-class HttpRequest(Model):
+class HttpRequest(OratorModel):
     __table__ = 'http_requests'
     __fillable__ = ['*']
     __casts__ = {'form_data': 'dict'}
-    __timestamps__ = ['created_at']
+    # Had to disable timestamps because of the ridiculous error from orator when trying to update http_requests:
+    # QueryException: no such column: updated_at (SQL: UPDATE "http_requests" SET...
+    # Orator does not seem to respect the __timestamps__ array on updates
+    __timestamps__ = False
 
     id: int
     http_version: str
@@ -206,9 +210,6 @@ class HttpRequest(Model):
             parsed_headers[key] = parse_text(value)
 
         self.set_headers(parsed_headers)
-
-    def save(self, *args, **kwargs):
-        return super(HttpRequest, self).save(*args, **kwargs)
 
     def generate_form_data(self) -> FormData:
         headers = self.get_headers() or {}
