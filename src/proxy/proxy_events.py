@@ -12,6 +12,7 @@ class ProxyHttpFlow(http.HTTPFlow):
 class ProxyEvents:
     settings: Optional[SettingsJson]
     client_id: int
+    recording_enabled: bool
     intercept_enabled: bool
     intercepted_flows: list[ProxyHttpFlow]
     pntest_homepage_html: str
@@ -23,6 +24,7 @@ class ProxyEvents:
         self.include_path = include_path
         self.pntest_homepage_html = Path(f'{self.include_path}/html_page.html').read_text()
         self.settings = None
+        self.recording_enabled = True
 
     def set_proxy(self, proxy):
         self.proxy = proxy
@@ -84,6 +86,10 @@ class ProxyEvents:
     def set_intercept_enabled(self, enabled):
         self.intercept_enabled = enabled
 
+    def set_recording_enabled(self, enabled: bool):
+        print('[Proxy] enabled = ', enabled)
+        self.recording_enabled = enabled
+
     def set_settings(self, settings: SettingsJson):
         self.settings = settings
 
@@ -133,8 +139,7 @@ class ProxyEvents:
 
     def websocket_message(self, flow: http.HTTPFlow):
         print('[Proxy] websocket message')
-
-        if flow.websocket is None:
+        if flow.websocket is None or self.recording_enabled == False:
             return
 
         message = flow.websocket.messages[-1]
@@ -177,6 +182,9 @@ class ProxyEvents:
             return
 
     def should_request_be_captured(self, flow: http.HTTPFlow) -> bool:
+        if self.recording_enabled == False:
+            return False
+
         if self.settings is None:
             return True
 

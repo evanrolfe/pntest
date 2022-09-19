@@ -88,6 +88,8 @@ while True:
             proxy_events.forward_all()
         elif message['type'] == 'enable_intercept':
             proxy_events.set_intercept_enabled(message['value'])
+        elif message['type'] == 'enable_recording':
+            proxy_events.set_recording_enabled(message['value'])
         elif message['type'] == 'set_settings':
             proxy_events.set_settings(message['value'])
         elif message['type'] == 'poll':

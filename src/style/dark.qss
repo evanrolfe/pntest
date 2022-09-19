@@ -195,7 +195,6 @@ QPushButton#networkStatus {
 
 QPushButton#interceptStatus   {
   height: 17px;
-  color: #C3E88D;
   background-color: $bg-sidebar;
   padding-left: 10px;
   padding-right: 10px;

@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 import traceback
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+from lib.process_manager import ProcessManager
 
 from views._compiled.main_window import Ui_MainWindow
 from lib.app_settings import AppSettings
@@ -125,7 +126,7 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box.exec()
 
     # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
-    def set_process_manager(self, process_manager):
+    def set_process_manager(self, process_manager: ProcessManager):
         self.process_manager = process_manager
 
         # TODO: We could probably use the singleton get_instance() and set these in the page's constructors
@@ -133,6 +134,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.process_manager.flow_created.connect(self.network_page.http_page.flow_created)
         self.process_manager.flow_updated.connect(self.network_page.http_page.flow_updated)
         self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
+
+        self.network_status.clicked.connect(self.toggle_recording_enabled)
+
+    def toggle_recording_enabled(self):
+        self.process_manager.toggle_recording_enabled()
+
+        if self.process_manager.recording_enabled:
+            self.network_status.setText("Network: Recording")
+        else:
+            self.network_status.setText("Network: Paused")
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()

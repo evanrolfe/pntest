@@ -27,6 +27,9 @@ class ProcessManager(QtCore.QObject):
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
     proxy_started = QtCore.pyqtSignal(int)
 
+    proxy_handler: ProxyHandler
+    recording_enabled: bool
+
     # Singleton method stuff:
     __instance = None
 
@@ -63,6 +66,8 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.signals.websocket_message_created.connect(self.websocket_message_created)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_started)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
+
+        self.recording_enabled = True
 
     def on_exit(self):
         print("[ProcessManager] killing all processes...")
@@ -101,12 +106,11 @@ class ProcessManager(QtCore.QObject):
 
     def launch_client(self, client: Client, client_info: Browser, settings: SettingsJson):
         print(f"Launching client:")
-        process_manager = ProcessManager.get_instance()
-        process_manager.launch_proxy(client, settings)
+        self.launch_proxy(client, settings)
 
         browser_command = client_info.get('command')
         if browser_command:
-            process_manager.launch_browser(client, browser_command)
+            self.launch_browser(client, browser_command)
 
     def proxy_was_launched(self, client_id: int):
         client = Client.find(client_id)
@@ -163,11 +167,15 @@ class ProcessManager(QtCore.QObject):
     def forward_all(self):
         self.proxy_handler.forward_all()
 
-    def drop_flow(self, flow):
+    def drop_flow(self, flow: HttpFlow):
         self.proxy_handler.drop_flow(flow)
 
-    def set_enabled(self, enabled):
+    def set_enabled(self, enabled: bool):
         self.proxy_handler.set_enabled(enabled)
+
+    def toggle_recording_enabled(self):
+        self.recording_enabled = not self.recording_enabled
+        self.proxy_handler.set_recording_enabled(self.recording_enabled)
 
     def set_settings(self, settings: SettingsJson) -> None:
         self.proxy_handler.set_settings(settings)
