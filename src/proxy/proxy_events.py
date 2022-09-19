@@ -190,18 +190,6 @@ class ProxyEvents:
         if flow.request.host not in host_list and host_setting == 'include':
             return False
 
-        # Check Path
-        path_list = self.settings['capture_filters']['path_list']
-        path_setting = self.settings['capture_filters']['path_setting']
-
-        path_contains_any_of_path_list = any(path in flow.request.path for path in path_list)
-
-        if path_contains_any_of_path_list and path_setting == 'exclude':
-            return False
-
-        if not path_contains_any_of_path_list and path_setting == 'include':
-            return False
-
         return True
 
 def convert_dict_bytes_to_strings(d):

@@ -180,15 +180,12 @@ class MainWindow(QtWidgets.QMainWindow):
         item_value = item.data(QtCore.Qt.ItemDataRole.UserRole)
 
         if item_value == 'network':
-            print('todo')
             self.ui.stackedWidget.setCurrentWidget(self.network_page)
         elif item_value == 'intercept':
-            print('todo')
             self.ui.stackedWidget.setCurrentWidget(self.intercept_page)
         elif item_value == 'clients':
             self.ui.stackedWidget.setCurrentWidget(self.clients_page)
         elif item_value == 'requests':
-            print('todo')
             self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 
     def reload(self):
