@@ -77,6 +77,38 @@ class MainWindow(QtWidgets.QMainWindow):
         keyseq_ctrl_r = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+R'), self)
         keyseq_ctrl_r.activated.connect(self.reload_style)
 
+        # Status Bar
+        self.intercept_status = QtWidgets.QPushButton()
+        self.intercept_status.setText("Intercept: Enabled")
+        self.intercept_status.setObjectName("interceptStatus")
+        self.intercept_status.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+
+        self.network_status = QtWidgets.QPushButton()
+        self.network_status.setText("Network: Recording")
+        self.network_status.setObjectName("networkStatus")
+        self.network_status.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+
+        self.proxy_status = QtWidgets.QLabel()
+        self.proxy_status.setText("Proxies: None")
+        self.proxy_status.setObjectName("proxyStatus")
+
+        line1 = QtWidgets.QFrame(self)
+        line1.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        line1.setLineWidth(1)
+        line1.setObjectName("statusBarLine")
+        line2 = QtWidgets.QFrame(self)
+        line2.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        line2.setLineWidth(1)
+        line2.setObjectName("statusBarLine")
+
+        self.ui.statusBar.insertPermanentWidget(0, self.proxy_status)
+        self.ui.statusBar.insertPermanentWidget(1, line1)
+        self.ui.statusBar.insertPermanentWidget(2, self.network_status)
+        self.ui.statusBar.insertPermanentWidget(3, line2)
+        self.ui.statusBar.insertPermanentWidget(4, self.intercept_status)
+
     def exception_handler(self, type, exception, tb):
         print("------------------------------------------------\nERROR\n------------------------------------------------")
         exception_str = "\n".join(traceback.format_exception_only(exception))

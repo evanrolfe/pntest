@@ -168,6 +168,7 @@ QListWidget::item::selected#sideBar {
 QStatusBar {
   background: $bg-sidebar;
   border-top: 1px solid $item-bright-faded;
+  padding: 0;
 }
 
 QStatusBar::item {
@@ -175,7 +176,35 @@ QStatusBar::item {
 }
 
 QStatusBar > QSizeGrip {
-  background: $bg-sidebar;
+  background: $bg-input;
+}
+
+QLabel#proxyStatus {
+  height: 17px;
+  background-color: $bg-sidebar;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+QPushButton#networkStatus {
+  height: 17px;
+  background-color: $bg-sidebar;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+QPushButton#interceptStatus   {
+  height: 17px;
+  color: #C3E88D;
+  background-color: $bg-sidebar;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+QFrame#statusBarLine {
+  border-right: 1 solid $item-bright-faded;
+  width: 1px;
+  padding: 0;
 }
 
 /*------------------------------------------------------------------------------*

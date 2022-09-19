@@ -49,7 +49,6 @@ class CodeEditor(QtWidgets.QWidget):
         self.find_in_progress = None
 
     def show_find_replace(self):
-        print("Showing...")
         self.ui.findReplace.setVisible(True)
         self.ui.findText.setFocus()
 
