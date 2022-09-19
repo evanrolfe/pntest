@@ -7,6 +7,7 @@ import os
 import sys
 from PyQt6 import QtCore
 from lib.browser_launcher.detect import Browser
+from lib.database import Database
 from models.data.client import Client
 from models.data.http_flow import HttpFlow
 from models.data.settings import Settings
@@ -90,8 +91,12 @@ class ProcessManager(QtCore.QObject):
     def browser_was_closed(self, client: Client):
         print(f"[ProcessManager] browser {client.id} closed, closing proxy")
         self.close_proxy(client)
-        client.open = False
-        client.save()
+
+        browser_process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
+        self.processes.remove(browser_process)
+
+        database = Database.get_instance()
+        database.db.table('clients').where('id', client.id).update(open=False)
         self.clients_changed.emit()
 
     def launch_client(self, client: Client, client_info: Browser, settings: SettingsJson):
@@ -108,8 +113,9 @@ class ProcessManager(QtCore.QObject):
         if client is None:
             return
 
-        client.open = True
-        client.save()
+        database = Database.get_instance()
+        database.db.table('clients').where('id', client.id).update(open=True)
+
         self.clients_changed.emit()
 
     def close_client(self, client: Client):
