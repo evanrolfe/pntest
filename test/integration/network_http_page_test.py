@@ -107,3 +107,35 @@ class TestNetworkHttpPage:
         table_model = widget.ui.requestsTableWidget.table_model
         assert len(table_model.flows) == 1
         assert table_model.flows[0].id == flow4.id
+
+    def test_network_http_page_searching_requests_by_path(self, database, cleanup_database, qtbot: QtBot):
+        Settings.create_defaults()
+        flow1 = create_http_flow("http", "example.com", 80, "/admin/login.php")
+        flow2 = create_http_flow("http", "example.com", 80, "/admin/test.php")
+        flow3 = create_http_flow("http", "example.com", 80, "/users/index.php")
+        flow4 = create_http_flow("http", "pntest.com", 80, "/index.html")
+
+        widget = HttpPage()
+        qtbot.addWidget(widget)
+        qtbot.waitExposed(widget)
+
+        # Enter the search terms
+        search_box = widget.ui.requestsTableWidget.ui.searchBox
+        qtbot.keyClicks(search_box, "/admin")
+        qtbot.keyClick(search_box, QtCore.Qt.Key.Key_Return)
+
+        # widget.show()
+        # qtbot.waitForWindowShown(widget)
+        # time.sleep(3)
+
+        # Wait for loading finished signal
+        with qtbot.waitSignal(widget.worker.signals.finished, timeout=10000):
+            pass
+
+        # Check the correct requests are displayed in the table
+        table_model = widget.ui.requestsTableWidget.table_model
+        assert len(table_model.flows) == 2
+
+        request_ids = [f.id for f in table_model.flows]
+        assert flow1.id in request_ids
+        assert flow2.id in request_ids
