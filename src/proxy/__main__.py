@@ -17,11 +17,13 @@ TIMEOUT_AFTER_SECONDS_NO_POLL = 3
 
 port_num = int(argv[1])
 client_id = int(argv[2])
-settings_raw = argv[4]
+recording_enabled_raw = int(argv[4])
+settings_raw = argv[5]
 
 # Load base64 encdoded settings
 settings_str = base64.b64decode(bytes(settings_raw, 'utf-8')).decode('utf-8')
 settings = json.loads(settings_str)
+recording_enabled = (recording_enabled_raw == 1)
 
 print(f'Proxy server starting, port {port_num}, client_id {client_id}..')
 
@@ -31,7 +33,7 @@ if os.getenv('DEV_MODE'):
     include_path = f"{app_path}/include"
 else:
     include_path = argv[3]
-print(f'[Proxy] --------------> include_path: {include_path}')
+print(f'[Proxy] --------------> include_path: {include_path}, recording_enabled: {recording_enabled}')
 
 # 1. Start mitmproxy
 proxy_events = ProxyEvents(client_id, include_path)
@@ -41,6 +43,7 @@ proxy_thread = threading.Thread(target=proxy.run_in_thread, args=(loop, proxy.ma
 proxy_thread.start()
 
 proxy_events.set_settings(settings)
+proxy_events.set_recording_enabled(recording_enabled)
 
 # 2. Connect to the main process via ZMQ
 print('connecting ZMQ Server...')
