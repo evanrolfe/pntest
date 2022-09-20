@@ -29,6 +29,7 @@ class ProcessManager(QtCore.QObject):
 
     proxy_handler: ProxyHandler
     recording_enabled: bool
+    intercept_enabled: bool
 
     # Singleton method stuff:
     __instance = None
@@ -68,6 +69,7 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
 
         self.recording_enabled = True
+        self.intercept_enabled = False
 
     def on_exit(self):
         print("[ProcessManager] killing all processes...")
@@ -172,8 +174,9 @@ class ProcessManager(QtCore.QObject):
     def drop_flow(self, flow: HttpFlow):
         self.proxy_handler.drop_flow(flow)
 
-    def set_enabled(self, enabled: bool):
-        self.proxy_handler.set_enabled(enabled)
+    def toggle_intercept_enabled(self):
+        self.intercept_enabled = not self.intercept_enabled
+        self.proxy_handler.set_intercept_enabled(self.intercept_enabled)
 
     def toggle_recording_enabled(self):
         self.recording_enabled = not self.recording_enabled

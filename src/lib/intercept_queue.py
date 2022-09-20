@@ -40,8 +40,11 @@ class InterceptQueue(QtCore.QObject):
         self.process_manager.forward_all()
         self.queue = []
 
-    def set_enabled(self, enabled):
-        self.process_manager.set_enabled(enabled)
+    def enabled(self) -> bool:
+        return self.process_manager.intercept_enabled
+
+    def toggle_intercept_enabled(self):
+        self.process_manager.toggle_intercept_enabled()
 
     # Private Methods
 

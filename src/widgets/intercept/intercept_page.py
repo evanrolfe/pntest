@@ -61,12 +61,12 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercept_queue.drop_flow(self.intercepted_flow)
 
     def enabled_button_clicked(self):
-        if self.intercept_enabled:
+        if self.intercept_queue.enabled():
             self.__clear_request()
             self.intercept_queue.forward_all()
 
-        self.intercept_queue.set_enabled(not self.intercept_enabled)
-        self.__set_enabled(not self.intercept_enabled)
+        self.intercept_queue.toggle_intercept_enabled()
+        self.__set_enabled(self.intercept_queue.enabled())
 
     # Private methods
 
@@ -102,10 +102,8 @@ class InterceptPage(QtWidgets.QWidget):
         self.ui.bodyText.setPlainText("")
         self.__set_buttons_enabled(False)
 
-    def __set_enabled(self, intercept_enabled):
-        self.intercept_enabled = intercept_enabled
-
-        if intercept_enabled is True:
+    def __set_enabled(self, intercept_enabled: bool):
+        if intercept_enabled:
             self.ui.enabledButton.setText('Disable Intercept')
         else:
             self.ui.enabledButton.setText('Enable Intercept')

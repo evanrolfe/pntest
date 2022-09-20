@@ -131,8 +131,7 @@ class ProxyZmqServer(QtCore.QObject):
         message = {'type': 'drop', 'flow': flow.serialize()}
         self.socket.send_multipart([str(flow.client_id).encode(), json.dumps(message).encode()])
 
-    # TODO: Rename this to set_intercept_enabled
-    def set_enabled(self, enabled):
+    def set_intercept_enabled(self, enabled):
         message = {'type': 'enable_intercept', 'value': enabled}
         for client_id in list(self.client_ids):
             self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
@@ -181,8 +180,8 @@ class ProxyHandler():
     def drop_flow(self, flow: HttpFlow):
         self.zmq_server.drop_flow(flow)
 
-    def set_enabled(self, enabled: bool):
-        self.zmq_server.set_enabled(enabled)
+    def set_intercept_enabled(self, enabled: bool):
+        self.zmq_server.set_intercept_enabled(enabled)
 
     def set_recording_enabled(self, enabled: bool):
         self.zmq_server.set_recording_enabled(enabled)
