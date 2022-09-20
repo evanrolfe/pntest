@@ -80,7 +80,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Status Bar
         self.intercept_status = QtWidgets.QPushButton()
-        self.intercept_status.setText("Intercept: Enabled")
+        self.intercept_status.setText("Intercept: Disabled")
         self.intercept_status.setObjectName("interceptStatus")
         self.intercept_status.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
 
@@ -136,6 +136,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
 
         self.network_status.clicked.connect(self.toggle_recording_enabled)
+
+        self.process_manager.intercept_changed.connect(self.intercept_changed)
+
+    def intercept_changed(self):
+        if self.process_manager.intercept_enabled:
+            self.intercept_status.setText("Intercept: Enabled")
+        else:
+            self.intercept_status.setText("Intercept: Disabled")
 
     def toggle_recording_enabled(self):
         self.process_manager.toggle_recording_enabled()

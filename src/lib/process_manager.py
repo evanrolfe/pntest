@@ -26,6 +26,7 @@ class ProcessManager(QtCore.QObject):
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
     proxy_started = QtCore.pyqtSignal(int)
+    intercept_changed = QtCore.pyqtSignal(bool)
 
     proxy_handler: ProxyHandler
     recording_enabled: bool
@@ -177,6 +178,7 @@ class ProcessManager(QtCore.QObject):
     def toggle_intercept_enabled(self):
         self.intercept_enabled = not self.intercept_enabled
         self.proxy_handler.set_intercept_enabled(self.intercept_enabled)
+        self.intercept_changed.emit(self.intercept_enabled)
 
     def toggle_recording_enabled(self):
         self.recording_enabled = not self.recording_enabled
