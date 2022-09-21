@@ -23,6 +23,7 @@ class InterceptPage(QtWidgets.QWidget):
 
         self.intercept_queue = InterceptQueue()
         self.intercept_queue.decision_required.connect(self.decision_required)
+        self.intercept_queue.intercept_changed.connect(self.__set_enabled)
 
     def decision_required(self, flow):
         self.intercepted_flow = flow

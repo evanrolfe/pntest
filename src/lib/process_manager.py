@@ -151,12 +151,14 @@ class ProcessManager(QtCore.QObject):
         print(f"[ProcessManager] Launching proxy, app_path: {app_path}")
 
         recording_enabled = 1 if self.recording_enabled else 0
+        intercept_enabled = 1 if self.intercept_enabled else 0
         settings_json_b64 = base64.b64encode(bytes(json.dumps(settings), 'utf-8')).decode('utf-8')
 
         if is_dev_mode():
-            proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id} _ {recording_enabled} {settings_json_b64}'
+            proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id} _ {recording_enabled} {intercept_enabled} {settings_json_b64}'
         else:
-            proxy_command = f'{app_path}/pntest_proxy {client.proxy_port} {client.id} {app_path}/include {recording_enabled} {settings_json_b64}'
+            proxy_command = f'{app_path}/pntest_proxy {client.proxy_port} {client.id} {app_path}/include {recording_enabled} {intercept_enabled} {settings_json_b64}'
+
         print(proxy_command)
         current_env = os.environ.copy()
         process = subprocess.Popen(

@@ -136,6 +136,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
 
         self.network_status.clicked.connect(self.toggle_recording_enabled)
+        self.intercept_status.clicked.connect(self.process_manager.toggle_intercept_enabled)
 
         self.process_manager.intercept_changed.connect(self.intercept_changed)
 

@@ -18,12 +18,14 @@ TIMEOUT_AFTER_SECONDS_NO_POLL = 3
 port_num = int(argv[1])
 client_id = int(argv[2])
 recording_enabled_raw = int(argv[4])
-settings_raw = argv[5]
+intercept_enabled_raw = int(argv[5])
+settings_raw = argv[6]
 
 # Load base64 encdoded settings
 settings_str = base64.b64decode(bytes(settings_raw, 'utf-8')).decode('utf-8')
 settings = json.loads(settings_str)
 recording_enabled = (recording_enabled_raw == 1)
+intercept_enabled = (intercept_enabled_raw == 1)
 
 print(f'Proxy server starting, port {port_num}, client_id {client_id}..')
 
@@ -44,6 +46,7 @@ proxy_thread.start()
 
 proxy_events.set_settings(settings)
 proxy_events.set_recording_enabled(recording_enabled)
+proxy_events.set_intercept_enabled(intercept_enabled)
 
 # 2. Connect to the main process via ZMQ
 print('connecting ZMQ Server...')

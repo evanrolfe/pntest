@@ -8,6 +8,7 @@ from models.data.http_flow import HttpFlow
 
 class InterceptQueue(QtCore.QObject):
     decision_required = QtCore.pyqtSignal(HttpFlow)
+    intercept_changed = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -16,6 +17,7 @@ class InterceptQueue(QtCore.QObject):
 
         self.process_manager = ProcessManager.get_instance()
         self.process_manager.flow_intercepted.connect(self.flow_intercepted)
+        self.process_manager.intercept_changed.connect(self.intercept_changed)
 
     def flow_intercepted(self, flow):
         print(f'[InterceptQueue] received intercepted flow {flow.uuid}')
