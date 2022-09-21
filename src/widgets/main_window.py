@@ -136,23 +136,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
 
         self.network_status.clicked.connect(self.toggle_recording_enabled)
-        self.intercept_status.clicked.connect(self.process_manager.toggle_intercept_enabled)
+        self.intercept_status.clicked.connect(self.toggle_intercept_enabled)
 
+        self.process_manager.recording_changed.connect(self.recording_changed)
         self.process_manager.intercept_changed.connect(self.intercept_changed)
+
+    def toggle_recording_enabled(self):
+        self.process_manager.toggle_recording_enabled()
+
+    def toggle_intercept_enabled(self):
+        self.process_manager.toggle_intercept_enabled()
+
+    def recording_changed(self):
+        if self.process_manager.recording_enabled:
+            self.network_status.setText("Network: Recording")
+        else:
+            self.network_status.setText("Network: Paused")
 
     def intercept_changed(self):
         if self.process_manager.intercept_enabled:
             self.intercept_status.setText("Intercept: Enabled")
         else:
             self.intercept_status.setText("Intercept: Disabled")
-
-    def toggle_recording_enabled(self):
-        self.process_manager.toggle_recording_enabled()
-
-        if self.process_manager.recording_enabled:
-            self.network_status.setText("Network: Recording")
-        else:
-            self.network_status.setText("Network: Paused")
 
     def restore_layout_state(self):
         settings = AppSettings.get_instance()
