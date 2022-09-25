@@ -5,6 +5,7 @@ import subprocess
 import signal
 import os
 import sys
+from typing import Optional, TypedDict
 from PyQt6 import QtCore
 from lib.browser_launcher.detect import Browser
 from lib.database import Database
@@ -19,18 +20,25 @@ from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefo
 from lib.browser_launcher.browser_proc import BrowserProc
 from proxy.common_types import SettingsJson
 
+class RunningProcess(TypedDict):
+    client: Client
+    type: str
+    process: Optional[subprocess.Popen[bytes]]
+    worker: Optional[BrowserProc]
+
 class ProcessManager(QtCore.QObject):
-    clients_changed = QtCore.pyqtSignal()
     flow_created = QtCore.pyqtSignal(HttpFlow)
     flow_updated = QtCore.pyqtSignal(HttpFlow)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
     proxy_started = QtCore.pyqtSignal(int)
 
+    clients_changed = QtCore.pyqtSignal()
     recording_changed = QtCore.pyqtSignal(bool)
     intercept_changed = QtCore.pyqtSignal(bool)
 
     proxy_handler: ProxyHandler
+    processes: list[RunningProcess]
     recording_enabled: bool
     intercept_enabled: bool
 
@@ -74,16 +82,21 @@ class ProcessManager(QtCore.QObject):
         self.recording_enabled = True
         self.intercept_enabled = False
 
+    def get_open_clients(self) -> list[Client]:
+        return [c['client'] for c in self.processes if c['type'] == 'proxy']
+
     def on_exit(self):
         print("[ProcessManager] killing all processes...")
         self.proxy_handler.stop()
 
-        for process_dict in self.processes:
-            if 'process' in process_dict:
-                os.kill(process_dict['process'].pid, signal.SIGTERM)
+        for running_process in self.processes:
+            proc = running_process.get('process')
+            if proc is not None:
+                os.kill(proc.pid, signal.SIGTERM)
 
-            if 'worker' in process_dict:
-                process_dict['worker'].kill()
+            worker = running_process.get('worker')
+            if worker is not None:
+                worker.kill()
 
     def close_proxy(self, client: Client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'proxy'][0]
@@ -91,6 +104,7 @@ class ProcessManager(QtCore.QObject):
         print(f'[ProcessManager] killing process {pid}')
         os.kill(pid, signal.SIGTERM)
         self.processes.remove(process)
+        self.clients_changed.emit()
 
     def close_browser(self, client: Client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
@@ -102,8 +116,11 @@ class ProcessManager(QtCore.QObject):
         print(f"[ProcessManager] browser {client.id} closed, closing proxy")
         self.close_proxy(client)
 
-        browser_process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
-        self.processes.remove(browser_process)
+        browser_processes = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser']
+        if len(browser_processes) == 0:
+            return
+
+        self.processes.remove(browser_processes[0])
 
         database = Database.get_instance()
         database.db.table('clients').where('id', client.id).update(open=False)
@@ -146,7 +163,7 @@ class ProcessManager(QtCore.QObject):
 
         worker.signals.exited.connect(self.browser_was_closed)
         self.threadpool.start(worker)
-        self.processes.append({'client': client, 'type': 'browser', 'worker': worker})
+        self.processes.append({'client': client, 'type': 'browser', 'worker': worker, 'process': None})
 
     def launch_proxy(self, client: Client, settings: SettingsJson):
         app_path = str(get_app_path())
@@ -168,7 +185,7 @@ class ProcessManager(QtCore.QObject):
             preexec_fn=os.setsid,
             env=current_env
         )
-        self.processes.append({'client': client, 'type': 'proxy', 'process': process})
+        self.processes.append({'client': client, 'type': 'proxy', 'process': process, 'worker': None})
 
     def forward_flow(self, flow, intercept_response):
         self.proxy_handler.forward_flow(flow, intercept_response)

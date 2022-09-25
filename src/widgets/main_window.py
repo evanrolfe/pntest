@@ -3,6 +3,7 @@ from pathlib import Path
 import traceback
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 from lib.process_manager import ProcessManager
+from models.data.client import Client
 
 from views._compiled.main_window import Ui_MainWindow
 from lib.app_settings import AppSettings
@@ -140,6 +141,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.process_manager.recording_changed.connect(self.recording_changed)
         self.process_manager.intercept_changed.connect(self.intercept_changed)
+        self.process_manager.clients_changed.connect(self.clients_changed)
+
+    def clients_changed(self):
+        clients = self.process_manager.get_open_clients()
+
+        if len(clients) > 0:
+            proxy_ports = [str(c.proxy_port) for c in clients]
+            proxy_ports_str = ",".join(proxy_ports)
+            self.proxy_status.setText(f"Proxies: {proxy_ports_str}")
+        else:
+            self.proxy_status.setText("Proxies: None")
 
     def toggle_recording_enabled(self):
         self.process_manager.toggle_recording_enabled()
