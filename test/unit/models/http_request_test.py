@@ -127,3 +127,9 @@ class TestHttpRequest:
         payload_keys = request.payload_keys()
 
         assert payload_keys == ['username', 'password']
+
+    def test_get_curl_command(self, database, cleanup_database):
+        http_request = factory(HttpRequest, 'editor').make()
+        expected = 'curl -X GET -H "Accept: */*" -H "Accept-Encoding: gzip, deflate" -H "Connection: keep-alive" -H "User-Agent: pntest/0.1" http://synack.com/'
+        print(http_request.get_curl_command())
+        assert http_request.get_curl_command() == expected

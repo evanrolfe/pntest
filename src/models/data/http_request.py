@@ -11,6 +11,9 @@ from lib.types import Headers
 from lib.input_parsing.text_wrapper import parse_text, parse_text_with_payload_values
 from copy import deepcopy
 
+def escape_quotes(value: str) -> str:
+    return value.replace('"', r'\"')
+
 class FuzzFormData(TypedDict):
     payload_files: list[PayloadFileSerialised]
     fuzz_type: str
@@ -241,3 +244,17 @@ class HttpRequest(OratorModel):
             return []
 
         return [p['key'] for p in fuzz_data['payload_files']]
+
+    def get_curl_command(self) -> str:
+        headers_dict = self.get_headers()
+        headers = ""
+
+        if headers_dict is not None:
+            headers = ['"{0}: {1}"'.format(k, escape_quotes(v)) for k, v in headers_dict.items() if v != CALCULATED_TEXT]
+            headers = " -H ".join(headers)
+
+        content = getattr(self, 'content', None)
+        if content is None or content == "":
+            return f"curl -X {self.method} -H {headers} \"{self.get_url()}\""
+        else:
+            return f"curl -X {self.method} -H {headers} -d {content}' {self.get_url()}"

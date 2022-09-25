@@ -1,5 +1,7 @@
 from ast import For
 from typing import Optional
+import pyperclip
+
 from PyQt6 import QtWidgets, QtCore, QtGui
 from models.data.http_flow import HttpFlow
 from models.data.http_response import HttpResponse
@@ -77,6 +79,18 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.example_selected.connect(self.example_selected)
         self.ui.examplesTable.delete_examples.connect(self.delete_examples)
+
+        # Request Actions Dropdown Button
+        self.actions_menu = QtWidgets.QMenu(self.ui.actionsButton)
+        action1 = QtGui.QAction("Copy as curl", self.actions_menu)
+        action1.triggered.connect(self.action_copy_as_curl)
+        self.actions_menu.addAction(action1)
+        self.ui.actionsButton.setMenu(self.actions_menu)
+
+    def action_copy_as_curl(self):
+        print("Copy as curl...")
+        self.update_request_with_values_from_form()
+        pyperclip.copy(self.flow.request.get_curl_command())
 
     # TODO: This logic is spread all over the place here and in self.ui.flowView, it needs to be
     # cleaned up and encapsulated (probably most of the logic should go in FlowView)

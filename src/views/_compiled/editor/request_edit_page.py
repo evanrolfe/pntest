@@ -62,6 +62,10 @@ class Ui_RequestEditPage(object):
         self.saveButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.saveButton.setObjectName("saveButton")
         self.requestActionsLayout.addWidget(self.saveButton)
+        self.actionsButton = QtWidgets.QPushButton(self.layoutWidget)
+        self.actionsButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.actionsButton.setObjectName("actionsButton")
+        self.requestActionsLayout.addWidget(self.actionsButton)
         self.verticalLayout.addLayout(self.requestActionsLayout)
         self.layout2 = QtWidgets.QHBoxLayout()
         self.layout2.setContentsMargins(0, 0, 0, 0)
@@ -86,6 +90,7 @@ class Ui_RequestEditPage(object):
         self.toggleExamplesButton.setText(_translate("RequestEditPage", "Saved Examples (10) <<"))
         self.sendButton.setText(_translate("RequestEditPage", "Send"))
         self.saveButton.setText(_translate("RequestEditPage", "Save"))
+        self.actionsButton.setText(_translate("RequestEditPage", "..."))
 from widgets.editor.examples_table import ExamplesTable
 from widgets.shared.flow_view import FlowView
 from widgets.shared.line_scintilla import LineScintilla
