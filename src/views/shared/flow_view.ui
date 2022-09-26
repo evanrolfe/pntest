@@ -393,31 +393,6 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="responseBodyRenderedTab">
-        <attribute name="title">
-         <string>Rendered</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_body">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="CodeEditor" name="responseRendered" native="true"/>
-         </item>
-        </layout>
-       </widget>
       </widget>
       <widget class="Loader" name="loaderWidget"/>
      </widget>

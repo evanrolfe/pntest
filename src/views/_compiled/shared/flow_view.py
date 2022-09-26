@@ -181,16 +181,6 @@ class Ui_FlowView(object):
         self.responseRaw.setObjectName("responseRaw")
         self.verticalLayout_4_body.addWidget(self.responseRaw)
         self.responseTabs.addTab(self.responseBodyRawTab, "")
-        self.responseBodyRenderedTab = QtWidgets.QWidget()
-        self.responseBodyRenderedTab.setObjectName("responseBodyRenderedTab")
-        self.verticalLayout_body = QtWidgets.QVBoxLayout(self.responseBodyRenderedTab)
-        self.verticalLayout_body.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_body.setSpacing(0)
-        self.verticalLayout_body.setObjectName("verticalLayout_body")
-        self.responseRendered = CodeEditor(self.responseBodyRenderedTab)
-        self.responseRendered.setObjectName("responseRendered")
-        self.verticalLayout_body.addWidget(self.responseRendered)
-        self.responseTabs.addTab(self.responseBodyRenderedTab, "")
         self.responseStackedWidget.addWidget(self.responseTabs)
         self.loaderWidget = Loader()
         self.loaderWidget.setObjectName("loaderWidget")
@@ -218,7 +208,6 @@ class Ui_FlowView(object):
         self.requestTabs.setTabText(self.requestTabs.indexOf(self.fuzzPayloadsTab), _translate("FlowView", "Fuzzing Options"))
         self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseHeadersTab), _translate("FlowView", "Response"))
         self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRawTab), _translate("FlowView", "Body"))
-        self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRenderedTab), _translate("FlowView", "Rendered"))
 from widgets.shared.code_editor import CodeEditor
 from widgets.shared.headers_form import HeadersForm
 from widgets.shared.loader import Loader

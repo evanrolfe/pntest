@@ -120,8 +120,6 @@ class FlowView(QtWidgets.QWidget):
 
         # Response:
         self.ui.responseRaw.set_value('')
-        self.ui.responseRendered.set_value('')
-        # self.ui.responseBodyPreview.setHtml('')
 
     def set_flow(self, flow: HttpFlow):
         self.flow = flow
