@@ -50,13 +50,9 @@ class ClientsTable(QtWidgets.QWidget):
         menu = QtWidgets.QMenu()
 
         if client.open == 1:
-            bring_front_action = QtGui.QAction("Bring to Front")
-            bring_front_action.triggered.connect(lambda: self.bring_to_front_client_clicked.emit(client))
-
             close_action = QtGui.QAction("Close Client")
             close_action.triggered.connect(lambda: self.close_client_clicked.emit(client))
 
-            menu.addAction(bring_front_action)
             menu.addAction(close_action)
         else:
             action = QtGui.QAction("Open Client")

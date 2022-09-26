@@ -33,7 +33,6 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.clientsTable.setTableModel(self.clients_table_model)
         self.ui.clientsTable.open_client_clicked.connect(self.open_client_clicked)
         self.ui.clientsTable.close_client_clicked.connect(self.close_client_clicked)
-        self.ui.clientsTable.bring_to_front_client_clicked.connect(self.bring_to_front_client_clicked)
 
         # Add Icons:
         self.ui.chromiumButton.setIcon(QtGui.QIcon('assets:icons/icons8-chromium.svg'))
@@ -115,6 +114,3 @@ class ClientsPage(QtWidgets.QWidget):
     def close_client_clicked(self, client: Client):
         self.process_manager.close_client(client)
         self.reload_table_data()
-
-    def bring_to_front_client_clicked(self, client: Client):
-        print(f'============> bring to front client {client}')
