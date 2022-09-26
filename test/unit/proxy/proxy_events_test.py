@@ -54,7 +54,7 @@ def generate_settings(host: str, setting: str) -> SettingsJson:
 
 class TestProxyEvents:
     def test_should_request_be_captured(self):
-        proxy_events = ProxyEvents(1, "/Users/evan/Code/pntest/include")
+        proxy_events = ProxyEvents(1, "./include")
 
         test_cases = [
             { 'setting_host': 'localhost', 'setting': 'include', 'host': 'localhost', 'port': 8000, 'expected': True },
