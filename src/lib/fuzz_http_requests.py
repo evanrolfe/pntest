@@ -1,29 +1,33 @@
+import time
+import random
 from PyQt6 import QtCore
 import itertools
 from typing import cast
 from lib.background_worker import WorkerSignals
 from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest
+from models.data.http_request import FuzzFormData, HttpRequest
 
 class FuzzHttpRequests:
     flow: HttpFlow
+    fuzz_data: FuzzFormData
     cancelled: bool
 
     def __init__(self, flow: HttpFlow):
         self.flow = flow
         self.cancelled = False
 
+        fuzz_data = self.flow.request.fuzz_data()
+        if fuzz_data is None:
+            return
+        self.fuzz_data = fuzz_data
+
     def cancel(self) -> None:
         self.cancelled = True
 
     def start(self, signals: WorkerSignals) -> None:
-        fuzz_data = self.flow.request.fuzz_data()
-        if fuzz_data is None:
-            return
-
-        if fuzz_data['fuzz_type'] == HttpRequest.FUZZ_TYPE_KEYS[0]:
+        if self.fuzz_data['fuzz_type'] == HttpRequest.FUZZ_TYPE_KEYS[0]:
             self.start_one_to_one(signals)
-        elif fuzz_data['fuzz_type'] == HttpRequest.FUZZ_TYPE_KEYS[1]:
+        elif self.fuzz_data['fuzz_type'] == HttpRequest.FUZZ_TYPE_KEYS[1]:
             self.start_cartesian(signals)
 
     def start_one_to_one(self, signals: WorkerSignals) -> None:
@@ -57,6 +61,9 @@ class FuzzHttpRequests:
             # 2.4 Emit a signal
             signals.response_received.emit(example_flow)
 
+            # Optionally sleep
+            self.sleep_inbetween_requests()
+
     def start_cartesian(self, signals: WorkerSignals) -> None:
         # 1. Load all payloads
         payloads = self.flow.request.payload_files()
@@ -75,7 +82,6 @@ class FuzzHttpRequests:
             for j, payload in enumerate(payloads):
                 payload_values[payload.key] = product[j]
 
-            print(payload_values)
             # 2.1 Generate an HttpFlow + HttpRequest
             example_flow = self.flow.duplicate_for_fuzz_example(i + 1)
 
@@ -88,3 +94,28 @@ class FuzzHttpRequests:
 
             # 2.4 Emit a signal
             signals.response_received.emit(example_flow)
+
+            # Optionally sleep
+            self.sleep_inbetween_requests()
+
+
+    def sleep_inbetween_requests(self):
+        if self.fuzz_data['delay_type'] == HttpRequest.DELAY_TYPE_KEYS[0]: # Disabled
+            return
+        elif self.fuzz_data['delay_type'] == HttpRequest.DELAY_TYPE_KEYS[1]: # Fixed
+            duration = self.fuzz_data['delay_secs']
+            if duration is None:
+                return
+            time.sleep(int(duration))
+
+        elif self.fuzz_data['delay_type'] == HttpRequest.DELAY_TYPE_KEYS[2]: # Range
+            min = self.fuzz_data['delay_secs_min']
+            max = self.fuzz_data['delay_secs_max']
+            if min is None:
+                min = 0
+            if max is None:
+                return
+
+            duration = random.randint(int(min), int(max))
+            print("Sleeping for ", duration, " secs")
+            time.sleep(duration)

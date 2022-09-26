@@ -185,6 +185,9 @@ class FuzzEditPage(QtWidgets.QWidget):
         payload_files_serialised = [p.serialise() for p in payload_files]
         fuzz_type = self.ui.fuzzView.get_fuzz_type()
         delay_type = self.ui.fuzzView.get_delay_type()
+        delay_secs = self.ui.fuzzView.get_delay_secs()
+        delay_secs_min = self.ui.fuzzView.get_delay_secs_min()
+        delay_secs_max = self.ui.fuzzView.get_delay_secs_max()
 
         form_data: FormData = {
             'method': method,
@@ -194,7 +197,10 @@ class FuzzEditPage(QtWidgets.QWidget):
             'fuzz_data': {
                 'payload_files': payload_files_serialised,
                 'fuzz_type': fuzz_type,
-                'delay_type': delay_type
+                'delay_type': delay_type,
+                'delay_secs': delay_secs,
+                'delay_secs_min': delay_secs_min,
+                'delay_secs_max': delay_secs_max,
             }
         }
         self.flow.request.set_form_data(form_data)

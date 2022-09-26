@@ -18,6 +18,9 @@ class FuzzFormData(TypedDict):
     payload_files: list[PayloadFileSerialised]
     fuzz_type: str
     delay_type: str
+    delay_secs: Optional[str]
+    delay_secs_min: Optional[str]
+    delay_secs_max: Optional[str]
 
 class FormData(TypedDict):
     method: str

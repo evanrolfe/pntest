@@ -47,6 +47,7 @@ class FuzzView(FlowView):
     # def get_request_headers(self) -> Headers:
     #     return self.ui.requestHeaders.get_headers()
 
+    # TODO: Merge these into one method that returns FuzzFormData
     def get_request_payload_files(self) -> list[PayloadFile]:
         return self.table_model.payloads
 
@@ -57,6 +58,15 @@ class FuzzView(FlowView):
     def get_delay_type(self) -> str:
         index = self.ui.delayTypeDropdown.currentIndex()
         return HttpRequest.DELAY_TYPE_KEYS[index]
+
+    def get_delay_secs(self) -> str:
+        return self.ui.delayDuration.text()
+
+    def get_delay_secs_min(self) -> str:
+        return self.ui.delayMinDuration.text()
+
+    def get_delay_secs_max(self) -> str:
+        return self.ui.delayMaxDuration.text()
 
     def show_response(self, show: bool):
         if show:
@@ -83,6 +93,25 @@ class FuzzView(FlowView):
         self.table_model = PayloadFilesTableModel(flow.request.payload_files())
         self.ui.payloadsTable.setModel(self.table_model)
         self.table_model.payloads_changed.connect(self.payloads_changed)
+
+        fuzz_data = flow.request.form_data["fuzz_data"]
+        if fuzz_data is None:
+            return
+
+        if fuzz_data["delay_type"] == HttpRequest.DELAY_TYPE_KEYS[0]: # Disabled
+            self.ui.delayTypeDropdown.setCurrentIndex(0)
+            self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationDisabled)
+
+        elif fuzz_data["delay_type"] == HttpRequest.DELAY_TYPE_KEYS[1]: # Fixed
+            self.ui.delayTypeDropdown.setCurrentIndex(1)
+            self.ui.delayDurationStack.setCurrentWidget(self.ui.delayDurationForm)
+            self.ui.delayDuration.setText(fuzz_data["delay_secs"] or "")
+
+        elif fuzz_data["delay_type"] == HttpRequest.DELAY_TYPE_KEYS[2]: # Range
+            self.ui.delayTypeDropdown.setCurrentIndex(2)
+            self.ui.delayDurationStack.setCurrentWidget(self.ui.delayRangeForm)
+            self.ui.delayMinDuration.setText(fuzz_data["delay_secs_min"] or "")
+            self.ui.delayMaxDuration.setText(fuzz_data["delay_secs_max"] or "")
 
     def delay_type_changed(self, index: int):
         if index == 0:
