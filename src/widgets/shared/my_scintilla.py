@@ -53,7 +53,6 @@ class MyScintilla(Qsci.QsciScintilla):
         self.setIndentationWidth(4)
         self.setIndentationGuides(True)
         self.setBackspaceUnindents(True)
-        self.setTabWidth(4)
         self.setEdgeColumn(79)
         self.setMarginLineNumbers(0, True)
         self.setMarginWidth(0, 50)

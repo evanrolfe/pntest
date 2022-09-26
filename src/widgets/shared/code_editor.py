@@ -16,6 +16,7 @@ class CodeEditor(QtWidgets.QWidget):
     set_code = QtCore.pyqtSignal(str, str)
 
     FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
+    TAB_SIZE = 4
 
     def __init__(self, *args, **kwargs):
         super(CodeEditor, self).__init__(*args, **kwargs)
@@ -24,6 +25,7 @@ class CodeEditor(QtWidgets.QWidget):
 
         self.ui.code.setMarginType(0, Qsci.QsciScintilla.MarginType.NumberMargin)
         self.ui.code.setMarginWidth(0, "0000")
+        self.ui.code.setTabWidth(self.TAB_SIZE)
 
         self.hide_find_replace()
         self.ui.findButton.clicked.connect(self.find)
@@ -145,7 +147,7 @@ class CodeEditor(QtWidgets.QWidget):
         # TODO: Format javascript
         if self.selected_format == 'JSON':
             try:
-                formatted_content = json.dumps(json.loads(text), indent=2)
+                formatted_content = json.dumps(json.loads(text), indent=self.TAB_SIZE)
             except json.decoder.JSONDecodeError:
                 formatted_content = text
         elif self.selected_format == 'XML':
