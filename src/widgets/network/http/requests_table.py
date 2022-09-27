@@ -78,11 +78,11 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.selectionModel().selectionChanged.connect(self.set_selected_requests)
 
         self.ui.requestsTable.setColumnWidth(0, 50)
-        self.ui.requestsTable.setColumnWidth(1, 80)
-        self.ui.requestsTable.setColumnWidth(2, 80)
-        self.ui.requestsTable.setColumnWidth(3, 80)
+        self.ui.requestsTable.setColumnWidth(1, 50)
+        self.ui.requestsTable.setColumnWidth(2, 50)
+        self.ui.requestsTable.setColumnWidth(3, 60)
         self.ui.requestsTable.setColumnWidth(4, 150)
-        self.ui.requestsTable.setColumnWidth(5, 300)
+        self.ui.requestsTable.setColumnWidth(5, 250)
         self.ui.requestsTable.setColumnWidth(6, 50)
         self.ui.requestsTable.setColumnWidth(7, 70)
 

@@ -76,7 +76,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.sideBar.currentItemChanged.connect(self.sidebar_item_clicked)
 
         # For testing purposes only:
-        self.show_editor_page()
+        # self.show_editor_page()
         keyseq_ctrl_r = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+R'), self)
         keyseq_ctrl_r.activated.connect(self.reload_style)
 
