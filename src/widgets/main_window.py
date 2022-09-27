@@ -1,6 +1,7 @@
 import shutil
 from pathlib import Path
 import traceback
+from typing import Optional
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 from lib.process_manager import ProcessManager
 from models.data.client import Client
@@ -60,9 +61,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set padding on widgets:
         self.ui.centralWidget.layout().setContentsMargins(0, 0, 0, 0)
 
-        # Add actions to sidebar:
-        self.setup_sidebar()
-
         # Shortcut for closing app
         self.network_page.send_flow_to_editor.connect(self.editor_page.send_flow_to_editor)
         self.network_page.send_flow_to_editor.connect(self.show_editor_page)
@@ -73,6 +71,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Menubar:
         self.setup_menu_actions()
         self.restore_layout_state()
+
+        # Sidebar:
+        self.ui.sideBar.currentItemChanged.connect(self.sidebar_item_clicked)
 
         # For testing purposes only:
         self.show_editor_page()
@@ -204,48 +205,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def exit(self):
         QtWidgets.QApplication.quit()
 
-    def setup_sidebar(self):
-        self.ui.sideBar.currentItemChanged.connect(self.sidebar_item_clicked)
-
-        self.ui.sideBar.setObjectName('sideBar')
-
-        self.ui.sideBar.setViewMode(QtWidgets.QListView.ViewMode.IconMode)
-        self.ui.sideBar.setFlow(QtWidgets.QListView.Flow.TopToBottom)
-        self.ui.sideBar.setMovement(QtWidgets.QListView.Movement.Static)
-        self.ui.sideBar.setUniformItemSizes(True)
-        # icon_size = QSize(52, 35)
-
-        # Network Item
-        network_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-cloud-backup-restore-50.png"), "Network", None)
-        network_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'network')
-        network_item.setToolTip("Network")
-        self.ui.sideBar.addItem(network_item)
-
-        # Intercept Item
-        intercept_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-rich-text-converter-50.png"), "Intercept", None)
-        intercept_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'intercept')
-        intercept_item.setToolTip("Intercept")
-        self.ui.sideBar.addItem(intercept_item)
-
-        # Clients Item
-        clients_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-browse-page-50.png"), "Clients", None)
-        clients_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'clients')
-        clients_item.setToolTip("Clients")
-        self.ui.sideBar.addItem(clients_item)
-
-        # Requests Item
-        requests_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-compose-50.png"), "Requests", None)
-        requests_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'requests')
-        requests_item.setToolTip("Request Editor")
-        self.ui.sideBar.addItem(requests_item)
-
-        # Extensions Item
-        # extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-plus-math-50.png"), None)
-        # extensions_item.setData(QtCore.Qt.UserRole, 'extensions')
-        # self.ui.sideBar.addItem(extensions_item)
-        self.ui.sideBar.setCurrentRow(0)
-
-    def sidebar_item_clicked(self, item):
+    def sidebar_item_clicked(self, item: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
         item_value = item.data(QtCore.Qt.ItemDataRole.UserRole)
 
         if item_value == 'network':

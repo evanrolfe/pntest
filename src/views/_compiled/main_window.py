@@ -19,7 +19,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setContentsMargins(0, 11, 0, 11)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.sideBar = QtWidgets.QListWidget(self.centralWidget)
+        self.sideBar = Sidebar(self.centralWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -67,3 +67,4 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionPreferences.setText(_translate("MainWindow", "Preferences"))
         self.actionAbout_PnTest.setText(_translate("MainWindow", "About PnTest"))
+from widgets.qt.sidebar import Sidebar
