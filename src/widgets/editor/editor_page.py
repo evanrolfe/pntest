@@ -32,10 +32,6 @@ class EditorPage(QtWidgets.QWidget):
         keyseq_ctrl_w = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'), self)
         keyseq_ctrl_w.activated.connect(self.ui.editorTabs.close_current_tab)
 
-    def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key.Key_Escape.value:
-            self.close()
-
     def reload(self):
         self.ui.editorTabs.clear()
         self.ui.itemExplorer.reload_data()
