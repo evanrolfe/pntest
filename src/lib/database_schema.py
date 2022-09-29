@@ -8,6 +8,8 @@ SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   created_at INTEGER
 );
 
+CREATE INDEX index_editor_items_parent_id ON editor_items(parent_id);
+
 CREATE TABLE IF NOT EXISTS clients(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT,
@@ -45,6 +47,8 @@ CREATE TABLE IF NOT EXISTS http_requests(
     created_at INTEGER
 );
 
+CREATE INDEX index_http_requests_host ON http_requests(host);
+
 CREATE TABLE IF NOT EXISTS http_responses(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     http_version TEXT NOT NULL,
@@ -71,6 +75,9 @@ CREATE TABLE IF NOT EXISTS http_flows(
     created_at INTEGER NOT NULL
 );
 
+CREATE INDEX index_http_flows_uuid ON http_flows(uuid);
+CREATE INDEX index_http_flows_type ON http_flows(type);
+
 CREATE TABLE IF NOT EXISTS variables(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   key TEXT NOT NULL,
@@ -80,6 +87,8 @@ CREATE TABLE IF NOT EXISTS variables(
   source_id INTEGER,
   created_at INTEGER
 );
+
+CREATE INDEX index_variables_key ON variables(key);
 
 CREATE TABLE IF NOT EXISTS websocket_messages(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
