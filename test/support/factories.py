@@ -13,8 +13,6 @@ def client_factory(faker):
     return {
         'title': 'Browser #1',
         'type': 'chromium',
-        'pages': '[]',
-        'cookies': '[]',
         'proxy_port': 8080,
         'browser_port': 9222,
         'open': 0

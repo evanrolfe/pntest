@@ -8,8 +8,6 @@ BROWSER_PORT = 9222
 class Client(OratorModel):
     id: int
     title: Optional[str]
-    cookies: Optional[str]
-    pages: Optional[str]
     type: str
     proxy_port: Optional[int]
     browser_port: Optional[int]

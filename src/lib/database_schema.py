@@ -5,46 +5,44 @@ SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   name TEXT NOT NULL,
   item_type TEXT NOT NULL,
   item_id INTEGER,
-  created_at INTEGER
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (parent_id) REFERENCES editor_items(id)
 );
 
 CREATE INDEX index_editor_items_parent_id ON editor_items(parent_id);
 
 CREATE TABLE IF NOT EXISTS clients(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT,
-  cookies TEXT,
-  pages TEXT,
+  title TEXT NOT NULL,
   type TEXT NOT NULL,
-  proxy_port INTEGER,
+  proxy_port INTEGER NOT NULL,
   browser_port INTEGER,
-  open BOOLEAN DEFAULT 0,
-  created_at INTEGER,
+  open BOOLEAN DEFAULT 0 NOT NULL,
+  created_at INTEGER NOT NULL,
   launched_at INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS settings(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  json TEXT NOT NULL,
-  created_at INTEGER
+  json TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS http_requests(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     http_version TEXT NOT NULL,
-    headers TEXT,
+    headers TEXT NOT NULL,
     content TEXT,
     trailers TEXT,
     timestamp_start REAL,
     timestamp_end REAL,
     host TEXT NOT NULL,
-    port INTEGER,
+    port INTEGER NOT NULL,
     method TEXT NOT NULL,
     scheme TEXT NOT NULL,
     authority TEXT,
     path TEXT NOT NULL,
     form_data TEXT NOT NULL,
-    created_at INTEGER
+    created_at INTEGER NOT NULL
 );
 
 CREATE INDEX index_http_requests_host ON http_requests(host);
@@ -68,12 +66,18 @@ CREATE TABLE IF NOT EXISTS http_flows(
     type TEXT NOT NULL,
     title TEXT,
     request_id INTEGER,
-    original_request_id,
+    original_request_id INTEGER,
     response_id INTEGER,
-    original_response_id,
+    original_response_id INTEGER,
     http_flow_id INTEGER,
-    created_at INTEGER NOT NULL
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (request_id) REFERENCES http_requests(id),
+    FOREIGN KEY (original_request_id) REFERENCES http_requests(id),
+    FOREIGN KEY (response_id) REFERENCES http_responses(id),
+    FOREIGN KEY (original_response_id) REFERENCES http_responses(id)
 );
+
 
 CREATE INDEX index_http_flows_uuid ON http_flows(uuid);
 CREATE INDEX index_http_flows_type ON http_flows(type);
@@ -85,7 +89,7 @@ CREATE TABLE IF NOT EXISTS variables(
   description TEXT,
   source_type TEXT NOT NULL,
   source_id INTEGER,
-  created_at INTEGER
+  created_at INTEGER NOT NULL
 );
 
 CREATE INDEX index_variables_key ON variables(key);
@@ -96,7 +100,7 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
   direction TEXT NOT NULL,
   content TEXT NOT NULL,
   content_original TEXT,
-  created_at INTEGER
+  created_at INTEGER NOT NULL
 );
 
 CREATE VIEW v_http_flows_search AS

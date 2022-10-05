@@ -1,5 +1,8 @@
 {
   "python.analysis.extraPaths": [
-    "./src"
-  ]
+    "./src", "./venv"
+  ],
+  "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.include": ["stdlib", "stubs"],
+  "python.analysis.typeCheckingMode": "basic",
 }
