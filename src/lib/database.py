@@ -1,10 +1,16 @@
 import re
 import os
 import logging
+import sqlite3
+import sqlalchemy
+import sqlalchemy.orm
 from orator import DatabaseManager, Model
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from models.data.settings import Settings
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
+from lib.database_model_mapping import register_sqlalchemy_models
 
 # TODO: This class uses two database managers (Orator.DatabaesManager and QSqlDatabase), get rid of
 # the unecessary dependency on QSqlDatabase and do everything through Orator
@@ -18,6 +24,8 @@ if ENABLE_QUERY_LOGGING:
     logger.addHandler(handler)
 
 class Database:
+    conn: sqlite3.Connection
+
     # Singleton method stuff:
     __instance = None
 
@@ -32,6 +40,9 @@ class Database:
         self.db_path = db_path
 
         self.connect_to_db()
+        register_sqlalchemy_models()
+        # db_url = f"{self.db_path}"
+        # self.conn = sqlite3.connect(db_url, isolation_level=None)
 
         # Virtually private constructor.
         if Database.__instance is not None:
@@ -62,6 +73,23 @@ class Database:
         }
         self.db = DatabaseManager(config)
         Model.set_connection_resolver(self.db)
+
+    def register_models(self):
+        pass
+
+    def get_session(self):
+        db_url = f"sqlite:///{self.db_path}"
+        engine = create_engine(db_url)
+
+        session_factory = sessionmaker(bind=engine)
+        return scoped_session(session_factory)
+
+    def get_session_factory(self):
+        db_url = f"sqlite:///{self.db_path}"
+        engine = create_engine(db_url) # , echo="debug"
+
+        session_factory = sessionmaker(bind=engine) # , expire_on_commit=False
+        return session_factory
 
     def import_schema(self):
         query_sql = re.sub(r'\r\n|\n|\r', '', SCHEMA_SQL)
@@ -106,9 +134,9 @@ class Database:
                 VALUES ('delete', old.id);
             END;
         """
-        self.db.insert(trigger1_query)
-        self.db.insert(trigger2_query)
-        self.db.insert(trigger3_query)
+        # self.db.insert(trigger1_query)
+        # self.db.insert(trigger2_query)
+        # self.db.insert(trigger3_query)
 
         Settings.create_defaults()
 
