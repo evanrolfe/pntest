@@ -31,6 +31,7 @@ msgpack==1.0.4
 orator==0.9.9
 passlib==1.7.4
 pastel==0.1.1
+peewee==3.15.3
 pendulum==1.5.1
 protobuf==3.18.1
 publicsuffix2==2.20191221
@@ -43,8 +44,8 @@ pyOpenSSL==20.0.1
 pyparsing==2.4.7
 pyperclip==1.8.2
 PyQt6==6.3.1
-PyQt6-Qt6==6.3.1
 PyQt6-QScintilla==2.13.3
+PyQt6-Qt6==6.3.1
 PyQt6-sip==13.4.0
 python-dateutil==2.8.2
 pytz==2022.1
