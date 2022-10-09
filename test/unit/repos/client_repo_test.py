@@ -32,4 +32,4 @@ class TestClientRepo:
         client_repo = ClientRepo()
         result = client_repo.find(0)
 
-        print("========> ", result)
+        assert result is None

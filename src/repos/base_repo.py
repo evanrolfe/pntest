@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Generic, Optional, Type, TypeVar
+from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field
 from models.model import Model
 
@@ -19,8 +19,17 @@ class BaseRepo:
 
         return d
 
+    def model_columns(self, model: Model):
+        return self.__model_row_dict(model).keys()
+
+    def model_values(self, model: Model):
+        return self.__model_row_dict(model).values()
+
     def generic_insert(self, model: Model, table: Table):
-        query = Query.into(table).columns(*model.__dict__.keys()).insert(*model.__dict__.values())
+        columns = self.model_columns(model)
+        values = self.model_values(model)
+
+        query = Query.into(table).columns(*columns).insert(*values)
         cursor = self.conn.cursor()
         cursor.execute(query.get_sql())
         self.conn.commit()
@@ -34,3 +43,19 @@ class BaseRepo:
         cursor.execute(query.get_sql())
         row: sqlite3.Row = cursor.fetchone()
         return row
+
+    def generic_update(self, model: Model, table: Table):
+        query = Query.update(table)
+        for key, value in self.__model_row_dict(model).items():
+            query = query.set(key, value)
+        query = query.where(table.id == model.id)
+        self.conn.execute(query.get_sql())
+        self.conn.commit()
+
+    def __model_row_dict(self, model: Model) -> dict[str, Any]:
+        raw_table_values = {}
+        for key, value in model.__dict__.items():
+            if key not in model.meta['relationship_keys']:
+                raw_table_values[key] = value
+
+        return raw_table_values

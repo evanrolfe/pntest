@@ -16,3 +16,7 @@ class Client(Model):
     created_at: int = field(default=1) # TODO
 
     # Relations
+
+    meta = {
+        "relationship_keys": []
+    }

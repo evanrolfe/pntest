@@ -6,11 +6,12 @@ from models.client import Client
 from models.http_request import HttpRequest
 from models.http_response import HttpResponse
 from models.websocket_message import WebsocketMessage
+from models.model import Model
 
 @dataclass(kw_only=True)
-class HttpFlow():
+class HttpFlow(Model):
     # Columns
-    id: int = field(init=False)
+    id: int = field(init=False, default=0)
     uuid: Optional[str] = None
     client_id: Optional[int] = None
     type: str
@@ -28,4 +29,8 @@ class HttpFlow():
     original_request: Optional[HttpRequest] = None
     response: Optional[HttpResponse] = None
     original_response: Optional[HttpResponse] = None
-    websocket_messages: list[WebsocketMessage]
+    websocket_messages: list[WebsocketMessage] = field(default_factory=lambda: [])
+
+    meta = {
+        "relationship_keys": ["client", "request", "original_request", "response", "original_response", "websocket_messages"]
+    }
