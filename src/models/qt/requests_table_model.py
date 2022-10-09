@@ -1,7 +1,7 @@
 from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
 
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 
 class RequestsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance

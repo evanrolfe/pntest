@@ -1,3 +1,4 @@
+import json
 from operator import index
 import sqlite3
 from typing import Any, Generic, Optional, Type, TypeVar
@@ -63,7 +64,9 @@ class BaseRepo:
     def __model_row_dict(self, model: Model) -> dict[str, Any]:
         raw_table_values = {}
         for key, value in model.__dict__.items():
-            if key not in model.meta['relationship_keys']:
+            if  key in model.meta['json_columns']:
+                raw_table_values[key] = json.dumps(value)
+            elif key not in model.meta['relationship_keys']:
                 raw_table_values[key] = value
 
         return raw_table_values
