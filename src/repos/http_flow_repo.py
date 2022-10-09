@@ -1,6 +1,6 @@
 import sqlite3
 from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field
+from pypika import Query, Table, Field, Order
 
 
 from models.client import Client
@@ -8,6 +8,8 @@ from models.http_flow import HttpFlow
 from models.http_request import HttpRequest
 from models.http_response import HttpResponse
 from repos.base_repo import BaseRepo
+from repos.http_request_repo import HttpRequestRepo
+from repos.http_response_repo import HttpResponseRepo
 
 class HttpFlowRepo(BaseRepo):
     table: Table
@@ -65,20 +67,48 @@ class HttpFlowRepo(BaseRepo):
         else:
             self.generic_insert(flow, self.table)
 
-    # TODO: This logic should go in the model
-    def add_modified_request(self, flow: HttpFlow, modified_request: HttpRequest):
-        if flow.request_id is None:
-            raise Exception("cannot call add_modified_request() on a flow which has request_id = None")
+    def find_for_table(self, search_text: str) -> list[HttpFlow]:
+        # TODO: These needs to apply host filters from Settings
 
-        flow.original_request = flow.request
-        flow.request = modified_request
-        self.save(flow)
+        query = Query.from_(self.table).select('*').where(self.table.type == HttpFlow.TYPE_PROXY).orderby(self.table.id, order=Order.desc)
+        cursor = self.conn.cursor()
+        cursor.execute(query.get_sql())
+        rows: list[sqlite3.Row] = cursor.fetchall()
 
-    # TODO: This logic should go in the model
-    def add_modified_response(self, flow: HttpFlow, modified_response: HttpResponse):
-        if flow.response_id is None:
-            raise Exception("cannot call add_modified_response() on a flow which has response_id = None")
+        flows: list[HttpFlow] = []
+        for row in rows:
+            flow = HttpFlow(**self.row_to_dict(row))
+            flow.id = row['id']
+            flows.append(flow)
 
-        flow.original_response = flow.response
-        flow.response = modified_response
-        self.save(flow)
+        # Fetch the associated requests from db in a single query
+        request_ids = [f.request_id for f in flows if f.request_id is not None] + \
+            [f.original_request_id for f in flows if f.original_request_id is not None]
+
+        http_request_repo = HttpRequestRepo()
+        requests = http_request_repo.find_by_ids(request_ids)
+        requests_by_id: dict[int, HttpRequest] = self.index_models_by_id(requests)
+
+        # Fetch the associated responses from db in a single query
+        response_ids = [f.response_id for f in flows if f.response_id is not None] + \
+            [f.original_response_id for f in flows if f.original_response_id is not None]
+
+        http_response_repo = HttpResponseRepo()
+        responses = http_response_repo.find_by_ids(response_ids)
+        responses_by_id: dict[int, HttpResponse] = self.index_models_by_id(responses)
+
+        # Set the associated objects on the flows
+        for flow in flows:
+            if flow.request_id is not None:
+                flow.request = requests_by_id[flow.request_id]
+
+            if flow.original_request_id is not None:
+                flow.original_request = requests_by_id[flow.original_request_id]
+
+            if flow.response_id is not None:
+                flow.response = responses_by_id[flow.response_id]
+
+            if flow.original_response_id is not None:
+                flow.original_response = responses_by_id[flow.original_response_id]
+
+        return flows

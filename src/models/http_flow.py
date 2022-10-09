@@ -34,3 +34,25 @@ class HttpFlow(Model):
     meta = {
         "relationship_keys": ["client", "request", "original_request", "response", "original_response", "websocket_messages"]
     }
+
+    TYPE_PROXY = 'proxy'
+    TYPE_EDITOR = 'editor'
+    TYPE_EDITOR_EXAMPLE = 'editor_example'
+    TYPE_EDITOR_FUZZ = 'editor_fuzz'
+
+    def add_modified_request(self, modified_request: HttpRequest):
+        if self.request_id is None:
+            raise Exception("cannot call add_modified_request() on a flow which has request_id = None")
+
+        self.original_request = self.request
+        self.request = modified_request
+
+    def add_response(self, response: HttpResponse):
+        self.response = response
+
+    def add_modified_response(self, modified_response: HttpResponse):
+        if self.response_id is None:
+            raise Exception("cannot call add_modified_response() on a flow which has response_id = None")
+
+        self.original_response = self.response
+        self.response = modified_response

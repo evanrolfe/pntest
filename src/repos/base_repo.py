@@ -1,3 +1,4 @@
+from operator import index
 import sqlite3
 from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field
@@ -18,6 +19,13 @@ class BaseRepo:
                 d[key] = row[key]
 
         return d
+
+    def index_models_by_id(self, models: list[Any]) -> dict[int, Any]:
+        indexed_models = {}
+        for model in models:
+            indexed_models[model.id] = model
+
+        return indexed_models
 
     def model_columns(self, model: Model):
         return self.__model_row_dict(model).keys()

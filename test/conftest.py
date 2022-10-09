@@ -20,13 +20,18 @@ def database():
 
 @pytest.fixture(scope="function")
 def cleanup_database():
-    # EditorItem.truncate()
-    # HttpFlow.truncate()
-    # HttpRequest.truncate()
-    # HttpResponse.truncate()
-    # HttpFlowSearch.truncate()
-    # Variable.truncate()
-    # Settings.truncate()
+    conn = Database.get_instance().conn
+
+    conn.executescript("""
+        DELETE FROM 'editor_items';
+        DELETE FROM 'clients';
+        DELETE FROM 'settings';
+        DELETE FROM 'http_requests';
+        DELETE FROM 'http_responses';
+        DELETE FROM 'http_flows';
+        DELETE FROM 'variables';
+        DELETE FROM 'websocket_messages';
+    """)
 
     yield
 

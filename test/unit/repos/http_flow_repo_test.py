@@ -3,6 +3,7 @@ import sqlite3
 from venv import create
 from lib.database import Database
 from models.client import Client
+from models.data import http_flow
 from models.http_flow import HttpFlow
 from models.http_request import HttpRequest
 from models.http_response import HttpResponse
@@ -97,7 +98,8 @@ class TestHttpFlowRepo:
             form_data="{}",
             created_at=1
         )
-        http_flow_repo.add_modified_request(flow, modified_request)
+        flow.add_modified_request(modified_request)
+        http_flow_repo.save(flow)
         assert flow.request is not None
         assert flow.original_request is not None
 
@@ -162,7 +164,8 @@ class TestHttpFlowRepo:
             created_at=1,
         )
 
-        http_flow_repo.add_modified_response(flow, modified_response)
+        flow.add_modified_response(modified_response)
+        http_flow_repo.save(flow)
         assert flow.response is not None
         assert flow.original_response is not None
 
@@ -209,3 +212,133 @@ class TestHttpFlowRepo:
         assert len(flow.websocket_messages) == 1
         assert flow.websocket_messages[0] == ws_message
         assert ws_message.id > 0
+
+    def test_find_for_table(self, database, cleanup_database):
+            # 1. Create a Client, HttpFlow with HttpRequest
+        http_flow_repo = HttpFlowRepo()
+        client_repo = ClientRepo()
+
+        client = Client(title="test client!", type="browser", proxy_port=8080)
+        client_repo.save(client)
+        flow1 = HttpFlow(
+            type="proxy",
+            created_at=1,
+            client=client,
+            request=HttpRequest(
+                http_version="HTTP/2.0",
+                headers="{}",
+                host="synack.com",
+                port=80,
+                method="GET",
+                scheme="http",
+                path="/one",
+                form_data="{}",
+                created_at=1
+            ),
+            original_request=HttpRequest(
+                http_version="HTTP/2.0",
+                headers="{}",
+                host="synack.com",
+                port=80,
+                method="GET",
+                scheme="http",
+                path="/ORIGINAL",
+                form_data="{}",
+                created_at=1
+            ),
+            response=HttpResponse(
+                http_version="HTTP/2.0",
+                headers="{}",
+                content="not found",
+                timestamp_start=1.0,
+                timestamp_end=2.0,
+                status_code=404,
+                reason=None,
+                created_at=1,
+            ),
+            original_response=HttpResponse(
+                http_version="HTTP/2.0",
+                headers="{}",
+                content="ORIGINAL",
+                timestamp_start=1.0,
+                timestamp_end=2.0,
+                status_code=200,
+                reason=None,
+                created_at=1,
+            ),
+        )
+        flow2 = HttpFlow(
+            type="proxy",
+            created_at=1,
+            client=client,
+            request=HttpRequest(
+                http_version="HTTP/2.0",
+                headers="{}",
+                host="synack.com",
+                port=80,
+                method="GET",
+                scheme="http",
+                path="/two",
+                form_data="{}",
+                created_at=1
+            ),
+            original_request= HttpRequest(
+                http_version="HTTP/2.0",
+                headers="{}",
+                host="synack.com",
+                port=80,
+                method="GET",
+                scheme="http",
+                path="/original",
+                form_data="{}",
+                created_at=1
+            ),
+            response=HttpResponse(
+                http_version="HTTP/2.0",
+                headers="{}",
+                content="<html>hello world</html>",
+                timestamp_start=1.0,
+                timestamp_end=2.0,
+                status_code=200,
+                reason=None,
+                created_at=1,
+            ),
+            original_response=HttpResponse(
+                http_version="HTTP/2.0",
+                headers="{}",
+                content="<html>orig</html>",
+                timestamp_start=1.0,
+                timestamp_end=2.0,
+                status_code=200,
+                reason=None,
+                created_at=1,
+            ),
+        )
+        http_flow_repo.save(flow1)
+        http_flow_repo.save(flow2)
+
+        results = http_flow_repo.find_for_table("")
+
+        assert len(results) == 2
+        assert results[0].id == flow2.id
+        assert results[1].id == flow1.id
+
+        assert results[0].request is not None
+        assert results[1].request is not None
+        assert results[0].request.id > 0
+        assert results[1].request.id > 0
+
+        assert results[0].original_request is not None
+        assert results[1].original_request is not None
+        assert results[0].original_request.id > 0
+        assert results[1].original_request.id > 0
+
+        assert results[0].response is not None
+        assert results[1].response is not None
+        assert results[0].response.id > 0
+        assert results[1].response.id > 0
+
+        assert results[0].original_response is not None
+        assert results[1].original_response is not None
+        assert results[0].original_response.id > 0
+        assert results[1].original_response.id > 0
