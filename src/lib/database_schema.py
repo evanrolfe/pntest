@@ -13,8 +13,6 @@ CREATE INDEX index_editor_items_parent_id ON editor_items(parent_id);
 CREATE TABLE IF NOT EXISTS clients(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT,
-  cookies TEXT,
-  pages TEXT,
   type TEXT NOT NULL,
   proxy_port INTEGER,
   browser_port INTEGER,

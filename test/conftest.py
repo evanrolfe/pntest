@@ -12,18 +12,22 @@ from models.data.variable import Variable
 
 @pytest.fixture(scope="session")
 def database():
-    database = Database('test/tmp.db')
-    database.delete_existing_db()
-    database.load_or_create()
+    database = Database('tmp.db')
+    print("=============> DB Setup")
+    yield
+    print("=============> DB Teardown")
+    database.close()
 
 @pytest.fixture(scope="function")
 def cleanup_database():
-    EditorItem.truncate()
-    HttpFlow.truncate()
-    HttpRequest.truncate()
-    HttpResponse.truncate()
-    HttpFlowSearch.truncate()
-    Variable.truncate()
-    Settings.truncate()
+    # EditorItem.truncate()
+    # HttpFlow.truncate()
+    # HttpRequest.truncate()
+    # HttpResponse.truncate()
+    # HttpFlowSearch.truncate()
+    # Variable.truncate()
+    # Settings.truncate()
 
     yield
+
+    # Database.get_instance().close()
