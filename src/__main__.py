@@ -40,15 +40,13 @@ def main():
     QtCore.QDir.addSearchPath('assets', assets_path)
 
     # Load DB from the CLI if argument given
-    try:
-        tmp_db_path = sys.argv[1]
-        print(f'[Frontend] Overridding DB path from CLI: {tmp_db_path}')
-        database = Database(tmp_db_path)
-        database.load_or_create()
-    except IndexError:
-        database = Database(tmp_db_path)
-        database.delete_existing_db()
-        database.load_or_create()
+    # try:
+    #     tmp_db_path = sys.argv[1]
+    #     print(f'[Frontend] Overridding DB path from CLI: {tmp_db_path}')
+    #     database = Database(tmp_db_path)
+    #     database.load_or_create()
+    # except IndexError:
+    database = Database(tmp_db_path)
 
     process_manager = ProcessManager(src_path)
     main_window = MainWindow()

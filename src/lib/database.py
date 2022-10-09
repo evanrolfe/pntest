@@ -5,9 +5,9 @@ import sqlite3
 
 # from models.data.settings import Settings
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
+from orator import DatabaseManager, Model
 
-# TODO: This class uses two database managers (Orator.DatabaesManager and QSqlDatabase), get rid of
-# the unecessary dependency on QSqlDatabase and do everything through Orator
+from models.data.settings import Settings
 
 class Database:
     # Singleton method stuff:
@@ -27,7 +27,8 @@ class Database:
         self.delete_existing_db()
         self.connect()
         self.import_schema()
-
+        self.connect_orator_to_db()
+        Settings.create_defaults()
         # Virtually private constructor.
         if Database.__instance is not None:
             raise Exception("Database class is a singleton!")
@@ -65,6 +66,16 @@ class Database:
         pass
         # self.db_path = new_db_path
         # self.load_or_create()
+
+    def connect_orator_to_db(self):
+        config = {
+            'default': {
+                'driver': 'sqlite',
+                'database': self.db_path,
+            }
+        }
+        self.db = DatabaseManager(config)
+        Model.set_connection_resolver(self.db)
 
     def close(self):
         self.conn.close()
