@@ -1,15 +1,20 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
-from typing import Optional
-
+import json
+from typing import Any, Optional
+from requests import Response as RequestsResponse
+from lib.types import Headers
 from models.model import Model
+from proxy.common_types import ProxyResponse
+from lib.types import Headers
 
 @dataclass(kw_only=True)
 class HttpResponse(Model):
     # Columns
     id: int = field(init=False, default=0)
     http_version: str
-    headers: str
+    headers: Headers
     content: Optional[str]
     timestamp_start: float
     timestamp_end: float
@@ -20,5 +25,74 @@ class HttpResponse(Model):
     # Relations
 
     meta = {
-        "relationship_keys": []
+        "relationship_keys": [],
+        "json_columns": ["headers"],
     }
+
+    @classmethod
+    def from_state(cls, state: ProxyResponse) -> HttpResponse:
+        response = HttpResponse(
+            http_version = state['http_version'],
+            headers = dict(state['headers']),
+            content = state['content'],
+            timestamp_start = state['timestamp_start'],
+            timestamp_end = state['timestamp_end'],
+            status_code = state['status_code'],
+            reason = state['reason'],
+            created_at = 1,
+        )
+
+        return response
+
+    @classmethod
+    def from_requests_response(cls, response: RequestsResponse) -> HttpResponse:
+        version = 'Unknown'
+        if response.raw.version == 11:
+            version = 'HTTP/1.1'
+        elif response.raw.version == 10:
+            version = 'HTTP/1.0'
+
+        return HttpResponse(
+            content = response.text,
+            status_code = response.status_code,
+            reason = response.reason,
+            headers=dict(response.headers),
+            http_version=version,
+            timestamp_start=1.0,
+            timestamp_end=2.0,
+            created_at=1
+        )
+
+    def duplicate(self) -> HttpResponse:
+        return HttpResponse(
+            http_version = self.http_version,
+            headers = self.headers,
+            content = self.content,
+            status_code = self.status_code,
+            reason = self.reason,
+            timestamp_start=1.0,
+            timestamp_end=2.0,
+            created_at=1,
+        )
+
+    # TODO: Use a TypedDict instead of Any
+    # TODO: Make this work
+    def get_state(self) -> dict[str, Any]:
+        # attributes = self.serialize()
+        # attributes['headers'] = json.loads(attributes['headers'])
+        return {}
+
+    def set_headers(self, headers: Headers) -> None:
+        self.headers = headers
+
+    def get_headers(self) -> Headers:
+        return self.headers
+
+    def get_header_line(self) -> str:
+        return f'{self.http_version} {self.status_code} {self.reason}'
+
+    def get_header_line_no_http_version(self) -> str:
+        return f'{self.status_code} {self.reason}'
+
+    def content_for_preview(self) -> str:
+        return self.content or ''

@@ -17,5 +17,6 @@ class WebsocketMessage(Model):
     # Relations
 
     meta = {
-        "relationship_keys": []
+        "relationship_keys": [],
+        "json_columns": [],
     }

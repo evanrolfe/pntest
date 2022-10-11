@@ -3,7 +3,7 @@ import re
 from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 from lib.input_parsing.transform_payload import TransformPayload
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup

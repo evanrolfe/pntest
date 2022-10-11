@@ -1,17 +1,18 @@
-from typing import ByteString
+from typing import ByteString, cast
 from PyQt6 import QtCore, QtWidgets
 import zmq
 import sys
 import simplejson as json
-from models.data.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
+from models.http_flow import HttpFlow
 from models.data.websocket_message import WebsocketMessage
 from proxy.common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 PROXY_ZMQ_PORT = 5556
 
 class ProxySignals(QtCore.QObject):
-    flow_created = QtCore.pyqtSignal(HttpFlow)
-    flow_updated = QtCore.pyqtSignal(HttpFlow)
+    proxy_request = QtCore.pyqtSignal(object) # NOTE: Needs to be object even though its actually ProxyRequest
+    proxy_response = QtCore.pyqtSignal(object) # NOTE: Needs to be object even though its actually ProxyResponse
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     proxy_started = QtCore.pyqtSignal(int)
@@ -85,24 +86,19 @@ class ProxyZmqServer(QtCore.QObject):
         elif (obj['type'] == 'started'):
             self.signals.proxy_started.emit(id)
 
-    def request(self, request_state: ProxyRequest):
-        http_flow = HttpFlow.create_from_proxy_request(request_state)
+    def request(self, proxy_request: ProxyRequest):
+        self.signals.proxy_request.emit(proxy_request)
 
-        self.signals.flow_created.emit(http_flow)
-
-        if request_state['intercepted']:
-            self.signals.flow_intercepted.emit(http_flow)
+        # TODO:
+        # if request_state['intercepted']:
+        #     self.signals.flow_intercepted.emit(http_flow)
 
     def response(self, response_state: ProxyResponse):
-        http_flow = HttpFlow.update_from_proxy_response(response_state)
+        self.signals.proxy_response.emit(response_state)
 
-        if not http_flow:
-            return
-
-        self.signals.flow_updated.emit(http_flow)
-
-        if response_state['intercepted']:
-            self.signals.flow_intercepted.emit(http_flow)
+        # TODO:
+        # if response_state['intercepted']:
+        #     self.signals.flow_intercepted.emit(http_flow)
 
     def websocket_message(self, message_state: ProxyWebsocketMessage):
         http_flow, websocket_message = HttpFlow.create_from_proxy_websocket_message(message_state)

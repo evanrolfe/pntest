@@ -10,7 +10,7 @@ from PyQt6 import QtCore
 from lib.browser_launcher.detect import Browser
 from lib.database import Database
 from models.data.client import Client
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 from models.data.settings import Settings
 from models.data.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
@@ -18,7 +18,7 @@ from lib.paths import get_app_path
 from lib.utils import is_dev_mode
 from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
 from lib.browser_launcher.browser_proc import BrowserProc
-from proxy.common_types import SettingsJson
+from proxy.common_types import ProxyRequest, ProxyResponse, SettingsJson
 
 class RunningProcess(TypedDict):
     client: Client
@@ -27,8 +27,8 @@ class RunningProcess(TypedDict):
     worker: Optional[BrowserProc]
 
 class ProcessManager(QtCore.QObject):
-    flow_created = QtCore.pyqtSignal(HttpFlow)
-    flow_updated = QtCore.pyqtSignal(HttpFlow)
+    proxy_request = QtCore.pyqtSignal(ProxyRequest)
+    proxy_response = QtCore.pyqtSignal(ProxyResponse)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     websocket_message_created = QtCore.pyqtSignal(WebsocketMessage)
     proxy_started = QtCore.pyqtSignal(int)
@@ -72,8 +72,8 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.start()
         self.set_settings(Settings.get().parsed())
 
-        self.proxy_handler.signals.flow_created.connect(self.flow_created)
-        self.proxy_handler.signals.flow_updated.connect(self.flow_updated)
+        self.proxy_handler.signals.proxy_request.connect(self.proxy_request)
+        self.proxy_handler.signals.proxy_response.connect(self.proxy_response)
         self.proxy_handler.signals.flow_intercepted.connect(self.flow_intercepted)
         self.proxy_handler.signals.websocket_message_created.connect(self.websocket_message_created)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_started)

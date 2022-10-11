@@ -1,17 +1,21 @@
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets
+from models.http_response import HttpResponse
+from proxy.common_types import ProxyRequest, ProxyResponse
 from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.background_worker import BackgroundWorker
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
 
 class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.pyqtSignal()
     send_flow_to_editor = QtCore.pyqtSignal(object)
 
     search_text: Optional[str]
+    table_model: RequestsTableModel
 
     def __init__(self, *args, **kwargs):
         super(HttpPage, self).__init__(*args, **kwargs)
@@ -20,7 +24,7 @@ class HttpPage(QtWidgets.QWidget):
 
         self.search_text = None
         # Setup the request model
-        http_flows = HttpFlow.find_for_table(None)
+        http_flows = HttpFlowRepo().find_for_table('')
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
@@ -51,7 +55,6 @@ class HttpPage(QtWidgets.QWidget):
         else:
             self.ui.requestsTableWidget.ui.siteMapButton.setText(">>")
 
-
     def reload(self):
         self.search_text = None
         self.load_flows_async()
@@ -72,7 +75,7 @@ class HttpPage(QtWidgets.QWidget):
     def load_flows(self, signals):
         print(f'Searching for {self.search_text}')
 
-        http_flows = HttpFlow.find_for_table(self.search_text)
+        http_flows = HttpFlowRepo().find_for_table(self.search_text or '')
 
         return http_flows
 
@@ -108,8 +111,10 @@ class HttpPage(QtWidgets.QWidget):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
             selected_id = selected_id_cols[0].data()
-            flow = HttpFlow.find(selected_id)
-            self.ui.requestViewWidget.set_flow(flow)
+
+            flow = [f for f in self.table_model.flows if f.id == selected_id][0]
+            if flow is not None:
+                self.ui.requestViewWidget.set_flow(flow)
 
     def delete_requests(self, request_ids):
         if len(request_ids) > 1:
@@ -127,10 +132,20 @@ class HttpPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_requests(request_ids)
 
-    def flow_created(self, flow):
+    def proxy_request_received(self, proxy_request: ProxyRequest):
+        flow = HttpFlow.from_proxy_request(proxy_request)
+        HttpFlowRepo().save(flow)
         self.table_model.add_flow(flow)
 
-    def flow_updated(self, flow):
+    def proxy_response_received(self, proxy_response: ProxyResponse):
+        flow = HttpFlowRepo().find_by_uuid(proxy_response['flow_uuid'])
+        if flow is None:
+            return
+
+        response = HttpResponse.from_state(proxy_response)
+        flow.add_response(response)
+        HttpFlowRepo().save(flow)
+
         self.table_model.update_flow(flow)
 
     def show_loader(self):

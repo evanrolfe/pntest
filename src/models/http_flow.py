@@ -9,6 +9,7 @@ from models.websocket_message import WebsocketMessage
 from models.model import Model
 from lib.types import Headers
 from lib.background_worker import WorkerSignals
+from proxy.common_types import ProxyRequest, ProxyResponse
 
 @dataclass(kw_only=True)
 class HttpFlow(Model):
@@ -18,7 +19,7 @@ class HttpFlow(Model):
     client_id: Optional[int] = None
     type: str
     title: Optional[str] = None
-    request_id: Optional[int] = None
+    request_id: int = 0 # TODO: Maybe this should be handled in the same way that id is handled?
     original_request_id: Optional[int] = None
     response_id: Optional[int] = None
     original_response_id: Optional[int] = None
@@ -27,20 +28,84 @@ class HttpFlow(Model):
 
     # Relations
     client: Optional[Client] = None
-    request: Optional[HttpRequest] = None
+    request: HttpRequest
     original_request: Optional[HttpRequest] = None
     response: Optional[HttpResponse] = None
     original_response: Optional[HttpResponse] = None
     websocket_messages: list[WebsocketMessage] = field(default_factory=lambda: [])
 
     meta = {
-        "relationship_keys": ["client", "request", "original_request", "response", "original_response", "websocket_messages"]
+        "relationship_keys": [
+            "client",
+            "request",
+            "original_request",
+            "response",
+            "original_response",
+            "websocket_messages"
+        ],
+        "json_columns": [],
     }
 
     TYPE_PROXY = 'proxy'
     TYPE_EDITOR = 'editor'
     TYPE_EDITOR_EXAMPLE = 'editor_example'
     TYPE_EDITOR_FUZZ = 'editor_fuzz'
+
+    @classmethod
+    def create_for_editor(cls, type):
+        pass
+        # request = HttpRequest()
+        # request.set_blank_values_for_editor()
+        # request.save()
+
+        # flow = HttpFlow()
+        # flow.type = type
+        # flow.request_id = request.id
+        # flow.save()
+
+        # return flow
+
+    @classmethod
+    # TODO: Type check the ProxyRequest
+    def from_proxy_request(cls, proxy_request: ProxyRequest):
+        request = HttpRequest.from_state(proxy_request)
+
+        return HttpFlow(
+            uuid = proxy_request['flow_uuid'],
+            client_id = proxy_request['client_id'],
+            request_id = request.id,
+            type = HttpFlow.TYPE_PROXY,
+            request = request,
+            created_at = 1,
+        )
+
+    @classmethod
+    def update_from_proxy_response(cls, proxy_response: ProxyResponse):
+        pass
+        # flow = HttpFlow.where('uuid', '=', proxy_response['flow_uuid']).first()
+        # if flow is None:
+        #     return
+
+        # response = HttpResponse.from_state(proxy_response)
+        # response.save()
+
+        # # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
+        # database = Database.get_instance()
+        # database.db.table('http_flows').where('id', flow.id).update(response_id=response.id)
+
+        # flow2 = HttpFlow.find(flow.id)
+        # return flow2
+
+    @classmethod
+    def create_from_proxy_websocket_message(cls, proxy_websocket_message):
+        pass
+        # http_flow = HttpFlow.where('uuid', '=', proxy_websocket_message['flow_uuid']).first()
+
+        # websocket_message = WebsocketMessage.from_state(proxy_websocket_message)
+        # websocket_message.http_flow_id = http_flow.id
+        # websocket_message.save()
+
+        # return http_flow, websocket_message
 
     def add_modified_request(self, modified_request: HttpRequest):
         if self.request_id is None:

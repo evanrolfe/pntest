@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order
@@ -23,6 +24,7 @@ class HttpResponseRepo(BaseRepo):
         for row in rows:
             response = HttpResponse(**self.row_to_dict(row))
             response.id = row['id']
+            response.headers = json.loads(row['headers'])
             responses.append(response)
 
         return responses

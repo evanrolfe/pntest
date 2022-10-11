@@ -23,8 +23,52 @@ class HttpFlowRepo(BaseRepo):
         if row is None:
             return
 
-        flow = HttpFlow(**self.row_to_dict(row))
+        # Find the associated Request
+        http_request_repo = HttpRequestRepo()
+        request = http_request_repo.find(row['request_id'])
+        if request is None:
+            raise Exception(f"no request found for id: {row['request_id']}")
+
+        # TODO: Find the associated original Request
+
+        # TODO: Find the associated Response
+
+        # TODO: Find the associated original Response
+
+        # Add the request object to the values for the HttpFlow
+        values = self.row_to_dict(row)
+        values['request'] = request
+
+        # Instantiate the HttpFlow
+        flow = HttpFlow(**values)
         flow.id = row['id']
+
+        return flow
+
+    # TODO: DRY this up with find()
+    def find_by_uuid(self, uuid: str) -> Optional[HttpFlow]:
+        query = Query.from_(self.table).select('*').where(self.table.uuid == uuid)
+        cursor = self.conn.cursor()
+        cursor.execute(query.get_sql())
+        row: sqlite3.Row = cursor.fetchone()
+
+        if row is None:
+            return
+
+        # Find the associated Request
+        http_request_repo = HttpRequestRepo()
+        request = http_request_repo.find(row['request_id'])
+        if request is None:
+            raise Exception(f"no request found for id: {row['request_id']}")
+
+        # Add the request object to the values for the HttpFlow
+        values = self.row_to_dict(row)
+        values['request'] = request
+
+        # Instantiate the HttpFlow
+        flow = HttpFlow(**values)
+        flow.id = row['id']
+
         return flow
 
     def save(self, flow: HttpFlow):
@@ -33,10 +77,9 @@ class HttpFlowRepo(BaseRepo):
             flow.client_id = flow.client.id
 
         # Set request_id from associated HttpRequest object and save if its not persisted
-        if flow.request is not None:
-            if flow.request.id == 0:
-                self.generic_insert(flow.request, Table('http_requests'))
-            flow.request_id = flow.request.id
+        if flow.request.id == 0:
+            self.generic_insert(flow.request, Table('http_requests'))
+        flow.request_id = flow.request.id
 
         # Set original_request_id from associated HttpRequest object and save if its not persisted
         if flow.original_request is not None:

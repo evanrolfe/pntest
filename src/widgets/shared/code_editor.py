@@ -3,7 +3,7 @@ import re
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 from bs4 import BeautifulSoup
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 
 from views._compiled.shared.code_editor import Ui_CodeEditor
 
