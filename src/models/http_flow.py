@@ -124,6 +124,10 @@ class HttpFlow(Model):
         self.original_response = self.response
         self.response = modified_response
 
+    def add_ws_message(self, ws_message: WebsocketMessage):
+        ws_message.http_flow_id = self.id
+        self.websocket_messages.append(ws_message)
+
     def is_example(self) -> bool:
         return self.http_flow_id is not None
 

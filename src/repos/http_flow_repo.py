@@ -94,7 +94,7 @@ class HttpFlowRepo(BaseRepo):
                 try:
                     self.generic_insert(flow.response, Table('http_responses'))
                 except ValueError:
-                    print(f"HttpFlow ID {flow.id} ValueError from response content\n", flow.response.content)
+                    print(f"HttpFlow ID {flow.id} ValueError from response content")
                     flow.response.content = ''
                     self.generic_insert(flow.response, Table('http_responses'))
             flow.response_id = flow.response.id

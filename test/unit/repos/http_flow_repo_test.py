@@ -22,7 +22,7 @@ example_form_data: FormData = {
 }
 
 class TestHttpFlowRepo:
-    def test_saving_and_retrieving_a_flow(self, database):
+    def test_saving_and_retrieving_a_flow(self, database, cleanup_database):
         http_flow_repo = HttpFlowRepo()
         client_repo = ClientRepo()
 
@@ -58,7 +58,7 @@ class TestHttpFlowRepo:
 
         assert result is None
 
-    def test_updating_a_flow(self, database):
+    def test_updating_a_flow(self, database, cleanup_database):
         http_flow_repo = HttpFlowRepo()
         client_repo = ClientRepo()
 
@@ -174,7 +174,7 @@ class TestHttpFlowRepo:
         # 2. Add a response and save
         orig_response = HttpResponse(
             http_version="HTTP/2.0",
-            headers="{}",
+            headers={},
             content="<html></html>",
             timestamp_start=1.0,
             timestamp_end=2.0,
@@ -193,7 +193,7 @@ class TestHttpFlowRepo:
         # 3. Modify the response and save
         modified_response = HttpResponse(
             http_version="HTTP/2.0",
-            headers="{}",
+            headers={},
             content="this has been modified!",
             timestamp_start=1.0,
             timestamp_end=2.0,
@@ -238,18 +238,19 @@ class TestHttpFlowRepo:
         http_flow_repo.save(flow)
 
         ws_message = WebsocketMessage(
-            http_flow_id=flow.id,
+            http_flow_id=0,
             direction="incoming",
             content="hello world",
             content_original=None,
             created_at=1
         )
-        flow.websocket_messages.append(ws_message)
+        flow.add_ws_message(ws_message)
         http_flow_repo.save(flow)
 
         assert len(flow.websocket_messages) == 1
         assert flow.websocket_messages[0] == ws_message
         assert ws_message.id > 0
+        assert ws_message.http_flow_id == flow.id
 
     # def test_find_for_table(self, database, cleanup_database):
     #         # 1. Create a Client, HttpFlow with HttpRequest

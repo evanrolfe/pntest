@@ -3,6 +3,7 @@ from PyQt6 import QtCore
 
 from models.http_flow import HttpFlow
 
+# TODO: Rename this to FlowsTableModel
 class RequestsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance
     # layoutChanged: QtCore.pyqtSignalInstance
@@ -44,7 +45,10 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
             return
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        HttpFlow.destroy(*request_ids)
+        # TODO: Delete the flow
+        # HttpFlow.destroy(*request_ids)
+        raise Exception("NotImplementedError: Delete a flow!")
+
         self.flows = list(filter(lambda r: r.id not in request_ids, self.flows))
         self.endRemoveRows()
 

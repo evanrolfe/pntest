@@ -14,7 +14,7 @@ from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 
 class TestHttpRequestRepo:
-    def test_saving_a_request(self, database):
+    def test_saving_a_request(self, database, cleanup_database):
         http_request_repo = HttpRequestRepo()
 
         request = HttpRequest(

@@ -132,6 +132,7 @@ class HttpPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_requests(request_ids)
 
+    # TODO: This and proxy_response_received should probably go in ProcessManager instead
     def proxy_request_received(self, proxy_request: ProxyRequest):
         flow = HttpFlow.from_proxy_request(proxy_request)
         HttpFlowRepo().save(flow)

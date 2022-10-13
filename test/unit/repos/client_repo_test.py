@@ -8,7 +8,7 @@ from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 
 class TestClientRepo:
-    def test_saving_and_retrieving_a_client(self, database):
+    def test_saving_and_retrieving_a_client(self, database, cleanup_database):
         conn = Database.get_instance().conn
         client_repo = ClientRepo()
 
