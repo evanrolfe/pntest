@@ -31,7 +31,7 @@ class HttpResponse(Model):
 
     @classmethod
     def from_state(cls, state: ProxyResponse) -> HttpResponse:
-        response = HttpResponse(
+        return HttpResponse(
             http_version = state['http_version'],
             headers = dict(state['headers']),
             content = state['content'],
@@ -41,9 +41,6 @@ class HttpResponse(Model):
             reason = state['reason'],
             created_at = 1,
         )
-
-        return response
-
     @classmethod
     def from_requests_response(cls, response: RequestsResponse) -> HttpResponse:
         version = 'Unknown'

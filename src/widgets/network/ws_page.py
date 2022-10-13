@@ -1,4 +1,5 @@
 from PyQt6 import QtCore, QtWidgets
+from proxy.common_types import ProxyWebsocketMessage
 
 from views._compiled.network.ws_page import Ui_WsPage
 
@@ -74,8 +75,10 @@ class WsPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_messages(message_ids)
 
-    def websocket_message_created(self, websocket_message):
-        self.table_model.add_message(websocket_message)
+    def proxy_ws_message_received(self, websocket_message: ProxyWebsocketMessage):
+        # TODO: Implement this
+        pass
+        # self.table_model.add_message(websocket_message)
 
     # def search_requests(self, search_text):
     #     # requests = HttpFlow.search({'search': search_text})

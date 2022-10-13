@@ -135,7 +135,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Network Page:
         self.process_manager.proxy_request.connect(self.network_page.http_page.proxy_request_received)
         self.process_manager.proxy_response.connect(self.network_page.http_page.proxy_response_received)
-        self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
+        self.process_manager.proxy_ws_message.connect(self.network_page.ws_page.proxy_ws_message_received)
 
         self.network_status.clicked.connect(self.toggle_recording_enabled)
         self.intercept_status.clicked.connect(self.toggle_intercept_enabled)

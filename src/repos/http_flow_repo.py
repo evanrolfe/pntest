@@ -90,7 +90,13 @@ class HttpFlowRepo(BaseRepo):
         # Set request_id from associated HttpRequest object and save if its not persisted
         if flow.response is not None:
             if flow.response.id == 0:
-                self.generic_insert(flow.response, Table('http_responses'))
+                # TODO: Move this to HttpResponseRepo
+                try:
+                    self.generic_insert(flow.response, Table('http_responses'))
+                except ValueError:
+                    print(f"HttpFlow ID {flow.id} ValueError from response content\n", flow.response.content)
+                    flow.response.content = ''
+                    self.generic_insert(flow.response, Table('http_responses'))
             flow.response_id = flow.response.id
 
         # Set original_response_id from associated HttpResponse object and save if its not persisted

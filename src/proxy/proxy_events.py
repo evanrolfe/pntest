@@ -130,7 +130,11 @@ class ProxyEvents:
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
         response_state['intercepted'] = intercept_response
-        response_state['content'] = flow.response.text or ''
+        try:
+            response_state['content'] = flow.response.text or ''
+        except ValueError:
+            print("ValueError from response flow uuid = ", flow.id)
+            response_state['content'] = 'PnTest: Could not parse body'
 
         self.__send_message(response_state)
 
