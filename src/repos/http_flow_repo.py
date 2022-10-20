@@ -10,6 +10,7 @@ from models.http_response import HttpResponse
 from repos.base_repo import BaseRepo
 from repos.http_request_repo import HttpRequestRepo
 from repos.http_response_repo import HttpResponseRepo
+from repos.ws_message_repo import WsMessageRepo
 
 class HttpFlowRepo(BaseRepo):
     table: Table
@@ -19,57 +20,21 @@ class HttpFlowRepo(BaseRepo):
         self.table = Table('http_flows')
 
     def find(self, id: int) -> Optional[HttpFlow]:
-        row = self.generic_find(id, self.table)
-        if row is None:
-            return
+        query = Query.from_(self.table).select('*').where(self.table.id == id)
+        results = self.__find_by_query(query.get_sql())
 
-        # Find the associated Request
-        http_request_repo = HttpRequestRepo()
-        request = http_request_repo.find(row['request_id'])
-        if request is None:
-            raise Exception(f"no request found for id: {row['request_id']}")
-
-        # TODO: Find the associated original Request
-
-        # TODO: Find the associated Response
-
-        # TODO: Find the associated original Response
-
-        # Add the request object to the values for the HttpFlow
-        values = self.row_to_dict(row)
-        values['request'] = request
-
-        # Instantiate the HttpFlow
-        flow = HttpFlow(**values)
-        flow.id = row['id']
-
-        return flow
+        if len(results) == 0:
+            return None
+        return results[0]
 
     # TODO: DRY this up with find()
     def find_by_uuid(self, uuid: str) -> Optional[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.uuid == uuid)
-        cursor = self.conn.cursor()
-        cursor.execute(query.get_sql())
-        row: sqlite3.Row = cursor.fetchone()
+        results = self.__find_by_query(query.get_sql())
 
-        if row is None:
-            return
-
-        # Find the associated Request
-        http_request_repo = HttpRequestRepo()
-        request = http_request_repo.find(row['request_id'])
-        if request is None:
-            raise Exception(f"no request found for id: {row['request_id']}")
-
-        # Add the request object to the values for the HttpFlow
-        values = self.row_to_dict(row)
-        values['request'] = request
-
-        # Instantiate the HttpFlow
-        flow = HttpFlow(**values)
-        flow.id = row['id']
-
-        return flow
+        if len(results) == 0:
+            return None
+        return results[0]
 
     def save(self, flow: HttpFlow):
         # Set client_id from associated Client object
@@ -78,37 +43,31 @@ class HttpFlowRepo(BaseRepo):
 
         # Set request_id from associated HttpRequest object and save if its not persisted
         if flow.request.id == 0:
-            self.generic_insert(flow.request, Table('http_requests'))
+            HttpRequestRepo().save(flow.request)
         flow.request_id = flow.request.id
 
         # Set original_request_id from associated HttpRequest object and save if its not persisted
         if flow.original_request is not None:
             if flow.original_request.id == 0:
-                self.generic_insert(flow.original_request, Table('http_requests'))
+                HttpRequestRepo().save(flow.original_request)
             flow.original_request_id = flow.original_request.id
 
         # Set request_id from associated HttpRequest object and save if its not persisted
         if flow.response is not None:
             if flow.response.id == 0:
-                # TODO: Move this to HttpResponseRepo
-                try:
-                    self.generic_insert(flow.response, Table('http_responses'))
-                except ValueError:
-                    print(f"HttpFlow ID {flow.id} ValueError from response content")
-                    flow.response.content = ''
-                    self.generic_insert(flow.response, Table('http_responses'))
+                HttpResponseRepo().save(flow.response)
             flow.response_id = flow.response.id
 
         # Set original_response_id from associated HttpResponse object and save if its not persisted
         if flow.original_response is not None:
             if flow.original_response.id == 0:
-                self.generic_insert(flow.original_response, Table('http_responses'))
+                HttpResponseRepo().save(flow.original_response)
             flow.original_response_id = flow.original_response.id
 
         # Save the websocket messages
         for ws_message in flow.websocket_messages:
             if ws_message.id == 0:
-                self.generic_insert(ws_message, Table('websocket_messages'))
+                WsMessageRepo().save(ws_message)
 
         # Update or insert the HttpFlow
         if flow.id > 0:
@@ -120,48 +79,54 @@ class HttpFlowRepo(BaseRepo):
         # TODO: These needs to apply host filters from Settings
 
         query = Query.from_(self.table).select('*').where(self.table.type == HttpFlow.TYPE_PROXY).orderby(self.table.id, order=Order.desc)
+        return self.__find_by_query(query.get_sql())
+
+    def __find_by_query(self, sql_query: str) -> list[HttpFlow]:
         cursor = self.conn.cursor()
-        cursor.execute(query.get_sql())
+        cursor.execute(sql_query)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
-        flows: list[HttpFlow] = []
-        for row in rows:
-            flow = HttpFlow(**self.row_to_dict(row))
-            flow.id = row['id']
-            flows.append(flow)
-
-        # Fetch the associated requests from db in a single query
-        request_ids = [f.request_id for f in flows if f.request_id is not None] + \
-            [f.original_request_id for f in flows if f.original_request_id is not None]
+        # Pre-load the associated requests from db in a single query
+        request_ids = [r['request_id'] for r in rows if r['request_id'] is not None] + \
+            [r['original_request_id'] for r in rows if r['original_request_id'] is not None]
 
         http_request_repo = HttpRequestRepo()
         requests = http_request_repo.find_by_ids(request_ids)
         requests_by_id: dict[int, HttpRequest] = self.index_models_by_id(requests)
 
-        # Fetch the associated responses from db in a single query
-        response_ids = [f.response_id for f in flows if f.response_id is not None] + \
-            [f.original_response_id for f in flows if f.original_response_id is not None]
+        # Pre-load the associated responses from db in a single query
+        response_ids = [r['response_id'] for r in rows if r['response_id'] is not None] + \
+            [r['original_response_id'] for r in rows if r['original_response_id'] is not None]
 
         http_response_repo = HttpResponseRepo()
         responses = http_response_repo.find_by_ids(response_ids)
         responses_by_id: dict[int, HttpResponse] = self.index_models_by_id(responses)
 
-        # Set the associated objects on the flows
-        for flow in flows:
-            if flow.request_id is not None:
-                flow.request = requests_by_id[flow.request_id]
+        # Instantiate the flows with their associated objects
+        flows: list[HttpFlow] = []
+        for row in rows:
+            row_values = self.row_to_dict(row)
 
-            if flow.original_request_id is not None:
-                flow.original_request = requests_by_id[flow.original_request_id]
+            # Load Request
+            row_values['request'] = requests_by_id[row_values['request_id']]
 
-            if flow.response_id is not None:
-                flow.response = responses_by_id[flow.response_id]
+            # Load Original Request
+            if row_values['original_request_id'] is not None:
+                row_values['original_request'] = requests_by_id[row_values['original_request_id']]
 
-            if flow.original_response_id is not None:
-                flow.original_response = responses_by_id[flow.original_response_id]
+            # Load Response
+            if row_values['response_id'] is not None:
+                row_values['response'] = responses_by_id[row_values['response_id']]
+
+            # Load Original Response
+            if row_values['original_response_id'] is not None:
+                row_values['original_response'] = responses_by_id[row_values['original_response_id']]
+
+            flow = HttpFlow(**row_values)
+            flow.id = row['id']
+            flows.append(flow)
 
         return flows
-
 
 # TODO:
 # class HttpFlowObserver:

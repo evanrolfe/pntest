@@ -28,3 +28,10 @@ class HttpResponseRepo(BaseRepo):
             responses.append(response)
 
         return responses
+
+    def save(self, response: HttpResponse):
+        try:
+            self.generic_insert(response, self.table)
+        except ValueError:
+            response.content = ''
+            self.generic_insert(response, self.table)
