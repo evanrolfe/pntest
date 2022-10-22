@@ -12,6 +12,10 @@ from repos.http_flow_repo import HttpFlowRepo
 from repos.client_repo import ClientRepo
 from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
+from support.factories.client_factory import ClientFactory
+from support.factories.http_request_factory import HttpRequestFactory
+from support.factories.http_response_factory import HttpResponseFactory
+from support.factories.websocket_message_factory import WebsocketMessageFactory
 
 example_form_data: FormData = {
     "method": "GET",
@@ -26,24 +30,14 @@ class TestHttpFlowRepo:
         http_flow_repo = HttpFlowRepo()
         client_repo = ClientRepo()
 
-        client = Client(title="test client!", type="browser", proxy_port=8080)
+        client: Client = ClientFactory.build()
         client_repo.save(client)
 
         flow = HttpFlow(
             type="proxy",
             created_at=1,
             client=client,
-            request=HttpRequest(
-                http_version="HTTP/2.0",
-                headers={},
-                host="synack.com",
-                port=80,
-                method="GET",
-                scheme="http",
-                path="/ORIGINAL",
-                form_data=example_form_data,
-                created_at=1
-            )
+            request=HttpRequestFactory.build(path="/original")
         )
         http_flow_repo.save(flow)
 
@@ -62,24 +56,14 @@ class TestHttpFlowRepo:
         http_flow_repo = HttpFlowRepo()
         client_repo = ClientRepo()
 
-        client = Client(title="test client!", type="browser", proxy_port=8080)
+        client: Client = ClientFactory.build()
         client_repo.save(client)
 
         flow = HttpFlow(
             type="proxy",
             created_at=1,
             client=client,
-            request=HttpRequest(
-                http_version="HTTP/2.0",
-                headers={},
-                host="synack.com",
-                port=80,
-                method="GET",
-                scheme="http",
-                path="/ORIGINAL",
-                form_data=example_form_data,
-                created_at=1
-            )
+            request=HttpRequestFactory.build(path="/original")
         )
         http_flow_repo.save(flow)
 
@@ -100,20 +84,10 @@ class TestHttpFlowRepo:
         http_flow_repo = HttpFlowRepo()
         client_repo = ClientRepo()
 
-        client = Client(title="test client!", type="browser", proxy_port=8080)
+        client: Client = ClientFactory.build()
         client_repo.save(client)
 
-        orig_request = HttpRequest(
-            http_version="HTTP/2.0",
-            headers={},
-            host="synack.com",
-            port=80,
-            method="GET",
-            scheme="http",
-            path="/",
-            form_data=example_form_data,
-            created_at=1
-        )
+        orig_request = HttpRequestFactory.build(path="/original")
 
         flow = HttpFlow(type="proxy", created_at=1, client=client, request=orig_request)
         http_flow_repo.save(flow)
@@ -125,17 +99,7 @@ class TestHttpFlowRepo:
         assert flow.request_id == orig_request.id
 
         # 2. Add a modified request
-        modified_request = HttpRequest(
-            http_version="HTTP/2.0",
-            headers={},
-            host="synack.com",
-            port=80,
-            method="GET",
-            scheme="http",
-            path="/modified",
-            form_data=example_form_data,
-            created_at=1
-        )
+        modified_request = HttpRequestFactory.build(path="/modified")
         flow.add_modified_request(modified_request)
         http_flow_repo.save(flow)
         assert flow.request is not None
@@ -157,31 +121,13 @@ class TestHttpFlowRepo:
 
         client = Client(title="test client!", type="browser", proxy_port=8080)
         client_repo.save(client)
-        request = HttpRequest(
-            http_version="HTTP/2.0",
-            headers={},
-            host="synack.com",
-            port=80,
-            method="GET",
-            scheme="http",
-            path="/",
-            form_data=example_form_data,
-            created_at=1
-        )
+        request = HttpRequestFactory.build(path="/")
+
         flow = HttpFlow(type="proxy", created_at=1, client=client, request=request)
         http_flow_repo.save(flow)
 
         # 2. Add a response and save
-        orig_response = HttpResponse(
-            http_version="HTTP/2.0",
-            headers={},
-            content="<html></html>",
-            timestamp_start=1.0,
-            timestamp_end=2.0,
-            status_code=200,
-            reason=None,
-            created_at=1,
-        )
+        orig_response = HttpResponseFactory.build(status_code=200, content="original")
         flow.response = orig_response
         http_flow_repo.save(flow)
 
@@ -191,16 +137,7 @@ class TestHttpFlowRepo:
         assert flow.response_id == orig_response.id
 
         # 3. Modify the response and save
-        modified_response = HttpResponse(
-            http_version="HTTP/2.0",
-            headers={},
-            content="this has been modified!",
-            timestamp_start=1.0,
-            timestamp_end=2.0,
-            status_code=404,
-            reason=None,
-            created_at=1,
-        )
+        modified_response = HttpResponseFactory.build(status_code=404, content="modified!")
 
         flow.add_modified_response(modified_response)
         http_flow_repo.save(flow)
@@ -223,27 +160,12 @@ class TestHttpFlowRepo:
 
         client = Client(title="test client!", type="browser", proxy_port=8080)
         client_repo.save(client)
-        request = HttpRequest(
-            http_version="HTTP/2.0",
-            headers={},
-            host="synack.com",
-            port=80,
-            method="GET",
-            scheme="http",
-            path="/",
-            form_data=example_form_data,
-            created_at=1
-        )
+        request = HttpRequestFactory.build(path="/")
+
         flow = HttpFlow(type="proxy", created_at=1, client=client, request=request)
         http_flow_repo.save(flow)
 
-        ws_message = WebsocketMessage(
-            http_flow_id=0,
-            direction="incoming",
-            content="hello world",
-            content_original=None,
-            created_at=1
-        )
+        ws_message = WebsocketMessageFactory.build(direction="incoming", content="hello world")
         flow.add_ws_message(ws_message)
         http_flow_repo.save(flow)
 
@@ -263,95 +185,19 @@ class TestHttpFlowRepo:
             type="proxy",
             created_at=1,
             client=client,
-            request=HttpRequest(
-                http_version="HTTP/2.0",
-                headers={},
-                host="synack.com",
-                port=80,
-                method="GET",
-                scheme="http",
-                path="/one",
-                form_data=example_form_data,
-                created_at=1
-            ),
-            original_request=HttpRequest(
-                http_version="HTTP/2.0",
-                headers={},
-                host="synack.com",
-                port=80,
-                method="GET",
-                scheme="http",
-                path="/ORIGINAL",
-                form_data=example_form_data,
-                created_at=1
-            ),
-            response=HttpResponse(
-                http_version="HTTP/2.0",
-                headers={},
-                content="not found",
-                timestamp_start=1.0,
-                timestamp_end=2.0,
-                status_code=404,
-                reason=None,
-                created_at=1,
-            ),
-            original_response=HttpResponse(
-                http_version="HTTP/2.0",
-                headers={},
-                content="ORIGINAL",
-                timestamp_start=1.0,
-                timestamp_end=2.0,
-                status_code=200,
-                reason=None,
-                created_at=1,
-            ),
+            request=HttpRequestFactory.build(path="/modified1"),
+            original_request=HttpRequestFactory.build(path="/original1"),
+            response=HttpResponseFactory.build(status_code=404, content="not found"),
+            original_response=HttpResponseFactory.build(status_code=200, content="original"),
         )
         flow2 = HttpFlow(
             type="proxy",
             created_at=1,
             client=client,
-            request=HttpRequest(
-                http_version="HTTP/2.0",
-                headers={},
-                host="synack.com",
-                port=80,
-                method="GET",
-                scheme="http",
-                path="/two",
-                form_data=example_form_data,
-                created_at=1
-            ),
-            original_request= HttpRequest(
-                http_version="HTTP/2.0",
-                headers={},
-                host="synack.com",
-                port=80,
-                method="GET",
-                scheme="http",
-                path="/original",
-                form_data=example_form_data,
-                created_at=1
-            ),
-            response=HttpResponse(
-                http_version="HTTP/2.0",
-                headers={},
-                content="<html>hello world</html>",
-                timestamp_start=1.0,
-                timestamp_end=2.0,
-                status_code=200,
-                reason=None,
-                created_at=1,
-            ),
-            original_response=HttpResponse(
-                http_version="HTTP/2.0",
-                headers={},
-                content="<html>orig</html>",
-                timestamp_start=1.0,
-                timestamp_end=2.0,
-                status_code=200,
-                reason=None,
-                created_at=1,
-            ),
+            request=HttpRequestFactory.build(path="/modified2"),
+            original_request= HttpRequestFactory.build(path="/original2"),
+            response=HttpResponseFactory.build(status_code=200, content="<html>hello world</html>"),
+            original_response=HttpResponseFactory.build(status_code=200, content="<html>original</html>"),
         )
         http_flow_repo.save(flow1)
         http_flow_repo.save(flow2)
