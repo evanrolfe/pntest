@@ -1,5 +1,6 @@
 from asyncio import create_task
 import sqlite3
+import uuid
 from venv import create
 from lib.database import Database
 from models.client import Client
@@ -24,6 +25,34 @@ example_form_data: FormData = {
     "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
     "fuzz_data": None,
 }
+
+def create_multiple_flows() -> list[HttpFlow]:
+    client = Client(title="test client!", type="browser", proxy_port=8080)
+    ClientRepo().save(client)
+    flow1 = HttpFlow(
+        uuid=str(uuid.uuid4()),
+        type="proxy",
+        created_at=1,
+        client=client,
+        request=HttpRequestFactory.build(path="/modified1"),
+        original_request=HttpRequestFactory.build(path="/original1"),
+        response=HttpResponseFactory.build(status_code=404, content="not found"),
+        original_response=HttpResponseFactory.build(status_code=200, content="original"),
+    )
+    flow2 = HttpFlow(
+        uuid=str(uuid.uuid4()),
+        type="proxy",
+        created_at=1,
+        client=client,
+        request=HttpRequestFactory.build(path="/modified2"),
+        original_request= HttpRequestFactory.build(path="/original2"),
+        response=HttpResponseFactory.build(status_code=200, content="<html>hello world</html>"),
+        original_response=HttpResponseFactory.build(status_code=200, content="<html>original</html>"),
+    )
+    HttpFlowRepo().save(flow1)
+    HttpFlowRepo().save(flow2)
+
+    return [flow1, flow2]
 
 class TestHttpFlowRepo:
     def test_saving_and_retrieving_a_flow(self, database, cleanup_database):
@@ -87,7 +116,7 @@ class TestHttpFlowRepo:
         client: Client = ClientFactory.build()
         client_repo.save(client)
 
-        orig_request = HttpRequestFactory.build(path="/original")
+        orig_request: HttpRequest = HttpRequestFactory.build(path="/original")
 
         flow = HttpFlow(type="proxy", created_at=1, client=client, request=orig_request)
         http_flow_repo.save(flow)
@@ -99,7 +128,8 @@ class TestHttpFlowRepo:
         assert flow.request_id == orig_request.id
 
         # 2. Add a modified request
-        modified_request = HttpRequestFactory.build(path="/modified")
+        modified_request = orig_request.duplicate()
+        modified_request.modify("GET", "/modified", {}, "")
         flow.add_modified_request(modified_request)
         http_flow_repo.save(flow)
         assert flow.request is not None
@@ -175,34 +205,9 @@ class TestHttpFlowRepo:
         assert ws_message.http_flow_id == flow.id
 
     def test_find_for_table(self, database, cleanup_database):
-            # 1. Create a Client, HttpFlow with HttpRequest
-        http_flow_repo = HttpFlowRepo()
-        client_repo = ClientRepo()
+        flow1, flow2 = create_multiple_flows()
 
-        client = Client(title="test client!", type="browser", proxy_port=8080)
-        client_repo.save(client)
-        flow1 = HttpFlow(
-            type="proxy",
-            created_at=1,
-            client=client,
-            request=HttpRequestFactory.build(path="/modified1"),
-            original_request=HttpRequestFactory.build(path="/original1"),
-            response=HttpResponseFactory.build(status_code=404, content="not found"),
-            original_response=HttpResponseFactory.build(status_code=200, content="original"),
-        )
-        flow2 = HttpFlow(
-            type="proxy",
-            created_at=1,
-            client=client,
-            request=HttpRequestFactory.build(path="/modified2"),
-            original_request= HttpRequestFactory.build(path="/original2"),
-            response=HttpResponseFactory.build(status_code=200, content="<html>hello world</html>"),
-            original_response=HttpResponseFactory.build(status_code=200, content="<html>original</html>"),
-        )
-        http_flow_repo.save(flow1)
-        http_flow_repo.save(flow2)
-
-        results = http_flow_repo.find_for_table("")
+        results = HttpFlowRepo().find_for_table("")
 
         assert len(results) == 2
         assert results[0].id == flow2.id
@@ -227,3 +232,13 @@ class TestHttpFlowRepo:
         assert results[1].original_response is not None
         assert results[0].original_response.id > 0
         assert results[1].original_response.id > 0
+
+    def test_find_by_uuid(self, database, cleanup_database):
+        _, flow2 = create_multiple_flows()
+        if flow2.uuid is None:
+            assert False
+
+        result = HttpFlowRepo().find_by_uuid(flow2.uuid)
+
+        assert result is not None
+        assert result.id == flow2.id

@@ -27,7 +27,6 @@ class HttpFlowRepo(BaseRepo):
             return None
         return results[0]
 
-    # TODO: DRY this up with find()
     def find_by_uuid(self, uuid: str) -> Optional[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.uuid == uuid)
         results = self.__find_by_query(query.get_sql())

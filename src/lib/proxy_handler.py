@@ -14,7 +14,6 @@ class ProxySignals(QtCore.QObject):
     proxy_request = QtCore.pyqtSignal(object) # NOTE: Needs to be object even though its actually ProxyRequest
     proxy_response = QtCore.pyqtSignal(object) # NOTE: Needs to be object even though its actually ProxyResponse
     proxy_ws_message = QtCore.pyqtSignal(object) # NOTE: ^^
-    flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     proxy_started = QtCore.pyqtSignal(int)
 
 class ProxyZmqServer(QtCore.QObject):
@@ -89,16 +88,8 @@ class ProxyZmqServer(QtCore.QObject):
     def request(self, proxy_request: ProxyRequest):
         self.signals.proxy_request.emit(proxy_request)
 
-        # TODO:
-        # if request_state['intercepted']:
-        #     self.signals.flow_intercepted.emit(http_flow)
-
     def response(self, response_state: ProxyResponse):
         self.signals.proxy_response.emit(response_state)
-
-        # TODO:
-        # if response_state['intercepted']:
-        #     self.signals.flow_intercepted.emit(http_flow)
 
     def websocket_message(self, message_state: ProxyWebsocketMessage):
         self.signals.proxy_ws_message.emit(message_state)
@@ -108,7 +99,7 @@ class ProxyZmqServer(QtCore.QObject):
         #     http_flow.intercept_websocket_message = True
         #     self.signals.flow_intercepted.emit(http_flow)
 
-    def forward_flow(self, flow, intercept_response):
+    def forward_flow(self, flow: HttpFlow, intercept_response: bool):
         if intercept_response:
             type = 'forward_and_intercept'
         else:

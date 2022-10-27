@@ -138,6 +138,24 @@ class HttpRequest(Model):
 
         return new_request
 
+    def modify(self, modified_method: str, modified_path: str, modified_headers: Headers, modified_content: str):
+        self.method = modified_method
+        self.path = modified_path
+        self.headers = modified_headers
+        self.content = modified_content
+
+        if modified_headers.get('Host'):
+            host, port = self.__get_host_and_port(modified_headers['Host'])
+            self.host = host
+            if port:
+                self.port = port
+        elif modified_headers.get('host'):
+            # TODO: DRY up this duplication
+            host, port = self.__get_host_and_port(modified_headers['Host'])
+            self.host = host
+            if port:
+                self.port = port
+
     def overwrite_calculated_headers(self) -> None:
         calc_text = CALCULATED_TEXT
         headers = self.get_headers()
@@ -254,3 +272,20 @@ class HttpRequest(Model):
             return f"curl -X {self.method} -H {headers} \"{self.get_url()}\""
         else:
             return f"curl -X {self.method} -H {headers} -d {content}' {self.get_url()}"
+
+    def __eq__(self, other) -> bool:
+        return (
+            self.method == other.method and
+            self.host == other.host and
+            self.port == other.port and
+            self.path == other.path and
+            self.headers == other.headers and
+            self.content == other.content
+        )
+
+    def __get_host_and_port(self, host: str) -> tuple[str, Optional[int]]:
+        host_arr = host.split(':')
+        if len(host_arr) == 2:
+            return (host_arr[0], int(host_arr[1]))
+        else:
+            return [host_arr[0], None] # type: ignore

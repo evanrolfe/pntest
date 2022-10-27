@@ -18,7 +18,9 @@ from lib.paths import get_app_path
 from lib.utils import is_dev_mode
 from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
 from lib.browser_launcher.browser_proc import BrowserProc
+from models.http_response import HttpResponse
 from proxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage, SettingsJson
+from repos.http_flow_repo import HttpFlowRepo
 
 class RunningProcess(TypedDict):
     client: Client
@@ -27,8 +29,8 @@ class RunningProcess(TypedDict):
     worker: Optional[BrowserProc]
 
 class ProcessManager(QtCore.QObject):
-    proxy_request = QtCore.pyqtSignal(ProxyRequest)
-    proxy_response = QtCore.pyqtSignal(ProxyResponse)
+    proxy_request = QtCore.pyqtSignal(HttpFlow)
+    proxy_response = QtCore.pyqtSignal(HttpFlow)
     proxy_ws_message = QtCore.pyqtSignal(ProxyWebsocketMessage)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     proxy_started = QtCore.pyqtSignal(int)
@@ -72,9 +74,8 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.start()
         self.set_settings(Settings.get().parsed())
 
-        self.proxy_handler.signals.proxy_request.connect(self.proxy_request)
-        self.proxy_handler.signals.proxy_response.connect(self.proxy_response)
-        self.proxy_handler.signals.flow_intercepted.connect(self.flow_intercepted)
+        self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
+        self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)
         self.proxy_handler.signals.proxy_ws_message.connect(self.proxy_ws_message)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_started)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
@@ -187,7 +188,7 @@ class ProcessManager(QtCore.QObject):
         )
         self.processes.append({'client': client, 'type': 'proxy', 'process': process, 'worker': None})
 
-    def forward_flow(self, flow, intercept_response):
+    def forward_flow(self, flow: HttpFlow, intercept_response: bool):
         self.proxy_handler.forward_flow(flow, intercept_response)
 
     def forward_all(self):
@@ -216,3 +217,21 @@ class ProcessManager(QtCore.QObject):
 
     def set_settings(self, settings: SettingsJson) -> None:
         self.proxy_handler.set_settings(settings)
+
+    def proxy_request_slot(self, proxy_request: ProxyRequest):
+        flow = HttpFlow.from_proxy_request(proxy_request)
+        HttpFlowRepo().save(flow)
+
+        self.proxy_request.emit(flow)
+        if proxy_request['intercepted']:
+            self.flow_intercepted.emit(flow)
+
+    def proxy_response_slot(self, proxy_response: ProxyResponse):
+        flow = HttpFlowRepo().find_by_uuid(proxy_response['flow_uuid'])
+        if flow is None:
+            return
+        response = HttpResponse.from_state(proxy_response)
+        flow.add_response(response)
+        HttpFlowRepo().save(flow)
+
+        self.proxy_response.emit(flow)

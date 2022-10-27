@@ -1,9 +1,14 @@
+from typing import Optional
 from PyQt6 import QtWidgets, QtCore
+from models.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.intercept.intercept_page import Ui_InterceptPage
 from lib.intercept_queue import InterceptQueue
 
 class InterceptPage(QtWidgets.QWidget):
+    intercepted_flow: Optional[HttpFlow]
+
     def __init__(self, *args, **kwargs):
         super(InterceptPage, self).__init__(*args, **kwargs)
         self.ui = Ui_InterceptPage()
@@ -24,8 +29,9 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercept_queue = InterceptQueue()
         self.intercept_queue.decision_required.connect(self.decision_required)
         self.intercept_queue.intercept_changed.connect(self.__set_enabled)
+        self.intercepted_flow = None
 
-    def decision_required(self, flow):
+    def decision_required(self, flow: HttpFlow):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
 
@@ -71,7 +77,10 @@ class InterceptPage(QtWidgets.QWidget):
 
     # Private methods
 
-    def __forward_flow(self, intercept_response):
+    def __forward_flow(self, intercept_response: bool):
+        if self.intercepted_flow is None:
+            return
+
         header_line_arr = self.ui.headers.get_header_line().split(' ')
         modified_headers = self.ui.headers.get_headers()
         modified_content = self.ui.bodyText.toPlainText()
@@ -85,15 +94,18 @@ class InterceptPage(QtWidgets.QWidget):
             self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
 
         else:
-            modified_method = header_line_arr[0]
-            modified_path = header_line_arr[1]
-            self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
+            modified_request = self.intercepted_flow.request.duplicate()
+            modified_request.modify(header_line_arr[0], header_line_arr[1], modified_headers, modified_content)
+
+            if modified_request != self.intercepted_flow.request:
+                self.intercepted_flow.add_modified_request(modified_request)
+                HttpFlowRepo().save(self.intercepted_flow)
 
         # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
         self.__clear_request()
 
-        reloaded_flow = self.intercepted_flow.reload()
-        self.intercept_queue.forward_flow(reloaded_flow, intercept_response)
+        # reloaded_flow = self.intercepted_flow.reload()
+        self.intercept_queue.forward_flow(self.intercepted_flow, intercept_response)
 
     def __clear_request(self):
         self.intercepted_request = None

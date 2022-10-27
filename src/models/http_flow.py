@@ -178,6 +178,16 @@ class HttpFlow(Model):
             self.modified()
         ]
 
+    # This is used by the intercept/proxy when forwarding requests/responses
+    def serialize(self):
+        serialized_dict = super().serialize()
+        serialized_dict['request'] = self.request.serialize()
+
+        if self.response is not None:
+            serialized_dict['response'] = self.response.serialize()
+
+        return serialized_dict
+
     # TODO
     def duplicate_for_editor(self):
         pass
@@ -224,43 +234,6 @@ class HttpFlow(Model):
         # new_flow.save()
 
         # return new_flow
-
-    # TODO
-    def modify_request(self, modified_method: str, modified_path: str, modified_headers: Headers, modified_content: str):
-        pass
-        # original_request = self.request().first()
-        # original_state = original_request.get_state()
-        # request_unchanged = (
-        #     original_state['method'] == modified_method and
-        #     original_state['path'] == modified_path and
-        #     original_state['headers'] == modified_headers and
-        #     original_state['content'] == modified_content
-        # )
-
-        # if request_unchanged:
-        #     return
-
-        # original_state['method'] = modified_method
-        # original_state['path'] = modified_path
-        # original_state['headers'] = modified_headers
-        # original_state['content'] = modified_content
-
-        # if modified_headers.get('Host'):
-        #     host, port = self.get_host_and_port(modified_headers['Host'])
-        #     original_state['host'] = host
-        #     if port:
-        #         original_state['port'] = port
-
-        # # TODO: What if the user types in host header lowercase?
-        # # if modified_headers.get('host'):
-        # #     original_state['host'] = modified_headers['host']
-
-        # new_request = HttpRequest.from_state(original_state)
-        # new_request.save()
-
-        # # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
-        # database = Database.get_instance()
-        # database.db.table('http_flows').where('id', self.id).update(original_request_id=original_request.id, request_id=new_request.id)
 
     # TODO
     def modify_response(self, modified_status_code: int, modified_headers: Headers, modified_content: str):
