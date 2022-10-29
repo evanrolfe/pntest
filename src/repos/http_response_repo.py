@@ -24,6 +24,7 @@ class HttpResponseRepo(BaseRepo):
         for row in rows:
             response = HttpResponse(**self.row_to_dict(row))
             response.id = row['id']
+            response.created_at = row['created_at']
             response.headers = json.loads(row['headers'])
             responses.append(response)
 

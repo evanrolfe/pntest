@@ -12,6 +12,8 @@ from lib.types import Headers
 class HttpResponse(Model):
     # Columns
     id: int = field(init=False, default=0)
+    created_at: int = field(init=False, default=0)
+
     http_version: str
     headers: Headers
     content: Optional[str]
@@ -19,7 +21,6 @@ class HttpResponse(Model):
     timestamp_end: float
     status_code: int
     reason: Optional[str]
-    created_at: int
 
     # Relations
 
@@ -39,7 +40,6 @@ class HttpResponse(Model):
             timestamp_end = state['timestamp_end'],
             status_code = state['status_code'],
             reason = state['reason'],
-            created_at = 1,
         )
     @classmethod
     def from_requests_response(cls, response: RequestsResponse) -> HttpResponse:
@@ -57,7 +57,6 @@ class HttpResponse(Model):
             http_version=version,
             timestamp_start=1.0,
             timestamp_end=2.0,
-            created_at=1
         )
 
     def duplicate(self) -> HttpResponse:
@@ -69,7 +68,6 @@ class HttpResponse(Model):
             reason = self.reason,
             timestamp_start=1.0,
             timestamp_end=2.0,
-            created_at=1,
         )
 
     def modify(self, modified_status_code: int, modified_headers: Headers, modified_content: str):

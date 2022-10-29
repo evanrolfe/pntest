@@ -21,6 +21,7 @@ class HttpRequestRepo(BaseRepo):
 
         request = HttpRequest(**self.row_to_dict(row))
         request.id = row['id']
+        request.created_at = row['created_at']
         request.form_data = json.loads(row['form_data'])
         request.headers = json.loads(row['headers'])
         return request
@@ -42,6 +43,7 @@ class HttpRequestRepo(BaseRepo):
         for row in rows:
             request = HttpRequest(**self.row_to_dict(row))
             request.id = row['id']
+            request.created_at = row['created_at']
             request.form_data = json.loads(row['form_data'])
             request.headers = json.loads(row['headers'])
             requests.append(request)

@@ -10,4 +10,3 @@ class WebsocketMessageFactory(factory.Factory):
     direction="incoming"
     content="hello world"
     content_original=None
-    created_at=1

@@ -32,7 +32,6 @@ def create_multiple_flows() -> list[HttpFlow]:
     flow1 = HttpFlow(
         uuid=str(uuid.uuid4()),
         type="proxy",
-        created_at=1,
         client=client,
         request=HttpRequestFactory.build(path="/modified1"),
         original_request=HttpRequestFactory.build(path="/original1"),
@@ -42,7 +41,6 @@ def create_multiple_flows() -> list[HttpFlow]:
     flow2 = HttpFlow(
         uuid=str(uuid.uuid4()),
         type="proxy",
-        created_at=1,
         client=client,
         request=HttpRequestFactory.build(path="/modified2"),
         original_request= HttpRequestFactory.build(path="/original2"),
@@ -64,7 +62,6 @@ class TestHttpFlowRepo:
 
         flow = HttpFlow(
             type="proxy",
-            created_at=1,
             client=client,
             request=HttpRequestFactory.build(path="/original")
         )
@@ -73,7 +70,6 @@ class TestHttpFlowRepo:
         assert flow.id is not None
         assert flow.client_id == client.id
         assert flow.type == "proxy"
-        assert client.created_at is not None
 
     def test_finding_a_flow_that_doesnt_exist(self, database, cleanup_database):
         http_flow_repo = HttpFlowRepo()
@@ -90,7 +86,6 @@ class TestHttpFlowRepo:
 
         flow = HttpFlow(
             type="proxy",
-            created_at=1,
             client=client,
             request=HttpRequestFactory.build(path="/original")
         )
@@ -118,7 +113,7 @@ class TestHttpFlowRepo:
 
         orig_request: HttpRequest = HttpRequestFactory.build(path="/original")
 
-        flow = HttpFlow(type="proxy", created_at=1, client=client, request=orig_request)
+        flow = HttpFlow(type="proxy", client=client, request=orig_request)
         http_flow_repo.save(flow)
 
         assert flow.id is not None
@@ -153,7 +148,7 @@ class TestHttpFlowRepo:
         client_repo.save(client)
         request = HttpRequestFactory.build(path="/")
 
-        flow = HttpFlow(type="proxy", created_at=1, client=client, request=request)
+        flow = HttpFlow(type="proxy", client=client, request=request)
         http_flow_repo.save(flow)
 
         # 2. Add a response and save
@@ -192,7 +187,7 @@ class TestHttpFlowRepo:
         client_repo.save(client)
         request = HttpRequestFactory.build(path="/")
 
-        flow = HttpFlow(type="proxy", created_at=1, client=client, request=request)
+        flow = HttpFlow(type="proxy", client=client, request=request)
         http_flow_repo.save(flow)
 
         ws_message = WebsocketMessageFactory.build(direction="incoming", content="hello world")

@@ -41,9 +41,8 @@ class TestWsMessageRepo:
             scheme="http",
             path="/",
             form_data=example_form_data,
-            created_at=1
         )
-        flow = HttpFlow(type="proxy", created_at=1, client=client, request=request)
+        flow = HttpFlow(type="proxy", client=client, request=request)
         http_flow_repo.save(flow)
 
         ws_message1 = WebsocketMessage(
@@ -51,14 +50,12 @@ class TestWsMessageRepo:
             direction="incoming",
             content="hello world",
             content_original=None,
-            created_at=1
         )
         ws_message2 = WebsocketMessage(
             http_flow_id=0,
             direction="outgoing",
             content="hello, back at you",
             content_original=None,
-            created_at=1
         )
         flow.add_ws_message(ws_message1)
         flow.add_ws_message(ws_message2)

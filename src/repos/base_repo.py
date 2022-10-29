@@ -1,5 +1,5 @@
 import json
-from operator import index
+import time
 import sqlite3
 from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field
@@ -16,7 +16,7 @@ class BaseRepo:
     def row_to_dict(self, row: sqlite3.Row):
         d = {}
         for key in row.keys():
-            if key != 'id':
+            if key not in ['id', 'created_at']:
                 d[key] = row[key]
 
         return d
@@ -35,6 +35,9 @@ class BaseRepo:
         return self.__model_row_dict(model).values()
 
     def generic_insert(self, model: Model, table: Table):
+        # Add the created_at timestamp
+        model.created_at = int(time.time())
+
         columns = self.model_columns(model)
         values = self.model_values(model)
 
@@ -69,6 +72,7 @@ class BaseRepo:
         self.conn.execute(query.get_sql())
         self.conn.commit()
 
+    # TODO: This should be moved to the Model class
     def __model_row_dict(self, model: Model) -> dict[str, Any]:
         raw_table_values = {}
         for key, value in model.__dict__.items():

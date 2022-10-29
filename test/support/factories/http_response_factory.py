@@ -13,4 +13,3 @@ class HttpResponseFactory(factory.Factory):
     timestamp_end=2.0
     status_code=200
     reason=None
-    created_at=1

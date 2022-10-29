@@ -9,11 +9,12 @@ from proxy.common_types import ProxyWebsocketMessage
 class WebsocketMessage(Model):
     # Columns
     id: int = field(init=False, default=0)
+    created_at: int = field(init=False, default=0)
+
     http_flow_id: int
     direction: str
     content: str
     content_original: Optional[str]
-    created_at: int
 
     # Relations
 
@@ -30,7 +31,6 @@ class WebsocketMessage(Model):
             direction=state['direction'],
             content=state['content'],
             content_original=None,
-            created_at=1,
         )
 
         return message

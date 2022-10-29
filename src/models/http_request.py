@@ -36,6 +36,8 @@ class FormData(TypedDict):
 class HttpRequest(Model):
     # Columns
     id: int = field(init=False, default=0)
+    created_at: int = field(init=False, default=0)
+
     http_version: str
     headers: Headers
     content: Optional[str] = None
@@ -49,7 +51,6 @@ class HttpRequest(Model):
     authority: Optional[str] = None
     path: str
     form_data: FormData
-    created_at: int
 
     # Relations
 
@@ -78,7 +79,6 @@ class HttpRequest(Model):
             authority = state['authority'],
             path = state['path'],
             form_data = {'method': state['method'], 'url': 'TODO-URL', 'headers': dict(state['headers']), 'content': state['content'], 'fuzz_data': None},
-            created_at= 1,
         )
 
         return request
@@ -134,7 +134,6 @@ class HttpRequest(Model):
             authority = self.authority,
             path = self.path,
             form_data = self.form_data or self.generate_form_data(),
-            created_at = 1,
         )
 
     def modify(self, modified_method: str, modified_path: str, modified_headers: Headers, modified_content: str):

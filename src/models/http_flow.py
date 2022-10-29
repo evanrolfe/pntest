@@ -15,6 +15,8 @@ from proxy.common_types import ProxyRequest, ProxyResponse
 class HttpFlow(Model):
     # Columns
     id: int = field(init=False, default=0)
+    created_at: int = field(init=False, default=0)
+
     uuid: Optional[str] = None
     client_id: Optional[int] = None
     type: str
@@ -24,7 +26,6 @@ class HttpFlow(Model):
     response_id: Optional[int] = None
     original_response_id: Optional[int] = None
     http_flow_id: Optional[int] = None
-    created_at: int
 
     # Relations
     client: Optional[Client] = None
@@ -80,7 +81,6 @@ class HttpFlow(Model):
             request_id = request.id,
             type = HttpFlow.TYPE_PROXY,
             request = request,
-            created_at = 1,
         )
 
     @classmethod

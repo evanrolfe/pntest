@@ -23,5 +23,4 @@ class HttpRequestFactory(factory.Factory):
     scheme="http"
     path="/ORIGINAL"
     form_data=factory.LazyAttribute(generate_form_data)
-    created_at=1
 

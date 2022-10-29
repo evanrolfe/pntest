@@ -22,11 +22,11 @@ class TestClientRepo:
         assert client.proxy_port == 8080
         assert client.open == False
         assert client.created_at is not None
-        print(client)
 
         client2 = client_repo.find(client.id)
         assert client2 is not None
-        assert client2.id is not None
+        assert client2.id == client.id
+        assert client2.created_at == client.created_at
 
     def test_finding_a_client_that_doesnt_exist(self, database, cleanup_database):
         client_repo = ClientRepo()

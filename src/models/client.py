@@ -7,13 +7,14 @@ from models.model import Model
 class Client(Model):
     # Columns
     id: int = field(init=False, default=0)
+    created_at: int = field(init=False, default=0)
+
     proxy_port: int
     browser_port: Optional[int] = field(default=None)
     launched_at: Optional[int] = field(default=None)
     title: str
     type: str
     open: bool = field(default=False)
-    created_at: int = field(default=1) # TODO
 
     # Relations
 

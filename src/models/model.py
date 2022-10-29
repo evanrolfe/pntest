@@ -10,6 +10,7 @@ class ModelMetaData(TypedDict):
 
 class Model():
     id: int = field(init=False, default=0)
+    created_at: int = field(init=False, default=0)
 
     meta: ModelMetaData
 

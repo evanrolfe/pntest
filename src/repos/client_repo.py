@@ -4,7 +4,6 @@ from pypika import Query, Table, Field
 
 
 from models.client import Client
-from models.http_flow import HttpFlow
 from repos.base_repo import BaseRepo
 
 class ClientRepo(BaseRepo):
@@ -21,6 +20,7 @@ class ClientRepo(BaseRepo):
 
         client = Client(**self.row_to_dict(row))
         client.id = row['id']
+        client.created_at = row['created_at']
         return client
 
     def save(self, client: Client):
