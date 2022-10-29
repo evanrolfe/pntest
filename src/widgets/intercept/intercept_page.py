@@ -89,13 +89,20 @@ class InterceptPage(QtWidgets.QWidget):
             print('Forwarding websocket!')
             self.intercepted_flow.modify_latest_websocket_message(modified_content)
 
-        elif self.intercepted_flow.has_response():
+        elif self.intercepted_flow.response is not None:
             modified_status_code = int(header_line_arr[0])
-            self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
+            modified_response = self.intercepted_flow.response.duplicate()
+            modified_response.modify(modified_status_code, modified_headers, modified_content)
+
+            if modified_response != self.intercepted_flow.response:
+                self.intercepted_flow.add_modified_response(modified_response)
+                HttpFlowRepo().save(self.intercepted_flow)
 
         else:
+            modified_method = header_line_arr[0]
+            modified_path = header_line_arr[1]
             modified_request = self.intercepted_flow.request.duplicate()
-            modified_request.modify(header_line_arr[0], header_line_arr[1], modified_headers, modified_content)
+            modified_request.modify(modified_method, modified_path, modified_headers, modified_content)
 
             if modified_request != self.intercepted_flow.request:
                 self.intercepted_flow.add_modified_request(modified_request)

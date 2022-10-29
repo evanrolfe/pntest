@@ -1,7 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
-import json
 from typing import Any, Optional
 from requests import Response as RequestsResponse
 from lib.types import Headers
@@ -72,6 +71,11 @@ class HttpResponse(Model):
             created_at=1,
         )
 
+    def modify(self, modified_status_code: int, modified_headers: Headers, modified_content: str):
+        self.status_code = modified_status_code
+        self.headers = modified_headers
+        self.content = modified_content
+
     # TODO: Use a TypedDict instead of Any
     # TODO: Make this work
     def get_state(self) -> dict[str, Any]:
@@ -93,3 +97,10 @@ class HttpResponse(Model):
 
     def content_for_preview(self) -> str:
         return self.content or ''
+
+    def __eq__(self, other) -> bool:
+        return (
+            self.headers == other.headers and
+            self.content == other.content and
+            self.status_code == other.status_code
+        )

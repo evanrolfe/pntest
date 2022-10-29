@@ -121,7 +121,7 @@ class HttpRequest(Model):
         return f'{self.scheme}://{self.host}{port}{self.path}'
 
     def duplicate(self) -> HttpRequest:
-        new_request = HttpRequest(
+        return HttpRequest(
             http_version = self.http_version,
             headers = self.headers,
             content = self.content,
@@ -135,8 +135,6 @@ class HttpRequest(Model):
             form_data = self.form_data or self.generate_form_data(),
             created_at = 1,
         )
-
-        return new_request
 
     def modify(self, modified_method: str, modified_path: str, modified_headers: Headers, modified_content: str):
         self.method = modified_method

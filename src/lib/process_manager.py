@@ -235,3 +235,5 @@ class ProcessManager(QtCore.QObject):
         HttpFlowRepo().save(flow)
 
         self.proxy_response.emit(flow)
+        if proxy_response['intercepted']:
+            self.flow_intercepted.emit(flow)
