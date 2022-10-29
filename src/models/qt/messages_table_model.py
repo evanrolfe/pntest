@@ -3,6 +3,7 @@ from PyQt6 import QtCore
 
 from lib.utils import format_timestamp
 from models.websocket_message import WebsocketMessage
+from repos.ws_message_repo import WsMessageRepo
 
 class MessagesTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance
@@ -40,9 +41,8 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
             return
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        # TODO: Delete the websocket Message
-        # WebsocketMessage.destroy(*message_ids)
-        raise Exception("NotImplementedError: Delete a websocket message!")
+        [WsMessageRepo().delete(m) for m in self.messages if m.id in message_ids]
+
         self.messages = list(filter(lambda r: r.id not in message_ids, self.messages))
         self.endRemoveRows()
 

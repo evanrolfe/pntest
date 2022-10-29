@@ -29,6 +29,9 @@ class WsMessageRepo(BaseRepo):
         else:
             self.generic_insert(ws_message, self.table)
 
+    def delete(self, ws_message: WebsocketMessage):
+        self.generic_delete(ws_message, self.table)
+
     def find_for_table(self, search_text: str) -> list[WebsocketMessage]:
         # TODO: These needs to apply host filters from Settings
         query = Query.from_(self.table).select('*').orderby(self.table.id, order=Order.desc)
