@@ -20,4 +20,5 @@ class Client(Model):
     meta = {
         "relationship_keys": [],
         "json_columns": [],
+        "do_not_save_keys": [],
     }

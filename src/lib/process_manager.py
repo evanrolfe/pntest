@@ -12,7 +12,7 @@ from lib.database import Database
 from models.data.client import Client
 from models.http_flow import HttpFlow
 from models.data.settings import Settings
-from models.data.websocket_message import WebsocketMessage
+from models.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
 from lib.utils import is_dev_mode
@@ -31,7 +31,7 @@ class RunningProcess(TypedDict):
 class ProcessManager(QtCore.QObject):
     proxy_request = QtCore.pyqtSignal(HttpFlow)
     proxy_response = QtCore.pyqtSignal(HttpFlow)
-    proxy_ws_message = QtCore.pyqtSignal(ProxyWebsocketMessage)
+    proxy_ws_message = QtCore.pyqtSignal(WebsocketMessage)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     proxy_started = QtCore.pyqtSignal(int)
 
@@ -76,7 +76,7 @@ class ProcessManager(QtCore.QObject):
 
         self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
         self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)
-        self.proxy_handler.signals.proxy_ws_message.connect(self.proxy_ws_message)
+        self.proxy_handler.signals.proxy_ws_message.connect(self.proxy_ws_message_slot)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_started)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
 
@@ -236,4 +236,18 @@ class ProcessManager(QtCore.QObject):
 
         self.proxy_response.emit(flow)
         if proxy_response['intercepted']:
+            self.flow_intercepted.emit(flow)
+
+    def proxy_ws_message_slot(self, proxy_ws_message: ProxyWebsocketMessage):
+        flow = HttpFlowRepo().find_by_uuid(proxy_ws_message['flow_uuid'])
+        if flow is None:
+            return
+
+        ws_message = WebsocketMessage.from_state(proxy_ws_message)
+        flow.add_ws_message(ws_message)
+        HttpFlowRepo().save(flow)
+
+        self.proxy_ws_message.emit(ws_message)
+        if proxy_ws_message['intercepted']:
+            flow.intercept_websocket_message = True
             self.flow_intercepted.emit(flow)

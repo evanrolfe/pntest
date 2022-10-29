@@ -26,6 +26,7 @@ class HttpResponse(Model):
     meta = {
         "relationship_keys": [],
         "json_columns": ["headers"],
+        "do_not_save_keys": [],
     }
 
     @classmethod

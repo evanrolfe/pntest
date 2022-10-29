@@ -55,7 +55,8 @@ class HttpRequest(Model):
 
     meta = {
         "relationship_keys": [],
-        "json_columns": ["headers", "form_data"]
+        "json_columns": ["headers", "form_data"],
+        "do_not_save_keys": [],
     }
 
     # This is how requests are received from the proxy

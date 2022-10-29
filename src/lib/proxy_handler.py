@@ -94,11 +94,6 @@ class ProxyZmqServer(QtCore.QObject):
     def websocket_message(self, message_state: ProxyWebsocketMessage):
         self.signals.proxy_ws_message.emit(message_state)
 
-        # TODO:
-        # if message_state['intercepted']:
-        #     http_flow.intercept_websocket_message = True
-        #     self.signals.flow_intercepted.emit(http_flow)
-
     def forward_flow(self, flow: HttpFlow, intercept_response: bool):
         if intercept_response:
             type = 'forward_and_intercept'

@@ -77,16 +77,7 @@ class WsPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_messages(message_ids)
 
-    # TODO: This should probably go in ProcessManager instead
-    def proxy_ws_message_received(self, proxy_ws_message: ProxyWebsocketMessage):
-        flow = HttpFlowRepo().find_by_uuid(proxy_ws_message['flow_uuid'])
-        if flow is None:
-            return
-
-        ws_message = WebsocketMessage.from_state(proxy_ws_message)
-        flow.add_ws_message(ws_message)
-        HttpFlowRepo().save(flow)
-
+    def proxy_ws_message_received(self, ws_message: WebsocketMessage):
         self.table_model.add_message(ws_message)
 
     # def search_requests(self, search_text):

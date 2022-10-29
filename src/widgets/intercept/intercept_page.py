@@ -2,6 +2,7 @@ from typing import Optional
 from PyQt6 import QtWidgets, QtCore
 from models.http_flow import HttpFlow
 from repos.http_flow_repo import HttpFlowRepo
+from repos.ws_message_repo import WsMessageRepo
 
 from views._compiled.intercept.intercept_page import Ui_InterceptPage
 from lib.intercept_queue import InterceptQueue
@@ -35,7 +36,7 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
 
-        if hasattr(self.intercepted_flow, 'intercept_websocket_message'):
+        if self.intercepted_flow.intercept_websocket_message:
             self.ui.interceptTitle.setText(
                 f"Intercepted Websocket Message: {flow.request.method} {flow.request.get_url()}"
             )
@@ -85,9 +86,14 @@ class InterceptPage(QtWidgets.QWidget):
         modified_headers = self.ui.headers.get_headers()
         modified_content = self.ui.bodyText.toPlainText()
 
-        if hasattr(self.intercepted_flow, 'intercept_websocket_message'):
-            print('Forwarding websocket!')
-            self.intercepted_flow.modify_latest_websocket_message(modified_content)
+        # TODO: Move this logic to the models
+        if self.intercepted_flow.intercept_websocket_message:
+            websocket_message = self.intercepted_flow.websocket_messages[-1]
+
+            if websocket_message.content != modified_content:
+                websocket_message.content_original = websocket_message.content
+                websocket_message.content = modified_content
+                WsMessageRepo().save(websocket_message)
 
         elif self.intercepted_flow.response is not None:
             modified_status_code = int(header_line_arr[0])

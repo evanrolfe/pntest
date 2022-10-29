@@ -24,7 +24,10 @@ class WsMessageRepo(BaseRepo):
         return request
 
     def save(self, ws_message: WebsocketMessage):
-        self.generic_insert(ws_message, self.table)
+        if ws_message.id > 0:
+            self.generic_update(ws_message, self.table)
+        else:
+            self.generic_insert(ws_message, self.table)
 
     def find_for_table(self, search_text: str) -> list[WebsocketMessage]:
         # TODO: These needs to apply host filters from Settings

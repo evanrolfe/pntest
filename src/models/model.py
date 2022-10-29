@@ -6,6 +6,7 @@ from typing import TypedDict
 class ModelMetaData(TypedDict):
     relationship_keys: list[str]
     json_columns: list[str]
+    do_not_save_keys: list[str]
 
 class Model():
     id: int = field(init=False, default=0)
@@ -19,5 +20,7 @@ class Model():
                 raw_table_values[key] = json.dumps(value)
             elif key not in self.meta['relationship_keys']:
                 raw_table_values[key] = value
+            elif key in self.meta['do_not_save_keys']:
+                continue
 
         return raw_table_values

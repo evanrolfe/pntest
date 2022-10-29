@@ -20,6 +20,7 @@ class WebsocketMessage(Model):
     meta = {
         "relationship_keys": [],
         "json_columns": [],
+        "do_not_save_keys": [],
     }
 
     @classmethod

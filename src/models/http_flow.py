@@ -34,6 +34,9 @@ class HttpFlow(Model):
     original_response: Optional[HttpResponse] = None
     websocket_messages: list[WebsocketMessage] = field(default_factory=lambda: [])
 
+    # Ephemeral properties
+    intercept_websocket_message: bool = False
+
     meta = {
         "relationship_keys": [
             "client",
@@ -44,6 +47,7 @@ class HttpFlow(Model):
             "websocket_messages"
         ],
         "json_columns": [],
+        "do_not_save_keys": ["intercept_websocket_message"],
     }
 
     TYPE_PROXY = 'proxy'
@@ -185,6 +189,8 @@ class HttpFlow(Model):
 
         if self.response is not None:
             serialized_dict['response'] = self.response.serialize()
+
+        serialized_dict['websocket_messages'] = [ws.serialize() for ws in self.websocket_messages]
 
         return serialized_dict
 

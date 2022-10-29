@@ -66,7 +66,7 @@ class BaseRepo:
         for key, value in model.__dict__.items():
             if  key in model.meta['json_columns']:
                 raw_table_values[key] = json.dumps(value)
-            elif key not in model.meta['relationship_keys']:
+            elif key not in model.meta['relationship_keys']+ model.meta['do_not_save_keys']:
                 raw_table_values[key] = value
 
         return raw_table_values
