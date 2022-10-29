@@ -6,7 +6,7 @@ from models.model import Model
 @dataclass(kw_only=True)
 class Client(Model):
     # Columns
-    id: int = field(init=False)
+    id: int = field(init=False, default=0)
     proxy_port: int
     browser_port: Optional[int] = field(default=None)
     launched_at: Optional[int] = field(default=None)

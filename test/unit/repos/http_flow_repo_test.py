@@ -242,3 +242,11 @@ class TestHttpFlowRepo:
 
         assert result is not None
         assert result.id == flow2.id
+
+    def test_delete(self, database, cleanup_database):
+        _, flow2 = create_multiple_flows()
+
+        HttpFlowRepo().delete(flow2)
+
+        results = HttpFlowRepo().find_for_table("")
+        assert len(results) == 1

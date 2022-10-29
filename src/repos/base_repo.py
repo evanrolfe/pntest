@@ -61,6 +61,14 @@ class BaseRepo:
         self.conn.execute(query.get_sql())
         self.conn.commit()
 
+    def generic_delete(self, model: Model, table: Table):
+        if model.id == 0:
+            raise Exception("cannot delete a row which isn't saved")
+
+        query = Query.from_(table).delete().where(table.id == model.id)
+        self.conn.execute(query.get_sql())
+        self.conn.commit()
+
     def __model_row_dict(self, model: Model) -> dict[str, Any]:
         raw_table_values = {}
         for key, value in model.__dict__.items():

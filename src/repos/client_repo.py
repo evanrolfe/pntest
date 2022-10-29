@@ -24,4 +24,7 @@ class ClientRepo(BaseRepo):
         return client
 
     def save(self, client: Client):
-        self.generic_insert(client, self.table)
+        if client.id > 0:
+            self.generic_update(client, self.table)
+        else:
+            self.generic_insert(client, self.table)

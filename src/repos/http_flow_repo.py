@@ -2,7 +2,6 @@ import sqlite3
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order
 
-
 from models.client import Client
 from models.http_flow import HttpFlow
 from models.http_request import HttpRequest
@@ -18,22 +17,6 @@ class HttpFlowRepo(BaseRepo):
     def __init__(self):
         super().__init__()
         self.table = Table('http_flows')
-
-    def find(self, id: int) -> Optional[HttpFlow]:
-        query = Query.from_(self.table).select('*').where(self.table.id == id)
-        results = self.__find_by_query(query.get_sql())
-
-        if len(results) == 0:
-            return None
-        return results[0]
-
-    def find_by_uuid(self, uuid: str) -> Optional[HttpFlow]:
-        query = Query.from_(self.table).select('*').where(self.table.uuid == uuid)
-        results = self.__find_by_query(query.get_sql())
-
-        if len(results) == 0:
-            return None
-        return results[0]
 
     def save(self, flow: HttpFlow):
         # Set client_id from associated Client object
@@ -73,6 +56,41 @@ class HttpFlowRepo(BaseRepo):
             self.generic_update(flow, self.table)
         else:
             self.generic_insert(flow, self.table)
+
+    def delete(self, flow: HttpFlow):
+        # TODO: Put all these operations in a transaction and rollback if any fail
+        self.generic_delete(flow, self.table)
+
+        if flow.request.id > 0:
+            HttpRequestRepo().delete(flow.request)
+
+        if flow.original_request is not None:
+            if flow.original_request.id == 0:
+                HttpRequestRepo().delete(flow.original_request)
+
+        if flow.response is not None:
+            if flow.response.id == 0:
+                HttpResponseRepo().delete(flow.response)
+
+        if flow.original_response is not None:
+            if flow.original_response.id == 0:
+                HttpResponseRepo().delete(flow.original_response)
+
+    def find(self, id: int) -> Optional[HttpFlow]:
+        query = Query.from_(self.table).select('*').where(self.table.id == id)
+        results = self.__find_by_query(query.get_sql())
+
+        if len(results) == 0:
+            return None
+        return results[0]
+
+    def find_by_uuid(self, uuid: str) -> Optional[HttpFlow]:
+        query = Query.from_(self.table).select('*').where(self.table.uuid == uuid)
+        results = self.__find_by_query(query.get_sql())
+
+        if len(results) == 0:
+            return None
+        return results[0]
 
     def find_for_table(self, search_text: str) -> list[HttpFlow]:
         # TODO: These needs to apply host filters from Settings
@@ -126,20 +144,3 @@ class HttpFlowRepo(BaseRepo):
             flows.append(flow)
 
         return flows
-
-# TODO:
-# class HttpFlowObserver:
-#     def deleted(self, flow):
-#         if flow.request:
-#             flow.request.delete()
-
-#         if flow.original_request:
-#             flow.original_request.delete()
-
-#         if flow.response:
-#             flow.response.delete()
-
-#         if flow.original_response:
-#             flow.original_response.delete()
-
-# HttpFlow.observe(HttpFlowObserver())

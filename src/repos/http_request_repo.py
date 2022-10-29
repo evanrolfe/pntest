@@ -26,7 +26,11 @@ class HttpRequestRepo(BaseRepo):
         return request
 
     def save(self, request: HttpRequest):
+        # NOTE: Requests are only ever inserted, never updated.
         self.generic_insert(request, self.table)
+
+    def delete(self, request: HttpRequest):
+        self.generic_delete(request, self.table)
 
     def find_by_ids(self, ids: list[int]) -> list[HttpRequest]:
         query = Query.from_(self.table).select('*').where(self.table.id.isin(ids))
