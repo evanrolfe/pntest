@@ -9,11 +9,8 @@ from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 
 class TestClientRepo:
     def test_saving_and_retrieving_a_client(self, database, cleanup_database):
-        conn = Database.get_instance().conn
         client_repo = ClientRepo()
-
         client = Client(title="test client!", type="browser", proxy_port=8080)
-
         client_repo.save(client)
 
         assert client.id is not None

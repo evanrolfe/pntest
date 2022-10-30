@@ -90,16 +90,19 @@ class HttpRequest(Model):
         # attributes['headers'] = json.loads(attributes['headers'])
         return {}
 
-    def set_blank_values_for_editor(self) -> None:
-        self.http_version = 'HTTP/1.1'
-        self.headers = {}
-        self.host = ''
-        self.port = 80
-        self.method = 'GET'
-        self.scheme = 'http'
-        self.path = ''
-        self.content = ''
-        self.form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'fuzz_data': None}
+    @classmethod
+    def build_blank_for_editor(cls):
+        return HttpRequest(
+            http_version = 'HTTP/1.1',
+            headers = {},
+            host = '',
+            port = 80,
+            method = 'GET',
+            scheme = 'http',
+            path = '',
+            content = '',
+            form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'fuzz_data': None},
+        )
 
     def set_headers(self, headers: Headers) -> None:
         self.headers = headers

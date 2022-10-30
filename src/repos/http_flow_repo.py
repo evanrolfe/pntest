@@ -98,6 +98,10 @@ class HttpFlowRepo(BaseRepo):
         query = Query.from_(self.table).select('*').where(self.table.type == HttpFlow.TYPE_PROXY).orderby(self.table.id, order=Order.desc)
         return self.__find_by_query(query.get_sql())
 
+    def find_by_ids(self, ids: list[int]) -> list[HttpFlow]:
+        query = Query.from_(self.table).select('*').where(self.table.id.isin(ids))
+        return self.__find_by_query(query.get_sql())
+
     def __find_by_query(self, sql_query: str) -> list[HttpFlow]:
         cursor = self.conn.cursor()
         cursor.execute(sql_query)
@@ -141,6 +145,7 @@ class HttpFlowRepo(BaseRepo):
 
             flow = HttpFlow(**row_values)
             flow.id = row['id']
+            flow.created_at = row['created_at']
             flows.append(flow)
 
         return flows

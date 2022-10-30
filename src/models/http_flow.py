@@ -57,18 +57,13 @@ class HttpFlow(Model):
     TYPE_EDITOR_FUZZ = 'editor_fuzz'
 
     @classmethod
-    def create_for_editor(cls, type):
-        pass
-        # request = HttpRequest()
-        # request.set_blank_values_for_editor()
-        # request.save()
+    def build_blank_for_editor(cls, type: str):
+        request = HttpRequest.build_blank_for_editor()
 
-        # flow = HttpFlow()
-        # flow.type = type
-        # flow.request_id = request.id
-        # flow.save()
-
-        # return flow
+        return HttpFlow(
+            type=type,
+            request=request,
+        )
 
     @classmethod
     # TODO: Type check the ProxyRequest
@@ -82,34 +77,6 @@ class HttpFlow(Model):
             type = HttpFlow.TYPE_PROXY,
             request = request,
         )
-
-    @classmethod
-    def update_from_proxy_response(cls, proxy_response: ProxyResponse):
-        pass
-        # flow = HttpFlow.where('uuid', '=', proxy_response['flow_uuid']).first()
-        # if flow is None:
-        #     return
-
-        # response = HttpResponse.from_state(proxy_response)
-        # response.save()
-
-        # # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
-        # database = Database.get_instance()
-        # database.db.table('http_flows').where('id', flow.id).update(response_id=response.id)
-
-        # flow2 = HttpFlow.find(flow.id)
-        # return flow2
-
-    @classmethod
-    def create_from_proxy_websocket_message(cls, proxy_websocket_message):
-        pass
-        # http_flow = HttpFlow.where('uuid', '=', proxy_websocket_message['flow_uuid']).first()
-
-        # websocket_message = WebsocketMessage.from_state(proxy_websocket_message)
-        # websocket_message.http_flow_id = http_flow.id
-        # websocket_message.save()
-
-        # return http_flow, websocket_message
 
     def add_modified_request(self, modified_request: HttpRequest):
         if self.request_id is None:
@@ -240,45 +207,6 @@ class HttpFlow(Model):
         # new_flow.save()
 
         # return new_flow
-
-    # TODO
-    def modify_response(self, modified_status_code: int, modified_headers: Headers, modified_content: str):
-        pass
-        # original_response = self.response().first()
-        # original_state = original_response.get_state()
-
-        # response_unchanged = (
-        #     original_state['status_code'] == modified_status_code and
-        #     original_state['headers'] == modified_headers and
-        #     original_state['content'] == modified_content
-        # )
-
-        # if response_unchanged:
-        #     return
-
-        # original_state['status_code'] = modified_status_code
-        # original_state['headers'] = modified_headers
-        # original_state['content'] = modified_content
-
-        # new_response = HttpResponse.from_state(original_state)
-        # new_response.save()
-
-        # # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
-        # database = Database.get_instance()
-        # database.db.table('http_flows').where('id', self.id).update(original_response_id=original_response.id, response_id=new_response.id)
-
-    # TODO
-    def modify_latest_websocket_message(self, modified_content):
-        pass
-        # websocket_messages = self.websocket_messages().get()
-        # websocket_message = websocket_messages[-1]
-
-        # if websocket_message.content == modified_content:
-        #     return
-
-        # websocket_message.content_original = websocket_message.content
-        # websocket_message.content = modified_content
-        # websocket_message.save()
 
     # TODO
     def reload(self):
