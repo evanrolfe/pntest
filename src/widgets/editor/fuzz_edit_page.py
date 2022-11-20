@@ -1,15 +1,20 @@
+from typing import Optional
 from PyQt6 import QtWidgets, QtCore, QtGui
-from lib.fuzz_http_requests import FuzzHttpRequests
-from models.data.http_flow import HttpFlow
+from models.editor_item import EditorItem
+from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
 
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
-from models.data.http_request import FormData
+from lib.fuzz_http_requests import FuzzHttpRequests
+from models.http_flow import HttpFlow
+from models.http_request import FormData
 
 class FuzzEditPage(QtWidgets.QWidget):
     flow: HttpFlow
+    original_flow: HttpFlow
+    editor_item: EditorItem
     fuzzer: FuzzHttpRequests
 
     form_input_changed = QtCore.pyqtSignal(bool)
@@ -17,12 +22,14 @@ class FuzzEditPage(QtWidgets.QWidget):
 
     METHODS = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD']
 
-    def __init__(self, editor_item):
+    def __init__(self, editor_item: EditorItem):
         super(FuzzEditPage, self).__init__()
 
         self.editor_item = editor_item
-        self.flow = self.editor_item.item()
-        self.request = self.flow.request
+        flow = self.editor_item.item
+        if flow is None:
+            raise Exception("FuzzEditPage needs an editor item with a flow!")
+        self.flow = flow
         self.original_flow = self.flow
 
         self.ui = Ui_FuzzEditPage()
@@ -88,10 +95,8 @@ class FuzzEditPage(QtWidgets.QWidget):
         if not self.ui.examplesTable.isVisible():
             self.toggle_examples_table()
 
-        # TODO: Find a more effecient way of doing this:
-        self.flow = self.flow.reload()
+        HttpFlowRepo().save(example_flow)
         self.show_examples()
-        print(f'Got response for example: {example_flow.request.get_url()}')
 
     def fuzz_finished(self):
         print('Finished!')
@@ -102,14 +107,14 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.fuzzer.cancel()
 
     def show_examples(self):
-        self.ui.examplesTable.set_flow(self.flow)
+        self.ui.examplesTable.set_flow(self.original_flow)
 
     def set_send_save_buttons_enabled(self, enabled):
         self.ui.fuzzButton.setVisible(enabled)
         self.ui.saveButton.setVisible(enabled)
 
     # When an example is selected it can either be the original request or an example
-    def show_example(self, flow):
+    def show_example(self, flow: HttpFlow):
         self.flow = flow
 
         if self.flow.is_example():
@@ -140,27 +145,22 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.ui.urlInput.setText(self.flow.request.get_url())
         # self.ui.fuzzView.show_real_request()
 
-    def delete_examples(self, flows):
+    def delete_examples(self, flows: list[HttpFlow]):
         example_flows = [f for f in flows if f.is_example()]
 
         if len(example_flows) == 0:
             return
 
-        for flow in example_flows:
-            flow.delete()
+        for example in example_flows:
+            HttpFlowRepo().delete(example)
+            self.original_flow.examples = [ex for ex in self.original_flow.examples if ex.id != example.id]
 
-        self.ui.examplesTable.reload()
+        self.show_examples()
+        # self.ui.examplesTable.refresh()
 
     def save_request(self):
         self.update_request_with_values_from_form()
-        if hasattr(self.flow, 'id'):
-            self.flow.request.save()
-        else:
-            saved_editor_item = self.editor_item.save()
-            self.editor_item = saved_editor_item
-            self.flow = self.editor_item.item()
-            self.request = self.flow.request
-            self.original_flow = self.flow
+        HttpFlowRepo().save(self.flow)
 
         self.form_input_changed.emit(False)
         self.request_saved.emit()
@@ -247,7 +247,7 @@ class FuzzEditPage(QtWidgets.QWidget):
         # self.settings.save("FuzzEditPage.splitter", splitter_state)
         # self.settings.save("FuzzEditPage.splitter2", splitter_state2)
 
-    def set_method_on_form(self, method):
+    def set_method_on_form(self, method: Optional[str]):
         if method is None:
             index = 0
         else:

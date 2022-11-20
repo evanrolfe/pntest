@@ -14,7 +14,7 @@ class EditorItem(Model):
     parent_id: Optional[int] = field(default=None)
     name: str
     item_type: str
-    item_id: Optional[int]
+    item_id: Optional[int] = field(default=None)
 
     # Relations
     item: Optional[HttpFlow] = None
@@ -43,3 +43,20 @@ class EditorItem(Model):
 
     def item_is_flow(self) -> bool:
         return self.item_type in [self.TYPE_HTTP_FLOW, self.TYPE_FUZZ]
+
+    def duplicate(self) -> Optional[EditorItem]:
+        if self.item_type != self.TYPE_HTTP_FLOW:
+            print('WARNING - cannot duplicate editor items which arent http_flows')
+            return
+
+        original_flow = self.item
+        if original_flow is None:
+            return
+
+        flow = original_flow.duplicate_for_editor()
+
+        return EditorItem(
+            name = self.name,
+            item_type = self.item_type,
+            item = flow
+        )

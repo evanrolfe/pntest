@@ -16,6 +16,7 @@ class ProxyWrapper():
         self.opts = options.Options()
         self.opts.listen_port = listen_port
         self.opts.confdir = include_path
+        self.opts.ssl_insecure = True
         self.master = master.Master(self.opts)
         proxy_events.set_proxy(self)
         self.master.addons.add(proxy_events)

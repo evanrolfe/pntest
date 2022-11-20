@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
 
@@ -9,6 +10,7 @@ from models.websocket_message import WebsocketMessage
 from models.model import Model
 from lib.types import Headers
 from lib.background_worker import WorkerSignals
+from lib.http_request import HttpRequest as HttpRequestLib
 from proxy.common_types import ProxyRequest, ProxyResponse
 
 @dataclass(kw_only=True)
@@ -34,6 +36,7 @@ class HttpFlow(Model):
     response: Optional[HttpResponse] = None
     original_response: Optional[HttpResponse] = None
     websocket_messages: list[WebsocketMessage] = field(default_factory=lambda: [])
+    examples: list[HttpFlow] = field(default_factory=lambda: [])
 
     # Ephemeral properties
     intercept_websocket_message: bool = False
@@ -45,7 +48,8 @@ class HttpFlow(Model):
             "original_request",
             "response",
             "original_response",
-            "websocket_messages"
+            "websocket_messages",
+            "examples",
         ],
         "json_columns": [],
         "do_not_save_keys": ["intercept_websocket_message"],
@@ -161,52 +165,38 @@ class HttpFlow(Model):
 
         return serialized_dict
 
-    # TODO
     def duplicate_for_editor(self):
-        pass
-        # new_request = self.request.duplicate()
-        # new_request.overwrite_calculated_headers()
-        # new_request.save()
+        new_request = self.request.duplicate()
+        new_request.overwrite_calculated_headers()
 
-        # new_flow = HttpFlow()
-        # new_flow.type = HttpFlow.TYPE_EDITOR
-        # new_flow.request_id = new_request.id
-        # new_flow.save()
+        return HttpFlow(
+            type = self.type,
+            title =  f'{self.title} (Copy)',
+            request = new_request,
+        )
 
-        # return new_flow
+    def build_example(self, response) -> HttpFlow:
+        example_flow = HttpFlow(
+            type = HttpFlow.TYPE_EDITOR_EXAMPLE,
+            title = f'Example 123 TODO', # #{self.examples.count() + 1}
+            http_flow_id = self.id,
+            request = self.request.duplicate(),
+            response = response,
+        )
+        self.examples.append(example_flow)
 
-    # TODO
-    def duplicate_for_example(self, response):
-        pass
-        # response.save()
+        return example_flow
 
-        # new_request = self.request.duplicate()
-        # new_request.save()
+    def build_example_for_fuzz(self, num) -> HttpFlow:
+        example_flow = HttpFlow(
+            type = HttpFlow.TYPE_EDITOR_EXAMPLE,
+            title = f'Example #{num}',
+            http_flow_id = self.id,
+            request = self.request.duplicate(),
+        )
+        self.examples.append(example_flow)
 
-        # new_flow = HttpFlow()
-        # new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
-        # new_flow.title = f'Example #{self.examples.count() + 1}'
-        # new_flow.request_id = new_request.id
-        # new_flow.response_id = response.id
-        # new_flow.http_flow_id = self.id
-        # new_flow.save()
-
-        # return new_flow
-
-    # TODO
-    def duplicate_for_fuzz_example(self, num):
-        pass
-        # new_request = self.request.duplicate()
-        # new_request.save()
-
-        # new_flow = HttpFlow()
-        # new_flow.type = HttpFlow.TYPE_EDITOR_EXAMPLE
-        # new_flow.title = f'Example #{num}'
-        # new_flow.request_id = new_request.id
-        # new_flow.http_flow_id = self.id
-        # new_flow.save()
-
-        # return new_flow
+        return example_flow
 
     # TODO
     def reload(self):
@@ -222,26 +212,12 @@ class HttpFlow(Model):
     def is_editable(self):
         return True
 
-    # TODO:
-    def make_request(self, signals: Optional[WorkerSignals] = None):
-        pass
-        # method = self.request.method
-        # url = self.request.get_url()
-        # headers = self.request.get_headers() or {}
-        # content = self.request.content
-        # req = HttpRequestLib(method, url, headers, content)
+    def make_request(self, signals: Optional[WorkerSignals] = None) -> HttpResponse:
+        method = self.request.method
+        url = self.request.get_url()
+        headers = self.request.get_headers() or {}
+        content = self.request.content
+        req = HttpRequestLib(method, url, headers, content)
 
-        # raw_response = req.send()
-        # http_response = HttpResponse.from_requests_response(raw_response)
-
-        # return http_response
-
-    # TODO:
-    def make_request_and_save(self):
-        pass
-        # response = self.make_request()
-        # response.save()
-
-        # # Awful hack, this ORM is total sh*te and the update does not even work, so I have to use a query
-        # database = Database.get_instance()
-        # database.db.table('http_flows').where('id', self.id).update(response_id=response.id)
+        raw_response = req.send()
+        return HttpResponse.from_requests_response(raw_response)

@@ -60,6 +60,12 @@ class HttpRequest(Model):
         "do_not_save_keys": [],
     }
 
+    FUZZ_TYPE_LABELS = ['One To One', 'Cartesian Product']
+    FUZZ_TYPE_KEYS = ['one_to_one', 'cartesian']
+
+    DELAY_TYPE_LABELS = ['Disabled', 'Fixed Time Delay', 'Random Time Delay']
+    DELAY_TYPE_KEYS = ['disabled', 'fixed', 'random']
+
     # This is how requests are received from the proxy
     # TODO: Use a TypedDict instead of Any
     # TODO: Fix url value in form_data

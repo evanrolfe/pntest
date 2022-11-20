@@ -1,6 +1,7 @@
 from typing import Optional
 from PyQt6 import QtCore
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
 
 class ExamplesTableModel(QtCore.QAbstractTableModel):
     headers: list[str]
@@ -54,14 +55,14 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
                     return flow.title
                 elif (index.column() == 1):
                     response = flow.response
-                    if response == None:
+                    if response is None:
                         return
 
                     return str(response.status_code)
                 elif (index.column() == 2):
                     response = flow.response
                     response = flow.response
-                    if response == None:
+                    if response is None:
                         return
 
                     content = getattr(response, 'content', None)
@@ -80,7 +81,7 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
             if value != '':
                 flow = self.flows[index.row()]
                 flow.title = value
-                flow.save()
+                HttpFlowRepo().save(flow)
 
             return True
 
@@ -88,3 +89,6 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
 
     def roleNameArray(self) -> list[str]:
         return self.headers
+
+    def refresh(self) -> None:
+        self.layoutChanged.emit()

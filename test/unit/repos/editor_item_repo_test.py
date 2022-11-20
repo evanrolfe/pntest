@@ -8,7 +8,48 @@ from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 from support.factories.editor_item_factory import EditorItemFactory
 
-class TestClientRepo:
+def create_editor_item_with_many_children() -> list[EditorItem]:
+    editor_items = []
+
+    repo = EditorItemRepo()
+    parent_item: EditorItem = EditorItemFactory.build(name="parent")
+    parent_item.build_blank_http_flow()
+    repo.save(parent_item)
+    editor_items.append(parent_item)
+
+    parent_item2: EditorItem = EditorItemFactory.build(name="parent2")
+    parent_item2.build_blank_http_flow()
+    repo.save(parent_item2)
+    editor_items.append(parent_item2)
+
+    child_item1: EditorItem = EditorItemFactory.build(name="child1", parent_id=parent_item.id)
+    child_item1.build_blank_http_flow()
+    repo.save(child_item1)
+    editor_items.append(child_item1)
+
+    child_item2: EditorItem = EditorItemFactory.build(name="child2", parent_id=parent_item.id)
+    child_item2.build_blank_http_flow()
+    repo.save(child_item2)
+    editor_items.append(child_item2)
+
+    grand_child_item1: EditorItem = EditorItemFactory.build(name="grandchild1", parent_id=child_item2.id)
+    grand_child_item1.build_blank_http_flow()
+    repo.save(grand_child_item1)
+    editor_items.append(grand_child_item1)
+
+    grand_child_item2: EditorItem = EditorItemFactory.build(name="grandchild2", parent_id=child_item2.id)
+    grand_child_item2.build_blank_http_flow()
+    repo.save(grand_child_item2)
+    editor_items.append(grand_child_item2)
+
+    great_grand_child_item2: EditorItem = EditorItemFactory.build(name="greatgrandchild2", parent_id=grand_child_item1.id)
+    great_grand_child_item2.build_blank_http_flow()
+    repo.save(great_grand_child_item2)
+    editor_items.append(great_grand_child_item2)
+
+    return editor_items
+
+class TestEditorItemRepo:
     def test_saving_and_retrieving_an_item(self, database, cleanup_database):
         repo = EditorItemRepo()
         editor_item: EditorItem = EditorItemFactory.build()
@@ -36,33 +77,7 @@ class TestClientRepo:
 
     def test_saving_and_retrieving_an_item_with_children(self, database, cleanup_database):
         repo = EditorItemRepo()
-        parent_item: EditorItem = EditorItemFactory.build(name="parent")
-        parent_item.build_blank_http_flow()
-        repo.save(parent_item)
-
-        parent_item2: EditorItem = EditorItemFactory.build(name="parent2")
-        parent_item2.build_blank_http_flow()
-        repo.save(parent_item2)
-
-        child_item1: EditorItem = EditorItemFactory.build(name="child1", parent_id=parent_item.id)
-        child_item1.build_blank_http_flow()
-        repo.save(child_item1)
-
-        child_item2: EditorItem = EditorItemFactory.build(name="child2", parent_id=parent_item.id)
-        child_item2.build_blank_http_flow()
-        repo.save(child_item2)
-
-        grand_child_item1: EditorItem = EditorItemFactory.build(name="grandchild1", parent_id=child_item2.id)
-        grand_child_item1.build_blank_http_flow()
-        repo.save(grand_child_item1)
-
-        grand_child_item2: EditorItem = EditorItemFactory.build(name="grandchild2", parent_id=child_item2.id)
-        grand_child_item2.build_blank_http_flow()
-        repo.save(grand_child_item2)
-
-        great_grand_child_item2: EditorItem = EditorItemFactory.build(name="greatgrandchild2", parent_id=grand_child_item1.id)
-        great_grand_child_item2.build_blank_http_flow()
-        repo.save(great_grand_child_item2)
+        create_editor_item_with_many_children()
 
         # Find all items with children
         editor_items = repo.find_all_with_children()
@@ -72,3 +87,20 @@ class TestClientRepo:
         assert len(root_items) == 2
 
         # TODO: Actually test the result is correct here
+
+    def test_deleting_an_item_and_all_its_offspring(self, database, cleanup_database):
+        repo = EditorItemRepo()
+        created_items = create_editor_item_with_many_children()
+
+        # Delete one of the root items
+        editor_items = repo.find_all_with_children()
+        assert editor_items[0] is not None
+        repo.delete(editor_items[0])
+
+        # Find all items with children
+        editor_items = repo.find_all_with_children()
+        assert len(editor_items) == 4
+
+        root_items = [item for item in editor_items if item.parent_id is None]
+        assert len(root_items) == 1
+

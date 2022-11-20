@@ -4,8 +4,8 @@ from PyQt6 import QtCore
 import itertools
 from typing import cast
 from lib.background_worker import WorkerSignals
-from models.data.http_flow import HttpFlow
-from models.data.http_request import FuzzFormData, HttpRequest
+from models.http_flow import HttpFlow
+from models.http_request import FuzzFormData, HttpRequest
 
 class FuzzHttpRequests:
     flow: HttpFlow
@@ -49,14 +49,14 @@ class FuzzHttpRequests:
                 payload_values[payload.key] = payload.values[i]
 
             # 2.1 Generate an HttpFlow + HttpRequest
-            example_flow = self.flow.duplicate_for_fuzz_example(i + 1)
+            example_flow = self.flow.build_example_for_fuzz(i + 1)
 
             # 2.2 Replace the ${payload:usernames} values in the request
             example_flow.request.apply_payload_values(payload_values)
 
-            # 2.3 Make the request
-            example_flow.request.save()
-            example_flow.make_request_and_save()
+            # 2.3 Make the request and save
+            response = example_flow.make_request()
+            example_flow.response = response
 
             # 2.4 Emit a signal
             signals.response_received.emit(example_flow)
@@ -65,6 +65,7 @@ class FuzzHttpRequests:
             self.sleep_inbetween_requests()
 
     def start_cartesian(self, signals: WorkerSignals) -> None:
+        pass
         # 1. Load all payloads
         payloads = self.flow.request.payload_files()
         for p in payloads:
@@ -83,14 +84,14 @@ class FuzzHttpRequests:
                 payload_values[payload.key] = product[j]
 
             # 2.1 Generate an HttpFlow + HttpRequest
-            example_flow = self.flow.duplicate_for_fuzz_example(i + 1)
+            example_flow = self.flow.build_example_for_fuzz(i + 1)
 
             # 2.2 Replace the ${payload:usernames} values in the request
             example_flow.request.apply_payload_values(payload_values)
 
             # 2.3 Make the request
-            example_flow.request.save()
-            example_flow.make_request_and_save()
+            response = example_flow.make_request()
+            example_flow.response = response
 
             # 2.4 Emit a signal
             signals.response_received.emit(example_flow)

@@ -10,4 +10,3 @@ class EditorItemFactory(factory.Factory):
     name = "A saved request"
     item_type = EditorItem.TYPE_HTTP_FLOW
     item_id = None
-

@@ -27,8 +27,12 @@ class HttpRequestRepo(BaseRepo):
         return request
 
     def save(self, request: HttpRequest):
-        # NOTE: Requests are only ever inserted, never updated.
-        self.generic_insert(request, self.table)
+        # NOTE: Proxy Requests should only ever be inserted, never updated.
+        # Editor requests can be updated.
+        if request.id > 0:
+            self.generic_update(request, self.table)
+        else:
+            self.generic_insert(request, self.table)
 
     def delete(self, request: HttpRequest):
         self.generic_delete(request, self.table)

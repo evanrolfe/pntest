@@ -1,8 +1,7 @@
 from typing import Optional, cast
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets, QtGui
 
-from models.data.editor_item import EditorItem
-from models.data.editor_item_unsaved import EditorItemUnsaved
+from models.editor_item import EditorItem
 from widgets.editor.request_edit_page import RequestEditPage
 from widgets.editor.fuzz_edit_page import FuzzEditPage
 
@@ -20,11 +19,16 @@ class Tabs(QtWidgets.QTabWidget):
         self.tabCloseRequested.connect(self.close_tab)
 
     def open_blank_item(self):
-        editor_item = EditorItemUnsaved()
+        editor_item = EditorItem(name='Untitled', item_type=EditorItem.TYPE_HTTP_FLOW)
+        editor_item.build_blank_http_flow()
+
         request_edit_page = RequestEditPage(editor_item)
         request_edit_page.request_saved.connect(self.reload_icon)
         request_edit_page.request_saved.connect(self.new_request_saved)
-        self.insertTab(self.count(), request_edit_page, editor_item.icon(), editor_item.name)
+
+        # TODO: Set the icon
+        icon = QtGui.QIcon(f"assets:icons/dark/methods/fuzz.png") # editor_item.icon()
+        self.insertTab(self.count(), request_edit_page, icon, editor_item.name)
         self.setCurrentIndex(self.count() - 1)
 
     def open_item(self, editor_item: EditorItem):
@@ -42,7 +46,8 @@ class Tabs(QtWidgets.QTabWidget):
                 lambda modified: self.editor_item_form_changed(editor_item, modified)
             )
             edit_page.request_saved.connect(lambda: self.reload_icon(editor_item))
-            icon = editor_item.icon()
+            # TODO: Set the icon
+            icon = QtGui.QIcon(f"assets:icons/dark/methods/fuzz.png") # editor_item.icon()
             if icon is None:
                 return
             self.insertTab(self.count(), edit_page, icon, editor_item.name)
@@ -78,7 +83,10 @@ class Tabs(QtWidgets.QTabWidget):
         index = self.get_index_for_editor_item(editor_item)
         if index is None:
             return
-        icon = editor_item.icon()
+
+        # TODO: Set the icon
+        icon = QtGui.QIcon(f"assets:icons/dark/methods/fuzz.png") # editor_item.icon()
+
         if icon is None:
             return
         self.setTabIcon(index, icon)

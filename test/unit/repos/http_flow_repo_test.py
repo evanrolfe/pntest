@@ -52,6 +52,30 @@ def create_multiple_flows() -> list[HttpFlow]:
 
     return [flow1, flow2]
 
+
+def create_multiple_editor_flows_with_examples() -> list[HttpFlow]:
+    flow1 = HttpFlow(
+        type="editor",
+        request=HttpRequestFactory.build(path="/one"),
+    )
+    flow2 = HttpFlow(
+        type="editor",
+        request=HttpRequestFactory.build(path="/two"),
+    )
+    HttpFlowRepo().save(flow1)
+    HttpFlowRepo().save(flow2)
+
+    response1: HttpResponse = HttpResponseFactory.build()
+    flow1.build_example(response1)
+    HttpFlowRepo().save(flow1)
+
+    response2: HttpResponse = HttpResponseFactory.build()
+    flow1.build_example(response2)
+    HttpFlowRepo().save(flow1)
+
+    return [flow1, flow2]
+
+
 class TestHttpFlowRepo:
     def test_saving_and_retrieving_a_flow(self, database, cleanup_database):
         http_flow_repo = HttpFlowRepo()
@@ -199,6 +223,34 @@ class TestHttpFlowRepo:
         assert ws_message.id > 0
         assert ws_message.http_flow_id == flow.id
 
+    def test_saving_a_flow_and_adding_an_example(self, database, cleanup_database):
+        # 1. Create a Client, HttpFlow with HttpRequest
+        http_flow_repo = HttpFlowRepo()
+        request = HttpRequestFactory.build(path="/")
+
+        flow = HttpFlow(type="editor", request=request)
+        http_flow_repo.save(flow)
+
+        response: HttpResponse = HttpResponseFactory.build()
+        flow.build_example(response)
+        http_flow_repo.save(flow)
+
+        assert len(flow.examples) == 1
+        example = flow.examples[0]
+
+        assert example.response == response
+        assert example.id > 0
+        assert example.request.id > 0
+        assert example.response is not None
+        assert example.response.id > 0
+        assert example.http_flow_id == flow.id
+
+        flow2 = http_flow_repo.find(flow.id)
+        assert flow2 is not None
+        assert flow2.id == flow.id
+        assert len(flow2.examples) == 1
+        assert flow2.examples[0].id > 0
+
     def test_find_for_table(self, database, cleanup_database):
         flow1, flow2 = create_multiple_flows()
 
@@ -227,6 +279,23 @@ class TestHttpFlowRepo:
         assert results[1].original_response is not None
         assert results[0].original_response.id > 0
         assert results[1].original_response.id > 0
+
+    def test_find_by_ids(self, database, cleanup_database):
+        flow1, flow2 = create_multiple_editor_flows_with_examples()
+
+        results = HttpFlowRepo().find_by_ids([flow1.id, flow2.id])
+
+        assert len(results) == 2
+        assert results[0].id == flow1.id
+        assert results[1].id == flow2.id
+
+        assert results[0].request is not None
+        assert results[1].request is not None
+        assert results[0].request.id > 0
+        assert results[1].request.id > 0
+
+        assert len(results[0].examples) == 2
+        assert len(results[1].examples) == 0
 
     def test_find_by_uuid(self, database, cleanup_database):
         _, flow2 = create_multiple_flows()

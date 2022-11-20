@@ -66,6 +66,14 @@ class EditorItemRepo(BaseRepo):
         else:
             self.generic_insert(editor_item, self.table)
 
+    # Delete the EditorItem and all of its children, its childrens' children etc...
+    def delete(self, editor_item: EditorItem):
+        # TODO: Put all these operations in a transaction and rollback if any fail
+        self.generic_delete(editor_item, self.table)
+
+        for child in editor_item.children:
+            self.generic_delete(child, self.table)
+
     def __find_by_query(self, sql_query: str) -> list[EditorItem]:
         cursor = self.conn.cursor()
         cursor.execute(sql_query)

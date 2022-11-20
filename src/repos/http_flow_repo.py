@@ -23,9 +23,8 @@ class HttpFlowRepo(BaseRepo):
         if flow.client is not None:
             flow.client_id = flow.client.id
 
-        # Set request_id from associated HttpRequest object and save if its not persisted
-        if flow.request.id == 0:
-            HttpRequestRepo().save(flow.request)
+        # Set request_id from associated HttpRequest object and save
+        HttpRequestRepo().save(flow.request)
         flow.request_id = flow.request.id
 
         # Set original_request_id from associated HttpRequest object and save if its not persisted
@@ -50,6 +49,11 @@ class HttpFlowRepo(BaseRepo):
         for ws_message in flow.websocket_messages:
             if ws_message.id == 0:
                 WsMessageRepo().save(ws_message)
+
+        # Save the examples
+        for example_flow in flow.examples:
+            if example_flow.id == 0:
+                self.save(example_flow)
 
         # Update or insert the HttpFlow
         if flow.id > 0:
@@ -102,7 +106,12 @@ class HttpFlowRepo(BaseRepo):
         query = Query.from_(self.table).select('*').where(self.table.id.isin(ids))
         return self.__find_by_query(query.get_sql())
 
-    def __find_by_query(self, sql_query: str) -> list[HttpFlow]:
+    # This is used to find all example flows for a set of flows
+    def find_by_http_flow_id(self, http_flow_ids: list[int]) -> list[HttpFlow]:
+        query = Query.from_(self.table).select('*').where(self.table.http_flow_id.isin(http_flow_ids))
+        return self.__find_by_query(query.get_sql(), False)
+
+    def __find_by_query(self, sql_query: str, load_examples = True) -> list[HttpFlow]:
         cursor = self.conn.cursor()
         cursor.execute(sql_query)
         rows: list[sqlite3.Row] = cursor.fetchall()
@@ -123,6 +132,19 @@ class HttpFlowRepo(BaseRepo):
         responses = http_response_repo.find_by_ids(response_ids)
         responses_by_id: dict[int, HttpResponse] = self.index_models_by_id(responses)
 
+        #  Pre-load the associated example HttpFlows from db in a single query
+        example_flows_by_id: dict[int, list[HttpFlow]] = {}
+        if load_examples:
+            http_flow_ids =  [r['id'] for r in rows]
+            example_flows = self.find_by_http_flow_id(http_flow_ids)
+            for example_flow in example_flows:
+                if example_flow.http_flow_id is None:
+                    continue
+                if example_flows_by_id.get(example_flow.http_flow_id):
+                    example_flows_by_id[example_flow.http_flow_id].append(example_flow)
+                else:
+                    example_flows_by_id[example_flow.http_flow_id] = [example_flow]
+
         # Instantiate the flows with their associated objects
         flows: list[HttpFlow] = []
         for row in rows:
@@ -142,6 +164,11 @@ class HttpFlowRepo(BaseRepo):
             # Load Original Response
             if row_values['original_response_id'] is not None:
                 row_values['original_response'] = responses_by_id[row_values['original_response_id']]
+
+            # Load the Examples
+            examples = example_flows_by_id.get(row['id'])
+            if examples:
+                row_values['examples'] = examples
 
             flow = HttpFlow(**row_values)
             flow.id = row['id']
