@@ -65,7 +65,7 @@ class HttpPage(QtWidgets.QWidget):
         self.worker.signals.result.connect(self.update_table)
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.finished.connect(self.hide_loader)
-        self.threadpool.start(self.worker)
+        self.threadpool.start(self.worker)  # type:ignore
 
     def search_flows_async(self, search_text: str):
         print(f'Searching async for {search_text}')

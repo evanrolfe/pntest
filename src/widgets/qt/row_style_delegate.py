@@ -8,9 +8,9 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
     prev_hovered_index: QtCore.QModelIndex
     hover_background: QtGui.QBrush
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QtCore.QObject] = None):
         super(RowStyleDelegate, self).__init__(parent=None)
-        self.parent = parent
+        self.parent = parent # type:ignore
         self.hovered_index = QtCore.QModelIndex()
 
     def highlight_index(self, index: QtCore.QModelIndex):

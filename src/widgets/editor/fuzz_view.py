@@ -1,8 +1,8 @@
 # from html5print import HTMLBeautifier
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
-from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest
+from models.http_flow import HttpFlow
+from models.http_request import HttpRequest
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type

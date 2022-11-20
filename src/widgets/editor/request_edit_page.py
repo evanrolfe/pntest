@@ -193,7 +193,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.finished.connect(self.ui.flowView.hide_loader)
 
-        self.threadpool.start(self.worker)
+        self.threadpool.start(self.worker) # type:ignore
 
     # Get the request values (method, url, header, content) from the form and set them on the
     # HttpRequest object, but dont save it

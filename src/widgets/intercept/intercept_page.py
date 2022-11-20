@@ -46,9 +46,12 @@ class InterceptPage(QtWidgets.QWidget):
 
         elif self.intercepted_flow.has_response():
             self.ui.interceptTitle.setText(f"Intercepted HTTP Response: {flow.request.method} {flow.request.get_url()}")
+            if flow.response is None:
+                return
+
             self.ui.headers.set_headers(flow.response.get_headers())
             self.ui.headers.set_header_line(flow.response.get_header_line_no_http_version())
-            self.ui.bodyText.setPlainText(flow.response.content)
+            self.ui.bodyText.setPlainText(flow.response.content or '')
 
             self.ui.forwardInterceptButton.setEnabled(False)
 
@@ -56,7 +59,7 @@ class InterceptPage(QtWidgets.QWidget):
             self.ui.interceptTitle.setText(f"Intercepted HTTP Request: {flow.request.method} {flow.request.get_url()}")
             self.ui.headers.set_headers(flow.request.get_headers())
             self.ui.headers.set_header_line(flow.request.get_header_line_no_http_version())
-            self.ui.bodyText.setPlainText(flow.request.content)
+            self.ui.bodyText.setPlainText(flow.request.content or '')
 
     def forward_button_clicked(self):
         self.__forward_flow(False)
@@ -66,7 +69,8 @@ class InterceptPage(QtWidgets.QWidget):
 
     def drop_button_clicked(self):
         self.__clear_request()
-        self.intercept_queue.drop_flow(self.intercepted_flow)
+        if self.intercepted_flow is not None:
+            self.intercept_queue.drop_flow(self.intercepted_flow)
 
     def enabled_button_clicked(self):
         if self.intercept_queue.enabled():
