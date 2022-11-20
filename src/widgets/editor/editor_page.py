@@ -1,9 +1,11 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from models.http_flow import HttpFlow
+from repos.editor_item_repo import EditorItemRepo
 
 from views._compiled.editor.editor_page import Ui_EditorPage
 from widgets.shared.variables_popup import VariablesPopup
 from lib.app_settings import AppSettings
-from models.data.editor_item import EditorItem
+from models.editor_item import EditorItem
 
 class EditorPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -49,9 +51,10 @@ class EditorPage(QtWidgets.QWidget):
 
         # self.ui.requestGroupView.save_layout_state()
 
-    def send_flow_to_editor(self, flow):
+    def send_flow_to_editor(self, flow: HttpFlow):
         new_flow = flow.duplicate_for_editor()
-        editor_item = EditorItem.create_for_http_flow(new_flow)
+        editor_item = EditorItem.build_for_http_flow(new_flow)
+        EditorItemRepo().save(editor_item)
 
         print(f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')
         self.ui.itemExplorer.new_editor_item_created(editor_item)

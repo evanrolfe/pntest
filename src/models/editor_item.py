@@ -41,6 +41,15 @@ class EditorItem(Model):
 
             self.item = HttpFlow.build_blank_for_editor(type)
 
+    @classmethod
+    def build_for_http_flow(cls, flow: HttpFlow):
+        return EditorItem(
+            name = 'new request',
+            item_type = cls.TYPE_HTTP_FLOW,
+            item_id = flow.id,
+            item = flow
+        )
+
     def item_is_flow(self) -> bool:
         return self.item_type in [self.TYPE_HTTP_FLOW, self.TYPE_FUZZ]
 

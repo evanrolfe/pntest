@@ -67,8 +67,6 @@ class HttpRequest(Model):
     DELAY_TYPE_KEYS = ['disabled', 'fixed', 'random']
 
     # This is how requests are received from the proxy
-    # TODO: Use a TypedDict instead of Any
-    # TODO: Fix url value in form_data
     @classmethod
     def from_state(cls, state: ProxyRequest) -> HttpRequest:
         request = HttpRequest(
@@ -84,8 +82,16 @@ class HttpRequest(Model):
             scheme = state['scheme'],
             authority = state['authority'],
             path = state['path'],
-            form_data = {'method': state['method'], 'url': 'TODO-URL', 'headers': dict(state['headers']), 'content': state['content'], 'fuzz_data': None},
+            form_data = {
+                'method': state['method'],
+                'url': '',
+                'headers': dict(state['headers']),
+                'content': state['content'],
+                'fuzz_data': None
+            },
         )
+
+        request.form_data['url'] = request.get_url()
 
         return request
 
