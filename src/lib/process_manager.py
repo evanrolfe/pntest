@@ -101,6 +101,8 @@ class ProcessManager(QtCore.QObject):
 
     def close_proxy(self, client: Client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'proxy'][0]
+        if process['process'] is None:
+            return
         pid = process['process'].pid
         print(f'[ProcessManager] killing process {pid}')
         os.kill(pid, signal.SIGTERM)
@@ -109,6 +111,8 @@ class ProcessManager(QtCore.QObject):
 
     def close_browser(self, client: Client):
         process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
+        if process['worker'] is None:
+            return
         process['worker'].kill()
         self.processes.remove(process)
 
@@ -141,7 +145,7 @@ class ProcessManager(QtCore.QObject):
             return
 
         database = Database.get_instance()
-        database.db.table('clients').where('id', client.id).update(open=True)
+        database.db.table('clients').where('id', client.id).update(open=True) # type:ignore
 
         self.clients_changed.emit()
 
