@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 import json
 from typing import Any, Optional, TypedDict
 from lib.types import Headers
-from models.data.payload_file import PayloadFile, PayloadFileSerialised
+from models.payload_file import PayloadFile, PayloadFileSerialised
 from models.model import Model
 
 from constants import CALCULATED_TEXT
