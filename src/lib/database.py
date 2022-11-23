@@ -7,8 +7,6 @@ import sqlite3
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 from orator import DatabaseManager, Model
 
-from models.data.settings import Settings
-
 class Database:
     # Singleton method stuff:
     __instance = None
@@ -24,11 +22,11 @@ class Database:
 
     def __init__(self, db_path):
         self.db_path = db_path
-        self.delete_existing_db()
+        # self.delete_existing_db()
         self.connect()
         self.import_schema()
         self.connect_orator_to_db()
-        Settings.create_defaults()
+
         # Virtually private constructor.
         if Database.__instance is not None:
             raise Exception("Database class is a singleton!")

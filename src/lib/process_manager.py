@@ -11,7 +11,7 @@ from lib.browser_launcher.detect import Browser
 from lib.database import Database
 from models.client import Client
 from models.http_flow import HttpFlow
-from models.data.settings import Settings
+from models.settings import Settings
 from models.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
@@ -22,6 +22,7 @@ from models.http_response import HttpResponse
 from proxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage, SettingsJson
 from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
+from repos.settings_repo import SettingsRepo
 
 class RunningProcess(TypedDict):
     client: Client
@@ -73,7 +74,7 @@ class ProcessManager(QtCore.QObject):
 
         self.proxy_handler = ProxyHandler(self)
         self.proxy_handler.start()
-        self.set_settings(Settings.get().parsed())
+        self.set_settings(SettingsRepo().get_settings().json)
 
         self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
         self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)

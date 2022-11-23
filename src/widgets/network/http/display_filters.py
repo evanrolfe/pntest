@@ -1,7 +1,8 @@
 from PyQt6 import QtCore, QtWidgets
+from repos.settings_repo import SettingsRepo
 
 from views._compiled.network.http.display_filters import Ui_DisplayFilters
-from models.data.settings import Settings
+from models.settings import Settings
 
 class DisplayFilters(QtWidgets.QDialog):
     display_filters_saved = QtCore.pyqtSignal()
@@ -23,8 +24,8 @@ class DisplayFilters(QtWidgets.QDialog):
         self.load_display_filters()
 
     def load_display_filters(self):
-        self.settings = Settings.get()
-        display_filters = self.settings.parsed()['display_filters']
+        self.settings = SettingsRepo().get_settings()
+        display_filters = self.settings.json['display_filters']
 
         host_index = self.setting_to_index(display_filters['host_setting'])
         self.ui.hostSettingDropdown.setCurrentIndex(host_index)
@@ -36,11 +37,11 @@ class DisplayFilters(QtWidgets.QDialog):
         host_setting = self.index_to_setting(host_setting_index)
         host_list = self.ui.hostsText.toPlainText().split("\n")
 
-        display_filters = self.settings.parsed()['display_filters']
+        display_filters = self.settings.json['display_filters']
         display_filters['host_list'] = list(filter(None, host_list))
         display_filters['host_setting'] = host_setting
 
-        self.settings.save()
+        SettingsRepo().update(self.settings)
         self.display_filters_saved.emit()
 
         self.close()
