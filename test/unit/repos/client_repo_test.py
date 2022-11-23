@@ -30,3 +30,12 @@ class TestClientRepo:
         result = client_repo.find(0)
 
         assert result is None
+
+    def test_get_next_port_available(self, database, cleanup_database):
+        client_repo = ClientRepo()
+        client = Client(title="test client!", type="browser", proxy_port=8080)
+        client_repo.save(client)
+
+        result = client_repo.get_next_port_available()
+        assert result['proxy'] == 8081
+        assert result['browser'] == 9223

@@ -1,10 +1,11 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from models.data.settings import Settings
+from repos.client_repo import ClientRepo
 
 from views._compiled.clients.clients_page import Ui_ClientsPage
 
 from models.qt.clients_table_model import ClientsTableModel
-from models.data.client import Client
+from models.client import Client
 from lib.browser_launcher.detect import detect_available_browsers, Browser
 from lib.process_manager import ProcessManager
 
@@ -26,8 +27,8 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui = Ui_ClientsPage()
         self.ui.setupUi(self)
 
-        Client.where('open', '=', 1).update(open=0)
-        clients = Client.all()
+        ClientRepo().update_all_to_closed()
+        clients = ClientRepo().find_all()
         self.clients_table_model = ClientsTableModel(clients)
 
         self.ui.clientsTable.setTableModel(self.clients_table_model)
@@ -63,22 +64,23 @@ class ClientsPage(QtWidgets.QWidget):
         self.reload_table_data()
 
     def reload_table_data(self):
-        clients = Client.all()
+        clients = ClientRepo().find_all()
         self.clients_table_model.set_clients(clients)
 
     def create_client(self, client_type):
-        ports = Client.get_next_port_available()
+        ports = ClientRepo().get_next_port_available()
 
-        client = Client()
-        client.type = client_type
-        client.proxy_port = ports['proxy']
+        client = Client(
+            type = client_type,
+            proxy_port = ports['proxy'],
+            title = 'client'
+        )
 
         if client_type != 'anything':
             client.browser_port = ports['browser']
 
-        client.save()
+        ClientRepo().save(client)
 
-        print(client)
         self.open_client_clicked(client)
 
     def set_enabled_clients(self, enabled_clients: list[Browser]):

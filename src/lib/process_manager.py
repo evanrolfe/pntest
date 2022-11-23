@@ -9,7 +9,7 @@ from typing import Optional, TypedDict
 from PyQt6 import QtCore
 from lib.browser_launcher.detect import Browser
 from lib.database import Database
-from models.data.client import Client
+from models.client import Client
 from models.http_flow import HttpFlow
 from models.data.settings import Settings
 from models.websocket_message import WebsocketMessage
@@ -20,6 +20,7 @@ from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefo
 from lib.browser_launcher.browser_proc import BrowserProc
 from models.http_response import HttpResponse
 from proxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage, SettingsJson
+from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
 
 class RunningProcess(TypedDict):
@@ -140,7 +141,7 @@ class ProcessManager(QtCore.QObject):
             self.launch_browser(client, browser_command)
 
     def proxy_was_launched(self, client_id: int):
-        client = Client.find(client_id)
+        client = ClientRepo().find(client_id)
         if client is None:
             return
 
@@ -156,7 +157,7 @@ class ProcessManager(QtCore.QObject):
             self.close_proxy(client)
 
         client.open = False
-        client.save()
+        ClientRepo().save(client)
 
     def launch_browser(self, client: Client, browser_command):
         if client.type in ['chrome', 'chromium']:

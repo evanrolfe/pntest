@@ -5,7 +5,6 @@ from pytestqt.qtbot import QtBot
 from models.data.editor_item import EditorItem
 from models.data.http_flow import HttpFlow
 from models.data.http_request import HttpRequest
-from support.fixtures import load_fixtures
 from widgets.editor.editor_page import EditorPage
 
 class TestEditorPage:

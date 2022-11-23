@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
 
 from views._compiled.clients.clients_table import Ui_ClientsTable
-from models.data.client import Client
+from models.client import Client
 
 class ClientsTable(QtWidgets.QWidget):
     client_selected = QtCore.pyqtSignal(QtCore.QItemSelection, QtCore.QItemSelection)

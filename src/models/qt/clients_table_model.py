@@ -1,6 +1,6 @@
 from typing import Optional, Union
 from PyQt6 import QtCore
-from models.data.client import Client
+from models.client import Client
 
 class ClientsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.SignalInstance

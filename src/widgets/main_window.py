@@ -4,7 +4,6 @@ import traceback
 from typing import Optional
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 from lib.process_manager import ProcessManager
-from models.data.client import Client
 
 from views._compiled.main_window import Ui_MainWindow
 from lib.app_settings import AppSettings

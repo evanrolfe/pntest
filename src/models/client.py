@@ -3,6 +3,9 @@ from dataclasses import field
 from typing import Optional
 from models.model import Model
 
+PROXY_PORT = 8080
+BROWSER_PORT = 9222
+
 @dataclass(kw_only=True)
 class Client(Model):
     # Columns
@@ -23,3 +26,13 @@ class Client(Model):
         "json_columns": [],
         "do_not_save_keys": [],
     }
+
+    # Constants
+    PROXY_PORT = 8080
+    BROWSER_PORT = 9222
+
+    def open_text(self) -> str:
+        if (self.open):
+            return 'Open'
+        else:
+            return 'Closed'
