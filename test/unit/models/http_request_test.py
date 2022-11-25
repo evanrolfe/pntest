@@ -32,7 +32,6 @@ def create_multiple_flows() -> list[HttpFlow]:
     flow1 = HttpFlow(
         uuid=str(uuid.uuid4()),
         type="proxy",
-        created_at=1,
         client=client,
         request=HttpRequestFactory.build(path="/modified1"),
         original_request=HttpRequestFactory.build(path="/original1"),
@@ -42,7 +41,6 @@ def create_multiple_flows() -> list[HttpFlow]:
     flow2 = HttpFlow(
         uuid=str(uuid.uuid4()),
         type="proxy",
-        created_at=1,
         client=client,
         request=HttpRequestFactory.build(path="/modified2"),
         original_request= HttpRequestFactory.build(path="/original2"),
