@@ -1,8 +1,8 @@
 from PyQt6 import QtCore, QtWidgets
+from repos.variable_repo import VariableRepo
 
 from views._compiled.shared.variables_popup import Ui_VariablesPopup
 from models.qt.vars_table_model import VarsTableModel
-from models.data.variable import Variable
 
 class VariablesPopup(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -34,7 +34,7 @@ class VariablesPopup(QtWidgets.QDialog):
     def save(self):
         for var in self.table_model.variables:
             if not var.is_blank():
-                var.save()
+                VariableRepo().save(var)
                 print(f'saved variable {var.id}')
 
         self.close()
@@ -43,6 +43,6 @@ class VariablesPopup(QtWidgets.QDialog):
         self.load_variables()
 
     def load_variables(self):
-        vars = Variable.all_global()
+        vars = VariableRepo().find_all_global()
         self.table_model = VarsTableModel(vars)
         self.ui.varsTable.setModel(self.table_model)

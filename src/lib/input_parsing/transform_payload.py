@@ -1,6 +1,4 @@
-import hashlib
 from lib.input_parsing.transformer import Transformer
-from models.data.variable import Variable
 
 class TransformPayload(Transformer):
     payload_values: dict[str,str]

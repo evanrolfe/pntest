@@ -1,6 +1,6 @@
 from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
-from models.data.variable import Variable
+from models.variable import Variable
 
 class VarsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance
@@ -9,7 +9,7 @@ class VarsTableModel(QtCore.QAbstractTableModel):
     headers: list[str]
     variables: list[Variable]
 
-    def __init__(self, variables, parent=None):
+    def __init__(self, variables: list[Variable], parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['Key', 'Value', 'Description']
         self.variables = list(variables)
@@ -19,8 +19,7 @@ class VarsTableModel(QtCore.QAbstractTableModel):
         count = len(self.variables)
         self.beginInsertRows(QtCore.QModelIndex(), count, count)
         # Pass array by value
-        blank_var = Variable()
-        blank_var.source_type = Variable.SOURCE_TYPE_GLOBAL
+        blank_var = Variable.build_blank_global()
         self.variables.append(blank_var)
         self.endInsertRows()
 

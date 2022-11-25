@@ -1,6 +1,6 @@
 import hashlib
 from lib.input_parsing.transformer import Transformer
-from models.data.variable import Variable
+from repos.variable_repo import VariableRepo
 
 class TransformVar(Transformer):
     def __init__(self):
@@ -10,7 +10,7 @@ class TransformVar(Transformer):
         self.type = self.TYPE_VAR
 
     def encode(self, key: str) -> str:
-        var = Variable.find_by_key(key)
+        var = VariableRepo().find_by_key(key)
         if not var:
             return ''
 
