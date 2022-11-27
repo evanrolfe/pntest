@@ -1,12 +1,7 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from lib.process_manager import ProcessManager
-from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest
-from models.data.settings import Settings
 from support.fixtures import load_fixtures
-from models.data.editor_item import EditorItem
-from models.data.payload_file import PayloadFile
 from widgets.intercept.intercept_page import InterceptPage
 
 class TestInterceptPage:

@@ -3,7 +3,6 @@ import os
 import logging
 import sqlite3
 
-# from models.data.settings import Settings
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 from orator import DatabaseManager, Model
 

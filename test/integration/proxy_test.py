@@ -14,8 +14,6 @@ from lib.browser_launcher.detect import Browser
 
 from lib.paths import get_app_path
 from lib.process_manager import ProcessManager
-from models.data.client import Client
-from models.data.http_flow import HttpFlow
 from proxy.common_types import SettingsJson
 from widgets.main_window import MainWindow
 

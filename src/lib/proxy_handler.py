@@ -5,7 +5,6 @@ import sys
 import simplejson as json
 from repos.http_flow_repo import HttpFlowRepo
 from models.http_flow import HttpFlow
-from models.data.websocket_message import WebsocketMessage
 from proxy.common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 PROXY_ZMQ_PORT = 5556

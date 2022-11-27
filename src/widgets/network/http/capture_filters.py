@@ -2,7 +2,6 @@ from PyQt6 import QtCore, QtWidgets
 from repos.settings_repo import SettingsRepo
 
 from views._compiled.network.http.capture_filters import Ui_CaptureFilters
-from models.data.settings import Settings
 from lib.process_manager import ProcessManager
 
 class CaptureFilters(QtWidgets.QDialog):

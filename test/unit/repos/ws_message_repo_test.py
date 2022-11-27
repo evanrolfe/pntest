@@ -3,7 +3,6 @@ import sqlite3
 from venv import create
 from lib.database import Database
 from models.client import Client
-from models.data import http_flow
 from models.http_flow import HttpFlow
 from models.http_request import FormData, HttpRequest
 from models.http_response import HttpResponse
