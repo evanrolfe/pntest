@@ -16,7 +16,7 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
           pip-dependency-file: dev-requirements.txt
-      - run: sudo apt-get update && sudo apt install libnss3 libxcomposite-dev libxrandr2 libxi6 libxtst6 libasound2 libxcursor1 libxdamage1 qt5-default x11-utils xvfb
+      - run: sudo apt-get update && sudo apt install libnss3 libxcomposite-dev libxrandr2 libxi6 libxtst6 libasound2 libxcursor1 libxdamage1 x11-utils xvfb qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
       #- run: sudo apt-get update && sudo apt install libglapi-mesa libxcb-glx0 libxxf86vm1 libxdamage1 libxcursor1
       - run:
           command: PYTHONPATH="./src:./test:./src/proxy" python -m pytest -s ./test/unit
