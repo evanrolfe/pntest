@@ -43,6 +43,7 @@ pylev==1.4.0
 pyOpenSSL==20.0.1
 pyparsing==2.4.7
 pyperclip==1.8.2
+PyPika==0.48.9
 PyQt6==6.3.1
 PyQt6-QScintilla==2.13.3
 PyQt6-Qt6==6.3.1
