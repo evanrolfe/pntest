@@ -6,7 +6,7 @@ def generate_form_data(request: HttpRequest) -> FormData:
     return {
         "method": request.method,
         "url": request.scheme + "://" + request.host + request.path,
-        "headers": {"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1"},
+        "headers": request.headers,
         "content": '{ "username": "${payload:usernames}", "password": "${payload:passwords}" }',
         "fuzz_data": None,
     }

@@ -63,7 +63,7 @@ def proxy(request):
         'command': None,
         'version': None
     }
-    request.cls.process_manager.launch_client(request.cls.client, client_info, settings)
+    request.cls.process_manager.launch_client(request.cls.client, client_info, settings) # type:ignore
 
     # TODO: Find a better way of waiting for the proxy to start (i.e. ProcessManager could send a proxy_started signal)
     time.sleep(2)
@@ -75,7 +75,7 @@ def proxy(request):
 
     # Shut down the proxy
     print("Finished testing proxy, closing proxy..")
-    request.cls.process_manager.close_proxy(request.cls.client)
+    request.cls.process_manager.close_proxy(request.cls.client) # type:ignore
     request.cls.process_manager.on_exit()
 
 @pytest.mark.usefixtures("proxy")
@@ -102,8 +102,8 @@ class TestProxy:
         request = requests.Request('GET', httpserver.url_for('/proxy_test'))
         prepped_request = http_session.prepare_request(request)
 
-        # Verify both flow_created and flow_updated signals were sent by the proxy
-        signals = [self.process_manager.flow_created, self.process_manager.flow_updated]
+        # Verify both proxy_request and proxy_response signals were emitted by the proxy
+        signals = [self.process_manager.proxy_request, self.process_manager.proxy_response]
         self.flow_signals = []
         verifiers = [self.capture_flow_signal, self.capture_flow_signal]
 
@@ -154,7 +154,7 @@ class TestProxy:
         prepped_request_google = http_session.prepare_request(request_google)
 
         # Verify both flow_created and flow_updated signals were sent by the proxy
-        signals = [self.process_manager.flow_created, self.process_manager.flow_updated]
+        signals = [self.process_manager.proxy_request, self.process_manager.proxy_response]
 
         # Verify request to localhost emits signals:
         self.flow_signals = []
@@ -183,6 +183,7 @@ class TestProxy:
 
         assert len(self.flow_signals) == 0
 
+    # TODO:
     # def test_proxy_websocket(self, database, qtbot: QtBot):
     #     print("[Test] Starting websockets server...")
     #     start_server = websockets.serve(ws_handler, "localhost", 8000)  # type: ignore

@@ -13,9 +13,9 @@ from models.data.variable import Variable
 @pytest.fixture(scope="session")
 def database():
     database = Database('tmp.db')
-    print("=============> DB Setup")
+    print("\n[Test] DB Setup")
     yield
-    print("=============> DB Teardown")
+    print("[Test] DB Teardown")
     database.close()
 
 @pytest.fixture(scope="function")

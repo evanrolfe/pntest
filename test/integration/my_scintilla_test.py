@@ -4,11 +4,11 @@ from PyQt6 import QtCore, QtWidgets, Qsci
 from pytestqt.qtbot import QtBot
 from lib.input_parsing.encode_base64 import EncodeBase64
 from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
-from models.data.editor_item import EditorItem
-from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest
-from support.fixtures import load_fixtures, build_an_editor_request_with_payloads
-from support.factories import factory
+from models.editor_item import EditorItem
+from models.http_flow import HttpFlow
+from models.http_request import HttpRequest
+from repos.http_flow_repo import HttpFlowRepo
+from support.fixtures import load_fixtures, build_an_editor_flow_with_payloads
 from widgets.editor.editor_page import EditorPage
 from widgets.shared.my_scintilla import MyScintilla
 from widgets.shared.user_action import UserAction
@@ -206,13 +206,8 @@ class TestMyScintilla:
     # Payloads
     # --------------------------------------------------------------------------
     def test_text_trigger_autocomplete_payload(self, database, cleanup_database, qtbot: QtBot):
-        http_request = build_an_editor_request_with_payloads()
-        http_request.save()
-
-        http_flow = factory(HttpFlow, 'editor').make(
-            request_id=http_request.id,
-        )
-        http_flow.save()
+        http_flow = build_an_editor_flow_with_payloads()
+        HttpFlowRepo().save(http_flow)
 
         widget = MyScintilla()
         widget.resize(500, 200)
@@ -229,13 +224,8 @@ class TestMyScintilla:
         assert widget.text() == '${payload:password}'
 
     def test_indicator_click_trigger_autocomplete_payload(self, database, cleanup_database, qtbot: QtBot):
-        http_request = build_an_editor_request_with_payloads()
-        http_request.save()
-
-        http_flow = factory(HttpFlow, 'editor').make(
-            request_id=http_request.id,
-        )
-        http_flow.save()
+        http_flow = build_an_editor_flow_with_payloads()
+        HttpFlowRepo().save(http_flow)
 
         widget = MyScintilla()
         widget.setText('${payload:password}')
