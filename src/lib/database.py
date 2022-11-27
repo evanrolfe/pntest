@@ -1,10 +1,7 @@
-import re
 import os
-import logging
 import sqlite3
 
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
-from orator import DatabaseManager, Model
 
 class Database:
     # Singleton method stuff:
@@ -24,7 +21,6 @@ class Database:
         # self.delete_existing_db()
         self.connect()
         self.import_schema()
-        self.connect_orator_to_db()
 
         # Virtually private constructor.
         if Database.__instance is not None:
@@ -63,16 +59,6 @@ class Database:
         pass
         # self.db_path = new_db_path
         # self.load_or_create()
-
-    def connect_orator_to_db(self):
-        config = {
-            'default': {
-                'driver': 'sqlite',
-                'database': self.db_path,
-            }
-        }
-        self.db = DatabaseManager(config)
-        Model.set_connection_resolver(self.db)
 
     def close(self):
         self.conn.close()

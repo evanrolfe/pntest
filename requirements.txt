@@ -28,7 +28,6 @@ macholib==1.16
 MarkupSafe==2.1.1
 mitmproxy==7.0.4
 msgpack==1.0.4
-orator==0.9.9
 passlib==1.7.4
 pastel==0.1.1
 peewee==3.15.3

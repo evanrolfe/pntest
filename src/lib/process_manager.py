@@ -8,10 +8,8 @@ import sys
 from typing import Optional, TypedDict
 from PyQt6 import QtCore
 from lib.browser_launcher.detect import Browser
-from lib.database import Database
 from models.client import Client
 from models.http_flow import HttpFlow
-from models.settings import Settings
 from models.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
@@ -129,8 +127,8 @@ class ProcessManager(QtCore.QObject):
 
         self.processes.remove(browser_processes[0])
 
-        database = Database.get_instance()
-        database.db.table('clients').where('id', client.id).update(open=False)
+        client.open = False
+        ClientRepo().save(client)
         self.clients_changed.emit()
 
     def launch_client(self, client: Client, client_info: Browser, settings: SettingsJson):
@@ -146,9 +144,8 @@ class ProcessManager(QtCore.QObject):
         if client is None:
             return
 
-        database = Database.get_instance()
-        database.db.table('clients').where('id', client.id).update(open=True) # type:ignore
-
+        client.open = True
+        ClientRepo().save(client)
         self.clients_changed.emit()
 
     def close_client(self, client: Client):
