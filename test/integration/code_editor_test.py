@@ -28,7 +28,8 @@ class TestCodeEditor:
         # Type in "sit" and hit enter
         qtbot.keyClicks(widget.ui.findText, "sit")
         qtbot.keyClick(widget, QtCore.Qt.Key.Key_Return)
-        time.sleep(0.5) # NOTE: Without this sleep I get intermittent failures from this test
+        # TODO: Find a better way than  using time.sleep, without it this test gives intermitten failures
+        time.sleep(1)
 
         # Check the first instance of sit has been selected
         line0, col0, line1, col1 = widget.ui.code.getSelection()
