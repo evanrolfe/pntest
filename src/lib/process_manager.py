@@ -180,7 +180,7 @@ class ProcessManager(QtCore.QObject):
         if is_dev_mode():
             proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'
         else:
-            proxy_command = f'{self.app_path}/pntest/mitmdump -s {self.app_path}/pntest/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'
+            proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'
 
         print(proxy_command)
         current_env = os.environ.copy()

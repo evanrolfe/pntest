@@ -44,12 +44,11 @@ class ProxyEventsAddon:
     pntest_homepage_html: str
     socket: zmq.Socket
 
-    def __init__(self, client_id: int, include_path: str):
+    def __init__(self, client_id: int):
         self.client_id = client_id
         self.intercept_enabled = False
         self.intercepted_flows = []
-        self.include_path = include_path
-        self.pntest_homepage_html = Path(f'{self.include_path}/html_page.html').read_text()
+        self.pntest_homepage_html = Path(f'./include/html_page.html').read_text()
         self.settings = None
         self.recording_enabled = True
 
@@ -315,7 +314,7 @@ def convert_headers_bytes_to_strings(headers):
 
     return new_headers
 
-proxy_events = ProxyEventsAddon(client_id, '/Users/evan/Code/pntest/include')
+proxy_events = ProxyEventsAddon(client_id)
 proxy_events.set_settings(settings)
 proxy_events.set_recording_enabled(recording_enabled)
 proxy_events.set_intercept_enabled(intercept_enabled)
