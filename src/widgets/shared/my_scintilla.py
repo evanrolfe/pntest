@@ -3,7 +3,8 @@ import re
 from typing import Optional, TypedDict
 from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 from lib.input_parsing.transform_payload import TransformPayload
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
+from repos.variable_repo import VariableRepo
 
 from widgets.shared.code_themes import DarkTheme
 from widgets.shared.encoders_popup import EncodersPopup
@@ -12,8 +13,6 @@ from lib.input_parsing.parse import get_available_encoders
 from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_tree import TreeNode
 from lib.input_parsing.text_wrapper import TextWrapper, get_matches_for_indicators
-
-from models.data.variable import Variable
 
 # Regular Expression for valid individual code 'words'
 RE_VALID_WORD = re.compile(r"^\w+$")
@@ -435,7 +434,7 @@ class MyScintilla(Qsci.QsciScintilla):
         self.encoders_popup.show()
 
     def show_autocomplete(self):
-        vars = Variable.all_global()
+        vars = VariableRepo().find_all_global()
         options = ["var:"+v.key for v in vars]
         options.append("encoding")
 

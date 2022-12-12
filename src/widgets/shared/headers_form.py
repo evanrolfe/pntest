@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore, QtGui
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 
 from views._compiled.shared.headers_form import Ui_HeadersForm
 from models.qt.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
@@ -18,7 +18,6 @@ class MyDelegate(QtWidgets.QItemDelegate):
 
     def createEditor(self, parent: QtWidgets.QWidget, option: QtWidgets.QStyleOptionViewItem, index: QtCore.QModelIndex):
         line_scintilla = LineScintilla(parent)
-        line_scintilla.set_flow(self.flow)
         return line_scintilla
 
     def setModelData(self, editor: LineScintilla, model: RequestHeadersTableModel, index: QtCore.QModelIndex):
@@ -28,9 +27,6 @@ class MyDelegate(QtWidgets.QItemDelegate):
     def setEditorData(self, editor: LineScintilla, index: QtCore.QModelIndex):
         value = index.model().data(index, QtCore.Qt.ItemDataRole.EditRole)
         editor.setText(value)
-
-    def set_flow(self, flow: HttpFlow):
-        self.flow = flow
 
 class HeadersForm(QtWidgets.QWidget):
     # TODO: Add a headers_changed signal
@@ -69,10 +65,6 @@ class HeadersForm(QtWidgets.QWidget):
 
     def set_editable(self, editable):
         self.editable = editable
-
-    def set_flow(self, flow: HttpFlow):
-        self.flow = flow
-        self.delegate.set_flow(flow)
 
     def set_header_line(self, header_line):
         if header_line is not None:

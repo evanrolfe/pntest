@@ -1,10 +1,13 @@
 from PyQt6 import QtCore, QtWidgets
+from mitmproxy.common_types import ProxyWebsocketMessage
+from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.network.ws_page import Ui_WsPage
 
 from lib.app_settings import AppSettings
 from models.qt.messages_table_model import MessagesTableModel
-from models.data.websocket_message import WebsocketMessage
+from models.websocket_message import WebsocketMessage
+from repos.ws_message_repo import WsMessageRepo
 
 class WsPage(QtWidgets.QWidget):
     toggle_page = QtCore.pyqtSignal()
@@ -15,7 +18,7 @@ class WsPage(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Setup the table model
-        messages = WebsocketMessage.order_by('id', 'desc').get()
+        messages = WsMessageRepo().find_for_table('')
 
         self.table_model = MessagesTableModel(messages)
         self.ui.messagesTable.setTableModel(self.table_model)
@@ -29,7 +32,7 @@ class WsPage(QtWidgets.QWidget):
 
     def reload(self):
         self.ui.messageViewWidget.clear_message()
-        messages = WebsocketMessage.order_by('id', 'desc').get()
+        messages = WsMessageRepo().find_for_table('')
         self.table_model = MessagesTableModel(messages)
         self.ui.messagesTable.setTableModel(self.table_model)
 
@@ -55,7 +58,7 @@ class WsPage(QtWidgets.QWidget):
         if (len(selected.indexes()) > 0):
             selected_id_cols = list(filter(lambda i: i.column() == 0, selected.indexes()))
             selected_id = selected_id_cols[0].data()
-            message = WebsocketMessage.find(selected_id)
+            message = WsMessageRepo().find(selected_id)
             self.ui.messageViewWidget.set_message(message)
 
     def delete_messages(self, message_ids):
@@ -74,8 +77,8 @@ class WsPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_messages(message_ids)
 
-    def websocket_message_created(self, websocket_message):
-        self.table_model.add_message(websocket_message)
+    def proxy_ws_message_received(self, ws_message: WebsocketMessage):
+        self.table_model.add_message(ws_message)
 
     # def search_requests(self, search_text):
     #     # requests = HttpFlow.search({'search': search_text})

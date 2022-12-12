@@ -1,9 +1,15 @@
+from typing import Optional
 from PyQt6 import QtWidgets, QtCore
+from models.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
+from repos.ws_message_repo import WsMessageRepo
 
 from views._compiled.intercept.intercept_page import Ui_InterceptPage
 from lib.intercept_queue import InterceptQueue
 
 class InterceptPage(QtWidgets.QWidget):
+    intercepted_flow: Optional[HttpFlow]
+
     def __init__(self, *args, **kwargs):
         super(InterceptPage, self).__init__(*args, **kwargs)
         self.ui = Ui_InterceptPage()
@@ -24,12 +30,13 @@ class InterceptPage(QtWidgets.QWidget):
         self.intercept_queue = InterceptQueue()
         self.intercept_queue.decision_required.connect(self.decision_required)
         self.intercept_queue.intercept_changed.connect(self.__set_enabled)
+        self.intercepted_flow = None
 
-    def decision_required(self, flow):
+    def decision_required(self, flow: HttpFlow):
         self.intercepted_flow = flow
         self.__set_buttons_enabled(True)
 
-        if hasattr(self.intercepted_flow, 'intercept_websocket_message'):
+        if self.intercepted_flow.intercept_websocket_message:
             self.ui.interceptTitle.setText(
                 f"Intercepted Websocket Message: {flow.request.method} {flow.request.get_url()}"
             )
@@ -39,9 +46,12 @@ class InterceptPage(QtWidgets.QWidget):
 
         elif self.intercepted_flow.has_response():
             self.ui.interceptTitle.setText(f"Intercepted HTTP Response: {flow.request.method} {flow.request.get_url()}")
+            if flow.response is None:
+                return
+
             self.ui.headers.set_headers(flow.response.get_headers())
             self.ui.headers.set_header_line(flow.response.get_header_line_no_http_version())
-            self.ui.bodyText.setPlainText(flow.response.content)
+            self.ui.bodyText.setPlainText(flow.response.content_for_preview())
 
             self.ui.forwardInterceptButton.setEnabled(False)
 
@@ -49,7 +59,7 @@ class InterceptPage(QtWidgets.QWidget):
             self.ui.interceptTitle.setText(f"Intercepted HTTP Request: {flow.request.method} {flow.request.get_url()}")
             self.ui.headers.set_headers(flow.request.get_headers())
             self.ui.headers.set_header_line(flow.request.get_header_line_no_http_version())
-            self.ui.bodyText.setPlainText(flow.request.content)
+            self.ui.bodyText.setPlainText(flow.request.content or '')
 
     def forward_button_clicked(self):
         self.__forward_flow(False)
@@ -59,7 +69,8 @@ class InterceptPage(QtWidgets.QWidget):
 
     def drop_button_clicked(self):
         self.__clear_request()
-        self.intercept_queue.drop_flow(self.intercepted_flow)
+        if self.intercepted_flow is not None:
+            self.intercept_queue.drop_flow(self.intercepted_flow)
 
     def enabled_button_clicked(self):
         if self.intercept_queue.enabled():
@@ -71,29 +82,47 @@ class InterceptPage(QtWidgets.QWidget):
 
     # Private methods
 
-    def __forward_flow(self, intercept_response):
+    def __forward_flow(self, intercept_response: bool):
+        if self.intercepted_flow is None:
+            return
+
         header_line_arr = self.ui.headers.get_header_line().split(' ')
         modified_headers = self.ui.headers.get_headers()
         modified_content = self.ui.bodyText.toPlainText()
 
-        if hasattr(self.intercepted_flow, 'intercept_websocket_message'):
-            print('Forwarding websocket!')
-            self.intercepted_flow.modify_latest_websocket_message(modified_content)
+        # TODO: Move this logic to the models
+        if self.intercepted_flow.intercept_websocket_message:
+            websocket_message = self.intercepted_flow.websocket_messages[-1]
 
-        elif self.intercepted_flow.has_response():
+            if websocket_message.content != modified_content:
+                websocket_message.content_original = websocket_message.content
+                websocket_message.content = modified_content
+                WsMessageRepo().save(websocket_message)
+
+        elif self.intercepted_flow.response is not None:
             modified_status_code = int(header_line_arr[0])
-            self.intercepted_flow.modify_response(modified_status_code, modified_headers, modified_content)
+            modified_response = self.intercepted_flow.response.duplicate()
+            modified_response.modify(modified_status_code, modified_headers, modified_content)
+
+            if modified_response != self.intercepted_flow.response:
+                self.intercepted_flow.add_modified_response(modified_response)
+                HttpFlowRepo().save(self.intercepted_flow)
 
         else:
             modified_method = header_line_arr[0]
             modified_path = header_line_arr[1]
-            self.intercepted_flow.modify_request(modified_method, modified_path, modified_headers, modified_content)
+            modified_request = self.intercepted_flow.request.duplicate()
+            modified_request.modify(modified_method, modified_path, modified_headers, modified_content)
+
+            if modified_request != self.intercepted_flow.request:
+                self.intercepted_flow.add_modified_request(modified_request)
+                HttpFlowRepo().save(self.intercepted_flow)
 
         # NOTE: Its important __clear_request comes before forward_flow, otherwise a race condition will occur
         self.__clear_request()
 
-        reloaded_flow = self.intercepted_flow.reload()
-        self.intercept_queue.forward_flow(reloaded_flow, intercept_response)
+        # reloaded_flow = self.intercepted_flow.reload()
+        self.intercept_queue.forward_flow(self.intercepted_flow, intercept_response)
 
     def __clear_request(self):
         self.intercepted_request = None

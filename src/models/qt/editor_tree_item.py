@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Optional
 from PyQt6 import QtWidgets, QtGui
-from models.data.editor_item import EditorItem
+from models.editor_item import EditorItem
+from repos.editor_item_repo import EditorItemRepo
 
 class EditorTreeItem:
     label: str
@@ -56,12 +57,13 @@ class EditorTreeItem:
         if child_item.editor_item is None:
             return
 
-        if self.editor_item is not None:
-            child_item.editor_item.parent_id = self.editor_item.id
-            child_item.editor_item.save()
-        else:
-            child_item.editor_item.parent_id = None
-            child_item.editor_item.save()
+        # TODO: Save this when it actually needs to be saved
+        # if self.editor_item is not None:
+        #     child_item.editor_item.parent_id = self.editor_item.id
+        #     child_item.editor_item.save()
+        # else:
+        #     child_item.editor_item.parent_id = None
+        #     child_item.editor_item.save()
 
         self.sortChildren()
 
@@ -76,7 +78,7 @@ class EditorTreeItem:
         for row in range(count):
             removed_item = self.childItems.pop(position)
             if delete and removed_item.editor_item is not None:
-                removed_item.editor_item.delete_everything()
+                EditorItemRepo().delete(removed_item.editor_item)
 
         return True
 
@@ -86,12 +88,27 @@ class EditorTreeItem:
         # TODO: Remove *'s becuase they will mess with the modified indicator
         self.label = label
         self.editor_item.name = label
-        self.editor_item.save()
-
         return True
 
     def icon(self) -> Optional[QtGui.QIcon]:
         if self.is_dir or self.editor_item is None:
             return None
-        else:
-            return self.editor_item.icon()
+
+        if self.editor_item.item_type == EditorItem.TYPE_FUZZ:
+            return QtGui.QIcon(f"assets:icons/dark/methods/fuzz.png")
+
+        if self.editor_item.item_type == EditorItem.TYPE_HTTP_FLOW:
+            icon_methods = ['get', 'put', 'patch', 'delete', 'post', 'options', 'head']
+
+            item = self.editor_item.item
+            if item is None:
+                raise Exception("No item found for editor item")
+
+            method = item.request.method.lower()
+            if method not in icon_methods:
+                method = 'other'
+
+            return QtGui.QIcon(f"assets:icons/dark/methods/{method}.png")
+
+        raise Exception("No item found for editor item")
+

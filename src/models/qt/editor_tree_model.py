@@ -2,8 +2,9 @@ from typing import cast, Optional, Any
 from PyQt6 import QtCore, QtGui
 import json
 
-from models.data.editor_item import EditorItem
+from models.editor_item import EditorItem
 from models.qt.editor_tree_item import EditorTreeItem
+from repos.editor_item_repo import EditorItemRepo
 
 class EditorTreeModel(QtCore.QAbstractItemModel):
     item_renamed = QtCore.pyqtSignal(EditorItem)
@@ -46,6 +47,10 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
 
             self.layoutChanged.emit()
             self.change_selection.emit(new_selected_index)
+            if item.editor_item is None:
+                return True
+
+            EditorItemRepo().save(item.editor_item)
             if not item.is_dir:
                 self.item_renamed.emit(item.editor_item)
 
@@ -221,5 +226,5 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
         tree_item = EditorTreeItem.from_editor_item(editor_item)
         parent_tree_item.insertChild(tree_item)
 
-        for child_editor_item in editor_item.children():
+        for child_editor_item in editor_item.children:
             self.add_editor_item_to_tree(tree_item, child_editor_item)

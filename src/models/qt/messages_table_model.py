@@ -2,7 +2,8 @@ from typing import Any, Optional
 from PyQt6 import QtCore
 
 from lib.utils import format_timestamp
-from models.data.websocket_message import WebsocketMessage
+from models.websocket_message import WebsocketMessage
+from repos.ws_message_repo import WsMessageRepo
 
 class MessagesTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance
@@ -40,7 +41,8 @@ class MessagesTableModel(QtCore.QAbstractTableModel):
             return
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        WebsocketMessage.destroy(*message_ids)
+        [WsMessageRepo().delete(m) for m in self.messages if m.id in message_ids]
+
         self.messages = list(filter(lambda r: r.id not in message_ids, self.messages))
         self.endRemoveRows()
 

@@ -1,7 +1,7 @@
 import json
 from PyQt6 import QtCore
 from lib.process_manager import ProcessManager
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 
 # InterceptQueue takes in multiple flows from multiple proxies, it puts them all on a queue
 # and waits for a decision one at a time from the intercept page
@@ -9,6 +9,7 @@ from models.data.http_flow import HttpFlow
 class InterceptQueue(QtCore.QObject):
     decision_required = QtCore.pyqtSignal(HttpFlow)
     intercept_changed = QtCore.pyqtSignal(bool)
+    queue: list[HttpFlow]
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -19,22 +20,22 @@ class InterceptQueue(QtCore.QObject):
         self.process_manager.flow_intercepted.connect(self.flow_intercepted)
         self.process_manager.intercept_changed.connect(self.intercept_changed)
 
-    def flow_intercepted(self, flow):
+    def flow_intercepted(self, flow: HttpFlow):
         print(f'[InterceptQueue] received intercepted flow {flow.uuid}')
         self.queue.append(flow)
 
         if not self.awaiting_decision:
             self.request_decision(flow)
 
-    def request_decision(self, flow):
+    def request_decision(self, flow: HttpFlow):
         self.awaiting_decision = True
         self.decision_required.emit(flow)
 
-    def forward_flow(self, flow, intercept_response):
+    def forward_flow(self, flow: HttpFlow, intercept_response: bool):
         self.process_manager.forward_flow(flow, intercept_response)
         self.__pop_queue_and_await_next_decision()
 
-    def drop_flow(self, flow):
+    def drop_flow(self, flow: HttpFlow):
         self.process_manager.drop_flow(flow)
         self.__pop_queue_and_await_next_decision()
 

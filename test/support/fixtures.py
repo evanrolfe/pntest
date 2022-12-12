@@ -1,37 +1,44 @@
-from models.data.http_flow import HttpFlow
-from models.data.http_request import HttpRequest, FormData
-from models.data.http_response import HttpResponse
-from models.data.variable import Variable
-from models.data.payload_file import PayloadFileSerialised
-
-from support.factories import factory
+from models.client import Client
+from models.http_flow import HttpFlow
+from models.http_request import HttpRequest, FormData
+from models.http_response import HttpResponse
+from models.variable import Variable
+from models.payload_file import PayloadFileSerialised
+from mitmproxy.common_types import ProxyRequest
+from repos.client_repo import ClientRepo
+from repos.http_flow_repo import HttpFlowRepo
+from repos.variable_repo import VariableRepo
+from support.factories.http_request_factory import HttpRequestFactory
+from support.factories.http_response_factory import HttpResponseFactory
 
 def create_http_flow():
-    http_request = factory(HttpRequest, 'proxy').make()
-    http_request.save()
+    client = Client(title="test client!", type="browser", proxy_port=8080)
+    ClientRepo().save(client)
 
-    http_response = factory(HttpResponse, 'http_response').make()
-    http_response.save()
-
-    http_flow = factory(HttpFlow, 'proxy').make(
-        request_id=http_request.id,
-        response_id=http_response.id,
-        client_id=1
+    http_flow = HttpFlow(
+        type=HttpFlow.TYPE_PROXY,
+        request=HttpRequestFactory.build(),
+        response=HttpResponseFactory.build(),
     )
-    http_flow.save()
+    HttpFlowRepo().save(http_flow)
 
 def create_variables():
-    factory(Variable, 'global').create(key='host', value='localhost')
-    factory(Variable, 'global').create(key='apiVersion', value='v2')
-    factory(Variable, 'global').create(key='account_name', value='MyAccount')
-    factory(Variable, 'global').create(key='apiToken', value='0123456789')
+    var1 = Variable(key='host', value='localhost', source_type=Variable.SOURCE_TYPE_GLOBAL)
+    var2 = Variable(key='apiVersion', value='v2', source_type=Variable.SOURCE_TYPE_GLOBAL)
+    var3 = Variable(key='account_name', value='MyAccount', source_type=Variable.SOURCE_TYPE_GLOBAL)
+    var4 = Variable(key='apiToken', value='0123456789', source_type=Variable.SOURCE_TYPE_GLOBAL)
+
+    VariableRepo().save(var1)
+    VariableRepo().save(var2)
+    VariableRepo().save(var3)
+    VariableRepo().save(var4)
 
 def load_fixtures():
     create_http_flow()
     create_http_flow()
     create_variables()
 
-def build_an_editor_request_with_payloads() -> HttpRequest:
+def build_an_editor_flow_with_payloads() -> HttpFlow:
     payload1: PayloadFileSerialised = {
         'key': 'username',
         'file_path': 'usernames.txt',
@@ -54,11 +61,14 @@ def build_an_editor_request_with_payloads() -> HttpRequest:
             'payload_files': [payload1, payload2],
             'fuzz_type': HttpRequest.FUZZ_TYPE_KEYS[0],
             'delay_type': HttpRequest.DELAY_TYPE_KEYS[1],
+            'delay_secs': None,
+            'delay_secs_min': None,
+            'delay_secs_max': None,
         },
     }
-    state = {
+    state: ProxyRequest = {
         'http_version': 'HTTP/2.0',
-        'headers': [['user-agent', 'curl/7.68.0'], ['accept', '*/*']],
+        'headers': [('user-agent', 'curl/7.68.0'), ('accept', '*/*')],
         'content': '',
         'trailers': None,
         'timestamp_start': 1643967316.7360358,
@@ -77,4 +87,7 @@ def build_an_editor_request_with_payloads() -> HttpRequest:
 
     request = HttpRequest.from_state(state)
     request.set_form_data(form_data)
-    return request
+
+    http_flow = HttpFlow(type=HttpFlow.TYPE_EDITOR, request=request)
+
+    return http_flow

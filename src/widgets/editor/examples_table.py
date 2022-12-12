@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 
 from views._compiled.editor.examples_table import Ui_ExamplesTable
 from models.qt.examples_table_model import ExamplesTableModel
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
 
 class ExamplesTable(QtWidgets.QWidget):
     example_selected = QtCore.pyqtSignal(HttpFlow)
@@ -39,7 +39,7 @@ class ExamplesTable(QtWidgets.QWidget):
         self.ui.table.customContextMenuRequested.connect(self.right_clicked)
         self.selected_flows = []
 
-    def set_flow(self, flow):
+    def set_flow(self, flow: HttpFlow):
         self.flow = flow
         self.table_model = ExamplesTableModel([self.flow] + list(self.flow.examples))
         self.ui.table.setModel(self.table_model)
@@ -54,12 +54,8 @@ class ExamplesTable(QtWidgets.QWidget):
         except IndexError:
             return
 
-    def reload(self):
-        self.flow = self.flow.reload()
-        self.table_model = ExamplesTableModel([self.flow] + list(self.flow.examples))
-        self.ui.table.setModel(self.table_model)
-        self.ui.table.selectionModel().selectionChanged.connect(self.selection_changed)
-        self.ui.table.selectionModel().selectionChanged.connect(self.set_selected_flows)
+    def refresh(self):
+        self.set_flow(self.flow)
 
     def set_selected_flows(self, selected, deselected):
         selected_q_indexes = self.ui.table.selectionModel().selectedRows()

@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 
-from models.data.editor_item import EditorItem
+from repos.editor_item_repo import EditorItemRepo
+from models.editor_item import EditorItem
 from models.qt.editor_tree_model import EditorTreeModel
 from models.qt.editor_tree_item import EditorTreeItem
 
@@ -34,7 +35,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.copied_editor_item = None
 
     def reload_data(self):
-        editor_items = EditorItem.order_by('item_type', 'asc').get()
+        editor_items = EditorItemRepo().find_all_with_children()
         self.tree_model = EditorTreeModel('Requests', editor_items)
         self.tree_model.change_selection.connect(self.change_selection)
         self.tree_model.item_renamed.connect(self.item_renamed)
@@ -126,33 +127,34 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.item_created.emit(editor_item)
 
     def new_request_clicked(self, parent_index: QtCore.QModelIndex):
-        child_editor_item = EditorItem()
-        child_editor_item.name = 'New HTTP Request'
-        child_editor_item.item_type = EditorItem.TYPE_HTTP_FLOW
+        child_editor_item = EditorItem(name='New HTTP Request', item_type=EditorItem.TYPE_HTTP_FLOW)
+        child_editor_item.build_blank_http_flow()
+
+        self.insertChild(child_editor_item, parent_index)
+        self.item_created.emit(child_editor_item)
+
+    def new_fuzz_clicked(self, parent_index: QtCore.QModelIndex):
+        child_editor_item = EditorItem(name='New Fuzz Request', item_type=EditorItem.TYPE_FUZZ)
+        child_editor_item.build_blank_http_flow()
 
         self.insertChild(child_editor_item, parent_index)
         self.item_created.emit(child_editor_item)
 
     def new_dir_clicked(self, parent_index: QtCore.QModelIndex):
-        child_editor_item = EditorItem()
-        child_editor_item.name = 'New Folder'
-        child_editor_item.item_type = 'dir'
+        child_editor_item = EditorItem(name='New Folder', item_type='dir')
 
         self.insertChild(child_editor_item, parent_index)
-
-    def new_fuzz_clicked(self, parent_index: QtCore.QModelIndex):
-        child_editor_item = EditorItem()
-        child_editor_item.name = 'New Fuzz Request'
-        child_editor_item.item_type = EditorItem.TYPE_FUZZ
-
-        self.insertChild(child_editor_item, parent_index)
-        self.item_created.emit(child_editor_item)
 
     def copy_clicked(self, parent_index: QtCore.QModelIndex):
         tree_item = self.tree_model.getItem(parent_index)
         if tree_item.editor_item is None:
             return
-        self.copied_editor_item = tree_item.editor_item.duplicate()
+        copied_editor_item = tree_item.editor_item.duplicate()
+        if copied_editor_item is None:
+            return
+
+        self.copied_editor_item = copied_editor_item
+        EditorItemRepo().save(self.copied_editor_item)
 
     def paste_clicked(self, parent_index: QtCore.QModelIndex):
         self.insertChild(self.copied_editor_item, parent_index)
@@ -204,7 +206,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         if parent_tree_item.editor_item is not None:
             child_editor_item.parent_id = parent_tree_item.editor_item.id
 
-        child_editor_item.save()
+        EditorItemRepo().save(child_editor_item)
 
         child_tree_item = EditorTreeItem.from_editor_item(child_editor_item)
         self.tree_model.insertChild(child_tree_item, parent_index)

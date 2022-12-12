@@ -1,17 +1,20 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from pytest_httpserver import HTTPServer
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
 from support.fixtures import load_fixtures
 
-from models.data.editor_item_unsaved import EditorItemUnsaved
+from models.editor_item import EditorItem
 from widgets.editor.request_edit_page import RequestEditPage
 
 class TestEditorPage:
     def test_editor_page_saving_a_request_with_variables(self, database, cleanup_database, qtbot: QtBot):
         load_fixtures()
 
-        editor_item = EditorItemUnsaved()
+        editor_item = EditorItem(name = 'New Fuzz Request', item_type = EditorItem.TYPE_FUZZ)
+        editor_item.build_blank_http_flow()
+
         widget = RequestEditPage(editor_item)
         qtbot.addWidget(widget)
         qtbot.waitExposed(widget)
@@ -32,11 +35,21 @@ class TestEditorPage:
         button = widget.ui.saveButton
         qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
-        http_flows = HttpFlow.order_by('id', 'desc').get()
+        assert editor_item.item is not None
+        http_flows = HttpFlowRepo().find_by_ids([editor_item.item.id])
+        assert len(http_flows) == 1
         http_flow = http_flows[0]
 
         assert http_flow.request.http_version == 'HTTP/1.1'
-        assert http_flow.request.headers == '{"Content-Length": "<calculated when request is sent>", "Host": "<calculated when request is sent>", "Accept": "*/*", "Accept-Encoding": "gzip, deflate", "Connection": "keep-alive", "User-Agent": "pntest/0.1", "X-Api-Token": "0123456789"}'
+        assert http_flow.request.headers == {
+            'Content-Length': '<calculated when request is sent>',
+            'Host': '<calculated when request is sent>',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'User-Agent': 'pntest/0.1',
+            'X-Api-Token': '0123456789'
+        }
         assert http_flow.request.content == '{ "account_name": "MyAccount" }'
         assert http_flow.request.host == 'localhost'
         assert http_flow.request.port == 8080
@@ -63,7 +76,9 @@ class TestEditorPage:
 
         httpserver.expect_request("/v2/accounts/aGVsbG8gd29ybGQ=").respond_with_data("helloworld")
 
-        editor_item = EditorItemUnsaved()
+        editor_item = EditorItem(name = 'New Fuzz Request', item_type = EditorItem.TYPE_FUZZ)
+        editor_item.build_blank_http_flow()
+
         widget = RequestEditPage(editor_item)
         qtbot.addWidget(widget)
         qtbot.waitExposed(widget)
@@ -95,5 +110,6 @@ class TestEditorPage:
         assert example_flow.request.id is not None
         assert "/v2/accounts/aGVsbG8gd29ybGQ=" in example_flow.request.get_url()
 
-        assert example_flow.response.id is not None  # type: ignore
-        assert example_flow.response.content == "helloworld"  # type: ignore
+        assert example_flow.response is not None
+        assert example_flow.response.id is not None
+        assert example_flow.response.content == b"helloworld"

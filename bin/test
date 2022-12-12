@@ -12,4 +12,4 @@ else
     test_func="-k $2"
 fi
 
-PYTHONPATH="./src:./test:./src/proxy" DEV_MODE=true pytest -s $test_path $test_func
+PYTHONPATH="./src:./test:./src/mitmproxy" DEV_MODE=true pytest -s $test_path $test_func

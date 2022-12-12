@@ -4,7 +4,6 @@ import traceback
 from typing import Optional
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 from lib.process_manager import ProcessManager
-from models.data.client import Client
 
 from views._compiled.main_window import Ui_MainWindow
 from lib.app_settings import AppSettings
@@ -133,9 +132,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # TODO: We could probably use the singleton get_instance() and set these in the page's constructors
         # Network Page:
-        self.process_manager.flow_created.connect(self.network_page.http_page.flow_created)
-        self.process_manager.flow_updated.connect(self.network_page.http_page.flow_updated)
-        self.process_manager.websocket_message_created.connect(self.network_page.ws_page.websocket_message_created)
+        self.process_manager.proxy_request.connect(self.network_page.http_page.proxy_request_received)
+        self.process_manager.proxy_response.connect(self.network_page.http_page.proxy_response_received)
+        self.process_manager.proxy_ws_message.connect(self.network_page.ws_page.proxy_ws_message_received)
 
         self.network_status.clicked.connect(self.toggle_recording_enabled)
         self.intercept_status.clicked.connect(self.toggle_intercept_enabled)

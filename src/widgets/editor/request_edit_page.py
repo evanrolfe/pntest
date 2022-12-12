@@ -3,12 +3,14 @@ from typing import Optional
 import pyperclip
 
 from PyQt6 import QtWidgets, QtCore, QtGui
-from models.data.http_flow import HttpFlow
-from models.data.http_response import HttpResponse
+from models.http_flow import HttpFlow
+from models.http_response import HttpResponse
+from repos.editor_item_repo import EditorItemRepo
+from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.editor.request_edit_page import Ui_RequestEditPage
-from models.data.http_request import FormData
-from models.data.editor_item import EditorItem
+from models.http_request import FormData
+from models.editor_item import EditorItem
 from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
 
@@ -26,7 +28,7 @@ class RequestEditPage(QtWidgets.QWidget):
         super(RequestEditPage, self).__init__()
 
         self.editor_item = editor_item
-        flow = self.editor_item.item()
+        flow = self.editor_item.item
         if flow is None:
             raise Exception("RequestEditPage needs an editor item with a flow!")
         self.flow = flow
@@ -134,36 +136,36 @@ class RequestEditPage(QtWidgets.QWidget):
         for flow in example_flows:
             flow.delete()
 
-        self.ui.examplesTable.reload()
+        self.ui.examplesTable.refresh()
 
     def save_request(self):
         self.update_request_with_values_from_form()
-        if hasattr(self.flow, 'id'):
-            self.flow.request.save()
-        else:
-            saved_editor_item = self.editor_item.save()
-            self.editor_item = saved_editor_item
-            self.flow = self.editor_item.item()
-            self.ui.examplesTable.set_flow(self.flow)
+        EditorItemRepo().save(self.editor_item)
+        HttpFlowRepo().save(self.flow)
 
         self.form_input_changed.emit(False)
         self.request_saved.emit(self.editor_item)
 
     def save_example(self):
         # 1. Save the HttpResponse (without a flow)
-        self.save_request()
+       #  self.save_request()
 
         # 3. Create the example HttpFlow
         if self.latest_response is None:
             return
 
-        self.flow.duplicate_for_example(self.latest_response)
+        self.update_request_with_values_from_form()
+        example_flow = self.flow.build_example(self.latest_response)
+        HttpFlowRepo().save(example_flow)
 
         # 4. Update GUI
-        self.ui.examplesTable.reload()
+        self.ui.examplesTable.refresh()
         self.ui.flowView.set_save_as_example_enabled(False)
 
-    def response_received(self, http_response):
+        if not self.ui.examplesTable.isVisible():
+            self.toggle_examples_table()
+
+    def response_received(self, http_response: HttpResponse):
         self.latest_response = http_response
         self.ui.flowView.set_response_from_editor(self.latest_response)
         self.ui.flowView.set_save_as_example_enabled(True)
@@ -191,7 +193,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.worker.signals.error.connect(self.request_error)
         self.worker.signals.finished.connect(self.ui.flowView.hide_loader)
 
-        self.threadpool.start(self.worker)
+        self.threadpool.start(self.worker) # type:ignore
 
     # Get the request values (method, url, header, content) from the form and set them on the
     # HttpRequest object, but dont save it

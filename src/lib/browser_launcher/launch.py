@@ -58,7 +58,7 @@ def get_options_chrome_or_chromium(client):
     ]
 
     user_data_dir_options = [
-        f'--user-data-dir={get_app_config_path()}/{client.type}-profile'
+        f'--user-data-dir={get_app_config_path()}/{client.type}-{client.id}-profile'
     ]
 
     return DEFAULT_CHROME_OPTIONS + proxy_options + user_data_dir_options

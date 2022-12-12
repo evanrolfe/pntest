@@ -4,8 +4,8 @@ from typing import Optional
 from bs4 import BeautifulSoup
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
-from models.data.http_flow import HttpFlow
-from models.data.http_response import HttpResponse
+from models.http_flow import HttpFlow
+from models.http_response import HttpResponse
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type
@@ -128,7 +128,6 @@ class FlowView(QtWidgets.QWidget):
         self.set_response(flow)
 
         self.ui.requestBody.set_flow(flow)
-        self.ui.requestHeaders.set_flow(flow)
 
     def set_request(self, flow: HttpFlow):
         request = flow.request
@@ -143,7 +142,7 @@ class FlowView(QtWidgets.QWidget):
             self.ui.requestHeaders.set_default_headers()
 
         # Don't use a formatter if this is an editor request becuase the request body will have been written by the user
-        self.set_request_format_from_headers(request.get_headers() or Headers())
+        self.set_request_format_from_headers(request.headers)
         self.ui.requestBody.set_auto_format_enabled(flow.is_type_proxy())
         self.ui.requestBody.set_value(request.form_data['content'] or '')
 
@@ -175,7 +174,7 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_response_format_from_headers(response.get_headers() or Headers())
         self.ui.responseRaw.set_auto_format_enabled(True)
-        self.ui.responseRaw.set_value(response.content or '')
+        self.ui.responseRaw.set_value(response.content_for_preview())
 
         self.set_response_status_label(response)
 
@@ -224,7 +223,7 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_response_format_from_headers(response.get_headers() or Headers())
         self.ui.responseRaw.set_auto_format_enabled(True)
-        self.ui.responseRaw.set_value(response.content or '')
+        self.ui.responseRaw.set_value(response.content_for_preview())
 
         self.set_response_status_label(response)
 
@@ -252,13 +251,10 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseRaw.set_format(format)
 
         if self.flow.response:
-            content = self.flow.response.content
+            content = self.flow.response.content_for_preview()
         else:
             # TODO: The editor should just create an HttpResponse that isn't saved and pass it to FlowView
-            content = self.editor_response.content
-
-        if content is None:
-            return
+            content = self.editor_response.content_for_preview()
 
         self.ui.responseRaw.set_value(content)
 

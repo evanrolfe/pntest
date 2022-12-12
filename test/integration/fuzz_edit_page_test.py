@@ -1,19 +1,20 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
+from repos.editor_item_repo import EditorItemRepo
+from repos.http_flow_repo import HttpFlowRepo
 from support.fixtures import load_fixtures
-from models.data.editor_item import EditorItem
-from models.data.payload_file import PayloadFile
+from models.editor_item import EditorItem
+from models.payload_file import PayloadFile
 from widgets.editor.fuzz_edit_page import FuzzEditPage
 
 class TestFuzzEditPage:
     def test_saving_a_fuzz_request(self, database, cleanup_database, qtbot: QtBot):
         load_fixtures()
 
-        editor_item = EditorItem()
-        editor_item.name = 'New Fuzz Request'
-        editor_item.item_type = EditorItem.TYPE_FUZZ
-        editor_item.save()
+        editor_item = EditorItem(name = 'New Fuzz Request', item_type = EditorItem.TYPE_FUZZ)
+        editor_item.build_blank_http_flow()
+        EditorItemRepo().save(editor_item)
 
         widget = FuzzEditPage(editor_item)
         qtbot.addWidget(widget)
@@ -37,10 +38,14 @@ class TestFuzzEditPage:
         button = widget.ui.saveButton
         qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
-        http_flows = HttpFlow.order_by('id', 'desc').get()
+        assert editor_item.item is not None
+        http_flows = HttpFlowRepo().find_by_ids([editor_item.item.id])
+        assert len(http_flows) == 1
         http_flow = http_flows[0]
 
         assert http_flow.type == 'editor_fuzz'
+        assert http_flow.request is not None
+        assert http_flow.request.form_data['fuzz_data'] is not None
         assert http_flow.request.form_data['url'] == 'http://www.synack.com/login.php?username=${payload:usernames}&password=${payload:passwords}'
         assert http_flow.request.form_data['fuzz_data']['payload_files'] == [
             {'file_path': './test/support/usernames.txt', 'key': 'usernames', 'num_items': 2, 'description': ''},
@@ -52,10 +57,9 @@ class TestFuzzEditPage:
     def test_modifying_a_payload_in_fuzz_request(self, database, cleanup_database, qtbot: QtBot):
         load_fixtures()
 
-        editor_item = EditorItem()
-        editor_item.name = 'New Fuzz Request'
-        editor_item.item_type = EditorItem.TYPE_FUZZ
-        editor_item.save()
+        editor_item = EditorItem(name = 'New Fuzz Request', item_type = EditorItem.TYPE_FUZZ)
+        editor_item.build_blank_http_flow()
+        EditorItemRepo().save(editor_item)
 
         widget = FuzzEditPage(editor_item)
         qtbot.addWidget(widget)

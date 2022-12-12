@@ -1,8 +1,10 @@
 from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
 
-from models.data.http_flow import HttpFlow
+from models.http_flow import HttpFlow
+from repos.http_flow_repo import HttpFlowRepo
 
+# TODO: Rename this to FlowsTableModel
 class RequestsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance
     # layoutChanged: QtCore.pyqtSignalInstance
@@ -36,16 +38,17 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         end_index = self.index(row_index, len(self.headers) - 1)
         self.dataChanged.emit(start_index, end_index)
 
-    def delete_requests(self, request_ids: list[int]) -> None:
-        row_index = self.get_index_of(request_ids[0])
-        row_index2 = self.get_index_of(request_ids[-1])
+    def delete_requests(self, flow_ids: list[int]) -> None:
+        row_index = self.get_index_of(flow_ids[0])
+        row_index2 = self.get_index_of(flow_ids[-1])
 
         if row_index is None or row_index2 is None:
             return
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        HttpFlow.destroy(*request_ids)
-        self.flows = list(filter(lambda r: r.id not in request_ids, self.flows))
+        [HttpFlowRepo().delete(f) for f in self.flows if f.id in flow_ids]
+
+        self.flows = list(filter(lambda r: r.id not in flow_ids, self.flows))
         self.endRemoveRows()
 
     def roleNames(self) -> Dict[int, str]:
