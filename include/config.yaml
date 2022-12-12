@@ -1,0 +1,354 @@
+certs: ['*=./include/mitmproxy-ca.pem']
+ssl_insecure: true
+
+# Add all certificates of the upstream server to the certificate chain
+# that will be served to the proxy client, as extras. Type bool.
+# add_upstream_certs_to_client_chain: false
+
+# Opposite of --ignore-hosts. Type sequence of str.
+# allow_hosts: []
+
+# Strip out request headers that might cause the server to return
+# 304-not-modified. Type bool.
+# anticache: false
+
+# Try to convince servers to send us un-compressed data. Type bool.
+# anticomp: false
+
+# Block connections from public IP addresses. Type bool.
+# block_global: true
+
+# Block matching requests and return an empty response with the
+# specified HTTP status. Option syntax is "/flow-filter/status-code",
+# where flow-filter describes which requests this rule should be applied
+# to and status-code is the HTTP status code to return for blocked
+# requests. The separator ("/" in the example) can be any character.
+# Setting a non-standard status code of 444 will close the connection
+# without sending a response. Type sequence of str.
+# block_list: []
+
+# Block connections from local (private) IP addresses. This option does
+# not affect loopback addresses (connections from the local machine),
+# which are always permitted. Type bool.
+# block_private: false
+
+# Byte size limit of HTTP request and response bodies. Understands k/m/g
+# suffixes, i.e. 3m for 3 megabytes. Type optional str.
+# body_size_limit:
+
+# Passphrase for decrypting the private key provided in the --cert
+# option.  Note that passing cert_passphrase on the command line makes
+# your passphrase visible in your system's process list. Specify it in
+# config.yaml to avoid this. Type optional str.
+# cert_passphrase:
+
+# SSL certificates of the form "[domain=]path". The domain may include a
+# wildcard, and is equal to "*" if not specified. The file at path is a
+# certificate in PEM format. If a private key is included in the PEM, it
+# is used, else the default key in the conf dir is used. The PEM file
+# should contain the full certificate chain, with the leaf certificate
+# as the first entry. Type sequence of str.
+# certs: []
+
+# Set supported ciphers for client <-> mitmproxy connections using
+# OpenSSL syntax. Type optional str.
+# ciphers_client:
+
+# Set supported ciphers for mitmproxy <-> server connections using
+# OpenSSL syntax. Type optional str.
+# ciphers_server:
+
+# Client certificate file or directory. Type optional str.
+# client_certs:
+
+# Replay client requests from a saved file. Type sequence of str.
+# client_replay: []
+
+# Concurrency limit on in-flight client replay requests. Currently the
+# only valid values are 1 and -1 (no limit). Type int.
+# client_replay_concurrency: 1
+
+# Persist command history between mitmproxy invocations. Type bool.
+# command_history: true
+
+# Location of the default mitmproxy configuration files. Type str.
+# confdir: ~/.mitmproxy
+
+# Set the local IP address that mitmproxy should use when connecting to
+# upstream servers. Type optional str.
+# connect_addr:
+
+# Determine when server connections should be established. When set to
+# lazy, mitmproxy tries to defer establishing an upstream connection as
+# long as possible. This makes it possible to use server replay while
+# being offline. When set to eager, mitmproxy can detect protocols with
+# server-side greetings, as well as accurately mirror TLS ALPN
+# negotiation. Valid values are 'eager', 'lazy'.
+# connection_strategy: eager
+
+# Flow content view lines limit. Limit is enabled by default to speedup
+# flows browsing. Type int.
+# content_view_lines_cutoff: 512
+
+# The default content view mode. Valid values are 'auto', 'raw', 'hex',
+# 'graphql', 'json', 'xml/html', 'wbxml', 'javascript', 'css', 'url-
+# encoded', 'multipart form', 'image', 'query', 'protocol buffer',
+# 'msgpack', 'grpc/protocol buffer', 'mqtt'.
+# dumper_default_contentview: auto
+
+# Limit which flows are dumped. Type optional str.
+# dumper_filter:
+
+# When exporting a request as an external command, make an effort to
+# connect to the same IP as in the original request. This helps with
+# reproducibility in cases where the behaviour depends on the particular
+# host we are connecting to. Currently this only affects curl exports.
+# Type bool.
+# export_preserve_original_ip: false
+
+# The display detail level for flows in mitmdump: 0 (quiet) to 4 (very
+# verbose).   0: no output   1: shortened request URL with response
+# status code   2: full request URL with response status code and HTTP
+# headers   3: 2 + truncated response content, content of WebSocket and
+# TCP messages   4: 3 + nothing is truncated Type int.
+# flow_detail: 1
+
+# Enable/disable HTTP/2 support. HTTP/2 support is enabled by default.
+# Type bool.
+# http2: true
+
+# Send a PING frame if an HTTP/2 connection is idle for more than the
+# specified number of seconds to prevent the remote site from closing
+# it. Set to 0 to disable this feature. Type int.
+# http2_ping_keepalive: 58
+
+# Ignore host and forward all traffic without processing it. In
+# transparent mode, it is recommended to use an IP address (range), not
+# the hostname. In regular mode, only SSL traffic is ignored and the
+# hostname should be used. The supplied value is interpreted as a
+# regular expression and matched on the ip or the hostname. Type
+# sequence of str.
+# ignore_hosts: []
+
+# Reverse Proxy: Keep the original host header instead of rewriting it
+# to the reverse proxy target. Type bool.
+# keep_host_header: false
+
+# Continue serving after client playback, server playback or file read.
+# This option is ignored by interactive tools, which always keep
+# serving. Type bool.
+# keepserving: false
+
+# TLS key size for certificates and CA. Type int.
+# key_size: 2048
+
+# Address to bind proxy server(s) to (may be overridden for individual
+# modes, see `mode`). Type str.
+# listen_host: ''
+
+# Port to bind proxy server(s) to (may be overridden for individual
+# modes, see `mode`). By default, the port is mode-specific. The default
+# regular HTTP proxy spawns on port 8080. Type optional int.
+# listen_port:
+
+# Map remote resources to a local file using a pattern of the form
+# "[/flow-filter]/url-regex/file-or-directory-path", where the separator
+# can be any character. Type sequence of str.
+# map_local: []
+
+# Map remote resources to another remote URL using a pattern of the form
+# "[/flow-filter]/url-regex/replacement", where the separator can be any
+# character. Type sequence of str.
+# map_remote: []
+
+# The proxy server type(s) to spawn. Can be passed multiple times.
+# Mitmproxy supports "regular" (HTTP), "transparent", "socks5",
+# "reverse:SPEC", and "upstream:SPEC" proxy servers. For reverse and
+# upstream proxy modes, SPEC is host specification in the form of
+# "http[s]://host[:port]".  You may append `@listen_port` or
+# `@listen_host:listen_port` to override `listen_host` or `listen_port`
+# for a specific proxy mode. Features such as client playback will use
+# the first mode to determine which upstream server to use. Type
+# sequence of str.
+# mode:
+# - regular
+
+# Replacement pattern of the form "[/flow-filter]/regex/[@]replacement",
+# where the separator can be any character. The @ allows to provide a
+# file path that is used to read the replacement string. Type sequence
+# of str.
+# modify_body: []
+
+# Header modify pattern of the form "[/flow-filter]/header-
+# name/[@]header-value", where the separator can be any character. The @
+# allows to provide a file path that is used to read the header value
+# string. An empty header-value removes existing header-name headers.
+# Type sequence of str.
+# modify_headers: []
+
+# Normalize outgoing HTTP/2 header names, but emit a warning when doing
+# so. HTTP/2 does not allow uppercase header names. This option makes
+# sure that HTTP/2 headers set in custom scripts are lowercased before
+# they are sent. Type bool.
+# normalize_outbound_headers: true
+
+# Toggle the mitmproxy onboarding app. Type bool.
+# onboarding: true
+
+# Onboarding app domain. For transparent mode, use an IP when a DNS
+# entry for the app domain is not present. Type str.
+# onboarding_host: mitm.it
+
+# Port to serve the onboarding app from. Type int.
+# onboarding_port: 80
+
+# Enable debug logs in the proxy core. Type bool.
+# proxy_debug: false
+
+# Require proxy authentication. Format: "username:pass", "any" to accept
+# any user/pass combination, "@path" to use an Apache htpasswd file, or
+# "ldap[s]:url_server_ldap[:port]:dn_auth:password:dn_subtree" for LDAP
+# authentication. Type optional str.
+# proxyauth:
+
+# Enable/disable raw TCP connections. TCP connections are enabled by
+# default. Type bool.
+# rawtcp: true
+
+# Enable/disable raw UDP connections. UDP connections are enabled by
+# default. Type bool.
+# rawudp: true
+
+# Read only matching flows. Type optional str.
+# readfile_filter:
+
+# Read flows from file. Type optional str.
+# rfile:
+
+# Stream flows to file as they arrive. Prefix path with + to append. The
+# full path can use python strftime() formating, missing directories are
+# created as needed. A new file is opened every time the formatted
+# string changes. Type optional str.
+# save_stream_file:
+
+# Filter which flows are written to file. Type optional str.
+# save_stream_filter:
+
+# Execute a script. Type sequence of str.
+# scripts: []
+
+# Start a proxy server. Enabled by default. Type bool.
+# server: true
+
+# Replay server responses from a saved file. Type sequence of str.
+# server_replay: []
+
+# Ignore request content while searching for a saved flow to replay.
+# Type bool.
+# server_replay_ignore_content: false
+
+# Ignore request destination host while searching for a saved flow to
+# replay. Type bool.
+# server_replay_ignore_host: false
+
+# Request parameters to be ignored while searching for a saved flow to
+# replay. Type sequence of str.
+# server_replay_ignore_params: []
+
+# Request payload parameters (application/x-www-form-urlencoded or
+# multipart/form-data) to be ignored while searching for a saved flow to
+# replay. Type sequence of str.
+# server_replay_ignore_payload_params: []
+
+# Ignore request destination port while searching for a saved flow to
+# replay. Type bool.
+# server_replay_ignore_port: false
+
+# Kill extra requests during replay (for which no replayable response
+# was found). Type bool.
+# server_replay_kill_extra: false
+
+# Don't remove flows from server replay state after use. This makes it
+# possible to replay same response multiple times. Type bool.
+# server_replay_nopop: false
+
+# Refresh server replay responses by adjusting date, expires and last-
+# modified headers, as well as adjusting cookie expiration. Type bool.
+# server_replay_refresh: true
+
+# Request headers that need to match while searching for a saved flow to
+# replay. Type sequence of str.
+# server_replay_use_headers: []
+
+# Use the Host header to construct URLs for display. Type bool.
+# showhost: false
+
+# Do not verify upstream server SSL/TLS certificates. Type bool.
+# ssl_insecure: false
+
+# Path to a PEM formatted trusted CA certificate. Type optional str.
+# ssl_verify_upstream_trusted_ca:
+
+# Path to a directory of trusted CA certificates for upstream server
+# verification prepared using the c_rehash tool. Type optional str.
+# ssl_verify_upstream_trusted_confdir:
+
+# Set sticky auth filter. Matched against requests. Type optional str.
+# stickyauth:
+
+# Set sticky cookie filter. Matched against requests. Type optional str.
+# stickycookie:
+
+# Stream data to the client if response body exceeds the given
+# threshold. If streamed, the body will not be stored in any way.
+# Understands k/m/g suffixes, i.e. 3m for 3 megabytes. Type optional
+# str.
+# stream_large_bodies:
+
+# Generic TCP SSL proxy mode for all hosts that match the pattern.
+# Similar to --ignore-hosts, but SSL connections are intercepted. The
+# communication contents are printed to the log in verbose mode. Type
+# sequence of str.
+# tcp_hosts: []
+
+# Log verbosity. Valid values are 'error', 'warn', 'info', 'alert',
+# 'debug'.
+# termlog_verbosity: info
+
+# Set the maximum TLS version for client connections. Valid values are
+# 'UNBOUNDED', 'SSL3', 'TLS1', 'TLS1_1', 'TLS1_2', 'TLS1_3'.
+# tls_version_client_max: UNBOUNDED
+
+# Set the minimum TLS version for client connections. Valid values are
+# 'UNBOUNDED', 'SSL3', 'TLS1', 'TLS1_1', 'TLS1_2', 'TLS1_3'.
+# tls_version_client_min: TLS1_2
+
+# Set the maximum TLS version for server connections. Valid values are
+# 'UNBOUNDED', 'SSL3', 'TLS1', 'TLS1_1', 'TLS1_2', 'TLS1_3'.
+# tls_version_server_max: UNBOUNDED
+
+# Set the minimum TLS version for server connections. Valid values are
+# 'UNBOUNDED', 'SSL3', 'TLS1', 'TLS1_1', 'TLS1_2', 'TLS1_3'.
+# tls_version_server_min: TLS1_2
+
+# Generic UDP SSL proxy mode for all hosts that match the pattern.
+# Similar to --ignore-hosts, but SSL connections are intercepted. The
+# communication contents are printed to the log in verbose mode. Type
+# sequence of str.
+# udp_hosts: []
+
+# Add HTTP Basic authentication to upstream proxy and reverse proxy
+# requests. Format: username:password. Type optional str.
+# upstream_auth:
+
+# Connect to upstream server to look up certificate details. Type bool.
+# upstream_cert: true
+
+# Make sure that incoming HTTP requests are not malformed. Disabling
+# this option makes mitmproxy vulnerable to HTTP smuggling attacks. Type
+# bool.
+# validate_inbound_headers: true
+
+# Enable/disable WebSocket support. WebSocket support is enabled by
+# default. Type bool.
+# websocket: true

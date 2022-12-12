@@ -1,8 +1,8 @@
 # PnTest
 
-[![PnTest](https://circleci.com/gh/evanrolfe/pntest.svg?style=shield)](https://app.circleci.com/pipelines/github/evanrolfe/pntest) ![](https://img.shields.io/badge/python-3.10-blue) ![](https://img.shields.io/badge/Qt-6-blue)
+[![PnTest](https://circleci.com/gh/evanrolfe/pntest.svg?style=shield)](https://app.circleci.com/pipelines/github/evanrolfe/pntest) ![](https://img.shields.io/badge/python-3.11-blue) ![](https://img.shields.io/badge/Qt-6-blue)
 
-An HTTP (and Websockets) proxy for performing penetration tests against web applications, with advanced capabilities for handling single-page-applications. This repo contains the frontend GUI application based on Python 3.9 and PySide2.
+An HTTP (and Websockets) proxy for performing penetration tests against web applications and APIs.
 
 ![](./screenshot.png)
 
@@ -36,8 +36,8 @@ Mac:
 ```bash
 $ git clone git@github.com:evanrolfe/pntest.git
 $ cd pntest
-$ pip3 install virtualenv
-$ python3 -m virtualenv -p /usr/local/bin/python3 venv
+$ pip3.11 install virtualenv
+$ python3.11 -m virtualenv -p /usr/local/bin/python3.11 venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
 $ pip install -r dev-requirements.txt

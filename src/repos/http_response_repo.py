@@ -32,11 +32,7 @@ class HttpResponseRepo(BaseRepo):
 
     def save(self, response: HttpResponse):
         # NOTE: Requests are only ever inserted, never updated.
-        try:
-            self.generic_insert(response, self.table)
-        except ValueError:
-            response.content = ''
-            self.generic_insert(response, self.table)
+        self.generic_insert(response, self.table)
 
     def delete(self, response: HttpResponse):
         self.generic_delete(response, self.table)

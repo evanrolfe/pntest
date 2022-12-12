@@ -34,7 +34,7 @@ def create_http_flow(scheme: str, host: str, port: int, path: str) -> HttpFlow:
     http_flow = HttpFlow(
         type=HttpFlow.TYPE_PROXY,
         request=http_request,
-        response=HttpResponseFactory.build(status_code=404, content="not found"),
+        response=HttpResponseFactory.build(status_code=404, content=str.encode("not found")),
     )
     HttpFlowRepo().save(http_flow)
     return http_flow

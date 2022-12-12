@@ -2,7 +2,7 @@ import json
 import time
 import sqlite3
 from typing import Any, Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field
+from pypika import Query, Table, Field, QmarkParameter
 from models.model import Model
 
 from lib.database import Database
@@ -39,11 +39,12 @@ class BaseRepo:
         model.created_at = int(time.time())
 
         columns = self.model_columns(model)
-        values = self.model_values(model)
+        values = [v for v in self.model_values(model)]
+        qmark_values = [QmarkParameter() for _ in values]
 
-        query = Query.into(table).columns(*columns).insert(*values)
+        query = Query.into(table).columns(*columns).insert(*qmark_values)
         cursor = self.conn.cursor()
-        cursor.execute(query.get_sql())
+        cursor.execute(query.get_sql(), values)
         self.conn.commit()
 
         if cursor.lastrowid is not None:

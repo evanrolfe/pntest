@@ -174,7 +174,7 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_response_format_from_headers(response.get_headers() or Headers())
         self.ui.responseRaw.set_auto_format_enabled(True)
-        self.ui.responseRaw.set_value(response.content or '')
+        self.ui.responseRaw.set_value(response.content_for_preview())
 
         self.set_response_status_label(response)
 
@@ -223,7 +223,7 @@ class FlowView(QtWidgets.QWidget):
 
         self.set_response_format_from_headers(response.get_headers() or Headers())
         self.ui.responseRaw.set_auto_format_enabled(True)
-        self.ui.responseRaw.set_value(response.content or '')
+        self.ui.responseRaw.set_value(response.content_for_preview())
 
         self.set_response_status_label(response)
 
@@ -251,13 +251,10 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseRaw.set_format(format)
 
         if self.flow.response:
-            content = self.flow.response.content
+            content = self.flow.response.content_for_preview()
         else:
             # TODO: The editor should just create an HttpResponse that isn't saved and pass it to FlowView
-            content = self.editor_response.content
-
-        if content is None:
-            return
+            content = self.editor_response.content_for_preview()
 
         self.ui.responseRaw.set_value(content)
 

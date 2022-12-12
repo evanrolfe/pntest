@@ -1,7 +1,7 @@
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets
 from models.http_response import HttpResponse
-from proxy.common_types import ProxyRequest, ProxyResponse
+from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.background_worker import BackgroundWorker
@@ -74,7 +74,7 @@ class HttpPage(QtWidgets.QWidget):
 
     def load_flows(self, signals):
         print(f'Searching for {self.search_text}')
-
+        # TODO: This should create its own db connection
         http_flows = HttpFlowRepo().find_for_table(self.search_text or '')
 
         return http_flows

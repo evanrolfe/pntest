@@ -1,7 +1,7 @@
 factory_boy
 pytest
 pytest-qt
-pyinstaller==5.0
+pyinstaller
 pytest-httpserver
 websockets==10.3
 websocket-client==1.4.1

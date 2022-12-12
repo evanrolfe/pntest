@@ -35,7 +35,7 @@ class Database:
             os.remove(self.db_path)
 
     def connect(self):
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
 
     def import_schema(self):
@@ -50,9 +50,9 @@ class Database:
         # Settings.create_defaults()
 
     def reload_with_new_database(self, new_db_path):
-        pass
-        # self.close()
-        # self.db_path = new_db_path
+        self.close()
+        self.db_path = new_db_path
+        self.connect()
         # self.load_or_create()
 
     def load_new_database(self, new_db_path):

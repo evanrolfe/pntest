@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS http_responses(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     http_version TEXT NOT NULL,
     headers TEXT NOT NULL,
-    content TEXT,
+    content BLOB,
     timestamp_start REAL,
     timestamp_end REAL,
     status_code INTEGER NOT NULL,

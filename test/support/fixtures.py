@@ -4,7 +4,7 @@ from models.http_request import HttpRequest, FormData
 from models.http_response import HttpResponse
 from models.variable import Variable
 from models.payload_file import PayloadFileSerialised
-from proxy.common_types import ProxyRequest
+from mitmproxy.common_types import ProxyRequest
 from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
 from repos.variable_repo import VariableRepo

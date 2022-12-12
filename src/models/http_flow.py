@@ -11,7 +11,7 @@ from models.model import Model
 from lib.types import Headers
 from lib.background_worker import WorkerSignals
 from lib.http_request import HttpRequest as HttpRequestLib
-from proxy.common_types import ProxyRequest, ProxyResponse
+from mitmproxy.common_types import ProxyRequest, ProxyResponse
 
 @dataclass(kw_only=True)
 class HttpFlow(Model):
@@ -70,7 +70,6 @@ class HttpFlow(Model):
         )
 
     @classmethod
-    # TODO: Type check the ProxyRequest
     def from_proxy_request(cls, proxy_request: ProxyRequest):
         request = HttpRequest.from_state(proxy_request)
 

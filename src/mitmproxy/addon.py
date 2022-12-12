@@ -1,21 +1,48 @@
+"""
+Basic skeleton of a mitmproxy addon.
+
+Run as follows: mitmproxy -s anatomy.py
+"""
+import base64
+import logging
+import os
+import signal
+import zmq
 from typing import cast, Optional
 import simplejson as json
 from pathlib import Path
-
-from mitmproxy.http import Headers
-from mitmproxy import http
+import time
+import mitmproxy
+import threading
+from mitmproxy.http import Headers, Response as MitmResponse, HTTPFlow as MitmHTTPFlow
 from common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
+from sys import argv
 
-class ProxyHttpFlow(http.HTTPFlow):
+PROXY_ZMQ_PORT = 5556
+TIMEOUT_AFTER_SECONDS_NO_POLL = 3
+
+proxy_port = argv[4]
+client_id = int(argv[7])
+recording_enabled_raw = int(argv[8])
+intercept_enabled_raw = int(argv[9])
+settingsb64 = argv[10]
+
+settings_str = base64.b64decode(bytes(settingsb64, 'utf-8')).decode('utf-8')
+settings = json.loads(settings_str)
+recording_enabled = (recording_enabled_raw == 1)
+intercept_enabled = (intercept_enabled_raw == 1)
+
+class ProxyHttpFlow(MitmHTTPFlow):
     intercept_response: bool
 
-class ProxyEvents:
+class ProxyEventsAddon:
     settings: Optional[SettingsJson]
     client_id: int
     recording_enabled: bool
     intercept_enabled: bool
     intercepted_flows: list[ProxyHttpFlow]
     pntest_homepage_html: str
+    socket: zmq.Socket
 
     def __init__(self, client_id: int, include_path: str):
         self.client_id = client_id
@@ -26,14 +53,69 @@ class ProxyEvents:
         self.settings = None
         self.recording_enabled = True
 
-    def set_proxy(self, proxy):
-        self.proxy = proxy
+    def zmq_connect(self):
+        print("[ZMQClient] starting...")
 
-    def set_socket(self, socket):
-        self.socket = socket
+        # Connect to the ZMQ server
+        context = zmq.Context()
+        self.socket = context.socket(zmq.DEALER)
+        self.socket.setsockopt_string(zmq.IDENTITY, str(client_id))
+        self.socket.connect("tcp://localhost:%s" % PROXY_ZMQ_PORT)
 
-    def send_started_message(self):
-        self.__send_message({'type': 'started'})
+        # Let em know we've started
+        self.socket.send_string(json.dumps({'type': 'started'}))
+
+        # Listen to messages from the server
+        listen_thread = threading.Thread(target=self.zmq_listen, daemon=True)
+        listen_thread.start()
+
+        print("[ZMQClient] listening...")
+
+
+    def zmq_listen(self):
+        poll = zmq.Poller()
+        poll.register(self.socket, zmq.POLLIN)
+        last_poll_at = int(time.time())
+
+        while True:
+            sockets = dict(poll.poll(1000))
+
+            diff = int(time.time()) - last_poll_at
+            # If the src/__main__.py process has stopped, then the proxy should kill itself
+            if diff >= TIMEOUT_AFTER_SECONDS_NO_POLL:
+                print(f'[Proxy] last poll was {diff} secs ago! Shutting down..')
+                os.kill(os.getpid(), signal.SIGTERM)
+
+            if sockets:
+                message_raw = self.socket.recv()
+
+                # ZMQ typing is not accurate here
+                if type(message_raw) is not bytes:
+                    raise Exception(f'[Proxy] Could not parse message of type {type(message_raw)}')
+
+                message_raw_str = message_raw.decode('utf-8')
+                message = json.loads(message_raw)
+
+                if message['type'] in ['forward', 'forward_and_intercept']:
+                    self.forward_flow(message)
+
+                elif message['type'] == 'drop':
+                    self.drop_flow(message)
+
+                elif message['type'] == 'forward_all':
+                    self.forward_all()
+
+                elif message['type'] == 'enable_intercept':
+                    self.set_intercept_enabled(message['value'])
+
+                elif message['type'] == 'enable_recording':
+                    self.set_recording_enabled(message['value'])
+
+                elif message['type'] == 'set_settings':
+                    self.set_settings(message['value'])
+
+                elif message['type'] == 'poll':
+                    last_poll_at = int(time.time())
 
     # ---------------------------------------------------------------------------
     # Actions:
@@ -83,11 +165,10 @@ class ProxyEvents:
         flow.intercept()
         self.intercepted_flows.append(flow)
 
-    def set_intercept_enabled(self, enabled):
+    def set_intercept_enabled(self, enabled: bool):
         self.intercept_enabled = enabled
 
     def set_recording_enabled(self, enabled: bool):
-        print('[Proxy] enabled = ', enabled)
         self.recording_enabled = enabled
 
     def set_settings(self, settings: SettingsJson):
@@ -96,11 +177,11 @@ class ProxyEvents:
     # ---------------------------------------------------------------------------
     # MitmProxy Events:
     # ---------------------------------------------------------------------------
-    def request(self, flow: http.HTTPFlow):
+    def request(self, flow: MitmHTTPFlow):
         print('[Proxy] HTTP request')
         # The default homepage at http://pntest
         if flow.request.host == 'pntest':
-            flow.response = http.Response.make(200, self.pntest_homepage_html, {"content-type": "text/html"})
+            flow.response = MitmResponse.make(200, self.__proxy_home_page_html(), {"content-type": "text/html"})
 
         if not self.should_request_be_captured(flow):
             return
@@ -116,7 +197,7 @@ class ProxyEvents:
         if request_state['intercepted']:
             self.intercept_flow(flow)
 
-    def response(self, flow: http.HTTPFlow):
+    def response(self, flow: MitmHTTPFlow):
         print('[Proxy] HTTP response')
         intercept_response = getattr(flow, 'intercept_response', False)
 
@@ -130,18 +211,22 @@ class ProxyEvents:
         response_state['flow_uuid'] = flow.id
         response_state['type'] = 'response'
         response_state['intercepted'] = intercept_response
-        try:
-            response_state['content'] = flow.response.text or ''
-        except ValueError:
-            print("ValueError from response flow uuid = ", flow.id)
-            response_state['content'] = 'PnTest: Could not parse body'
+
+        # NOTE: Even though it breaks the type-checking, we convert this to a string so it can be sent
+        # over zmq, then in ProxyHandler we decode base64 and decode back to raw bytes
+        # TODO: Have a seperate ProxyResponseZmq type with content: str
+        if flow.response.content is None:
+            response_state['content'] = '' # type:ignore
+        else:
+            print(flow.response.content)
+            response_state['content'] = base64.b64encode(flow.response.content).decode('utf-8') # type:ignore
 
         self.__send_message(response_state)
 
         if intercept_response:
             self.intercept_flow(flow)
 
-    def websocket_message(self, flow: http.HTTPFlow):
+    def websocket_message(self, flow: MitmHTTPFlow):
         print('[Proxy] websocket message')
         if flow.websocket is None or self.recording_enabled == False:
             return
@@ -185,7 +270,7 @@ class ProxyEvents:
             print(f'ERROR => Could not send message for flow {message["flow_uuid"]}')
             return
 
-    def should_request_be_captured(self, flow: http.HTTPFlow) -> bool:
+    def should_request_be_captured(self, flow: MitmHTTPFlow) -> bool:
         if self.recording_enabled == False:
             return False
 
@@ -203,6 +288,12 @@ class ProxyEvents:
             return False
 
         return True
+
+    def __proxy_home_page_html(self) -> str:
+        html = self.pntest_homepage_html
+        html = html.replace('{{client_id}}', str(self.client_id))
+        html = html.replace('{{proxy_port}}', proxy_port)
+        return html
 
 def convert_dict_bytes_to_strings(d):
     new_d = {}
@@ -223,3 +314,11 @@ def convert_headers_bytes_to_strings(headers):
         new_headers.append(new_header)
 
     return new_headers
+
+proxy_events = ProxyEventsAddon(client_id, '/Users/evan/Code/pntest/include')
+proxy_events.set_settings(settings)
+proxy_events.set_recording_enabled(recording_enabled)
+proxy_events.set_intercept_enabled(intercept_enabled)
+proxy_events.zmq_connect()
+
+addons = [proxy_events]

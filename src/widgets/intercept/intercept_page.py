@@ -51,7 +51,7 @@ class InterceptPage(QtWidgets.QWidget):
 
             self.ui.headers.set_headers(flow.response.get_headers())
             self.ui.headers.set_header_line(flow.response.get_header_line_no_http_version())
-            self.ui.bodyText.setPlainText(flow.response.content or '')
+            self.ui.bodyText.setPlainText(flow.response.content_for_preview())
 
             self.ui.forwardInterceptButton.setEnabled(False)
 

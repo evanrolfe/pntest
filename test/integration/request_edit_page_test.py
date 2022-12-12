@@ -110,5 +110,6 @@ class TestEditorPage:
         assert example_flow.request.id is not None
         assert "/v2/accounts/aGVsbG8gd29ybGQ=" in example_flow.request.get_url()
 
-        assert example_flow.response.id is not None  # type: ignore
-        assert example_flow.response.content == "helloworld"  # type: ignore
+        assert example_flow.response is not None
+        assert example_flow.response.id is not None
+        assert example_flow.response.content == b"helloworld"

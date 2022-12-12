@@ -12,7 +12,7 @@ from constants import CALCULATED_TEXT
 from lib.types import Headers
 from lib.input_parsing.text_wrapper import parse_text, parse_text_with_payload_values
 from copy import deepcopy
-from proxy.common_types import ProxyRequest
+from mitmproxy.common_types import ProxyRequest
 
 def escape_quotes(value: str) -> str:
     return value.replace('"', r'\"')

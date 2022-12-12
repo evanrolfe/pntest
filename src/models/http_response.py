@@ -5,7 +5,7 @@ from typing import Any, Optional
 from requests import Response as RequestsResponse
 from lib.types import Headers
 from models.model import Model
-from proxy.common_types import ProxyResponse
+from mitmproxy.common_types import ProxyResponse
 from lib.types import Headers
 
 @dataclass(kw_only=True)
@@ -16,7 +16,7 @@ class HttpResponse(Model):
 
     http_version: str
     headers: Headers
-    content: Optional[str]
+    content: Optional[bytes]
     timestamp_start: float
     timestamp_end: float
     status_code: int
@@ -50,7 +50,7 @@ class HttpResponse(Model):
             version = 'HTTP/1.0'
 
         return HttpResponse(
-            content = response.text,
+            content = response.content,
             status_code = response.status_code,
             reason = response.reason,
             headers=dict(response.headers),
@@ -73,7 +73,7 @@ class HttpResponse(Model):
     def modify(self, modified_status_code: int, modified_headers: Headers, modified_content: str):
         self.status_code = modified_status_code
         self.headers = modified_headers
-        self.content = modified_content
+        self.content = str.encode(modified_content)
 
     # TODO: Use a TypedDict instead of Any
     # TODO: Make this work
@@ -95,7 +95,9 @@ class HttpResponse(Model):
         return f'{self.status_code} {self.reason}'
 
     def content_for_preview(self) -> str:
-        return self.content or ''
+        if self.content is None:
+            return ''
+        return self.content.decode()
 
     def __eq__(self, other) -> bool:
         return (

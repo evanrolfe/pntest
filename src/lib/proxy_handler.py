@@ -3,9 +3,10 @@ from PyQt6 import QtCore, QtWidgets
 import zmq
 import sys
 import simplejson as json
+import base64
 from repos.http_flow_repo import HttpFlowRepo
 from models.http_flow import HttpFlow
-from proxy.common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
+from mitmproxy.common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 PROXY_ZMQ_PORT = 5556
 
@@ -77,6 +78,8 @@ class ProxyZmqServer(QtCore.QObject):
             self.request(obj)
         elif (obj['type'] == 'response'):
             print(f'[ProxyZmqServer] Received http response')
+            # Decode the base64 string, and decode the string to bytes:
+            obj['content'] = base64.b64decode(obj['content'])
             self.response(obj)
         elif (obj['type'] == 'websocket_message'):
             print(f'[ProxyZmqServer] Received websocket message')

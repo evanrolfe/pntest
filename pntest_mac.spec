@@ -20,7 +20,7 @@ a = Analysis(
         ('src/style/light.qss', 'style/'),
         ('src/assets/icons', 'assets/icons'),
     ],
-    hiddenimports=[],
+    hiddenimports=['PyQt6.QtPrintSupport'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -50,13 +50,15 @@ exea = EXE(
     entitlements_file=None,
 )
 #===============================================================================
-# pntest_Proxy
+# mitmdump
 #===============================================================================
 b = Analysis(
-    ['src/proxy/__main__.py'],
-    pathex=['src/proxy', 'venv/lib/python3.9/site-packages/'],
-    binaries=[('include/cert9.db', 'include/'), ('include/rootCA.key', 'include/')],
-    datas=[],
+    ['venv/bin/mitmdump', 'src/mitmproxy/addon.py'],
+    binaries=[], #[('include/cert9.db', 'include/'), ('include/rootCA.key', 'include/')],
+    datas=[
+        ('src/mitmproxy/addon.py', '.'),
+        ('src/mitmproxy/common_types.py', '.')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -74,7 +76,7 @@ exeb = EXE(
     b.scripts,
     [],
     exclude_binaries=True,
-    name='pntest_proxy',
+    name='mitmdump',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -17,7 +17,7 @@ from lib.utils import is_dev_mode
 from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
 from lib.browser_launcher.browser_proc import BrowserProc
 from models.http_response import HttpResponse
-from proxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage, SettingsJson
+from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage, SettingsJson
 from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
 from repos.settings_repo import SettingsRepo
@@ -39,6 +39,7 @@ class ProcessManager(QtCore.QObject):
     recording_changed = QtCore.pyqtSignal(bool)
     intercept_changed = QtCore.pyqtSignal(bool)
 
+    app_path: str
     proxy_handler: ProxyHandler
     processes: list[RunningProcess]
     recording_enabled: bool
@@ -54,9 +55,9 @@ class ProcessManager(QtCore.QObject):
             raise Exception("Calling ProcessManager.get_instance() when there is not instance!")
         return ProcessManager.__instance
 
-    def __init__(self, src_path):
+    def __init__(self, app_path: str):
         super().__init__()
-        self.init(src_path)
+        self.init(app_path)
 
         # Virtually private constructor.
         if ProcessManager.__instance is not None:
@@ -65,8 +66,8 @@ class ProcessManager(QtCore.QObject):
             ProcessManager.__instance = self
     # /Singleton method stuff
 
-    def init(self, src_path):
-        self.src_path = src_path
+    def init(self, app_path: str):
+        self.app_path = app_path
         self.processes = []
         self.threadpool = QtCore.QThreadPool()
 
@@ -77,7 +78,6 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
         self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)
         self.proxy_handler.signals.proxy_ws_message.connect(self.proxy_ws_message_slot)
-        self.proxy_handler.signals.proxy_started.connect(self.proxy_started)
         self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
 
         self.recording_enabled = True
@@ -170,17 +170,17 @@ class ProcessManager(QtCore.QObject):
         self.processes.append({'client': client, 'type': 'browser', 'worker': worker, 'process': None})
 
     def launch_proxy(self, client: Client, settings: SettingsJson):
-        app_path = str(get_app_path())
-        print(f"[ProcessManager] Launching proxy, app_path: {app_path}")
+        print(f"[ProcessManager] Launching proxy, app_path: {self.app_path}")
 
         recording_enabled = 1 if self.recording_enabled else 0
         intercept_enabled = 1 if self.intercept_enabled else 0
         settings_json_b64 = base64.b64encode(bytes(json.dumps(settings), 'utf-8')).decode('utf-8')
+        args_str = f'{client.id} {recording_enabled} {intercept_enabled} {settings_json_b64}'
 
         if is_dev_mode():
-            proxy_command = f'{sys.executable} {app_path}/proxy {client.proxy_port} {client.id} _ {recording_enabled} {intercept_enabled} {settings_json_b64}'
+            proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'
         else:
-            proxy_command = f'{app_path}/pntest_proxy {client.proxy_port} {client.id} {app_path}/include {recording_enabled} {intercept_enabled} {settings_json_b64}'
+            proxy_command = f'{self.app_path}/pntest/mitmdump -s {self.app_path}/pntest/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'
 
         print(proxy_command)
         current_env = os.environ.copy()

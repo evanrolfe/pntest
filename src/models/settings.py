@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from models.model import Model
 
-from proxy.common_types import SettingsJson, CaptureFilterSettings, DisplayFilterSettings, ProxySettings
+from mitmproxy.common_types import SettingsJson, CaptureFilterSettings, DisplayFilterSettings, ProxySettings
 
 @dataclass(kw_only=True)
 class Settings(Model):

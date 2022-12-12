@@ -1,7 +1,7 @@
 from typing import Any, TypedDict
 
 # Types which are used by both the main process and the proxy processes, unfortunately this code needs
-# to be stored in src/proxy, otherwise you get an "ImportError: attempted relative import with no known parent package"
+# to be stored in src/mitmproxy, otherwise you get an "ImportError: attempted relative import with no known parent package"
 # If you have a solution to this please let me know or submit a pull request
 
 class CaptureFilterSettings(TypedDict):
@@ -45,7 +45,7 @@ class ProxyRequest(TypedDict):
 class ProxyResponse(TypedDict):
     http_version: str
     headers: list[tuple[str, str]]
-    content: str
+    content: bytes
     trailers: Any
     timestamp_start: float
     timestamp_end: float

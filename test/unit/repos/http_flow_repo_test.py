@@ -100,6 +100,16 @@ class TestHttpFlowRepo:
 
         assert result is None
 
+    def test_saving_a_flow_and_response(self, database, cleanup_database):
+        http_flow_repo = HttpFlowRepo()
+        request = HttpRequestFactory.build(path="/")
+        response: HttpResponse = HttpResponseFactory.build()
+
+        flow = HttpFlow(type="editor", request=request, response=response)
+        http_flow_repo.save(flow)
+
+        assert flow.id is not None
+
     def test_updating_a_flow(self, database, cleanup_database):
         http_flow_repo = HttpFlowRepo()
         client_repo = ClientRepo()
