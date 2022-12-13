@@ -6,6 +6,7 @@ Run as follows: mitmproxy -s anatomy.py
 import base64
 import logging
 import os
+import pathlib
 import signal
 import zmq
 from typing import cast, Optional
@@ -20,12 +21,14 @@ from sys import argv
 
 PROXY_ZMQ_PORT = 5556
 TIMEOUT_AFTER_SECONDS_NO_POLL = 3
+HOME_PAGE_PATH = 'include/html_page.html'
 
 proxy_port = argv[4]
 client_id = int(argv[7])
 recording_enabled_raw = int(argv[8])
 intercept_enabled_raw = int(argv[9])
-settingsb64 = argv[10]
+app_path = argv[10]
+settingsb64 = argv[11]
 
 settings_str = base64.b64decode(bytes(settingsb64, 'utf-8')).decode('utf-8')
 settings = json.loads(settings_str)
@@ -41,16 +44,18 @@ class ProxyEventsAddon:
     recording_enabled: bool
     intercept_enabled: bool
     intercepted_flows: list[ProxyHttpFlow]
-    pntest_homepage_html: str
     socket: zmq.Socket
 
-    def __init__(self, client_id: int):
+    def __init__(self, client_id: int, app_path: str):
+        current_path = pathlib.Path(__file__).parent.resolve()
+        print("------------> Proxy: app_path = ", app_path)
+
         self.client_id = client_id
         self.intercept_enabled = False
         self.intercepted_flows = []
-        self.pntest_homepage_html = Path(f'./include/html_page.html').read_text()
         self.settings = None
         self.recording_enabled = True
+        self.app_path = app_path
 
     def zmq_connect(self):
         print("[ZMQClient] starting...")
@@ -69,7 +74,6 @@ class ProxyEventsAddon:
         listen_thread.start()
 
         print("[ZMQClient] listening...")
-
 
     def zmq_listen(self):
         poll = zmq.Poller()
@@ -289,7 +293,8 @@ class ProxyEventsAddon:
         return True
 
     def __proxy_home_page_html(self) -> str:
-        html = self.pntest_homepage_html
+        html = Path(f'{self.app_path}/{HOME_PAGE_PATH}').read_text()
+
         html = html.replace('{{client_id}}', str(self.client_id))
         html = html.replace('{{proxy_port}}', proxy_port)
         return html
@@ -314,7 +319,7 @@ def convert_headers_bytes_to_strings(headers):
 
     return new_headers
 
-proxy_events = ProxyEventsAddon(client_id)
+proxy_events = ProxyEventsAddon(client_id, app_path)
 proxy_events.set_settings(settings)
 proxy_events.set_recording_enabled(recording_enabled)
 proxy_events.set_intercept_enabled(intercept_enabled)

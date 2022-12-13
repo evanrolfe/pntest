@@ -175,7 +175,7 @@ class ProcessManager(QtCore.QObject):
         recording_enabled = 1 if self.recording_enabled else 0
         intercept_enabled = 1 if self.intercept_enabled else 0
         settings_json_b64 = base64.b64encode(bytes(json.dumps(settings), 'utf-8')).decode('utf-8')
-        args_str = f'{client.id} {recording_enabled} {intercept_enabled} {settings_json_b64}'
+        args_str = f'{client.id} {recording_enabled} {intercept_enabled} {self.app_path} {settings_json_b64}'
 
         if is_dev_mode():
             proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'

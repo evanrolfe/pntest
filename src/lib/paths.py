@@ -9,7 +9,10 @@ def get_app_config_path():
     return QStandardPaths.standardLocations(QStandardPaths.StandardLocation.AppConfigLocation)[0]
 
 def get_app_path():
-    return pathlib.Path(__file__).parent.parent.absolute()
+    if is_dev_mode():
+        return pathlib.Path(__file__).parent.parent.parent.absolute()
+    else:
+        return pathlib.Path(__file__).parent.parent.absolute()
 
 def get_include_path():
     if is_dev_mode():
