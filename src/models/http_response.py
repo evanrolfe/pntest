@@ -97,7 +97,10 @@ class HttpResponse(Model):
     def content_for_preview(self) -> str:
         if self.content is None:
             return ''
-        return self.content.decode()
+        try:
+            return self.content.decode()
+        except UnicodeDecodeError as ex:
+            return 'UnicodeDecodeError: ' + str(ex)
 
     def __eq__(self, other) -> bool:
         return (
