@@ -263,7 +263,7 @@ class MainWindow(QtWidgets.QMainWindow):
         shutil.copy(database.db_path, new_db_path)
         print(f'[Frontend] Copied {database.db_path} to {new_db_path}')
 
-        database.load_new_database(new_db_path)
+        database.reload_with_new_database(new_db_path)
         self.reload()
 
     def show_preferences(self):

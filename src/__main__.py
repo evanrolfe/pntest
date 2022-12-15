@@ -2,7 +2,7 @@ import os
 import sys
 from PyQt6 import QtWidgets, QtGui, QtCore
 
-from lib.paths import get_app_path, get_resource_path
+from lib.paths import get_app_path, get_resource_path, get_app_config_path
 from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -34,18 +34,16 @@ def main():
 
     print(f'[Gui] App path: {app_path}')
     print(f'[Gui] DB path: {tmp_db_path}')
-    print(f'[Gui] style dir path: {style_dir_path}')
+    print(f'[Gui] App config path: {get_app_config_path()}')
     print(f'[Gui] assets path: {assets_path}')
 
     QtCore.QDir.addSearchPath('assets', assets_path)
 
-    # Load DB from the CLI if argument given
-    # try:
-    #     tmp_db_path = sys.argv[1]
-    #     print(f'[Frontend] Overridding DB path from CLI: {tmp_db_path}')
-    #     database = Database(tmp_db_path)
-    #     database.load_or_create()
-    # except IndexError:
+    # Ensure clean slate on start so delete the tmp db if it exists
+    if os.path.isfile(tmp_db_path):
+        print(f'[Gui] found existing db at {tmp_db_path}, deleting.')
+        os.remove(tmp_db_path)
+
     database = Database(tmp_db_path)
 
     process_manager = ProcessManager(str(app_path))

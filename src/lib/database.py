@@ -47,18 +47,10 @@ class Database:
             self.conn.executescript(SCHEMA_SQL)
             self.conn.commit()
 
-        # Settings.create_defaults()
-
     def reload_with_new_database(self, new_db_path):
         self.close()
         self.db_path = new_db_path
         self.connect()
-        # self.load_or_create()
-
-    def load_new_database(self, new_db_path):
-        pass
-        # self.db_path = new_db_path
-        # self.load_or_create()
 
     def close(self):
         self.conn.close()
