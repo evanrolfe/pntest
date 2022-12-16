@@ -22,7 +22,14 @@ class BrowserProc(QtCore.QRunnable):
         stdout, stderr = self.process.communicate(input=None, timeout=None)
         exit_code = self.process.wait()
         print(stdout, stderr, exit_code)
-        self.signals.exited.emit(self.client)
+
+        # TODO: Figure out how to prevent this error. It is thrown sometimes when you have a browser open
+        # but close PnTest without closing the browser first.
+        # See: http://enki-editor.org/2014/08/23/Pyqt_mem_mgmt.html
+        try:
+            self.signals.exited.emit(self.client)
+        except RuntimeError as err:
+            print("RuntimeError: ", err)
 
     def kill(self):
         os.kill(self.process.pid, signal.SIGTERM)
