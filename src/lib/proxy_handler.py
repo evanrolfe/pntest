@@ -78,8 +78,8 @@ class ProxyZmqServer(QtCore.QObject):
             self.request(obj)
         elif (obj['type'] == 'response'):
             print(f'[ProxyZmqServer] Received http response')
-            # Decode the base64 string, and decode the string to bytes:
-            obj['content'] = base64.b64decode(obj['content'])
+            # Decode the hex string
+            obj['content'] = bytes.fromhex(obj['content'])
             self.response(obj)
         elif (obj['type'] == 'websocket_message'):
             print(f'[ProxyZmqServer] Received websocket message')

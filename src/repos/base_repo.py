@@ -58,11 +58,16 @@ class BaseRepo:
         return row
 
     def generic_update(self, model: Model, table: Table):
-        query = Query.update(table)
-        for key, value in self.__model_row_dict(model).items():
-            query = query.set(key, value)
-        query = query.where(table.id == model.id)
-        self.conn.execute(query.get_sql())
+        columns = [c for c in self.model_columns(model)]
+        values = [v for v in self.model_values(model)]
+        qmark_values = [QmarkParameter() for _ in values]
+
+        query = Query.update(table).where(table.id == model.id)
+        for i in range(len(columns)):
+            query = query.set(columns[i], qmark_values[i])
+
+        cursor = self.conn.cursor()
+        cursor.execute(query.get_sql(), values)
         self.conn.commit()
 
     def generic_delete(self, model: Model, table: Table):

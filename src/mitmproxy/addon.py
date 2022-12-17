@@ -221,7 +221,7 @@ class ProxyEventsAddon:
         if flow.response.content is None:
             response_state['content'] = '' # type:ignore
         else:
-            response_state['content'] = base64.b64encode(flow.response.content).decode('utf-8') # type:ignore
+            response_state['content'] = flow.response.content.hex() # type:ignore
 
         self.__send_message(response_state)
 

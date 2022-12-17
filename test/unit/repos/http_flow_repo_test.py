@@ -323,3 +323,14 @@ class TestHttpFlowRepo:
 
         results = HttpFlowRepo().find_for_table("")
         assert len(results) == 1
+
+    def test_null_character_error(self, database, cleanup_database):
+        request = HttpRequestFactory.build(path="/one", content = 'PING\x00')
+
+        flow = HttpFlow(
+            type="editor",
+            request=request,
+        )
+        # Needs to be done twice so generic_update() is also tested
+        HttpFlowRepo().save(flow)
+        HttpFlowRepo().save(flow)
