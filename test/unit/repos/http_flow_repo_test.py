@@ -334,3 +334,36 @@ class TestHttpFlowRepo:
         # Needs to be done twice so generic_update() is also tested
         HttpFlowRepo().save(flow)
         HttpFlowRepo().save(flow)
+
+    def test_searching(self, database, cleanup_database):
+        flow1 = HttpFlow(
+            type="proxy",
+            request=HttpRequestFactory.build(host="google.com", path="/one"),
+            response=HttpResponseFactory.build()
+        )
+        flow2 = HttpFlow(
+            type="proxy",
+            request=HttpRequestFactory.build(host="google.com", path="/two"),
+            response=HttpResponseFactory.build()
+        )
+        flow3 = HttpFlow(
+            type="proxy",
+            request=HttpRequestFactory.build(host="pntest.com", path="/index.html"),
+            response=HttpResponseFactory.build()
+        )
+        flow4 = HttpFlow(
+            type="editor",
+            request=HttpRequestFactory.build(host="pntest.com", path="/editor.html"),
+            response=HttpResponseFactory.build()
+        )
+
+        HttpFlowRepo().save(flow1)
+        HttpFlowRepo().save(flow2)
+        HttpFlowRepo().save(flow3)
+        HttpFlowRepo().save(flow4)
+
+        assert flow1.id is not None
+
+        results = HttpFlowRepo().find_by_search('pntest')
+        assert len(results) == 1
+        assert results[0].id == flow3.id

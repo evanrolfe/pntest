@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Generic, Optional, Type, TypeVar
+from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order
 
 from models.client import Client
@@ -82,7 +82,7 @@ class HttpFlowRepo(BaseRepo):
 
     def find(self, id: int) -> Optional[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.id == id)
-        results = self.__find_by_query(query.get_sql())
+        results = self.__find_by_query(query.get_sql(), [])
 
         if len(results) == 0:
             return None
@@ -90,30 +90,48 @@ class HttpFlowRepo(BaseRepo):
 
     def find_by_uuid(self, uuid: str) -> Optional[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.uuid == uuid)
-        results = self.__find_by_query(query.get_sql())
+        results = self.__find_by_query(query.get_sql(), [])
 
         if len(results) == 0:
             return None
         return results[0]
 
-    def find_for_table(self, search_text: str) -> list[HttpFlow]:
+    def find_for_table(self, search_term: str) -> list[HttpFlow]:
         # TODO: These needs to apply host filters from Settings
+        if len(search_term) > 0:
+            return self.find_by_search(search_term)
 
         query = Query.from_(self.table).select('*').where(self.table.type == HttpFlow.TYPE_PROXY).orderby(self.table.id, order=Order.desc)
-        return self.__find_by_query(query.get_sql())
+        return self.__find_by_query(query.get_sql(), [])
 
     def find_by_ids(self, ids: list[int]) -> list[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.id.isin(ids))
-        return self.__find_by_query(query.get_sql())
+        return self.__find_by_query(query.get_sql(), [])
 
     # This is used to find all example flows for a set of flows
     def find_by_http_flow_id(self, http_flow_ids: list[int]) -> list[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.http_flow_id.isin(http_flow_ids))
-        return self.__find_by_query(query.get_sql(), False)
+        return self.__find_by_query(query.get_sql(), [], False)
 
-    def __find_by_query(self, sql_query: str, load_examples = True) -> list[HttpFlow]:
+    def find_by_search(self, search_term: str) -> list[HttpFlow]:
+        # Wrap quotes around search text if none provided
+        # User may want to for more advanced search queries like:
+        # host:"synack.com" path:"solutions/talent"
+        if '"' not in search_term:
+            search_term = f'"{search_term}"'
+
+        query = "SELECT * FROM http_requests_fts WHERE http_requests_fts MATCH ?;"
         cursor = self.conn.cursor()
-        cursor.execute(sql_query)
+        cursor.execute(query, [search_term])
+        rows: list[sqlite3.Row] = cursor.fetchall()
+
+        request_ids = [r['id'] for r in rows]
+        query = Query.from_(self.table).select('*').where(self.table.request_id.isin(request_ids)).where(self.table.type == HttpFlow.TYPE_PROXY)
+        return self.__find_by_query(query.get_sql(), [], False)
+
+    def __find_by_query(self, sql_query: str, sql_params: list[Any], load_examples = True) -> list[HttpFlow]:
+        cursor = self.conn.cursor()
+        cursor.execute(sql_query, sql_params)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
         # Pre-load the associated requests from db in a single query

@@ -74,7 +74,7 @@ class HttpPage(QtWidgets.QWidget):
 
     def load_flows(self, signals):
         print(f'Searching for {self.search_text}')
-        # TODO: This should create its own db connection
+
         http_flows = HttpFlowRepo().find_for_table(self.search_text or '')
 
         return http_flows
