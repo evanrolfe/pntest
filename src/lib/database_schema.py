@@ -101,11 +101,18 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
 -- Views & Virtual
 -- -----------------------------------------------------------------------------
 
+CREATE VIEW v_http_requests_search AS
+    SELECT req.id, req.host, req.path, resp.headers
+    FROM http_requests req
+    LEFT JOIN http_flows flow ON flow.request_id=req.id
+    LEFT JOIN http_responses resp ON resp.id=flow.response_id;
+
 CREATE VIRTUAL TABLE http_requests_fts USING fts5(
     id,
     host,
     path,
-    content='http_requests',
+    headers,
+    content='v_http_requests_search',
     content_rowid='id'
 );
 
@@ -113,19 +120,17 @@ CREATE VIRTUAL TABLE http_requests_fts USING fts5(
 -- Triggers
 -- -----------------------------------------------------------------------------
 CREATE TRIGGER http_request_insert AFTER INSERT ON http_requests BEGIN
-    INSERT INTO http_requests_fts (rowid, host, path)
-    VALUES (new.id, new.host, new.path);
+    INSERT INTO http_requests_fts (rowid, host, path, headers)
+    VALUES (new.id, new.host, new.path, NULL);
+END;
+
+CREATE TRIGGER http_response_insert AFTER INSERT ON http_responses BEGIN
+    INSERT INTO http_requests_fts (http_requests_fts)
+    VALUES ('rebuild');
 END;
 
 CREATE TRIGGER http_request_delete AFTER DELETE ON http_requests BEGIN
-    INSERT INTO http_requests_fts (http_requests_fts, rowid, host, path)
-    VALUES ('delete', old.id, old.host, old.path);
-END;
-
-CREATE TRIGGER http_request_update AFTER UPDATE ON http_requests BEGIN
-    INSERT INTO http_requests_fts (http_requests_fts, rowid, host, path)
-    VALUES ('delete', old.id, old.host, old.path);
-    INSERT INTO http_requests_fts (rowid, host, path)
-    VALUES (new.id, new.host, new.path);
+    INSERT INTO http_requests_fts (http_requests_fts, rowid, host, path, headers)
+    VALUES ('delete', old.id, old.host, old.path, old.headers);
 END;
 """

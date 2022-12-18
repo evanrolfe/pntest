@@ -113,6 +113,11 @@ class HttpFlowRepo(BaseRepo):
         query = Query.from_(self.table).select('*').where(self.table.http_flow_id.isin(http_flow_ids))
         return self.__find_by_query(query.get_sql(), [], False)
 
+    # See https://www.sqlite.org/fts5.html
+    #
+    # Example queries:
+    # host:^"www.google.com"
+    # host:"www.google.com" AND path:"complete"
     def find_by_search(self, search_term: str) -> list[HttpFlow]:
         # Wrap quotes around search text if none provided
         # User may want to for more advanced search queries like:
@@ -120,7 +125,7 @@ class HttpFlowRepo(BaseRepo):
         if '"' not in search_term:
             search_term = f'"{search_term}"'
 
-        query = "SELECT * FROM http_requests_fts WHERE http_requests_fts MATCH ?;"
+        query = "SELECT * FROM http_requests_fts WHERE http_requests_fts MATCH ? ORDER BY rank;"
         cursor = self.conn.cursor()
         cursor.execute(query, [search_term])
         rows: list[sqlite3.Row] = cursor.fetchall()
