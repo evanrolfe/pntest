@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS http_responses(
 
 CREATE TABLE IF NOT EXISTS http_flows(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT,
+    uuid TEXT UNIQUE,
     client_id INTEGER,
     type TEXT NOT NULL,
     title TEXT,
