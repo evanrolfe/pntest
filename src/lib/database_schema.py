@@ -5,7 +5,9 @@ SCHEMA_SQL = """CREATE TABLE IF NOT EXISTS editor_items(
   name TEXT NOT NULL,
   item_type TEXT NOT NULL,
   item_id INTEGER,
-  created_at INTEGER
+  created_at INTEGER,
+
+  FOREIGN KEY (parent_id) REFERENCES editor_items(id)
 );
 
 CREATE INDEX index_editor_items_parent_id ON editor_items(parent_id);
@@ -68,7 +70,13 @@ CREATE TABLE IF NOT EXISTS http_flows(
     response_id INTEGER,
     original_response_id,
     http_flow_id INTEGER,
-    created_at INTEGER NOT NULL
+    created_at INTEGER NOT NULL,
+
+    FOREIGN KEY (request_id) REFERENCES http_requests(id)
+    FOREIGN KEY (response_id) REFERENCES http_responses(id)
+    FOREIGN KEY (original_request_id) REFERENCES http_requests(id)
+    FOREIGN KEY (original_response_id) REFERENCES http_responses(id)
+    FOREIGN KEY (http_flow_id) REFERENCES http_flows(id)
 );
 
 CREATE INDEX index_http_flows_http_flow_id ON http_flows(http_flow_id);
@@ -94,8 +102,12 @@ CREATE TABLE IF NOT EXISTS websocket_messages(
   direction TEXT NOT NULL,
   content TEXT NOT NULL,
   content_original TEXT,
-  created_at INTEGER
+  created_at INTEGER,
+
+  FOREIGN KEY (http_flow_id) REFERENCES http_flows(id)
 );
+
+CREATE INDEX index_websocket_messages_http_flow_id ON websocket_messages(http_flow_id);
 
 -- -----------------------------------------------------------------------------
 -- Views & Virtual
