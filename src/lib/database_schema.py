@@ -45,8 +45,6 @@ CREATE TABLE IF NOT EXISTS http_requests(
     created_at INTEGER
 );
 
-CREATE INDEX index_http_requests_host ON http_requests(host);
-
 CREATE TABLE IF NOT EXISTS http_responses(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     http_version TEXT NOT NULL,
@@ -73,6 +71,8 @@ CREATE TABLE IF NOT EXISTS http_flows(
     created_at INTEGER NOT NULL
 );
 
+CREATE INDEX index_http_flows_http_flow_id ON http_flows(http_flow_id);
+CREATE INDEX index_http_flows_request_id ON http_flows(request_id);
 CREATE INDEX index_http_flows_uuid ON http_flows(uuid);
 CREATE INDEX index_http_flows_type ON http_flows(type);
 
@@ -131,6 +131,7 @@ END;
 
 CREATE TRIGGER http_request_delete AFTER DELETE ON http_requests BEGIN
     INSERT INTO http_requests_fts (http_requests_fts, rowid, host, path, headers)
-    VALUES ('delete', old.id, old.host, old.path, old.headers);
+    SELECT 'delete', id, host, path, headers
+    FROM v_http_requests_search WHERE id=old.id;
 END;
 """

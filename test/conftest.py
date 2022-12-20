@@ -13,7 +13,6 @@ def database():
 @pytest.fixture(scope="function")
 def cleanup_database():
     conn = Database.get_instance().conn
-
     conn.executescript("""
         DELETE FROM 'editor_items';
         DELETE FROM 'clients';
@@ -26,5 +25,3 @@ def cleanup_database():
     """)
 
     yield
-
-    # Database.get_instance().close()
