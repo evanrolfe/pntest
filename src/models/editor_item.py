@@ -69,3 +69,22 @@ class EditorItem(Model):
             item_type = self.item_type,
             item = flow
         )
+
+# Given a list of EditorItems, set the children property for each item recursively
+class LoadChildrenOnEditorItems:
+    editor_items: list[EditorItem]
+
+    def __init__(self, editor_items: list[EditorItem]):
+        self.editor_items = editor_items
+
+    def run(self):
+        root_items = [item for item in self.editor_items if item.parent_id is None]
+
+        self.__add_children_to_items(root_items)
+
+    def __add_children_to_items(self, editor_items: list[EditorItem]):
+        for editor_item in editor_items:
+            children = [item for item in self.editor_items if item.parent_id == editor_item.id]
+            editor_item.children = children
+
+            self.__add_children_to_items(children)

@@ -3,30 +3,10 @@ from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, QmarkParameter
 
 
-from models.editor_item import EditorItem
+from models.editor_item import EditorItem, LoadChildrenOnEditorItems
 from models.http_flow import HttpFlow
 from repos.base_repo import BaseRepo
 from repos.http_flow_repo import HttpFlowRepo
-
-# Given a list of EditorItems, set the children property for each item recursively
-# TODO: Move this to EditorItem model
-class LoadChildrenOnEditorItems:
-    editor_items: list[EditorItem]
-
-    def __init__(self, editor_items: list[EditorItem]):
-        self.editor_items = editor_items
-
-    def run(self):
-        root_items = [item for item in self.editor_items if item.parent_id is None]
-
-        self.__add_children_to_items(root_items)
-
-    def __add_children_to_items(self, editor_items: list[EditorItem]):
-        for editor_item in editor_items:
-            children = [item for item in self.editor_items if item.parent_id == editor_item.id]
-            editor_item.children = children
-
-            self.__add_children_to_items(children)
 
 class EditorItemRepo(BaseRepo):
     table: Table
@@ -51,9 +31,6 @@ class EditorItemRepo(BaseRepo):
         LoadChildrenOnEditorItems(editor_items).run()
 
         return editor_items
-
-    def load_children_to_editor_item(self, editor_item: EditorItem):
-        return
 
     def save(self, editor_item: EditorItem):
         # Set original_request_id from associated HttpRequest object and save if its not persisted
