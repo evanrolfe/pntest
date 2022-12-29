@@ -51,9 +51,9 @@ class BaseRepo:
             model.id = cursor.lastrowid
 
     def generic_find(self, id: int, table: Table) -> Optional[sqlite3.Row]:
-        query = Query.from_(table).select('*').where(table.id == id)
+        query = Query.from_(table).select('*').where(table.id == QmarkParameter())
         cursor = self.conn.cursor()
-        cursor.execute(query.get_sql())
+        cursor.execute(query.get_sql(), [id])
         row: sqlite3.Row = cursor.fetchone()
         return row
 
@@ -74,8 +74,8 @@ class BaseRepo:
         if model.id == 0:
             raise Exception("cannot delete a row which isn't saved")
 
-        query = Query.from_(table).delete().where(table.id == model.id)
-        self.conn.execute(query.get_sql())
+        query = Query.from_(table).delete().where(table.id == QmarkParameter())
+        self.conn.execute(query.get_sql(), [model.id])
         self.conn.commit()
 
     # TODO: This should be moved to the Model class

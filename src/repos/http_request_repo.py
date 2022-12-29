@@ -1,7 +1,7 @@
 import json
 import sqlite3
 from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order
+from pypika import Query, Table, Field, Order, QmarkParameter
 
 from models.http_request import HttpRequest
 from repos.base_repo import BaseRepo
@@ -38,9 +38,11 @@ class HttpRequestRepo(BaseRepo):
         self.generic_delete(request, self.table)
 
     def find_by_ids(self, ids: list[int]) -> list[HttpRequest]:
-        query = Query.from_(self.table).select('*').where(self.table.id.isin(ids))
+        qmark_values = [QmarkParameter() for _ in ids]
+
+        query = Query.from_(self.table).select('*').where(self.table.id.isin(qmark_values))
         cursor = self.conn.cursor()
-        cursor.execute(query.get_sql())
+        cursor.execute(query.get_sql(), ids)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
         requests = []

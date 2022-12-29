@@ -1,6 +1,6 @@
 import sqlite3
-from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field
+from typing import Any, Generic, Optional, Type, TypeVar
+from pypika import Query, Table, Field, QmarkParameter
 
 
 from models.editor_item import EditorItem
@@ -9,6 +9,7 @@ from repos.base_repo import BaseRepo
 from repos.http_flow_repo import HttpFlowRepo
 
 # Given a list of EditorItems, set the children property for each item recursively
+# TODO: Move this to EditorItem model
 class LoadChildrenOnEditorItems:
     editor_items: list[EditorItem]
 
@@ -35,8 +36,8 @@ class EditorItemRepo(BaseRepo):
         self.table = Table('editor_items')
 
     def find(self, id: int) -> Optional[EditorItem]:
-        query = Query.from_(self.table).select('*').where(self.table.id == id)
-        results = self.__find_by_query(query.get_sql())
+        query = Query.from_(self.table).select('*').where(self.table.id == QmarkParameter())
+        results = self.__find_by_query(query.get_sql(), [id])
 
         if len(results) == 0:
             return None
@@ -45,7 +46,7 @@ class EditorItemRepo(BaseRepo):
     def find_all_with_children(self) -> list[EditorItem]:
         # TODO: Order by item_type, name
         query = Query.from_(self.table).select('*')
-        editor_items = self.__find_by_query(query.get_sql())
+        editor_items = self.__find_by_query(query.get_sql(), [])
 
         LoadChildrenOnEditorItems(editor_items).run()
 
@@ -74,9 +75,9 @@ class EditorItemRepo(BaseRepo):
         for child in editor_item.children:
             self.generic_delete(child, self.table)
 
-    def __find_by_query(self, sql_query: str) -> list[EditorItem]:
+    def __find_by_query(self, sql_query: str, sql_params: list[Any]) -> list[EditorItem]:
         cursor = self.conn.cursor()
-        cursor.execute(sql_query)
+        cursor.execute(sql_query, sql_params)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
         # Pre-load the associated HttpFlows from db in a single query

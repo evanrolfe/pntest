@@ -1,7 +1,7 @@
 import json
 import sqlite3
 from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order
+from pypika import Query, Table, Field, Order, QmarkParameter
 
 from models.variable import Variable
 from repos.base_repo import BaseRepo
@@ -14,9 +14,9 @@ class VariableRepo(BaseRepo):
         self.table = Table('variables')
 
     def find_by_key(self, key: str) -> Optional[Variable]:
-        query = Query.from_(self.table).select('*').where(self.table.key == key)
+        query = Query.from_(self.table).select('*').where(self.table.key == QmarkParameter())
         cursor = self.conn.cursor()
-        cursor.execute(query.get_sql())
+        cursor.execute(query.get_sql(), [key])
         row: sqlite3.Row = cursor.fetchone()
         if row is None:
             return
