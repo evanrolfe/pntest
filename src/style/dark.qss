@@ -350,6 +350,16 @@ QPushButton#findButton, #findPrevButton, #replaceButton, #replaceAllButton {
   width: 75px;
 }
 
+/* Intercept buttons */
+QPushButton#forwardButton, #forwardInterceptButton, #dropButton, #enabledButton {
+  width: 200px;
+}
+
+/* StandardButtons */
+QMessageBox QPushButton {
+  width: 50px;
+}
+
 /*------------------------------------------------------------------------------*
  * QComboBox
  *------------------------------------------------------------------------------*/
