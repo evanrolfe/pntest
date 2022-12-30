@@ -19,18 +19,6 @@ from widgets.preferences_window import PreferencesWindow
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-# https://stackoverflow.com/questions/34445507/change-background-color-of-qwidget-using-animation
-class Sidebar(QtWidgets.QListWidget):
-    def setColor(self, color: QtGui.QColor):
-        r = color.red()
-        g = color.green()
-        b = color.blue()
-
-        super().setStyleSheet("""QListWidget::item::selected#sideBar {
-            border-left: 2px solid #FC6A0C;
-            background: #FC6A0C;
-        }""")
-
 class MainWindow(QtWidgets.QMainWindow):
     # reload_style = QtCore.Signal()
 
@@ -62,6 +50,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Shortcut for closing app
         self.network_page.send_flow_to_editor.connect(self.editor_page.send_flow_to_editor)
         self.network_page.send_flow_to_editor.connect(self.show_editor_page)
+        self.intercept_page.something_intercepted.connect(self.ui.sideBar.highlight_intercept)
+        self.intercept_page.intercept_queue_empty.connect(self.ui.sideBar.un_highlight_intercept)
 
         # Prefrences Window
         self.preferences_window = PreferencesWindow(self)

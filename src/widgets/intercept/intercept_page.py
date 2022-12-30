@@ -9,6 +9,8 @@ from lib.intercept_queue import InterceptQueue
 
 class InterceptPage(QtWidgets.QWidget):
     intercepted_flow: Optional[HttpFlow]
+    something_intercepted = QtCore.pyqtSignal()
+    intercept_queue_empty = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(InterceptPage, self).__init__(*args, **kwargs)
@@ -28,6 +30,8 @@ class InterceptPage(QtWidgets.QWidget):
         # self.ui.enabledButton.setDown(intercept_enabled)
 
         self.intercept_queue = InterceptQueue()
+        self.intercept_queue.decision_required.connect(self.something_intercepted)
+        self.intercept_queue.queue_empty.connect(self.intercept_queue_empty)
         self.intercept_queue.decision_required.connect(self.decision_required)
         self.intercept_queue.intercept_changed.connect(self.__set_enabled)
         self.intercepted_flow = None

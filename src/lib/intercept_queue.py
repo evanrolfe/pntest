@@ -9,6 +9,7 @@ from models.http_flow import HttpFlow
 class InterceptQueue(QtCore.QObject):
     decision_required = QtCore.pyqtSignal(HttpFlow)
     intercept_changed = QtCore.pyqtSignal(bool)
+    queue_empty = QtCore.pyqtSignal()
     queue: list[HttpFlow]
 
     def __init__(self, parent=None):
@@ -42,6 +43,7 @@ class InterceptQueue(QtCore.QObject):
     def forward_all(self):
         self.process_manager.forward_all()
         self.queue = []
+        self.queue_empty.emit()
 
     def enabled(self) -> bool:
         return self.process_manager.intercept_enabled
@@ -55,9 +57,12 @@ class InterceptQueue(QtCore.QObject):
         self.queue.pop(0)
         self.awaiting_decision = False
 
-        if len(self.queue) > 0:
-            next_flow = self.queue[0]
-            self.request_decision(next_flow)
+        if len(self.queue) == 0:
+            self.queue_empty.emit()
+            return
+
+        next_flow = self.queue[0]
+        self.request_decision(next_flow)
 
     def __print_queue(self):
         print(f'[InterceptQueue] queue is now:')
