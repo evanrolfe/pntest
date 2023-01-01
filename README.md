@@ -90,6 +90,7 @@ hiddenimports = collect_submodules("pendulum")
 
 ## Generating certificate authority and importing to browsers:
 **Create Certificate authority**
+
 1. Generate the CA private key:
 ```
 $ openssl genpkey -algorithm RSA -out include/rootKey.pem -pkeyopt rsa_keygen_bits:4096
@@ -122,6 +123,7 @@ $ cat include/clientCert.key include/clientCert.crt > include/mitmproxy-client.p
 ```
 
 **Import to browsers**
+
 [Chrome/Chromium] No more action needed as chrome is started using the `--ignore-certificate-errors-spki-list` option.
 
 [Firefox] Generate the cert9.db file with the certificate imported:
