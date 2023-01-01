@@ -89,7 +89,7 @@ hiddenimports = collect_submodules("pendulum")
 ```
 
 ## Generating certificate authority and importing to browsers:
-*Create Certificate authority*
+**Create Certificate authority**
 1. Generate the CA private key:
 ```
 $ openssl genpkey -algorithm RSA -out include/rootKey.pem -pkeyopt rsa_keygen_bits:4096
@@ -104,7 +104,7 @@ $ openssl x509 -req -sha256 -days 3650 -in include/rootCA.csr -signkey include/r
 $ cat include/rootKey.pem include/rootCA.pem > include/mitmproxy-ca.pem
 ```
 
-*Create a client cert to be used by mitmproxy*
+**Create a client cert to be used by mitmproxy**
 
 Firefox does not allow you to use CA certs as the server cert, if you do it will give you an CA_CERT_USED_AS_END_ENTITY error. So we generate an end-entity cert which will be used by mitmproxy.
 1. Create the client private key
@@ -121,7 +121,7 @@ $ openssl x509 -req -in include/clientCert.csr -CA include/rootCA.pem -CAkey inc
 $ cat include/clientCert.key include/clientCert.crt > include/mitmproxy-client.pem
 ```
 
-*Import to browsers*
+**Import to browsers**
 [Chrome/Chromium] No more action needed as chrome is started using the `--ignore-certificate-errors-spki-list` option.
 
 [Firefox] Generate the cert9.db file with the certificate imported:
