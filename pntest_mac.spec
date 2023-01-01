@@ -12,8 +12,8 @@ a = Analysis(
     binaries=[],
     datas=[
         ('include/cert9.db', 'include/'),
-        ('include/rootCA.key', 'include/'),
         ('include/mitmproxy-ca.pem', 'include/'),
+        ('include/mitmproxy-client.pem', 'include/'),
         ('include/html_page.html', 'include/'),
         ('src/style/dark.qss', 'style/'),
         ('src/style/dark_theme.qss', 'style/'),
