@@ -89,15 +89,36 @@ hiddenimports = collect_submodules("pendulum")
 ```
 
 ## Generating certificate authority and importing to browsers:
-*Certificate authority*
-1. Generate the CA key:
+*Create Certificate authority*
+1. Generate the CA private key:
 ```
-$ openssl genrsa -des3 -out include/rootCA.key 4096
+$ openssl genpkey -algorithm RSA -out include/rootKey.pem -pkeyopt rsa_keygen_bits:4096
 ```
-2. Generate a cert and pem file
+2. Generate a cert and sign it with the root key
 ```
-$ openssl req -x509 -new -nodes -extensions v3_ca -key include/rootCA.key -sha256 -days 3650 -out include/mitmproxy-ca.pem
-$ openssl rsa -in include/rootCA.key >> include/mitmproxy-ca.pem
+$ openssl req -new -key include/rootKey.pem -days 5480 -extensions v3_ca -batch -out include/rootCA.csr -utf8 -subj '/C=UK/O=pntest/OU=pntest'
+$ openssl x509 -req -sha256 -days 3650 -in include/rootCA.csr -signkey include/rootKey.pem -extfile include/openssl.rootCA.cnf -out include/rootCA.pem
+```
+3. Create the necessary cert for [mitmproxy](https://docs.mitmproxy.org/stable/concepts-certificates/#using-a-custom-server-certificate) :
+```
+$ cat include/rootKey.pem include/rootCA.pem > include/mitmproxy-ca.pem
+```
+
+*Create a client cert to be used by mitmproxy*
+
+Firefox does not allow you to use CA certs as the server cert, if you do it will give you an CA_CERT_USED_AS_END_ENTITY error. So we generate an end-entity cert which will be used by mitmproxy.
+1. Create the client private key
+```
+$ openssl genrsa -out include/clientCert.key 2048
+```
+2. Generate a client cert and sign it with the client private key
+```
+$ openssl req -new -key include/clientCert.key -out include/clientCert.csr -subj '/C=UK/O=pntest/OU=pntest'
+$ openssl x509 -req -in include/clientCert.csr -CA include/rootCA.pem -CAkey include/rootKey.pem -CAcreateserial -out include/clientCert.crt -days 500 -sha256 -extfile include/openssl.ss.cnf
+```
+3. Create the necessary cert for mitmproxy
+```
+$ cat include/clientCert.key include/clientCert.crt > include/mitmproxy-client.pem
 ```
 
 *Import to browsers*
@@ -105,16 +126,8 @@ $ openssl rsa -in include/rootCA.key >> include/mitmproxy-ca.pem
 
 [Firefox] Generate the cert9.db file with the certificate imported:
 
-1. Create a new firefox profile:
-```
-$ firefox -CreateProfile pntest-new
-```
+1. Start firefox from pntest, you'll get a cert error on https sites
 
-2. Start firefox:
-```
-$ firefox -P "pntest-cert"
-```
+2. Import the certiciate (settins -> certificates -> import -> select include/rootCA.pem -> Trust CA to identify web sites & Trust CA to identify email users)
 
-3. Import the certiciate (settins -> certificates -> import -> select include/mitmproxy-ca.pem -> Trust CA to identify web sites & Trust CA to identify email users)
-
-4. Locate the cert9.db file i.e. `~/.mozilla/firefox/gwmyug3m.pntest-cert/cert9.db` in Linux and copy it to `pntest/include/cert9.db`
+3. Locate the cert9.db file in the firefox profile i.e. `~/Library/Preferences/pntest/firefox-profile-8080/cert9.db` (Mac) and copy it to `include/cert9.db`

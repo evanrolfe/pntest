@@ -66,8 +66,10 @@ def get_options_chrome_or_chromium(client):
 def get_options_firefox(client, browser_command):
     profile_path = f'{get_app_config_path()}/{client.type}-profile-{client.proxy_port}'
     profile_name = f'pntest-{client.proxy_port}'
+    dir_exists = os.path.isdir(profile_path)
 
-    if not os.path.isdir(profile_path):
+    if not dir_exists:
+        os.mkdir(profile_path)
         print(f'[BrowserLauncher] creating firefox profile in {profile_path}')
         subprocess.run([browser_command, '-CreateProfile', f'{profile_name} {profile_path}'])
         configure_firefox_profile(client, profile_path)
@@ -97,7 +99,7 @@ def configure_firefox_profile(client, profile_path):
     prefs_str = ''.join([f'user_pref({pref});\n' for pref in prefs])
     pref_file = os.path.join(profile_path, 'user.js')
 
-    with open(pref_file, 'a+') as file:
+    with open(pref_file, 'w+') as file:
         file.write(prefs_str)
 
     cert9_file = f'{get_include_path()}/cert9.db'
