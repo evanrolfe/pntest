@@ -3,7 +3,7 @@ from typing import Optional
 # from html5print import HTMLBeautifier
 from bs4 import BeautifulSoup
 from PyQt6 import QtWidgets
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 from models.http_flow import HttpFlow
 from models.http_response import HttpResponse
 
@@ -166,17 +166,48 @@ class FlowView(QtWidgets.QWidget):
             self.ui.responseHeaders.set_header_line('')
             self.ui.responseHeaders.set_headers(None)
             self.ui.responseRaw.set_value('')
-            # self.ui.responseBodyPreview.setHtml('')
             return
 
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
+        self.__display_response_body(response, response.get_format())
 
-        self.set_response_format_from_headers(response.get_headers() or Headers())
+    def __display_response_body(self, response: HttpResponse, format: Optional[str] = None):
+        # Determine the format and update the dropdown
+        if format is None:
+            self.ui.responseRaw.clear_formatting()
+            self.response_format_dropdown.setCurrentIndex(len(CodeEditor.FORMATS) - 1)
+        else:
+            self.ui.responseRaw.set_format(format)
+            index = CodeEditor.FORMATS.index(format)
+            self.response_format_dropdown.setCurrentIndex(index)
+
+        # self.set_response_format_from_headers(response.get_headers() or Headers())
         self.ui.responseRaw.set_auto_format_enabled(True)
-        self.ui.responseRaw.set_value(response.content_for_preview())
-
         self.set_response_status_label(response)
+
+        # Set the response body value
+        if format == 'Hex':
+            content = response.content_hex()
+            self.ui.responseRaw.set_value(content)
+            self.ui.responseBodyStack.setCurrentIndex(0) # Show CodeEditor
+        elif format == 'Image':
+            if response.content is None:
+                return
+            self.ui.responseBodyStack.setCurrentIndex(1) # Show Image view
+
+            qbytes = QtCore.QByteArray()
+            qbytes.append(response.content)
+            pixmap = QtGui.QPixmap()
+            pixmap.loadFromData(qbytes)
+
+            self.ui.responseImg.clear()
+            self.ui.responseImg.setPixmap(pixmap)
+            self.ui.responseImg.show()
+        else:
+            content = response.content_for_preview()
+            self.ui.responseRaw.set_value(content)
+            self.ui.responseBodyStack.setCurrentIndex(0) # Show CodeEditor
 
     def set_response_status_label(self, response: HttpResponse):
         status = str(response.status_code)
@@ -220,12 +251,8 @@ class FlowView(QtWidgets.QWidget):
         self.editor_response = response
         self.ui.responseHeaders.set_header_line(response.get_header_line())
         self.ui.responseHeaders.set_headers(response.get_headers())
-
-        self.set_response_format_from_headers(response.get_headers() or Headers())
-        self.ui.responseRaw.set_auto_format_enabled(True)
-        self.ui.responseRaw.set_value(response.content_for_preview())
-
         self.set_response_status_label(response)
+        self.__display_response_body(response, response.get_format())
 
     def set_modified_dropdown(self, flow):
         if self.request_modified_dropdown is None:
@@ -251,12 +278,10 @@ class FlowView(QtWidgets.QWidget):
         self.ui.responseRaw.set_format(format)
 
         if self.flow.response:
-            content = self.flow.response.content_for_preview()
+            self.__display_response_body(self.flow.response, format)
         else:
             # TODO: The editor should just create an HttpResponse that isn't saved and pass it to FlowView
-            content = self.editor_response.content_for_preview()
-
-        self.ui.responseRaw.set_value(content)
+            self.__display_response_body(self.editor_response, format)
 
     def set_request_format_from_headers(self, headers: Headers):
         format = get_content_type(headers)
@@ -265,15 +290,3 @@ class FlowView(QtWidgets.QWidget):
             return
 
         self.ui.requestBody.set_format(format)
-
-    def set_response_format_from_headers(self, headers: Headers):
-        format = get_content_type(headers)
-        if format is None:
-            self.ui.responseRaw.clear_formatting()
-            self.response_format_dropdown.setCurrentIndex(len(CodeEditor.FORMATS) - 1)
-            return
-
-        self.ui.responseRaw.set_format(format)
-
-        index = CodeEditor.FORMATS.index(format)
-        self.response_format_dropdown.setCurrentIndex(index)

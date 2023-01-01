@@ -16,5 +16,7 @@ def get_content_type(headers: Headers) -> Optional[str]:
         return 'HTML'
     elif 'javascript' in content_type:
         return 'Javascript'
+    elif 'image' in content_type:
+        return 'Image'
     else:
         return None

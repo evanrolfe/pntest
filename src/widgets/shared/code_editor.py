@@ -15,7 +15,7 @@ class CodeEditor(QtWidgets.QWidget):
 
     set_code = QtCore.pyqtSignal(str, str)
 
-    FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted']
+    FORMATS = ['JSON', 'XML', 'HTML', 'Javascript', 'Unformatted', 'Hex', 'Image']
     TAB_SIZE = 4
 
     def __init__(self, *args, **kwargs):

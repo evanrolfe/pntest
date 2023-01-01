@@ -98,6 +98,9 @@ class MyScintilla(Qsci.QsciScintilla):
         self.SCN_AUTOCCOMPLETED.connect(self.autocomplete_selection_inserted)
         self.flow = None
 
+        # Enable text wrapping:
+        self.setWrapMode(Qsci.QsciScintilla.WrapMode.WrapWord)
+
     def set_flow(self, flow: HttpFlow):
         self.flow = flow
 

@@ -389,7 +389,10 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="CodeEditor" name="responseRaw" native="true"/>
+          <widget class="QStackedWidget" name="responseBodyStack">
+           <widget class="CodeEditor" name="responseRaw"/>
+           <widget class="QLabel" name="responseImg"/>
+          </widget>
          </item>
         </layout>
        </widget>

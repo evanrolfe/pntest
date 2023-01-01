@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Any, Optional
 from requests import Response as RequestsResponse
-from lib.types import Headers
+from lib.types import Headers, get_content_type
 from models.model import Model
 from mitmproxy.common_types import ProxyResponse
 from lib.types import Headers
@@ -93,6 +93,14 @@ class HttpResponse(Model):
 
     def get_header_line_no_http_version(self) -> str:
         return f'{self.status_code} {self.reason}'
+
+    def content_hex(self) -> str:
+        if self.content is None:
+            return ''
+        return self.content.hex(' ')
+
+    def get_format(self) -> Optional[str]:
+        return get_content_type(self.headers)
 
     def content_for_preview(self) -> str:
         if self.content is None:
