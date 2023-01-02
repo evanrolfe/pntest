@@ -201,6 +201,9 @@ class FlowView(QtWidgets.QWidget):
             pixmap = QtGui.QPixmap()
             pixmap.loadFromData(qbytes)
 
+            if pixmap.width() > 400 or pixmap.height() > 400:
+                pixmap = pixmap.scaled(400, 400, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+
             self.ui.responseImg.clear()
             self.ui.responseImg.setPixmap(pixmap)
             self.ui.responseImg.show()
