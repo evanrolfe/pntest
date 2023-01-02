@@ -113,8 +113,15 @@ class HttpPage(QtWidgets.QWidget):
             selected_id = selected_id_cols[0].data()
 
             flow = [f for f in self.table_model.flows if f.id == selected_id][0]
-            if flow is not None:
-                self.ui.requestViewWidget.set_flow(flow)
+            if flow is None:
+                return
+
+            # The flows stored here don't have their content value loaded to save on memory
+            # So we need to fetch the flow from the db again when select
+            flow_full = HttpFlowRepo().find(flow.id)
+            if flow_full is None:
+                return
+            self.ui.requestViewWidget.set_flow(flow_full)
 
     def delete_requests(self, request_ids):
         if len(request_ids) > 1:

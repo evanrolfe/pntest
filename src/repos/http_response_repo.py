@@ -14,17 +14,27 @@ class HttpResponseRepo(BaseRepo):
         super().__init__()
         self.table = Table('http_responses')
 
-    def find_by_ids(self, ids: list[int]) -> list[HttpResponse]:
+    def find_by_ids(self, ids: list[int], load_minimal_data = False) -> list[HttpResponse]:
         qmark_values = [QmarkParameter() for _ in ids]
 
-        query = Query.from_(self.table).select('*').where(self.table.id.isin(qmark_values))
+        if load_minimal_data:
+            # Load all the columns except for content
+            columns = ['id','http_version','headers','timestamp_start','timestamp_end','status_code','reason','created_at']
+        else:
+            columns = '*'
+
+        query = Query.from_(self.table).select(*columns).where(self.table.id.isin(qmark_values))
         cursor = self.conn.cursor()
         cursor.execute(query.get_sql(), ids)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
         responses = []
         for row in rows:
-            response = HttpResponse(**self.row_to_dict(row))
+            response_values = self.row_to_dict(row)
+            if load_minimal_data:
+                response_values['content'] = None
+
+            response = HttpResponse(**response_values)
             response.id = row['id']
             response.created_at = row['created_at']
             response.headers = json.loads(row['headers'])

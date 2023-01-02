@@ -116,3 +116,6 @@ class HttpResponse(Model):
             self.content == other.content and
             self.status_code == other.status_code
         )
+
+    def clear_extra_data(self):
+        self.content = b''

@@ -283,11 +283,15 @@ class TestHttpFlowRepo:
         assert results[1].response is not None
         assert results[0].response.id > 0
         assert results[1].response.id > 0
+        assert results[0].response.content is None
+        assert results[1].response.content is None
 
         assert results[0].original_response is not None
         assert results[1].original_response is not None
         assert results[0].original_response.id > 0
         assert results[1].original_response.id > 0
+        assert results[0].original_response.content is None
+        assert results[1].original_response.content is None
 
     def test_find_by_ids(self, database, cleanup_database):
         flow1, flow2 = create_multiple_editor_flows_with_examples()

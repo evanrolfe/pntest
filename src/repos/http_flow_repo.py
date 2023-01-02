@@ -102,7 +102,7 @@ class HttpFlowRepo(BaseRepo):
             return self.find_by_search(search_term)
 
         query = Query.from_(self.table).select('*').where(self.table.type == HttpFlow.TYPE_PROXY).orderby(self.table.id, order=Order.desc)
-        return self.__find_by_query(query.get_sql(), [])
+        return self.__find_by_query(query.get_sql(), [], False, True)
 
     def find_by_ids(self, ids: list[int]) -> list[HttpFlow]:
         query = Query.from_(self.table).select('*').where(self.table.id.isin(ids))
@@ -134,7 +134,7 @@ class HttpFlowRepo(BaseRepo):
         query = Query.from_(self.table).select('*').where(self.table.request_id.isin(request_ids)).where(self.table.type == HttpFlow.TYPE_PROXY)
         return self.__find_by_query(query.get_sql(), [], False)
 
-    def __find_by_query(self, sql_query: str, sql_params: list[Any], load_examples = True) -> list[HttpFlow]:
+    def __find_by_query(self, sql_query: str, sql_params: list[Any], load_examples = True, load_minimal_data = False) -> list[HttpFlow]:
         cursor = self.conn.cursor()
         cursor.execute(sql_query, sql_params)
         rows: list[sqlite3.Row] = cursor.fetchall()
@@ -143,16 +143,14 @@ class HttpFlowRepo(BaseRepo):
         request_ids = [r['request_id'] for r in rows if r['request_id'] is not None] + \
             [r['original_request_id'] for r in rows if r['original_request_id'] is not None]
 
-        http_request_repo = HttpRequestRepo()
-        requests = http_request_repo.find_by_ids(request_ids)
+        requests = HttpRequestRepo().find_by_ids(request_ids)
         requests_by_id: dict[int, HttpRequest] = self.index_models_by_id(requests)
 
         # Pre-load the associated responses from db in a single query
         response_ids = [r['response_id'] for r in rows if r['response_id'] is not None] + \
             [r['original_response_id'] for r in rows if r['original_response_id'] is not None]
 
-        http_response_repo = HttpResponseRepo()
-        responses = http_response_repo.find_by_ids(response_ids)
+        responses = HttpResponseRepo().find_by_ids(response_ids, load_minimal_data)
         responses_by_id: dict[int, HttpResponse] = self.index_models_by_id(responses)
 
         #  Pre-load the associated example HttpFlows from db in a single query

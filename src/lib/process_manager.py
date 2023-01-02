@@ -241,6 +241,9 @@ class ProcessManager(QtCore.QObject):
         flow.add_response(response)
         HttpFlowRepo().save(flow)
 
+        # So we dont use unecessary memory
+        flow.clear_extra_data()
+
         self.proxy_response.emit(flow)
         if proxy_response['intercepted']:
             self.flow_intercepted.emit(flow)

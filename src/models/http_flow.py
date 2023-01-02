@@ -220,3 +220,11 @@ class HttpFlow(Model):
 
         raw_response = req.send()
         return HttpResponse.from_requests_response(raw_response)
+
+    # When a flow is received from the proxy, we save it to the db, and then clear the body, so
+    # as to not use up too much memory.
+    # When you click a request in the network table, the body is once again loaded from the db.
+    def clear_extra_data(self):
+        if self.response is None:
+            return
+        self.response.clear_extra_data()
