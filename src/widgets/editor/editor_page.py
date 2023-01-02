@@ -58,3 +58,11 @@ class EditorPage(QtWidgets.QWidget):
 
         print(f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')
         self.ui.itemExplorer.new_editor_item_created(editor_item)
+
+    def send_flow_to_fuzzer(self, flow: HttpFlow):
+        new_flow = flow.duplicate_for_fuzz()
+        editor_item = EditorItem.build_for_http_flow_fuzz(new_flow)
+        EditorItemRepo().save(editor_item)
+
+        print(f'Created EditorItem {editor_item.id} and editor request: {editor_item.item_id}')
+        self.ui.itemExplorer.new_editor_item_created(editor_item)

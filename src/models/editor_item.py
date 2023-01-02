@@ -50,13 +50,21 @@ class EditorItem(Model):
             item = flow
         )
 
+    @classmethod
+    def build_for_http_flow_fuzz(cls, flow: HttpFlow):
+        return EditorItem(
+            name = 'new fuzz',
+            item_type = cls.TYPE_FUZZ,
+            item_id = flow.id,
+            item = flow
+        )
+
     def item_is_flow(self) -> bool:
         return self.item_type in [self.TYPE_HTTP_FLOW, self.TYPE_FUZZ]
 
     def duplicate(self) -> Optional[EditorItem]:
         if self.item_type != self.TYPE_HTTP_FLOW:
-            print('WARNING - cannot duplicate editor items which arent http_flows')
-            return
+            raise Exception('cannot duplicate editor items which arent http_flows')
 
         original_flow = self.item
         if original_flow is None:
@@ -67,6 +75,22 @@ class EditorItem(Model):
         return EditorItem(
             name = self.name,
             item_type = self.item_type,
+            item = flow
+        )
+
+    def duplicate_for_fuzz(self) -> Optional[EditorItem]:
+        if self.item_type != self.TYPE_HTTP_FLOW:
+            raise Exception('cannot fuzz editor items which arent http_flows')
+
+        original_flow = self.item
+        if original_flow is None:
+            return
+
+        flow = original_flow.duplicate_for_fuzz()
+
+        return EditorItem(
+            name = self.name,
+            item_type = EditorItem.TYPE_FUZZ,
             item = flow
         )
 

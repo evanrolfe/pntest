@@ -5,6 +5,7 @@ from widgets.network.ws_page import WsPage
 
 class NetworkPage(QtWidgets.QWidget):
     send_flow_to_editor = QtCore.pyqtSignal(object)
+    send_flow_to_fuzzer = QtCore.pyqtSignal(object)
 
     def __init__(self, *args, **kwargs):
         super(NetworkPage, self).__init__(*args, **kwargs)
@@ -22,6 +23,7 @@ class NetworkPage(QtWidgets.QWidget):
 
         # Connect signals
         self.http_page.send_flow_to_editor.connect(self.send_flow_to_editor)
+        self.http_page.send_flow_to_fuzzer.connect(self.send_flow_to_fuzzer)
         self.ws_page.toggle_page.connect(self.set_page_http)
         self.http_page.toggle_page.connect(self.set_page_ws)
 

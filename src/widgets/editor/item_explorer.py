@@ -93,6 +93,9 @@ class ItemExplorer(QtWidgets.QTreeView):
         new_fuzz_action = QtGui.QAction("New Fuzz")
         new_fuzz_action.triggered.connect(lambda: self.new_fuzz_clicked(index))
 
+        fuzz_action = QtGui.QAction("Fuzz this request")
+        fuzz_action.triggered.connect(lambda: self.fuzz_request(index))
+
         rename_action = QtGui.QAction("Rename")
         rename_action.triggered.connect(lambda: self.edit(index))
 
@@ -117,6 +120,9 @@ class ItemExplorer(QtWidgets.QTreeView):
             menu.addAction(copy_action)
 
         if index.isValid():
+            if tree_item.editor_item is not None and tree_item.editor_item.item_type == EditorItem.TYPE_HTTP_FLOW:
+                menu.addAction(fuzz_action)
+
             menu.addAction(delete_action)
             menu.addAction(rename_action)
 
@@ -217,3 +223,18 @@ class ItemExplorer(QtWidgets.QTreeView):
             QtCore.QItemSelectionModel.SelectionFlag.ClearAndSelect
         )
         self.edit(child_index)
+
+    def fuzz_request(self, index: QtCore.QModelIndex):
+        tree_item = self.tree_model.getItem(index)
+
+        if tree_item.editor_item is None or tree_item.editor_item.item_type != EditorItem.TYPE_HTTP_FLOW:
+            return
+        copied_editor_item = tree_item.editor_item.duplicate_for_fuzz()
+        if copied_editor_item is None:
+            return
+
+        self.copied_editor_item = copied_editor_item
+        EditorItemRepo().save(self.copied_editor_item)
+
+        self.insertChild(self.copied_editor_item, index.parent())
+        self.item_created.emit(self.copied_editor_item)

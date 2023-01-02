@@ -174,6 +174,16 @@ class HttpFlow(Model):
             request = new_request,
         )
 
+    def duplicate_for_fuzz(self):
+        new_request = self.request.duplicate()
+        new_request.overwrite_calculated_headers()
+
+        return HttpFlow(
+            type = HttpFlow.TYPE_EDITOR_FUZZ,
+            title =  f'{self.title}',
+            request = new_request,
+        )
+
     def build_example(self, response) -> HttpFlow:
         example_flow = HttpFlow(
             type = HttpFlow.TYPE_EDITOR_EXAMPLE,

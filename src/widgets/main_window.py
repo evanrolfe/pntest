@@ -50,6 +50,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Shortcut for closing app
         self.network_page.send_flow_to_editor.connect(self.editor_page.send_flow_to_editor)
         self.network_page.send_flow_to_editor.connect(self.show_editor_page)
+        self.network_page.send_flow_to_fuzzer.connect(self.editor_page.send_flow_to_fuzzer)
+        self.network_page.send_flow_to_fuzzer.connect(self.show_editor_page)
+
         self.intercept_page.something_intercepted.connect(self.ui.sideBar.highlight_intercept)
         self.intercept_page.intercept_queue_empty.connect(self.ui.sideBar.un_highlight_intercept)
 

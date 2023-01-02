@@ -12,6 +12,7 @@ class RequestsTable(QtWidgets.QWidget):
     delete_requests = QtCore.pyqtSignal(list)
     search_text_changed = QtCore.pyqtSignal(str)
     send_flow_to_editor = QtCore.pyqtSignal(HttpFlow)
+    send_flow_to_fuzzer = QtCore.pyqtSignal(HttpFlow)
     display_filters_saved = QtCore.pyqtSignal()
 
     table_model: RequestsTableModel
@@ -105,6 +106,10 @@ class RequestsTable(QtWidgets.QWidget):
                 send_action = QtGui.QAction("Send to editor")
                 menu.addAction(send_action)
                 send_action.triggered.connect(lambda: self.send_flow_to_editor.emit(flow))
+
+                fuzz_action = QtGui.QAction("Send to fuzzer")
+                menu.addAction(fuzz_action)
+                fuzz_action.triggered.connect(lambda: self.send_flow_to_fuzzer.emit(flow))
 
             action = QtGui.QAction("Delete request")
             menu.addAction(action)

@@ -13,6 +13,7 @@ from repos.http_flow_repo import HttpFlowRepo
 class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.pyqtSignal()
     send_flow_to_editor = QtCore.pyqtSignal(object)
+    send_flow_to_fuzzer = QtCore.pyqtSignal(object)
 
     search_text: Optional[str]
     table_model: RequestsTableModel
@@ -33,6 +34,7 @@ class HttpPage(QtWidgets.QWidget):
         self.ui.requestsTableWidget.search_text_changed.connect(self.search_flows_async)
         self.ui.requestsTableWidget.display_filters_saved.connect(self.load_flows_async)
         self.ui.requestsTableWidget.send_flow_to_editor.connect(self.send_flow_to_editor)
+        self.ui.requestsTableWidget.send_flow_to_fuzzer.connect(self.send_flow_to_fuzzer)
 
         # Site Map
         self.ui.siteMap.setVisible(False)
