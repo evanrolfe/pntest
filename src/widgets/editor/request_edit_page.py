@@ -51,7 +51,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.ui.methodInput.insertItems(0, self.METHODS)
 
         self.ui.flowView.set_show_rendered(False)
-        self.ui.flowView.set_editable(True)
+        self.ui.flowView.set_request_editable(True)
         self.ui.flowView.set_save_as_example_enabled(False)
         self.ui.flowView.save_example_button.clicked.connect(self.save_example)
 
@@ -140,6 +140,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
     def save_request(self):
         self.update_request_with_values_from_form()
+
         EditorItemRepo().save(self.editor_item)
         HttpFlowRepo().save(self.flow)
 
@@ -210,6 +211,7 @@ class RequestEditPage(QtWidgets.QWidget):
             'fuzz_data': None
         }
         self.flow.request.set_form_data(form_data)
+        self.ui.flowView.refresh_header_line()
 
     def cancel_request(self):
         self.worker.kill()

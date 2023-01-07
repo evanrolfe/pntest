@@ -11,14 +11,17 @@ from constants import DEFAULT_HEADERS, EMPTY_HEADER
 
 class MyDelegate(QtWidgets.QItemDelegate):
     flow: HttpFlow
+    editable: bool
 
     # HttpFlow is necessary in order to allow the LineScintilla to access the payloads
     def __init__(self, parent = None):
+        self.editable = True
         super(MyDelegate, self).__init__(parent)
 
     def createEditor(self, parent: QtWidgets.QWidget, option: QtWidgets.QStyleOptionViewItem, index: QtCore.QModelIndex):
-        line_scintilla = LineScintilla(parent)
-        return line_scintilla
+        self.line_scintilla = LineScintilla(parent)
+        self.line_scintilla.setReadOnly(not self.editable)
+        return self.line_scintilla
 
     def setModelData(self, editor: LineScintilla, model: RequestHeadersTableModel, index: QtCore.QModelIndex):
         value = editor.text()
@@ -27,6 +30,9 @@ class MyDelegate(QtWidgets.QItemDelegate):
     def setEditorData(self, editor: LineScintilla, index: QtCore.QModelIndex):
         value = index.model().data(index, QtCore.Qt.ItemDataRole.EditRole)
         editor.setText(value)
+
+    def set_editable(self, editable: bool):
+        self.editable = editable
 
 class HeadersForm(QtWidgets.QWidget):
     # TODO: Add a headers_changed signal
@@ -63,8 +69,11 @@ class HeadersForm(QtWidgets.QWidget):
         self.ui.headersTable.setColumnWidth(0, 20)
         self.ui.headersTable.setColumnWidth(1, 250)
 
+        self.ui.headerLine.setReadOnly(True)
+
     def set_editable(self, editable):
         self.editable = editable
+        self.delegate.set_editable(self.editable)
 
     def set_header_line(self, header_line):
         if header_line is not None:

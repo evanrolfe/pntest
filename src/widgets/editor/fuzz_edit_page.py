@@ -123,7 +123,7 @@ class FuzzEditPage(QtWidgets.QWidget):
             self.show_request()
 
     def show_request(self):
-        self.ui.fuzzView.set_editable(True)
+        self.ui.fuzzView.set_request_editable(True)
         self.set_send_save_buttons_enabled(True)
         self.ui.fuzzView.show_response(False)
         self.ui.fuzzView.show_fuzzing_options(True)
@@ -136,7 +136,7 @@ class FuzzEditPage(QtWidgets.QWidget):
         self.ui.fuzzView.set_flow(self.flow)
 
     def show_request_example(self):
-        self.ui.fuzzView.set_editable(False)
+        self.ui.fuzzView.set_request_editable(False)
         self.set_send_save_buttons_enabled(False)
         self.ui.fuzzView.show_response(True)
         self.ui.fuzzView.show_fuzzing_options(False)

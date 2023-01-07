@@ -69,8 +69,9 @@ class FlowView(QtWidgets.QWidget):
 
         # Headers
         self.ui.requestHeaders.headers_changed.connect(self.update_syntax_highlighting_for_request)
+        self.ui.responseHeaders.set_editable(False)
 
-    def set_editable(self, editable):
+    def set_request_editable(self, editable):
         self.editable = editable
         self.ui.requestHeaders.set_editable(editable)
 
@@ -237,6 +238,12 @@ class FlowView(QtWidgets.QWidget):
 
         self.response_status_label.setStyleSheet("background-color: "+bg_color)
         self.response_status_label.setText(status + label_msg)
+
+    # In the request editor the header line is based off of the url input + method dropdown, so when
+    # those values change we need to update the header line too
+    def refresh_header_line(self):
+        request = self.flow.request
+        self.ui.requestHeaders.set_header_line(request.get_header_line())
 
     def show_real_request(self):
         request = self.flow.request
