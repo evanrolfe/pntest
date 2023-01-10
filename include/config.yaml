@@ -1,6 +1,6 @@
 # certs: ['*=./include/mitmproxy-ca.pem']
 ssl_insecure: true
-client_certs: ./include/mitmproxy-client.pem
+# client_certs: ./include/mitmproxy-client.pem
 # Add all certificates of the upstream server to the certificate chain
 # that will be served to the proxy client, as extras. Type bool.
 # add_upstream_certs_to_client_chain: false

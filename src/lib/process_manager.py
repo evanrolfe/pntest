@@ -178,9 +178,9 @@ class ProcessManager(QtCore.QObject):
         args_str = f'{client.id} {recording_enabled} {intercept_enabled} {self.app_path} {settings_json_b64}'
 
         if is_dev_mode():
-            proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include {args_str}'
+            proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem {args_str}'
         else:
-            proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include {args_str}'
+            proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include --set client_certs={self.app_path}/include/mitmproxy-client.pem {args_str}'
 
         print(proxy_command)
         # To get logging from the proxy, add the stdout,stderr lines to Popen() args
