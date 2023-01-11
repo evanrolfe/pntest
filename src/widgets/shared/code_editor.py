@@ -70,7 +70,7 @@ class CodeEditor(QtWidgets.QWidget):
                 find_text,  # Text to find,
                 False,  # Treat as regular expression
                 False,  # Case sensitive search
-                True,  # Whole word matches only
+                False,  # Whole word matches only
                 True,  # Wrap search
                 True,  # Forward search
                 line=-1,  # From line: -1 starts at current position
@@ -123,25 +123,6 @@ class CodeEditor(QtWidgets.QWidget):
 
     def get_value(self) -> str:
         return self.ui.code.text()
-
-    # NOTE: See mu/interface/main.py line 1280 (def replace_text) for an implementation of "replace all"
-    def show_finder(self):
-        case_sensitive = False
-
-        self.ui.code.findFirst(
-            "asdf",  # Text to find,
-            False,  # Treat as regular expression
-            case_sensitive,  # Case sensitive search
-            True,  # Whole word matches only
-            True,  # Wrap search
-            forward=True,  # Forward search
-            line=-1,  # From line: -1 starts at current position
-            index=-1,  # From col: -1 starts at current position
-            show=False,  # Unfolds found text
-            posix=False,
-        )  # More POSIX compatible RegEx
-
-        self.ui.code.replaceSelectedText("somethingelse!")
 
     def format_text(self, text: str) -> str:
         # TODO: Format javascript
