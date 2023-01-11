@@ -15,6 +15,7 @@ a = Analysis(
         ('include/mitmproxy-ca.pem', 'include/'),
         ('include/mitmproxy-client.pem', 'include/'),
         ('include/html_page.html', 'include/'),
+        ('include/config.yaml', 'include/'),
         ('src/style/dark.qss', 'style/'),
         ('src/style/dark_theme.qss', 'style/'),
         ('src/style/light.qss', 'style/'),
