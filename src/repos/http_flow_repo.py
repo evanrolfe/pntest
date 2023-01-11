@@ -131,7 +131,7 @@ class HttpFlowRepo(BaseRepo):
         rows: list[sqlite3.Row] = cursor.fetchall()
 
         request_ids = [r['id'] for r in rows]
-        query = Query.from_(self.table).select('*').where(self.table.request_id.isin(request_ids)).where(self.table.type == HttpFlow.TYPE_PROXY)
+        query = Query.from_(self.table).select('*').where(self.table.request_id.isin(request_ids)).where(self.table.type == HttpFlow.TYPE_PROXY).orderby(self.table.id, order=Order.desc)
         return self.__find_by_query(query.get_sql(), [], False)
 
     def __find_by_query(self, sql_query: str, sql_params: list[Any], load_examples = True, load_minimal_data = False) -> list[HttpFlow]:
