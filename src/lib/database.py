@@ -21,6 +21,7 @@ class Database:
         # self.delete_existing_db()
         self.connect()
         self.import_schema()
+        self.__set_all_clients_closed()
 
         # Virtually private constructor.
         if Database.__instance is not None:
@@ -51,6 +52,12 @@ class Database:
         self.close()
         self.db_path = new_db_path
         self.connect()
+        self.__set_all_clients_closed()
 
     def close(self):
         self.conn.close()
+
+    def __set_all_clients_closed(self):
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE clients SET open = 0;")
+        self.conn.commit()
