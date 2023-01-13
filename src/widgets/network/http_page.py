@@ -4,6 +4,7 @@ from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from views._compiled.network.http_page import Ui_HttpPage
 
+from lib.debounce import debounce
 from lib.background_worker import BackgroundWorker
 from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
@@ -62,12 +63,14 @@ class HttpPage(QtWidgets.QWidget):
         self.search_text = None
         self.load_flows_async()
 
-    def load_flows_async(self):
-        self.show_loader()
+    def load_flows_async(self, show_loader: bool = True):
         self.worker = BackgroundWorker(self.load_flows)
         self.worker.signals.result.connect(self.update_table)
         self.worker.signals.error.connect(self.request_error)
-        self.worker.signals.finished.connect(self.hide_loader)
+
+        if show_loader:
+            self.show_loader()
+            self.worker.signals.finished.connect(self.hide_loader)
         self.threadpool.start(self.worker)  # type:ignore
 
     def search_flows_async(self, search_text: str):
@@ -82,10 +85,31 @@ class HttpPage(QtWidgets.QWidget):
 
         return http_flows
 
+    def load_full_flow(self, signals) -> HttpFlow:
+        flow = self.ui.requestViewWidget.flow
+        flow_full = HttpFlowRepo().find(flow.id)
+        if flow_full is None:
+            return flow
+        return flow_full
+
+    def display_full_flow(self, flow: HttpFlow):
+        self.ui.requestViewWidget.set_flow(flow)
+        return
+
+    # This loads the full flow, mainly the response body that is needed, cause the table does not
+    # store that in memory. Debounced so you can hold the up/down arrow button in the table without
+    # it freezing up.
+    @debounce(0.1)
+    def load_full_flow_async(self):
+        self.worker = BackgroundWorker(self.load_full_flow)
+        self.worker.signals.result.connect(self.display_full_flow)
+        self.worker.signals.error.connect(self.request_error)
+        self.threadpool.start(self.worker)  # type:ignore
+
     def update_table(self, http_flows):
-        print('Update table called')
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
+        self.ui.requestsTableWidget.refresh_selection()
 
     def request_error(self, error):
         exctype, value, traceback = error
@@ -118,13 +142,11 @@ class HttpPage(QtWidgets.QWidget):
             flow = [f for f in self.table_model.flows if f.id == selected_id][0]
             if flow is None:
                 return
+            self.ui.requestViewWidget.set_flow(flow)
 
-            # The flows stored here don't have their content value loaded to save on memory
-            # So we need to fetch the flow from the db again when select
-            flow_full = HttpFlowRepo().find(flow.id)
-            if flow_full is None:
-                return
-            self.ui.requestViewWidget.set_flow(flow_full)
+        # The flows stored here don't have their content value loaded to save on memory
+        # So we need to fetch the flow from the db again when select
+        self.load_full_flow_async()
 
     def delete_requests(self, request_ids):
         if len(request_ids) > 1:
@@ -142,8 +164,9 @@ class HttpPage(QtWidgets.QWidget):
         if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.table_model.delete_requests(request_ids)
 
+    @debounce(0.25)
     def proxy_request_received(self, flow: HttpFlow):
-        self.table_model.add_flow(flow)
+        self.load_flows_async(False)
 
     def proxy_response_received(self, flow: HttpFlow):
         self.table_model.update_flow(flow)

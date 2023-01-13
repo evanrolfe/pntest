@@ -1,3 +1,4 @@
+from typing import Optional
 from PyQt6 import QtCore, QtWidgets, QtGui
 from models.qt.requests_table_model import RequestsTableModel
 
@@ -90,6 +91,24 @@ class RequestsTable(QtWidgets.QWidget):
     def set_selected_requests(self, selected, deselected):
         selected_q_indexes = self.ui.requestsTable.selectionModel().selectedRows()
         self.selected_request_ids = list(map(lambda index: index.data(), selected_q_indexes))
+
+    # This is used to preserve the selection when the request table changes (i.e. from searching or new requests coming in)
+    def refresh_selection(self):
+        if len(self.selected_request_ids) == 0:
+            return
+
+        row1 = self.table_model.get_index_of(self.selected_request_ids[0])
+        row2 = self.table_model.get_index_of(self.selected_request_ids[-1])
+        if row1 is None or row2 is None:
+            return
+
+        index1 = self.table_model.index(row1, 0)
+        index2 = self.table_model.index(row2, 0)
+
+        selection = QtCore.QItemSelection(index1, index2)
+        self.ui.requestsTable.selectionModel().select(
+            selection, QtCore.QItemSelectionModel.SelectionFlag.ClearAndSelect | QtCore.QItemSelectionModel.SelectionFlag.Rows
+        )
 
     def right_clicked(self, position: QtCore.QPoint):
         index = self.ui.requestsTable.indexAt(position)
