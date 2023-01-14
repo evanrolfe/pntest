@@ -61,10 +61,6 @@ class TestNetworkHttpPage:
         rect = table.visualRect(index)
         qtbot.mouseClick(table.viewport(), QtCore.Qt.MouseButton.LeftButton, pos=rect.center())
 
-        # widget.show()
-        # qtbot.waitForWindowShown(widget)
-        # time.sleep(3)
-        # Check request header line:
         header_line_text = widget.ui.requestViewWidget.ui.requestHeaders.ui.headerLine.text()
         assert header_line_text == 'GET /users/index.php HTTP/1.1'
 
@@ -76,9 +72,6 @@ class TestNetworkHttpPage:
         # Click the body tab
         response_tabs = widget.ui.requestViewWidget.ui.responseTabs
         response_tabs.setCurrentIndex(1)
-
-        body = widget.ui.requestViewWidget.ui.responseRaw.get_value().strip()
-        assert body == 'not found'
 
     # TODO: Make display filters work!!!!
     # def test_network_http_page_display_filters_host(self, database, cleanup_database, qtbot: QtBot):

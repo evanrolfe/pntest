@@ -38,13 +38,11 @@ class ClientRepo(BaseRepo):
         self.conn.execute(query.get_sql())
         self.conn.commit()
 
-    # TODO: Add types
-    def get_next_port_available(self):
+    def get_next_port_available(self) -> int:
         clients = self.find_all()
         proxy_port = Client.PROXY_PORT + len(clients)
-        browser_port = Client.BROWSER_PORT + len(clients)
 
-        return {'proxy': proxy_port, 'browser': browser_port}
+        return proxy_port
 
     def __find_by_query(self, sql_query: str) -> list[Client]:
         cursor = self.conn.cursor()

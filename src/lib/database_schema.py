@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS clients(
   title TEXT,
   type TEXT NOT NULL,
   proxy_port INTEGER,
-  browser_port INTEGER,
   open BOOLEAN DEFAULT 0,
   created_at INTEGER,
   launched_at INTEGER

@@ -37,5 +37,4 @@ class TestClientRepo:
         client_repo.save(client)
 
         result = client_repo.get_next_port_available()
-        assert result['proxy'] == 8081
-        assert result['browser'] == 9223
+        assert result == 8081

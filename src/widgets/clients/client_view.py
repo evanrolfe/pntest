@@ -12,7 +12,6 @@ class ClientView(QtWidgets.QWidget):
         self.ui.clientBodyText.setPlainText('')
 
     def set_client(self, client):
-        text = f"{client.title}\nType: {client.type}\nProxy port: {client.proxy_port}" \
-            f"\nBrowser port: {client.browser_port}\nStatus: {client.open_text()}"
+        text = f"{client.title}\nType: {client.type}\nProxy port: {client.proxy_port}\nStatus: {client.open_text()}"
 
         self.ui.clientBodyText.setPlainText(text)

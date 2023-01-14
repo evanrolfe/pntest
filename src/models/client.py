@@ -4,7 +4,6 @@ from typing import Optional
 from models.model import Model
 
 PROXY_PORT = 8080
-BROWSER_PORT = 9222
 
 @dataclass(kw_only=True)
 class Client(Model):
@@ -13,7 +12,6 @@ class Client(Model):
     created_at: int = field(init=False, default=0)
 
     proxy_port: int
-    browser_port: Optional[int] = field(default=None)
     launched_at: Optional[int] = field(default=None)
     title: str
     type: str
@@ -29,7 +27,6 @@ class Client(Model):
 
     # Constants
     PROXY_PORT = 8080
-    BROWSER_PORT = 9222
 
     def open_text(self) -> str:
         if (self.open):

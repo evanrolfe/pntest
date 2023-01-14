@@ -69,16 +69,13 @@ class ClientsPage(QtWidgets.QWidget):
         self.clients_table_model.set_clients(clients)
 
     def create_client(self, client_type):
-        ports = ClientRepo().get_next_port_available()
+        port = ClientRepo().get_next_port_available()
 
         client = Client(
             type = client_type,
-            proxy_port = ports['proxy'],
+            proxy_port = port,
             title = 'client'
         )
-
-        if client_type != 'anything':
-            client.browser_port = ports['browser']
 
         ClientRepo().save(client)
 
