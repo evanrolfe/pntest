@@ -14,7 +14,7 @@ class SettingsRepo(BaseRepo):
         self.table = Table('settings')
 
     def get_settings(self) -> Settings:
-        settings = self.find(1)
+        settings = self.__find(1)
         if settings is not None:
             return settings
 
@@ -23,7 +23,13 @@ class SettingsRepo(BaseRepo):
 
         return default_settings
 
-    def find(self, id: int) -> Optional[Settings]:
+    def insert(self, settings: Settings):
+        self.generic_insert(settings, self.table)
+
+    def update(self, settings: Settings):
+        self.generic_update(settings, self.table)
+
+    def __find(self, id: int) -> Optional[Settings]:
         row = self.generic_find(id, self.table)
         if row is None:
             return
@@ -33,9 +39,3 @@ class SettingsRepo(BaseRepo):
         settings.created_at = row['created_at']
         settings.json = json.loads(row['json'])
         return settings
-
-    def insert(self, settings: Settings):
-        self.generic_insert(settings, self.table)
-
-    def update(self, settings: Settings):
-        self.generic_update(settings, self.table)

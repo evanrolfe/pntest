@@ -69,11 +69,23 @@ class ClientsPage(QtWidgets.QWidget):
         self.clients_table_model.set_clients(clients)
 
     def create_client(self, client_type):
-        port = ClientRepo().get_next_port_available()
+        # TODO: Move this logic out of the widget and into a model or class somewhere
+        settings = SettingsRepo().get_settings()
+        available_ports = settings.json['proxy']['ports_available']
+        used_ports = ClientRepo().get_used_ports()
+        first_port_available = None
+
+        for available_port in available_ports:
+            if available_port not in used_ports:
+                first_port_available = available_port
+                break
+
+        if first_port_available is None:
+            raise Exception("no more ports available! add some in the settings.")
 
         client = Client(
             type = client_type,
-            proxy_port = port,
+            proxy_port = first_port_available,
             title = 'client'
         )
 
@@ -88,25 +100,13 @@ class ClientsPage(QtWidgets.QWidget):
             button = self.client_buttons[client['name']]
             button.setEnabled(True)
 
-        # Update the anything button port
-        # anything_client_info = self.get_client_info('anything')
-        # self.ui.anythingButton.setText(f'Anything (Port {anything_client_info["proxyPort"]})')
-
-    def get_client_info(self, browser_type):
-        return 'TODO!'
-        # client_infos = [c for c in self.enabled_clients if c == browser_type]
-
-        # if len(client_infos) == 0:
-        #     client_info = {'version': 'N/A', 'proxyPort': 'N/A',
-        #                    'browserPort': 'N/A', 'command': 'N/A'}
-        # else:
-        #     client_info = client_infos[0]
-
-        # return client_info
-
     def open_client_clicked(self, client: Client):
         client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
         settings = SettingsRepo().get_settings()
+
+        override_command = settings.json['browser']['browser_commands'].get(client_info['name'])
+        if override_command:
+            client_info['command'] = override_command
 
         self.process_manager.launch_client(client, client_info, settings.json)
         self.reload_table_data()

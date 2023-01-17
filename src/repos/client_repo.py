@@ -44,6 +44,10 @@ class ClientRepo(BaseRepo):
 
         return proxy_port
 
+    def get_used_ports(self) -> list[int]:
+        clients = self.find_all()
+        return [c.proxy_port for c in clients]
+
     def __find_by_query(self, sql_query: str) -> list[Client]:
         cursor = self.conn.cursor()
         cursor.execute(sql_query)

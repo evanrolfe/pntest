@@ -13,7 +13,7 @@ class TestSettingsRepo:
         assert settings.json['capture_filters']['host_list'] == []
         assert settings.created_at is not None
 
-        settings2 = repo.find(1)
+        settings2 = repo.get_settings()
         assert settings2 is not None
         assert settings2.id is not None
         assert settings2.json['capture_filters']['host_list'] == []

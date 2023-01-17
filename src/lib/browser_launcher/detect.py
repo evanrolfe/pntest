@@ -46,7 +46,7 @@ BROWSERS: list[Browser] = [
     },
 ]
 
-def check_command(command):
+def check_command(command: str):
     try:
         result = subprocess.run([command, '--version'], stdout=subprocess.PIPE)
         return result

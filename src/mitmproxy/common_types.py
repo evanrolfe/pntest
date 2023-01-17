@@ -19,10 +19,14 @@ class DisplayFilterSettings(TypedDict):
 class ProxySettings(TypedDict):
     ports_available: list[int]
 
+class BrowserSettings(TypedDict):
+    browser_commands: dict[str, str]
+
 class SettingsJson(TypedDict):
     capture_filters: CaptureFilterSettings
     display_filters: DisplayFilterSettings
     proxy: ProxySettings
+    browser: BrowserSettings
 
 class ProxyRequest(TypedDict):
     http_version: str
