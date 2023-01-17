@@ -299,12 +299,13 @@ class ProxyEventsAddon:
 
         # Check host
         host_list = self.settings['capture_filters']['host_list']
+        has_hosts = len(host_list) > 0
         host_setting = self.settings['capture_filters']['host_setting']
 
-        if flow.request.host in host_list and host_setting == 'exclude':
+        if flow.request.host in host_list and host_setting == 'exclude' and has_hosts:
             return False
 
-        if flow.request.host not in host_list and host_setting == 'include':
+        if flow.request.host not in host_list and host_setting == 'include' and has_hosts:
             return False
 
         return True
