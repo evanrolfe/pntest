@@ -7,7 +7,7 @@ import os
 import sys
 from typing import Optional, TypedDict
 from PyQt6 import QtCore
-from lib.browser_launcher.detect import Browser
+from models.available_client import AvailableClient
 from models.client import Client
 from models.http_flow import HttpFlow
 from models.websocket_message import WebsocketMessage
@@ -131,11 +131,11 @@ class ProcessManager(QtCore.QObject):
         ClientRepo().save(client)
         self.clients_changed.emit()
 
-    def launch_client(self, client: Client, client_info: Browser, settings: SettingsJson):
+    def launch_client(self, client: Client, client_info: AvailableClient, settings: SettingsJson):
         print(f"Launching client:")
         self.launch_proxy(client, settings)
 
-        browser_command = client_info.get('command')
+        browser_command = client_info.command
         if browser_command:
             self.launch_browser(client, browser_command)
 
@@ -157,7 +157,7 @@ class ProcessManager(QtCore.QObject):
         client.open = False
         ClientRepo().save(client)
 
-    def launch_browser(self, client: Client, browser_command):
+    def launch_browser(self, client: Client, browser_command: str):
         if client.type in ['chrome', 'chromium']:
             worker = BrowserProc(client, lambda: launch_chrome_or_chromium(client, browser_command))
         elif client.type == 'firefox':

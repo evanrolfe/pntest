@@ -1,11 +1,12 @@
 from typing import Optional
 from PyQt6 import QtWidgets
 from repos.settings_repo import SettingsRepo
-from lib.browser_launcher.detect import detect_available_browsers, Browser
+from repos.available_client_repo import AvailableClientRepo
+from models.available_client import AvailableClient
 from views._compiled.preferences_window import Ui_PreferencesWindow
 
 class PreferencesWindow(QtWidgets.QDialog):
-    available_browsers: list[Browser]
+    available_clients: list[AvailableClient]
     browser_commands: dict[str, dict[str, str]]
 
     def __init__(self, *args, **kwargs):
@@ -18,7 +19,7 @@ class PreferencesWindow(QtWidgets.QDialog):
         self.ui.cancelButton.clicked.connect(self.close)
         self.ui.saveButton.clicked.connect(self.save)
 
-        self.available_browsers = detect_available_browsers()
+        self.available_clients = AvailableClientRepo().find_all()
         self.load_settings()
 
     def showEvent(self, event):
@@ -26,7 +27,6 @@ class PreferencesWindow(QtWidgets.QDialog):
 
     def load_settings(self):
         self.settings = SettingsRepo().get_settings()
-        print(self.settings.json)
         ports = ','.join([str(port) for port in self.settings.json['proxy']['ports_available']])
         self.ui.proxyPortsInput.setText(ports)
 
@@ -80,10 +80,10 @@ class PreferencesWindow(QtWidgets.QDialog):
         else:
             setting = 'auto'
 
-        browser = self.__get_browser(browser_name)
-        if browser is None:
+        available_client = self.__get_available_client(browser_name)
+        if available_client is None:
             return
-        auto_cmd = browser.get('command')
+        auto_cmd = available_client.command
 
         self.browser_commands[browser_name] = {
             'auto': auto_cmd or '',
@@ -125,5 +125,5 @@ class PreferencesWindow(QtWidgets.QDialog):
         self.browser_commands[browser_name]['setting'] = setting
         self.__display_browser_cmd(browser_name)
 
-    def __get_browser(self, browser_name: str) -> Optional[Browser]:
-        return [b for b in self.available_browsers if b['name'] == browser_name][0]
+    def __get_available_client(self, client_name: str) -> Optional[AvailableClient]:
+        return [b for b in self.available_clients if b.name == client_name][0]

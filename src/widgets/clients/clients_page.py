@@ -2,26 +2,18 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from models.settings import Settings
 from repos.client_repo import ClientRepo
 from repos.settings_repo import SettingsRepo
+from repos.available_client_repo import AvailableClientRepo
+from models.available_client import AvailableClient
 
 from views._compiled.clients.clients_page import Ui_ClientsPage
 
 from models.qt.clients_table_model import ClientsTableModel
 from models.client import Client
-from lib.browser_launcher.detect import detect_available_browsers, Browser
 from lib.process_manager import ProcessManager
-
-ANYTHING_CLIENT: Browser = {
-    'name': 'anything',
-    'commands': [],
-    'regex': r'',
-    'type': 'anything',
-    'command': None,
-    'version': None
-}
 
 class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager
-    enabled_clients: list[Browser]
+    available_clients: list[AvailableClient]
 
     def __init__(self, *args, **kwargs):
         super(ClientsPage, self).__init__(*args, **kwargs)
@@ -51,15 +43,18 @@ class ClientsPage(QtWidgets.QWidget):
 
         # Disable clients not available
         self.client_buttons = {
-            'chromium': self.ui.chromiumButton,
             'chrome': self.ui.chromeButton,
+            'chromium': self.ui.chromiumButton,
             'firefox': self.ui.firefoxButton,
             'anything': self.ui.anythingButton
         }
-        self.set_enabled_clients(detect_available_browsers())
+        self.load_available_clients()
 
         self.process_manager = ProcessManager.get_instance()
         self.process_manager.clients_changed.connect(self.reload)
+
+    def showEvent(self, event):
+        self.load_available_clients()
 
     def reload(self):
         self.reload_table_data()
@@ -93,22 +88,19 @@ class ClientsPage(QtWidgets.QWidget):
 
         self.open_client_clicked(client)
 
-    def set_enabled_clients(self, enabled_clients: list[Browser]):
-        self.enabled_clients = enabled_clients + [ANYTHING_CLIENT]
+    def load_available_clients(self):
+        settings = SettingsRepo().get_settings()
+        self.available_clients = AvailableClientRepo().find_all_with_settings_override(settings)
 
-        for client in self.enabled_clients:
-            button = self.client_buttons[client['name']]
-            button.setEnabled(True)
+        for key, button in self.client_buttons.items():
+            available_client = [ac for ac in self.available_clients if ac.name == key][0]
+            button.setEnabled(available_client.enabled())
 
     def open_client_clicked(self, client: Client):
-        client_info = [c for c in self.enabled_clients if c['name'] == client.type][0]
+        available_client = [c for c in self.available_clients if c.name == client.type][0]
+
         settings = SettingsRepo().get_settings()
-
-        override_command = settings.json['browser']['browser_commands'].get(client_info['name'])
-        if override_command:
-            client_info['command'] = override_command
-
-        self.process_manager.launch_client(client, client_info, settings.json)
+        self.process_manager.launch_client(client, available_client, settings.json)
         self.reload_table_data()
 
     def close_client_clicked(self, client: Client):
