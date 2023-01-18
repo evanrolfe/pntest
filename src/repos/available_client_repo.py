@@ -39,6 +39,14 @@ DEFAULT_CLIENTS = [
         'version': None
     },
     {
+        'name': 'docker',
+        'commands': ['docker'],
+        'regex': r'Docker version ([0-9,\.]+), (.+)',
+        'type': 'docker',
+        'command': None,
+        'version': None
+    },
+    {
         'name': 'anything',
         'commands': [],
         'regex': r'',

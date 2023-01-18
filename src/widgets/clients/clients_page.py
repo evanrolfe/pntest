@@ -32,20 +32,22 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.chromiumButton.setIcon(QtGui.QIcon('assets:icons/icons8-chromium.svg'))
         self.ui.chromeButton.setIcon(QtGui.QIcon('assets:icons/icons8-chrome.svg'))
         self.ui.firefoxButton.setIcon(QtGui.QIcon('assets:icons/icons8-firefox.svg'))
+        self.ui.dockerButton.setIcon(QtGui.QIcon('assets:icons/icons8-docker.svg'))
         self.ui.anythingButton.setIcon(QtGui.QIcon('assets:icons/icons8-question-mark.png'))
 
         # Connect client buttons:
         self.ui.chromiumButton.clicked.connect(lambda: self.create_client('chromium'))
         self.ui.chromeButton.clicked.connect(lambda: self.create_client('chrome'))
         self.ui.firefoxButton.clicked.connect(lambda: self.create_client('firefox'))
+        self.ui.dockerButton.clicked.connect(lambda: self.create_client('docker'))
         self.ui.anythingButton.clicked.connect(lambda: self.create_client('anything'))
-        self.ui.terminalButton.clicked.connect(lambda: self.create_client('terminal'))
 
         # Disable clients not available
         self.client_buttons = {
             'chrome': self.ui.chromeButton,
             'chromium': self.ui.chromiumButton,
             'firefox': self.ui.firefoxButton,
+            'docker': self.ui.dockerButton,
             'anything': self.ui.anythingButton
         }
         self.load_available_clients()
