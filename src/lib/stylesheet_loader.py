@@ -40,7 +40,7 @@ class StyleheetLoader:
         stream = QtCore.QTextStream(file)
         theme_str = stream.readAll()
 
-        matches = re.search('\{(.*)\}', theme_str, flags=re.DOTALL)  # noqa W605
+        matches = re.search(r'\{(.*)\}', theme_str, flags=re.DOTALL)  # noqa W605
 
         if matches is None:
             return
