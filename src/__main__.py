@@ -11,9 +11,12 @@ from version import version
 
 THEME = 'dark'
 
-version_arg = sys.argv[1] if 1 < len(sys.argv) else None
+db_file_arg = None
+version_arg = sys.argv[1] if len(sys.argv) > 1 else None
 if version_arg == '--version':
     sys.exit(f'pntest v{version}')
+else:
+    db_file_arg = version_arg
 
 def except_hook(cls, exception, traceback):
     print("------------------------------------------------\nERROR\n------------------------------------------------")
@@ -40,11 +43,16 @@ def main():
     QtCore.QDir.addSearchPath('assets', assets_path)
 
     # Ensure clean slate on start so delete the tmp db if it exists
-    if os.path.isfile(tmp_db_path):
-        print(f'[Gui] found existing db at {tmp_db_path}, deleting.')
-        os.remove(tmp_db_path)
+    if db_file_arg:
+        db_path = db_file_arg
+    else:
+        if os.path.isfile(tmp_db_path):
+            print(f'[Gui] found existing db at {tmp_db_path}, deleting.')
+            os.remove(tmp_db_path)
 
-    database = Database(tmp_db_path)
+        db_path = tmp_db_path
+
+    database = Database(db_path)
 
     process_manager = ProcessManager(str(app_path))
     main_window = MainWindow()
