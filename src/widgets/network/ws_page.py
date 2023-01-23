@@ -4,7 +4,6 @@ from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.network.ws_page import Ui_WsPage
 
-from lib.app_settings import AppSettings
 from models.qt.messages_table_model import MessagesTableModel
 from models.websocket_message import WebsocketMessage
 from repos.ws_message_repo import WsMessageRepo
@@ -37,6 +36,7 @@ class WsPage(QtWidgets.QWidget):
         self.ui.messagesTable.setTableModel(self.table_model)
 
     def restore_layout_state(self):
+        return
         settings = AppSettings.get_instance()
         splitterState = settings.get("WsPage.messagesTableAndViewSplitter", None)
         splitterState2 = settings.get("WsPage.messageViewSplitterState", None)
@@ -47,6 +47,7 @@ class WsPage(QtWidgets.QWidget):
             self.ui.messageViewWidget.ui.splitter.restoreState(splitterState2)
 
     def save_layout_state(self):
+        return
         splitter_state = self.ui.messagesTableAndViewSplitter.saveState()
         splitter_state2 = self.ui.messageViewWidget.ui.splitter.saveState()
 

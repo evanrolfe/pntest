@@ -5,7 +5,6 @@ from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
 
-from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
 from lib.fuzz_http_requests import FuzzHttpRequests
 from models.http_flow import HttpFlow
@@ -40,7 +39,6 @@ class FuzzEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.setVisible(False)
         self.ui.toggleExamplesButton.setText("Saved Examples >>")
-        self.settings = AppSettings.get_instance()
         self.restore_layout_state()
 
         self.ui.toggleExamplesButton.clicked.connect(self.toggle_examples_table)

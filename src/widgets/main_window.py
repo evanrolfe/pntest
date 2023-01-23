@@ -6,7 +6,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 from lib.process_manager import ProcessManager
 
 from views._compiled.main_window import Ui_MainWindow
-from lib.app_settings import AppSettings
+from repos.app_settings_repo import AppSettingsRepo
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from widgets.network.network_page import NetworkPage
@@ -165,17 +165,17 @@ class MainWindow(QtWidgets.QMainWindow):
             self.intercept_status.setText("Intercept: Disabled")
 
     def restore_layout_state(self):
-        settings = AppSettings.get_instance()
-        geometry = settings.get('geometry', None)
+        settings = AppSettingsRepo().get()
+        geometry = settings["main_window_geometry"]
 
         if geometry is not None:
             self.restoreGeometry(geometry)
 
     def save_layout_state(self):
+        settings = AppSettingsRepo().get()
         geometry = self.saveGeometry()
-
-        settings = AppSettings.get_instance()
-        settings.save('geometry', geometry)
+        settings["main_window_geometry"] = geometry
+        AppSettingsRepo().save(settings)
 
     def reload_style(self):
         print("Reloading style...")

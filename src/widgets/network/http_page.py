@@ -6,7 +6,6 @@ from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.debounce import debounce
 from lib.background_worker import BackgroundWorker
-from lib.app_settings import AppSettings
 from models.qt.requests_table_model import RequestsTableModel
 from models.http_flow import HttpFlow
 from repos.http_flow_repo import HttpFlowRepo

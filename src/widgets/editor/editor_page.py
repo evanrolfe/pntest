@@ -4,7 +4,7 @@ from repos.editor_item_repo import EditorItemRepo
 
 from views._compiled.editor.editor_page import Ui_EditorPage
 from widgets.shared.variables_popup import VariablesPopup
-from lib.app_settings import AppSettings
+from repos.app_settings_repo import AppSettingsRepo
 from models.editor_item import EditorItem
 
 class EditorPage(QtWidgets.QWidget):
@@ -39,17 +39,17 @@ class EditorPage(QtWidgets.QWidget):
         self.ui.itemExplorer.reload_data()
 
     def restore_layout_state(self):
-        settings = AppSettings.get_instance()
-        splitter_state = settings.get("EditorPage.splitter", None)
+        settings = AppSettingsRepo().get()
+        splitter_state = settings["editor_page_splitter_state"]
+
         if splitter_state is not None:
             self.ui.editorSplitter.restoreState(splitter_state)
 
     def save_layout_state(self):
+        settings = AppSettingsRepo().get()
         splitter_state = self.ui.editorSplitter.saveState()
-        settings = AppSettings.get_instance()
-        settings.save("EditorPage.splitter", splitter_state)
-
-        # self.ui.requestGroupView.save_layout_state()
+        settings["editor_page_splitter_state"] = splitter_state
+        AppSettingsRepo().save(settings)
 
     def send_flow_to_editor(self, flow: HttpFlow):
         new_flow = flow.duplicate_for_editor()

@@ -5,13 +5,13 @@ import pyperclip
 from PyQt6 import QtWidgets, QtCore, QtGui
 from models.http_flow import HttpFlow
 from models.http_response import HttpResponse
+from repos.app_settings_repo import AppSettingsRepo
 from repos.editor_item_repo import EditorItemRepo
 from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.editor.request_edit_page import Ui_RequestEditPage
 from models.http_request import FormData
 from models.editor_item import EditorItem
-from lib.app_settings import AppSettings
 from lib.background_worker import BackgroundWorker
 
 class RequestEditPage(QtWidgets.QWidget):
@@ -41,7 +41,6 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.ui.examplesTable.setVisible(False)
         self.ui.toggleExamplesButton.setText("Saved Examples >>")
-        self.settings = AppSettings.get_instance()
         self.restore_layout_state()
 
         self.ui.toggleExamplesButton.clicked.connect(self.toggle_examples_table)
@@ -243,20 +242,19 @@ class RequestEditPage(QtWidgets.QWidget):
             self.ui.toggleExamplesButton.setText("Saved Examples >>")
 
     def restore_layout_state(self):
-        return None
-        # splitter_state = self.settings.get("RequestEditPage.splitter", None)
-        # splitter_state2 = self.settings.get("RequestEditPage.splitter2", None)
+        settings = AppSettingsRepo().get()
+        splitter_state = settings["request_edit_page_splitter_state"]
 
-        # self.ui.requestEditSplitter.restoreState(splitter_state)
-        # self.ui.splitter2.restoreState(splitter_state2)
+        if splitter_state is not None:
+            self.ui.requestEditSplitter.restoreState(splitter_state)
 
+    # TODO: This doesnt get called so never actually does anything
     def save_layout_state(self):
-        return None
-        # splitter_state = self.ui.requestEditSplitter.saveState()
-        # splitter_state2 = self.ui.splitter2.saveState()
+        settings = AppSettingsRepo().get()
+        splitter_state = self.ui.requestEditSplitter.saveState()
+        settings['request_edit_page_splitter_state'] = splitter_state
+        AppSettingsRepo().save(settings)
 
-        # self.settings.save("RequestEditPage.splitter", splitter_state)
-        # self.settings.save("RequestEditPage.splitter2", splitter_state2)
 
     def set_method_on_form(self, method):
         if method is None:
