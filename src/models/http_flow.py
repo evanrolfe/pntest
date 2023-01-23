@@ -132,7 +132,7 @@ class HttpFlow(Model):
     def is_type_editor_fuzz(self) -> bool:
         return self.type == HttpFlow.TYPE_EDITOR_FUZZ
 
-    def values_for_table(self):
+    def values_for_table(self) -> list[Any]:
         if self.request is None:
             return ['', '', '', '', '', '', '', '']
 

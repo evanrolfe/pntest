@@ -50,6 +50,20 @@ class HttpPage(QtWidgets.QWidget):
         self.restore_layout_state()
         self.threadpool = QtCore.QThreadPool()
 
+    def layout_changed(self, layout: str):
+        if layout == 'vertical1':
+            self.ui.requestsTableAndViewSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
+            self.ui.requestViewWidget.ui.splitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+        elif layout == 'vertical2':
+            self.ui.requestsTableAndViewSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
+            self.ui.requestViewWidget.ui.splitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        elif layout == 'horizontal1':
+            self.ui.requestsTableAndViewSplitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+            self.ui.requestViewWidget.ui.splitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        elif layout == 'horizontal2':
+            self.ui.requestsTableAndViewSplitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+            self.ui.requestViewWidget.ui.splitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+
     def toggle_sitemap(self):
         visible = not self.ui.siteMap.isVisible()
         self.ui.siteMap.setVisible(visible)
@@ -117,6 +131,7 @@ class HttpPage(QtWidgets.QWidget):
         print(traceback)
 
     def restore_layout_state(self):
+        return
         settings = AppSettings.get_instance()
         splitterState = settings.get("HttpPage.requestsTableAndViewSplitterState", None)
         splitterState2 = settings.get("HttpPage.requestsViewSplitterState", None)
@@ -127,6 +142,7 @@ class HttpPage(QtWidgets.QWidget):
             self.ui.requestViewWidget.ui.splitter.restoreState(splitterState2)
 
     def save_layout_state(self):
+        return
         splitter_state = self.ui.requestsTableAndViewSplitter.saveState()
         splitter_state2 = self.ui.requestViewWidget.ui.splitter.saveState()
 

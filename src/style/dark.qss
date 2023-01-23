@@ -494,6 +494,10 @@ QPushButton#saveAsExample {
   padding-left: 10px;
 }
 
+QLabel#responseStatusLabelTable {
+  border: 1 solid $bg-extra-dark;
+}
+
 QLabel#responseStatusLabel {
   border: 1 solid $bg-extra-dark;
   margin: 3px;

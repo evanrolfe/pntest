@@ -34,6 +34,7 @@ class RequestsTable(QtWidgets.QWidget):
         verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
         verticalHeader.setDefaultSectionSize(20)
         verticalHeader.setVisible(False)
+        verticalHeader.setDefaultAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.ui.requestsTable.setSortingEnabled(True)
         self.ui.requestsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)

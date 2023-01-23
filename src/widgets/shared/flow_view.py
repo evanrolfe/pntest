@@ -9,6 +9,7 @@ from models.http_response import HttpResponse
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type
+from lib.utils import get_status_colour
 from widgets.shared.code_editor import CodeEditor
 from constants import HTTP_STATUS_CODE_DESCRIPTIONS
 
@@ -221,22 +222,8 @@ class FlowView(QtWidgets.QWidget):
         else:
             label_msg = " " + response.reason
 
-        # NOTE: I tried to get this to work using properties and QSS but could not get the QLabel to be
-        # re-drawn so the colour never changed. Hence why I am setting this in python:
-        if status[0] == "1":
-            bg_color = "#7d69cb"
-        elif status[0] == "2":
-            bg_color = "#59a210"
-        elif status[0] == "3":
-            bg_color = "#1c90b4"
-        elif status[0] == "4":
-            bg_color = "#d07502"
-        elif status[0] == "5":
-            bg_color = "#d04444"
-        else:
-            bg_color = ""
-
-        self.response_status_label.setStyleSheet("background-color: "+bg_color)
+        bg_color = get_status_colour(response.status_code)
+        self.response_status_label.setStyleSheet(f"background-color: rgba({bg_color}, 255)")
         self.response_status_label.setText(status + label_msg)
 
     # In the request editor the header line is based off of the url input + method dropdown, so when

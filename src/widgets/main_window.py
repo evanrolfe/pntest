@@ -58,6 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Prefrences Window
         self.preferences_window = PreferencesWindow(self)
+        self.preferences_window.network_layout_changed.connect(self.network_page.layout_changed)
 
         # Menubar:
         self.setup_menu_actions()

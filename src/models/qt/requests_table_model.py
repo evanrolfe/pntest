@@ -81,8 +81,22 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
             flow = self.flows[index.row()]
 
             row_values = flow.values_for_table()
-
+            if index.column() in [3,6]:
+                return ''
             return row_values[index.column()]
+
+    def get_value(self, index: QtCore.QModelIndex):
+        if not index.isValid():
+            return None
+
+        if index.row() > len(self.flows):
+            return None
+
+        flow = self.flows[index.row()]
+
+        row_values = flow.values_for_table()
+
+        return row_values[index.column()]
 
     def roleNameArray(self) -> list[str]:
         return self.headers

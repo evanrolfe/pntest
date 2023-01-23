@@ -17,7 +17,7 @@ class NetworkPage(QtWidgets.QWidget):
         self.stacked_widget.addWidget(self.http_page)
         self.stacked_widget.addWidget(self.ws_page)
 
-        layout = QtWidgets.QHBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.stacked_widget)
 
@@ -40,3 +40,6 @@ class NetworkPage(QtWidgets.QWidget):
     def reload(self):
         self.http_page.reload()
         self.ws_page.reload()
+
+    def layout_changed(self, layout: str):
+        self.http_page.layout_changed(layout)

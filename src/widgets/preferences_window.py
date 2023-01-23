@@ -1,5 +1,5 @@
 from typing import Optional
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtCore
 from repos.settings_repo import SettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from models.available_client import AvailableClient
@@ -8,6 +8,7 @@ from views._compiled.preferences_window import Ui_PreferencesWindow
 class PreferencesWindow(QtWidgets.QDialog):
     available_clients: list[AvailableClient]
     browser_commands: dict[str, dict[str, str]]
+    network_layout_changed = QtCore.pyqtSignal(str)
 
     def __init__(self, *args, **kwargs):
         super(PreferencesWindow, self).__init__(*args, **kwargs)
@@ -30,6 +31,7 @@ class PreferencesWindow(QtWidgets.QDialog):
         ports = ','.join([str(port) for port in self.settings.json['proxy']['ports_available']])
         self.ui.proxyPortsInput.setText(ports)
 
+        # Browser commands
         self.browser_commands = {}
 
         self.__load_browser_cmd('chrome', self.ui.chromeCommandInput)
@@ -48,6 +50,14 @@ class PreferencesWindow(QtWidgets.QDialog):
         self.ui.chromiumAuto.toggled.connect(lambda: self.__setting_changed('chromium'))
         self.ui.firefoxAuto.toggled.connect(lambda: self.__setting_changed('firefox'))
 
+        # Network settings
+        self.__display_network_settings()
+
+        self.ui.vertical1.toggled.connect(lambda: self.__network_layout_changed('vertical1'))
+        self.ui.vertical2.toggled.connect(lambda: self.__network_layout_changed('vertical2'))
+        self.ui.horizontal1.toggled.connect(lambda: self.__network_layout_changed('horizontal1'))
+        self.ui.horizontal2.toggled.connect(lambda: self.__network_layout_changed('horizontal2'))
+
     def save(self):
         proxy_ports_str = self.ui.proxyPortsInput.text()
         proxy_ports = [int(p) for p in proxy_ports_str.split(',')]
@@ -58,6 +68,25 @@ class PreferencesWindow(QtWidgets.QDialog):
 
         SettingsRepo().update(self.settings)
         self.close()
+
+    def __display_network_settings(self):
+        radio_vert_1 = self.ui.vertical1
+        radio_vert_2 = self.ui.vertical2
+        radio_horiz_1 = self.ui.horizontal1
+        radio_horiz_2 = self.ui.horizontal2
+
+        layout = self.settings.json['network']['layout']
+        if layout == 'vertical1':
+            radio_vert_1.setChecked(True)
+        elif layout == 'vertical2':
+            radio_vert_2.setChecked(True)
+        elif layout == 'horizontal1':
+            radio_horiz_1.setChecked(True)
+        elif layout == 'horizontal2':
+            radio_horiz_2.setChecked(True)
+
+    def __network_layout_changed(self, layout: str):
+        self.network_layout_changed.emit(layout)
 
     def __update_settings_with_browser(self, browser_name: str):
         browser_cmd = self.browser_commands.get(browser_name)

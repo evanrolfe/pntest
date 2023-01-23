@@ -20,7 +20,7 @@ class HoverableQTableView(QtWidgets.QTableView):
 
         self.hover_index = None
         self.header_filter = HeaderViewFilter()
-        self.horizontalHeader().viewport().installEventFilter(self.header_filter)
+        # self.horizontalHeader().viewport().installEventFilter(self.header_filter)
 
     def mouseMoveEvent(self, event):
         index = self.indexAt(event.pos())
