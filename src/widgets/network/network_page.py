@@ -41,5 +41,5 @@ class NetworkPage(QtWidgets.QWidget):
         self.http_page.reload()
         self.ws_page.reload()
 
-    def layout_changed(self, layout: str):
-        self.http_page.layout_changed(layout)
+    def set_layout(self, layout: str):
+        self.http_page.set_layout(layout)

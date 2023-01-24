@@ -1,6 +1,7 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore
 from repos.settings_repo import SettingsRepo
+from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from models.available_client import AvailableClient
 from views._compiled.preferences_window import Ui_PreferencesWindow
@@ -27,8 +28,10 @@ class PreferencesWindow(QtWidgets.QDialog):
         self.load_settings()
 
     def load_settings(self):
-        self.settings = SettingsRepo().get_settings()
-        ports = ','.join([str(port) for port in self.settings.json['proxy']['ports_available']])
+        self.project_settings = SettingsRepo().get_settings()
+        self.app_settings = AppSettingsRepo().get()
+
+        ports = ','.join([str(port) for port in self.app_settings['proxy_ports_available']])
         self.ui.proxyPortsInput.setText(ports)
 
         # Browser commands
@@ -61,12 +64,12 @@ class PreferencesWindow(QtWidgets.QDialog):
     def save(self):
         proxy_ports_str = self.ui.proxyPortsInput.text()
         proxy_ports = [int(p) for p in proxy_ports_str.split(',')]
-        self.settings.json['proxy']['ports_available'] = proxy_ports
+        self.app_settings['proxy_ports_available'] = proxy_ports
         self.__update_settings_with_browser('chrome')
         self.__update_settings_with_browser('chromium')
         self.__update_settings_with_browser('firefox')
 
-        SettingsRepo().update(self.settings)
+        AppSettingsRepo().save(self.app_settings)
         self.close()
 
     def __display_network_settings(self):
@@ -75,7 +78,7 @@ class PreferencesWindow(QtWidgets.QDialog):
         radio_horiz_1 = self.ui.horizontal1
         radio_horiz_2 = self.ui.horizontal2
 
-        layout = self.settings.json['network']['layout']
+        layout = self.app_settings['network_layout']
         if layout == 'vertical1':
             radio_vert_1.setChecked(True)
         elif layout == 'vertical2':
@@ -86,6 +89,7 @@ class PreferencesWindow(QtWidgets.QDialog):
             radio_horiz_2.setChecked(True)
 
     def __network_layout_changed(self, layout: str):
+        self.app_settings['network_layout'] = layout
         self.network_layout_changed.emit(layout)
 
     def __update_settings_with_browser(self, browser_name: str):
@@ -94,16 +98,16 @@ class PreferencesWindow(QtWidgets.QDialog):
             return
 
         if browser_cmd['setting'] != 'custom':
-            if self.settings.json['browser']['browser_commands'].get(browser_name):
-                del self.settings.json['browser']['browser_commands'][browser_name]
+            if self.app_settings['browser_commands'].get(browser_name):
+                del self.app_settings['browser_commands'][browser_name]
             return
 
         input: QtWidgets.QLineEdit = getattr(self.ui, f'{browser_name}CommandInput')
         custom_cmd = input.text()
-        self.settings.json['browser']['browser_commands'][browser_name] = custom_cmd
+        self.app_settings['browser_commands'][browser_name] = custom_cmd
 
     def __load_browser_cmd(self, browser_name: str, input: QtWidgets.QLineEdit):
-        custom_cmd = self.settings.json['browser']['browser_commands'].get(browser_name)
+        custom_cmd = self.app_settings['browser_commands'].get(browser_name)
         if custom_cmd:
             setting = 'custom'
         else:

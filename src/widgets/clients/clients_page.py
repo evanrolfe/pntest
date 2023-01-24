@@ -2,6 +2,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from models.settings import Settings
 from repos.client_repo import ClientRepo
 from repos.settings_repo import SettingsRepo
+from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from models.available_client import AvailableClient
 
@@ -67,8 +68,8 @@ class ClientsPage(QtWidgets.QWidget):
 
     def create_client(self, client_type):
         # TODO: Move this logic out of the widget and into a model or class somewhere
-        settings = SettingsRepo().get_settings()
-        available_ports = settings.json['proxy']['ports_available']
+        settings = AppSettingsRepo().get()
+        available_ports = settings['proxy_ports_available']
         used_ports = ClientRepo().get_used_ports()
         first_port_available = None
 
@@ -91,7 +92,7 @@ class ClientsPage(QtWidgets.QWidget):
         self.open_client_clicked(client)
 
     def load_available_clients(self):
-        settings = SettingsRepo().get_settings()
+        settings = AppSettingsRepo().get()
         self.available_clients = AvailableClientRepo().find_all_with_settings_override(settings)
 
         for key, button in self.client_buttons.items():

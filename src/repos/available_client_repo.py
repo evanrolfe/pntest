@@ -3,8 +3,8 @@ import re
 import sqlite3
 import subprocess
 from typing import Generic, Optional, Type, TypeVar
+from models.app_settings import AppSettings
 from models.available_client import AvailableClient
-from models.settings import Settings
 
 DEFAULT_CLIENTS = [
     {
@@ -63,7 +63,7 @@ class AvailableClientRepo():
     def find_all(self) -> list[AvailableClient]:
         return self.find_all_with_settings_override()
 
-    def find_all_with_settings_override(self, settings: Optional[Settings] = None) -> list[AvailableClient]:
+    def find_all_with_settings_override(self, settings: Optional[AppSettings] = None) -> list[AvailableClient]:
         clients: list[AvailableClient] = []
         for default_client in DEFAULT_CLIENTS:
             client = AvailableClient(**default_client)
@@ -71,7 +71,7 @@ class AvailableClientRepo():
 
             # Apply the settings override command, if it exists
             if settings:
-                override_command = settings.json['browser']['browser_commands'].get(client.name)
+                override_command = settings['browser_commands'].get(client.name)
                 if override_command:
                     client.command = override_command
 

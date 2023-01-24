@@ -2,6 +2,7 @@ from typing import Optional
 from PyQt6 import QtCore, QtWidgets
 from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse
+from repos.app_settings_repo import AppSettingsRepo
 from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.debounce import debounce
@@ -49,7 +50,10 @@ class HttpPage(QtWidgets.QWidget):
         self.restore_layout_state()
         self.threadpool = QtCore.QThreadPool()
 
-    def layout_changed(self, layout: str):
+        layout = AppSettingsRepo().get()['network_layout']
+        self.set_layout(layout)
+
+    def set_layout(self, layout: str):
         if layout == 'vertical1':
             self.ui.requestsTableAndViewSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
             self.ui.requestViewWidget.ui.splitter.setOrientation(QtCore.Qt.Orientation.Vertical)
