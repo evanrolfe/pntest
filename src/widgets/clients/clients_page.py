@@ -1,7 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from models.settings import Settings
 from repos.client_repo import ClientRepo
-from repos.settings_repo import SettingsRepo
+from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from models.available_client import AvailableClient
@@ -102,8 +101,8 @@ class ClientsPage(QtWidgets.QWidget):
     def open_client_clicked(self, client: Client):
         available_client = [c for c in self.available_clients if c.name == client.type][0]
 
-        settings = SettingsRepo().get_settings()
-        self.process_manager.launch_client(client, available_client, settings.json)
+        settings = ProjectSettingsRepo().get()
+        self.process_manager.launch_client(client, available_client, settings)
         self.reload_table_data()
 
     def close_client_clicked(self, client: Client):

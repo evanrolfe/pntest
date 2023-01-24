@@ -1,5 +1,4 @@
 import sqlite3
-from models.settings import Settings
 from repos.app_settings_repo import AppSettingsRepo
 from lib.database import Database
 

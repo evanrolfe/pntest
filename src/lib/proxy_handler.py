@@ -4,9 +4,10 @@ import zmq
 import sys
 import simplejson as json
 import base64
+from models.project_settings import ProjectSettings
 from repos.http_flow_repo import HttpFlowRepo
 from models.http_flow import HttpFlow
-from mitmproxy.common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
+from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
 PROXY_ZMQ_PORT = 5556
 
@@ -124,7 +125,7 @@ class ProxyZmqServer(QtCore.QObject):
         for client_id in list(self.client_ids):
             self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
 
-    def set_settings(self, settings: SettingsJson) -> None:
+    def set_settings(self, settings: ProjectSettings) -> None:
         message = {'type': 'set_settings', 'value': settings}
         for client_id in list(self.client_ids):
             self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
@@ -169,5 +170,5 @@ class ProxyHandler():
     def set_recording_enabled(self, enabled: bool):
         self.zmq_server.set_recording_enabled(enabled)
 
-    def set_settings(self, settings: SettingsJson) -> None:
+    def set_settings(self, settings: ProjectSettings) -> None:
         self.zmq_server.set_settings(settings)

@@ -4,22 +4,6 @@ from typing import Any, TypedDict
 # to be stored in src/mitmproxy, otherwise you get an "ImportError: attempted relative import with no known parent package"
 # If you have a solution to this please let me know or submit a pull request
 
-class CaptureFilterSettings(TypedDict):
-    host_list: list[str]
-    host_setting: str
-    path_list: list[str]
-    path_setting: str
-
-class DisplayFilterSettings(TypedDict):
-    host_list: list[str]
-    host_setting: str
-    path_list: list[str]
-    path_setting: str
-
-class SettingsJson(TypedDict):
-    capture_filters: CaptureFilterSettings
-    display_filters: DisplayFilterSettings
-
 class ProxyRequest(TypedDict):
     http_version: str
     headers: list[tuple[str, str]]

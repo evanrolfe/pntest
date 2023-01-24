@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore
-from repos.settings_repo import SettingsRepo
+from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from models.available_client import AvailableClient
@@ -28,7 +28,7 @@ class PreferencesWindow(QtWidgets.QDialog):
         self.load_settings()
 
     def load_settings(self):
-        self.project_settings = SettingsRepo().get_settings()
+        self.project_settings = ProjectSettingsRepo().get()
         self.app_settings = AppSettingsRepo().get()
 
         ports = ','.join([str(port) for port in self.app_settings['proxy_ports_available']])

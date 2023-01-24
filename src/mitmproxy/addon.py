@@ -9,14 +9,14 @@ import os
 import pathlib
 import signal
 import zmq
-from typing import cast, Optional
+from typing import Any, cast, Optional
 import simplejson as json
 from pathlib import Path
 import time
 import mitmproxy
 import threading
 from mitmproxy.http import Headers, Response as MitmResponse, HTTPFlow as MitmHTTPFlow
-from common_types import SettingsJson, ProxyRequest, ProxyResponse, ProxyWebsocketMessage
+from common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from sys import argv
 
 PROXY_ZMQ_PORT = 5556
@@ -57,7 +57,7 @@ class ProxyHttpFlow(MitmHTTPFlow):
     intercept_response: bool
 
 class ProxyEventsAddon:
-    settings: Optional[SettingsJson]
+    settings: Optional[dict[str,Any]]
     client_id: int
     recording_enabled: bool
     intercept_enabled: bool
@@ -192,7 +192,7 @@ class ProxyEventsAddon:
     def set_recording_enabled(self, enabled: bool):
         self.recording_enabled = enabled
 
-    def set_settings(self, settings: SettingsJson):
+    def set_settings(self, settings):
         self.settings = settings
 
     # ---------------------------------------------------------------------------

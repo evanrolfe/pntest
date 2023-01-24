@@ -10,6 +10,7 @@ from PyQt6 import QtCore
 from models.available_client import AvailableClient
 from models.client import Client
 from models.http_flow import HttpFlow
+from models.project_settings import ProjectSettings
 from models.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
@@ -17,10 +18,10 @@ from lib.utils import is_dev_mode
 from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
 from lib.browser_launcher.browser_proc import BrowserProc
 from models.http_response import HttpResponse
-from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage, SettingsJson
+from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
-from repos.settings_repo import SettingsRepo
+from repos.project_settings_repo import ProjectSettingsRepo
 
 class RunningProcess(TypedDict):
     client: Client
@@ -73,7 +74,7 @@ class ProcessManager(QtCore.QObject):
 
         self.proxy_handler = ProxyHandler(self)
         self.proxy_handler.start()
-        self.set_settings(SettingsRepo().get_settings().json)
+        self.set_settings(ProjectSettingsRepo().get())
 
         self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
         self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)
@@ -131,7 +132,7 @@ class ProcessManager(QtCore.QObject):
         ClientRepo().save(client)
         self.clients_changed.emit()
 
-    def launch_client(self, client: Client, client_info: AvailableClient, settings: SettingsJson):
+    def launch_client(self, client: Client, client_info: AvailableClient, settings: ProjectSettings):
         print(f"Launching client:")
         self.launch_proxy(client, settings)
 
@@ -169,7 +170,7 @@ class ProcessManager(QtCore.QObject):
         self.threadpool.start(worker)
         self.processes.append({'client': client, 'type': 'browser', 'worker': worker, 'process': None})
 
-    def launch_proxy(self, client: Client, settings: SettingsJson):
+    def launch_proxy(self, client: Client, settings: ProjectSettings):
         print(f"[ProcessManager] Launching proxy, app_path: {self.app_path}")
 
         recording_enabled = 1 if self.recording_enabled else 0
@@ -222,7 +223,7 @@ class ProcessManager(QtCore.QObject):
         self.proxy_handler.set_recording_enabled(self.recording_enabled)
         self.recording_changed.emit(self.recording_enabled)
 
-    def set_settings(self, settings: SettingsJson) -> None:
+    def set_settings(self, settings: ProjectSettings) -> None:
         self.proxy_handler.set_settings(settings)
 
     def proxy_request_slot(self, proxy_request: ProxyRequest):

@@ -1,5 +1,5 @@
 from PyQt6 import QtCore, QtWidgets
-from repos.settings_repo import SettingsRepo
+from repos.project_settings_repo import ProjectSettingsRepo
 
 from views._compiled.network.http.capture_filters import Ui_CaptureFilters
 from lib.process_manager import ProcessManager
@@ -22,8 +22,8 @@ class CaptureFilters(QtWidgets.QDialog):
         self.load_capture_filters()
 
     def load_capture_filters(self):
-        self.settings = SettingsRepo().get_settings()
-        capture_filters = self.settings.json['capture_filters']
+        self.settings = ProjectSettingsRepo().get()
+        capture_filters = self.settings['capture_filters']
 
         host_index = self.setting_to_index(capture_filters['host_setting'])
         self.ui.hostSettingDropdown.setCurrentIndex(host_index)
@@ -37,13 +37,13 @@ class CaptureFilters(QtWidgets.QDialog):
         host_setting = self.index_to_setting(host_setting_index)
         host_list = self.ui.hostsText.toPlainText().split("\n")
 
-        capture_filters = self.settings.json['capture_filters']
+        capture_filters = self.settings['capture_filters']
         capture_filters['host_list'] = list(filter(None, host_list))
         capture_filters['host_setting'] = host_setting
 
-        SettingsRepo().update(self.settings)
+        ProjectSettingsRepo().save(self.settings)
         process_manager = ProcessManager.get_instance()
-        process_manager.set_settings(self.settings.json)
+        process_manager.set_settings(self.settings)
 
         self.close()
 
