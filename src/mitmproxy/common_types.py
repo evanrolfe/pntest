@@ -16,22 +16,9 @@ class DisplayFilterSettings(TypedDict):
     path_list: list[str]
     path_setting: str
 
-class ProxySettings(TypedDict):
-    ports_available: list[int]
-
-class BrowserSettings(TypedDict):
-    browser_commands: dict[str, str]
-
-class NetworkSettings(TypedDict):
-    layout: str
-
 class SettingsJson(TypedDict):
     capture_filters: CaptureFilterSettings
     display_filters: DisplayFilterSettings
-    proxy: ProxySettings
-    browser: BrowserSettings
-    network: NetworkSettings
-
 
 class ProxyRequest(TypedDict):
     http_version: str
