@@ -24,11 +24,9 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         horizontalHeader = self.ui.requestsTable.horizontalHeader()
-        horizontalHeader.setStretchLastSection(True)
         horizontalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Interactive)
         horizontalHeader.setSortIndicator(0, QtCore.Qt.SortOrder.DescendingOrder)
         horizontalHeader.setHighlightSections(False)
-        # horizontalHeader.setCursor(QtCore.Qt.PointingHandCursor)
 
         verticalHeader = self.ui.requestsTable.verticalHeader()
         verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
@@ -80,6 +78,7 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.selectionModel().selectionChanged.connect(self.request_selected)
         self.ui.requestsTable.selectionModel().selectionChanged.connect(self.set_selected_requests)
 
+        # TODO: Save the column widths to AppSettings
         self.ui.requestsTable.setColumnWidth(0, 50)
         self.ui.requestsTable.setColumnWidth(1, 50)
         self.ui.requestsTable.setColumnWidth(2, 50)
@@ -88,6 +87,18 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.setColumnWidth(5, 250)
         self.ui.requestsTable.setColumnWidth(6, 50)
         self.ui.requestsTable.setColumnWidth(7, 70)
+
+        horizontalHeader = self.ui.requestsTable.horizontalHeader()
+        # horizontalHeader.setStretchLastSection(True)
+        horizontalHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontalHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontalHeader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontalHeader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontalHeader.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Interactive)
+        horizontalHeader.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontalHeader.setSectionResizeMode(6, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontalHeader.setSectionResizeMode(7, QtWidgets.QHeaderView.ResizeMode.Fixed)
+
 
     def set_selected_requests(self, selected, deselected):
         selected_q_indexes = self.ui.requestsTable.selectionModel().selectedRows()

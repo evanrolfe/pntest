@@ -43,13 +43,15 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
 
             label = QtWidgets.QLabel(value)
             label.setAutoFillBackground(True)
-            label.setObjectName("")
+            label.setObjectName("mylabel")
             label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             label.setMinimumWidth(50)
-            label.setStyleSheet(f"color: {color}; background-color: #1E1E1E;")
+            label.setStyleSheet(f"color: {color}; background: transparent;")
 
             # painter.fillRect(options.rect, QtGui.QColor("#C3E88D"))
-            painter.drawPixmap(x+5, options.rect.y(), label.grab())
+            x_offest = 5
+            y_offset = 3
+            painter.drawPixmap(x+x_offest, options.rect.y()+y_offset, label.grab())
 
         # Response status column
         elif index.column() == 6:
@@ -62,7 +64,9 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
             label.setObjectName("responseStatusLabelTable")
             label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             label.setMinimumWidth(30)
-            label.setStyleSheet(f"background-color: rgba({bg_color}, 75)")
+            label.setStyleSheet(f"background-color: {bg_color};")
             # painter.fillRect(options.rect, QtGui.QColor("#C3E88D"))
-            painter.drawPixmap(options.rect.x(), options.rect.y(), label.grab())
+            x_offest = 9
+            y_offset = 2
+            painter.drawPixmap(options.rect.x()+x_offest, options.rect.y()+y_offset, label.grab())
 
