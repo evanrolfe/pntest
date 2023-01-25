@@ -23,7 +23,7 @@ class HttpRequest:
         request = Request(self.method, self.url, headers=self.parsed_headers(), data=body)
         prepped_request = session.prepare_request(request)
 
-        self.response = session.send(prepped_request, timeout=30, verify=False)
+        self.response = session.send(prepped_request, timeout=30, verify=False, allow_redirects=False)
         return self.response
 
     def parsed_headers(self) -> Headers:

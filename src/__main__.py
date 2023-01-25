@@ -32,7 +32,7 @@ def main():
     app_path = get_app_path()
     src_path = os.path.join(app_path, 'src')
     tmp_db_path = get_resource_path(src_path, 'pntest-tmp.db')
-    style_dir_path = get_resource_path(src_path, 'style')
+    style_dir_path = get_resource_path(src_path, 'assets/style')
     assets_path = get_resource_path(src_path, 'assets')
 
     print(f'[Gui] App path: {app_path}')
