@@ -32,8 +32,8 @@ QTabBar::tab {
   margin-left: -1px;
 }
 
-QStackedWidget#responseStackedWidget {
-  margin-top: 20px;
+QStackedWidget#responseStackedWidget, QStackedWidget#requestStackedWidget {
+  margin-top: 15px;
 }
 
 QTabBar::tab:selected {
