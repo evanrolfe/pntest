@@ -55,9 +55,6 @@ class ClientsPage(QtWidgets.QWidget):
         self.process_manager = ProcessManager.get_instance()
         self.process_manager.clients_changed.connect(self.reload)
 
-    def showEvent(self, event):
-        self.load_available_clients()
-
     def reload(self):
         self.reload_table_data()
 

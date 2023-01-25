@@ -19,6 +19,22 @@ class Tabs(QtWidgets.QTabWidget):
 
         self.tabCloseRequested.connect(self.close_tab)
 
+    def remove_new_tab_btn(self):
+        self.removeTab(self.count())
+
+    def add_new_tab_btn(self):
+        # icon = QtGui.QIcon(f"assets:icons/dark/methods/get.png")
+        # self.insertTab(self.count(), QtWidgets.QWidget(), icon, "")
+
+        new_tab_btn = QtWidgets.QToolButton(self)
+        new_tab_btn.setText("+")
+
+        i = self.count()
+        self.addTab(QtWidgets.QLabel(""), "")
+        self.setTabEnabled(i, False)
+        self.tabBar().setTabButton(i, QtWidgets.QTabBar.ButtonPosition.RightSide, new_tab_btn)
+        self.tabBar().setTabButton(i, QtWidgets.QTabBar.ButtonPosition.LeftSide, None) # type:ignore
+
     def open_blank_item(self):
         editor_item = EditorItem(name='Untitled', item_type=EditorItem.TYPE_HTTP_FLOW)
         editor_item.build_blank_http_flow()

@@ -59,6 +59,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Prefrences Window
         self.preferences_window = PreferencesWindow(self)
         self.preferences_window.network_layout_changed.connect(self.network_page.set_layout)
+        self.preferences_window.app_settings_saved.connect(self.clients_page.load_available_clients)
 
         # Menubar:
         self.setup_menu_actions()
@@ -179,7 +180,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def reload_style(self):
         print("Reloading style...")
-        style_loader = StyleheetLoader('/Users/evan/Code/pntest/src/style')
+        style_loader = StyleheetLoader('/Users/evan/Code/pntest/src/assets/style')
         stylesheet = style_loader.load_theme('dark')
         if stylesheet is None:
             return

@@ -10,6 +10,7 @@ class PreferencesWindow(QtWidgets.QDialog):
     available_clients: list[AvailableClient]
     browser_commands: dict[str, dict[str, str]]
     network_layout_changed = QtCore.pyqtSignal(str)
+    app_settings_saved = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(PreferencesWindow, self).__init__(*args, **kwargs)
@@ -70,6 +71,7 @@ class PreferencesWindow(QtWidgets.QDialog):
         self.__update_settings_with_browser('firefox')
 
         AppSettingsRepo().save(self.app_settings)
+        self.app_settings_saved.emit()
         self.close()
 
     def __display_network_settings(self):
