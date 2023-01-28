@@ -50,7 +50,7 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
 
             # painter.fillRect(options.rect, QtGui.QColor("#C3E88D"))
             x_offest = 5
-            y_offset = 3
+            y_offset = 0
             painter.drawPixmap(x+x_offest, options.rect.y()+y_offset, label.grab())
 
         # Response status column
@@ -67,6 +67,6 @@ class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
             label.setStyleSheet(f"background-color: {bg_color};")
             # painter.fillRect(options.rect, QtGui.QColor("#C3E88D"))
             x_offest = 9
-            y_offset = 2
+            y_offset = 0
             painter.drawPixmap(options.rect.x()+x_offest, options.rect.y()+y_offset, label.grab())
 

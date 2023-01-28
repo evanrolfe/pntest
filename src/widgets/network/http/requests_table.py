@@ -29,8 +29,8 @@ class RequestsTable(QtWidgets.QWidget):
         horizontalHeader.setHighlightSections(False)
 
         verticalHeader = self.ui.requestsTable.verticalHeader()
-        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
-        verticalHeader.setDefaultSectionSize(20)
+        verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        # verticalHeader.setDefaultSectionSize(10)
         verticalHeader.setVisible(False)
         verticalHeader.setDefaultAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 

@@ -7,6 +7,7 @@ QWidget {
   border-image: none;
   border: 0px transparent black;
   outline: 0;
+  font-size: 11px;
 }
 
 /*------------------------------------------------------------------------------*
@@ -27,13 +28,13 @@ QTabBar::tab {
   padding-left: 6px;
   padding-right: 6px;
   min-width: 80px;
-  min-height: 25px;
+  min-height: 20px;
   margin-right: 0px;
   margin-left: -1px;
 }
 
 QStackedWidget#responseStackedWidget, QStackedWidget#requestStackedWidget {
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 QTabBar::tab:selected {
@@ -64,11 +65,11 @@ QTabBar::tab:disabled {
  QTreeView {
   selection-background-color: $item-selected;
   background-color: $bg-extra-dark;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 QTreeView::item {
-  height: 25px;
+  height: 20px;
 }
 
 /*------------------------------------------------------------------------------*
@@ -79,6 +80,11 @@ QTableView {
   background-color: $bg-extra-dark;
 }
 
+QTableView::item {
+  height: 10px;
+}
+
+
 QHeaderView::section {
   background-color: $bg-sidebar;
   color: $text;
@@ -86,8 +92,8 @@ QHeaderView::section {
   border-right: 1px solid $bg-extra-dark;
   text-align: left;
   font-weight: normal;
-  font-size: 13px;
-  height: 25px;
+  font-size: 11px;
+  height: 20px;
 }
 
 QHeaderView::section#itemExplorerHeader {
@@ -284,7 +290,7 @@ QPushButton {
   background-color: $bg-input;
   border: 0 solid $border-light;
   border-radius: 3px;
-  height: 30px;
+  height: 22px;
 }
 
 QPushButton:hover {
@@ -437,7 +443,7 @@ QLineEdit {
   background-color: $bg-input;
   color: $text;
   border-radius: 3px;
-  height: 25px;
+  height: 16px;
 }
 
 QLineEdit:hover {
