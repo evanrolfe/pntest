@@ -17,6 +17,7 @@ import mitmproxy
 import threading
 from mitmproxy.http import Headers, Response as MitmResponse, HTTPFlow as MitmHTTPFlow
 from common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
+from home_page_html import HOME_PAGE_HTML
 from sys import argv
 
 PROXY_ZMQ_PORT = 5556
@@ -38,20 +39,9 @@ HOME_PAGE_PATH = 'include/html_page.html'
 #   '1',
 #   '1',
 #   '0',
-#   '/Users/evan/Code/pntest',
-#   'settings in here...'
 # ]
 proxy_port = argv[4]
 client_id = int(argv[9])
-recording_enabled_raw = int(argv[10])
-intercept_enabled_raw = int(argv[11])
-app_path = argv[12]
-settingsb64 = argv[13]
-
-settings_str = base64.b64decode(bytes(settingsb64, 'utf-8')).decode('utf-8')
-settings = json.loads(settings_str)
-recording_enabled = (recording_enabled_raw == 1)
-intercept_enabled = (intercept_enabled_raw == 1)
 
 class ProxyHttpFlow(MitmHTTPFlow):
     intercept_response: bool
@@ -64,16 +54,14 @@ class ProxyEventsAddon:
     intercepted_flows: list[ProxyHttpFlow]
     socket: zmq.Socket
 
-    def __init__(self, client_id: int, app_path: str):
+    def __init__(self, client_id: int):
         current_path = pathlib.Path(__file__).parent.resolve()
-        print("------------> Proxy: app_path = ", app_path)
 
         self.client_id = client_id
-        self.intercept_enabled = False
         self.intercepted_flows = []
         self.settings = None
+        self.intercept_enabled = False
         self.recording_enabled = True
-        self.app_path = app_path
 
     def zmq_connect(self):
         print("[ZMQClient] starting...")
@@ -311,7 +299,7 @@ class ProxyEventsAddon:
         return True
 
     def __proxy_home_page_html(self) -> str:
-        html = Path(f'{self.app_path}/{HOME_PAGE_PATH}').read_text()
+        html = HOME_PAGE_HTML
 
         html = html.replace('{{client_id}}', str(self.client_id))
         html = html.replace('{{proxy_port}}', proxy_port)
@@ -337,10 +325,7 @@ def convert_headers_bytes_to_strings(headers):
 
     return new_headers
 
-proxy_events = ProxyEventsAddon(client_id, app_path)
-proxy_events.set_settings(settings)
-proxy_events.set_recording_enabled(recording_enabled)
-proxy_events.set_intercept_enabled(intercept_enabled)
+proxy_events = ProxyEventsAddon(client_id)
 proxy_events.zmq_connect()
 
 addons = [proxy_events]

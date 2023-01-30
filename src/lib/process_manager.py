@@ -74,7 +74,6 @@ class ProcessManager(QtCore.QObject):
 
         self.proxy_handler = ProxyHandler(self)
         self.proxy_handler.start()
-        self.set_settings(ProjectSettingsRepo().get())
 
         self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
         self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)
@@ -141,6 +140,10 @@ class ProcessManager(QtCore.QObject):
             self.launch_browser(client, browser_command)
 
     def proxy_was_launched(self, client_id: int):
+        self.set_settings(ProjectSettingsRepo().get())
+        self.proxy_handler.set_recording_enabled(self.recording_enabled)
+        self.proxy_handler.set_intercept_enabled(self.intercept_enabled)
+
         client = ClientRepo().find(client_id)
         if client is None:
             return
@@ -175,8 +178,7 @@ class ProcessManager(QtCore.QObject):
 
         recording_enabled = 1 if self.recording_enabled else 0
         intercept_enabled = 1 if self.intercept_enabled else 0
-        settings_json_b64 = base64.b64encode(bytes(json.dumps(settings), 'utf-8')).decode('utf-8')
-        args_str = f'{client.id} {recording_enabled} {intercept_enabled} {self.app_path} {settings_json_b64}'
+        args_str = f'{client.id} {recording_enabled} {intercept_enabled}'
 
         if is_dev_mode():
             proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem {args_str}'
