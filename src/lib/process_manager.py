@@ -23,6 +23,8 @@ from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
 from repos.project_settings_repo import ProjectSettingsRepo
 
+ZMQ_SERVER_ADDR = "localhost:5556"
+
 class RunningProcess(TypedDict):
     client: Client
     type: str
@@ -178,12 +180,12 @@ class ProcessManager(QtCore.QObject):
 
         recording_enabled = 1 if self.recording_enabled else 0
         intercept_enabled = 1 if self.intercept_enabled else 0
-        args_str = f'{client.id} {recording_enabled} {intercept_enabled}'
+        args_str = f'--client-id {client.id} --zmq-server {ZMQ_SERVER_ADDR}'
 
         if is_dev_mode():
-            proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem {args_str}'
+            proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem - {args_str}'
         else:
-            proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include --set client_certs={self.app_path}/include/mitmproxy-client.pem {args_str}'
+            proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include --set client_certs={self.app_path}/include/mitmproxy-client.pem - {args_str}'
 
         print(proxy_command)
         # To get logging from the proxy, add the stdout,stderr lines to Popen() args

@@ -3,8 +3,6 @@ Basic skeleton of a mitmproxy addon.
 
 Run as follows: mitmproxy -s anatomy.py
 """
-import base64
-import logging
 import os
 import pathlib
 import signal
@@ -13,16 +11,14 @@ from typing import Any, cast, Optional
 import simplejson as json
 from pathlib import Path
 import time
-import mitmproxy
 import threading
 from mitmproxy.http import Headers, Response as MitmResponse, HTTPFlow as MitmHTTPFlow
 from common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from home_page_html import HOME_PAGE_HTML
 from sys import argv
+from argparse import ArgumentParser
 
-PROXY_ZMQ_PORT = 5556
 TIMEOUT_AFTER_SECONDS_NO_POLL = 3
-HOME_PAGE_PATH = 'include/html_page.html'
 
 # Example of argv:
 #
@@ -36,12 +32,13 @@ HOME_PAGE_PATH = 'include/html_page.html'
 #   'confdir=./include',
 #   '--set',
 #   'client_certs=./include/mitmproxy-client.pem',
-#   '1',
-#   '1',
-#   '0',
 # ]
-proxy_port = argv[4]
-client_id = int(argv[9])
+
+arg_parser = ArgumentParser()
+arg_parser.add_argument('-p', '--port')
+arg_parser.add_argument('--client-id')
+arg_parser.add_argument('--zmq-server')
+args, _ = arg_parser.parse_known_args(argv)
 
 class ProxyHttpFlow(MitmHTTPFlow):
     intercept_response: bool
@@ -69,8 +66,8 @@ class ProxyEventsAddon:
         # Connect to the ZMQ server
         context = zmq.Context()
         self.socket = context.socket(zmq.DEALER)
-        self.socket.setsockopt_string(zmq.IDENTITY, str(client_id))
-        self.socket.connect("tcp://localhost:%s" % PROXY_ZMQ_PORT)
+        self.socket.setsockopt_string(zmq.IDENTITY, str(self.client_id))
+        self.socket.connect("tcp://%s" % args.zmq_server)
 
         # Let em know we've started
         self.socket.send_string(json.dumps({'type': 'started'}))
@@ -195,6 +192,10 @@ class ProxyEventsAddon:
         if not self.should_request_be_captured(flow):
             return
 
+        # NOTE: WE have to re-write this when in docker_proxy because iptables intercepts this after the host
+        # has been replaced with an ip address
+        flow.request.host = str(flow.request.host_header or '')
+
         request_state = cast(ProxyRequest, convert_dict_bytes_to_strings(flow.request.get_state()))
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
@@ -302,7 +303,7 @@ class ProxyEventsAddon:
         html = HOME_PAGE_HTML
 
         html = html.replace('{{client_id}}', str(self.client_id))
-        html = html.replace('{{proxy_port}}', proxy_port)
+        html = html.replace('{{proxy_port}}', args.port)
         return html
 
 def convert_dict_bytes_to_strings(d):
@@ -325,7 +326,7 @@ def convert_headers_bytes_to_strings(headers):
 
     return new_headers
 
-proxy_events = ProxyEventsAddon(client_id)
+proxy_events = ProxyEventsAddon(int(args.client_id))
 proxy_events.zmq_connect()
 
 addons = [proxy_events]

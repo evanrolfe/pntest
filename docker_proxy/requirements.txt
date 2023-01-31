@@ -1,0 +1,3 @@
+mitmproxy==9.0.1
+pyzmq==23.2.0
+simplejson==3.17.6

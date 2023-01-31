@@ -11,6 +11,7 @@ charset-normalizer==2.1.0
 cleo==0.6.8
 click==8.0.4
 cryptography
+docker
 Faker==0.8.18
 Flask==2.0.3
 h11==0.12.0

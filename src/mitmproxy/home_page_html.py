@@ -1,0 +1,33 @@
+HOME_PAGE_HTML = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PnTest</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #252526;
+      color: #D4D4D4;
+      text-align: center;
+    }
+
+    hr {
+      width: 400px;
+      border: 1px solid #FC6A0C;
+    }
+
+    #main {
+      margin-top: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <h1>This browser is being intercepted by PnTest!</h1>
+    <hr>
+    <p>Client Id: {{client_id}}</p>
+    <p>Proxy Port: {{proxy_port}}</p>
+  </div>
+</body>
+</html>'''
