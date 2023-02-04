@@ -1,5 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from repos.browser_repo import BrowserRepo
+from services.available_client_service import AvailableClientService
 from services.client_service import ClientService
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
@@ -69,37 +70,16 @@ class ClientsPage(QtWidgets.QWidget):
         clients = ClientRepo().find_all()
         self.clients_table_model.set_clients(clients)
 
-    def create_client(self, client_type):
-        # TODO: Move this logic out of the widget and into a model or class somewhere
-        settings = AppSettingsRepo().get()
-        available_ports = settings['proxy_ports_available']
-        used_ports = ClientRepo().get_used_ports()
-        first_port_available = None
-
-        for available_port in available_ports:
-            if available_port not in used_ports:
-                first_port_available = available_port
-                break
-
-        if first_port_available is None:
-            raise Exception("no more ports available! add some in the settings.")
-
-        client = Client(
-            type = client_type,
-            proxy_port = first_port_available,
-            title = 'client'
-        )
-
+    def create_client(self, client_type: str):
+        client = self.client_service.build_client(client_type)
         ClientRepo().save(client)
-
         self.open_client_clicked(client)
 
     def load_available_clients(self):
-        settings = AppSettingsRepo().get()
-        self.available_clients = AvailableClientRepo().find_all_with_settings_override(settings)
+        available_clients = AvailableClientService().get_all()
 
         for key, button in self.client_buttons.items():
-            available_client = [ac for ac in self.available_clients if ac.name == key][0]
+            available_client = [ac for ac in available_clients if ac.name == key][0]
             button.setEnabled(available_client.enabled())
 
     def open_client_clicked(self, client: Client):

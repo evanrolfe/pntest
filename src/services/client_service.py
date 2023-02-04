@@ -7,6 +7,7 @@ from models.client import Client
 from repos.browser_repo import BrowserRepo
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
+from repos.container_repo import ContainerRepo
 from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
@@ -35,6 +36,7 @@ class ClientService(QtCore.QObject):
         self.open_clients = []
         self.process_repo = ProcessRepo.get_instance()
         self.browser_repo = BrowserRepo.get_instance()
+        self.container_repo = ContainerRepo.get_instance()
         self.browser_repo.browser_exited.connect(self.__browser_was_closed)
 
         # Virtually private constructor.
@@ -43,6 +45,26 @@ class ClientService(QtCore.QObject):
         else:
             ClientService.__instance = self
     # /Singleton method stuff
+
+    def build_client(self, client_type: str) -> Client:
+        settings = AppSettingsRepo().get()
+        available_ports = settings['proxy_ports_available']
+        used_ports = ClientRepo().get_used_ports()
+        first_port_available = None
+
+        for available_port in available_ports:
+            if available_port not in used_ports:
+                first_port_available = available_port
+                break
+
+        if first_port_available is None:
+            raise Exception("no more ports available! add some in the settings.")
+
+        return Client(
+            type = client_type,
+            proxy_port = first_port_available,
+            title = 'client'
+        )
 
     def launch_client(self, client: Client):
         # 1. Get the available client details
