@@ -21,6 +21,13 @@ def attach_to_container(container_ids: list[str]):
         return
 
     image = container.attrs['Config']['Image'] # type:ignore
+    # network_mode = container.attrs['HostConfig']['NetworkMode'] # type:ignore
+    networks = list(container.attrs['NetworkSettings']['Networks'].keys()) # type:ignore
+    network = networks[0]
+
+    if len(networks) > 1:
+        raise Exception("The docker container must only be on a single network")
+
     print(f'Stopping container: {container.short_id}')
     container.stop() # type:ignore
     print('Stopped.')
@@ -29,15 +36,13 @@ def attach_to_container(container_ids: list[str]):
     proxy_image = 'pntest-proxy:latest'
     print(f'Starting container with image: {proxy_image}')
     proxy_env = ['CLIENT_ID=2', 'ZMQ_SERVER=host.docker.internal:5556']
-
     proxy_container = client.containers.run(
         proxy_image,
         detach=True,
         privileged=True,
         environment=proxy_env,
         ports=container.ports,  #type:ignore
-    # TODO: This should dynamically fetch the network name
-        network="example_app_default"
+        network=network
     )
     print(f'started proxy container: {proxy_container.short_id}') # type:ignore
 

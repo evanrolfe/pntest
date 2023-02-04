@@ -1,5 +1,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from repos.browser_repo import BrowserRepo
+from services.client_service import ClientService
 from repos.client_repo import ClientRepo
+from repos.process_repo import ProcessRepo
 from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
@@ -13,6 +16,7 @@ from lib.process_manager import ProcessManager
 
 class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager
+    client_service: ClientService
     available_clients: list[AvailableClient]
 
     def __init__(self, *args, **kwargs):
@@ -53,7 +57,10 @@ class ClientsPage(QtWidgets.QWidget):
         self.load_available_clients()
 
         self.process_manager = ProcessManager.get_instance()
+        self.client_service = ClientService.get_instance()
+
         self.process_manager.clients_changed.connect(self.reload)
+        self.client_service.clients_changed.connect(self.reload)
 
     def reload(self):
         self.reload_table_data()
@@ -96,12 +103,9 @@ class ClientsPage(QtWidgets.QWidget):
             button.setEnabled(available_client.enabled())
 
     def open_client_clicked(self, client: Client):
-        available_client = [c for c in self.available_clients if c.name == client.type][0]
-
-        settings = ProjectSettingsRepo().get()
-        self.process_manager.launch_client(client, available_client, settings)
+        self.client_service.launch_client(client)
         self.reload_table_data()
 
     def close_client_clicked(self, client: Client):
-        self.process_manager.close_client(client)
+        self.client_service.close_client(client)
         self.reload_table_data()

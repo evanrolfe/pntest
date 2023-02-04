@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
+from models.browser import Browser
 from models.model import Model
+from models.process import Process
 
 PROXY_PORT = 8080
 
@@ -22,8 +24,12 @@ class Client(Model):
     meta = {
         "relationship_keys": [],
         "json_columns": [],
-        "do_not_save_keys": [],
+        "do_not_save_keys": ["browser", "proxy"],
     }
+
+    # Ephemeral properties
+    browser: Optional[Browser] = field(default=None)
+    proxy: Optional[Process] = field(default=None)
 
     # Constants
     PROXY_PORT = 8080
@@ -33,3 +39,6 @@ class Client(Model):
             return 'Open'
         else:
             return 'Closed'
+
+    def is_browser(self):
+        return self.type in ['chromium', 'chrome', 'firefox']

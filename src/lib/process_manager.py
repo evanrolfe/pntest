@@ -15,22 +15,15 @@ from models.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
 from lib.paths import get_app_path
 from lib.utils import is_dev_mode
-from lib.browser_launcher.launch import launch_chrome_or_chromium, launch_firefox
-from lib.browser_launcher.browser_proc import BrowserProc
+from lib.browser_launcher.launch_docker import launch_docker
+from lib.browser_launcher.launch_browser import launch_chrome_or_chromium, launch_firefox
 from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
 from repos.project_settings_repo import ProjectSettingsRepo
 
-ZMQ_SERVER_ADDR = "localhost:5556"
-
-class RunningProcess(TypedDict):
-    client: Client
-    type: str
-    process: Optional[subprocess.Popen[bytes]]
-    worker: Optional[BrowserProc]
-
+# TODO: This should go in a service class
 class ProcessManager(QtCore.QObject):
     proxy_request = QtCore.pyqtSignal(HttpFlow)
     proxy_response = QtCore.pyqtSignal(HttpFlow)
@@ -44,7 +37,6 @@ class ProcessManager(QtCore.QObject):
 
     app_path: str
     proxy_handler: ProxyHandler
-    processes: list[RunningProcess]
     recording_enabled: bool
     intercept_enabled: bool
 
@@ -58,9 +50,9 @@ class ProcessManager(QtCore.QObject):
             raise Exception("Calling ProcessManager.get_instance() when there is not instance!")
         return ProcessManager.__instance
 
-    def __init__(self, app_path: str):
+    def __init__(self):
         super().__init__()
-        self.init(app_path)
+        self.init()
 
         # Virtually private constructor.
         if ProcessManager.__instance is not None:
@@ -69,11 +61,7 @@ class ProcessManager(QtCore.QObject):
             ProcessManager.__instance = self
     # /Singleton method stuff
 
-    def init(self, app_path: str):
-        self.app_path = app_path
-        self.processes = []
-        self.threadpool = QtCore.QThreadPool()
-
+    def init(self):
         self.proxy_handler = ProxyHandler(self)
         self.proxy_handler.start()
 
@@ -85,61 +73,9 @@ class ProcessManager(QtCore.QObject):
         self.recording_enabled = True
         self.intercept_enabled = False
 
-    def get_open_clients(self) -> list[Client]:
-        return [c['client'] for c in self.processes if c['type'] == 'proxy']
-
     def on_exit(self):
-        print("[ProcessManager] killing all processes...")
+        print("[ProcessManager] killing all proxy handler...")
         self.proxy_handler.stop()
-
-        for running_process in self.processes:
-            proc = running_process.get('process')
-            if proc is not None:
-                os.kill(proc.pid, signal.SIGTERM)
-
-            worker = running_process.get('worker')
-            if worker is not None:
-                worker.kill()
-
-    def close_proxy(self, client: Client):
-        process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'proxy'][0]
-        if process['process'] is None:
-            return
-        pid = process['process'].pid
-        print(f'[ProcessManager] killing process {pid}')
-        os.kill(pid, signal.SIGTERM)
-        self.processes.remove(process)
-        self.clients_changed.emit()
-
-    def close_browser(self, client: Client):
-        process = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser'][0]
-        if process['worker'] is None:
-            return
-        process['worker'].kill()
-        self.processes.remove(process)
-
-    # Close the proxy when the browser is closed
-    def browser_was_closed(self, client: Client):
-        print(f"[ProcessManager] browser {client.id} closed, closing proxy")
-        self.close_proxy(client)
-
-        browser_processes = [p for p in self.processes if p['client'].id == client.id and p['type'] == 'browser']
-        if len(browser_processes) == 0:
-            return
-
-        self.processes.remove(browser_processes[0])
-
-        client.open = False
-        ClientRepo().save(client)
-        self.clients_changed.emit()
-
-    def launch_client(self, client: Client, client_info: AvailableClient, settings: ProjectSettings):
-        print(f"Launching client:")
-        self.launch_proxy(client, settings)
-
-        browser_command = client_info.command
-        if browser_command:
-            self.launch_browser(client, browser_command)
 
     def proxy_was_launched(self, client_id: int):
         self.set_settings(ProjectSettingsRepo().get())
@@ -153,52 +89,6 @@ class ProcessManager(QtCore.QObject):
         client.open = True
         ClientRepo().save(client)
         self.clients_changed.emit()
-
-    def close_client(self, client: Client):
-        if client.type != 'anything':
-            self.close_browser(client)
-        else:
-            self.close_proxy(client)
-
-        client.open = False
-        ClientRepo().save(client)
-
-    def launch_browser(self, client: Client, browser_command: str):
-        if client.type in ['chrome', 'chromium']:
-            worker = BrowserProc(client, lambda: launch_chrome_or_chromium(client, browser_command))
-        elif client.type == 'firefox':
-            worker = BrowserProc(client, lambda: launch_firefox(client, browser_command))
-        else:
-            return
-
-        worker.signals.exited.connect(self.browser_was_closed)
-        self.threadpool.start(worker)
-        self.processes.append({'client': client, 'type': 'browser', 'worker': worker, 'process': None})
-
-    def launch_proxy(self, client: Client, settings: ProjectSettings):
-        print(f"[ProcessManager] Launching proxy, app_path: {self.app_path}")
-
-        recording_enabled = 1 if self.recording_enabled else 0
-        intercept_enabled = 1 if self.intercept_enabled else 0
-        args_str = f'--client-id {client.id} --zmq-server {ZMQ_SERVER_ADDR}'
-
-        if is_dev_mode():
-            proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem - {args_str}'
-        else:
-            proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include --set client_certs={self.app_path}/include/mitmproxy-client.pem - {args_str}'
-
-        print(proxy_command)
-        # To get logging from the proxy, add the stdout,stderr lines to Popen() args
-        # file_out = open(f'{self.app_path}/log.txt','w')
-        # stdout=file_out,
-        # stderr=file_out
-        current_env = os.environ.copy()
-        process = subprocess.Popen(
-            proxy_command.split(' '),
-            preexec_fn=os.setsid,
-            env=current_env,
-        )
-        self.processes.append({'client': client, 'type': 'proxy', 'process': process, 'worker': None})
 
     def forward_flow(self, flow: HttpFlow, intercept_response: bool):
         self.proxy_handler.forward_flow(flow, intercept_response)
