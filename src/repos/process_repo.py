@@ -8,7 +8,7 @@ from models.available_client import AvailableClient
 from models.client import Client
 from models.process import Process
 from models.project_settings import ProjectSettings
-from lib.utils import is_dev_mode
+from lib.utils import is_development_env, is_test_env
 
 # TODO: This should be imported from teh file that defines the zmq server
 ZMQ_SERVER_ADDR = "localhost:5556"
@@ -45,13 +45,12 @@ class ProcessRepo():
 
     def launch_proxy(self, client: Client) -> Process:
         print(f"[ProcessManager] Launching proxy, app_path: {self.app_path}")
-
-        recording_enabled = 1 # if self.recording_enabled else 0
-        intercept_enabled = 1 # if self.intercept_enabled else 0
         args_str = f'--client-id {client.id} --zmq-server {ZMQ_SERVER_ADDR}'
 
-        if is_dev_mode():
+        if is_development_env():
             proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem - {args_str}'
+        elif is_test_env():
+            proxy_command = f'/Users/evan/Code/pntest/test/fake_proxy'
         else:
             proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include --set client_certs={self.app_path}/include/mitmproxy-client.pem - {args_str}'
 

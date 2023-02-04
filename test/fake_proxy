@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Fake proxy starting!"
+while true; do sleep 1000; done

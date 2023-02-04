@@ -3,23 +3,23 @@ import pathlib
 import os
 from PyQt6.QtCore import QStandardPaths
 
-from lib.utils import is_dev_mode
+from lib.utils import is_production_env
 
 def get_app_config_path():
     return QStandardPaths.standardLocations(QStandardPaths.StandardLocation.AppConfigLocation)[0]
 
 def get_app_path():
-    if is_dev_mode():
-        return pathlib.Path(__file__).parent.parent.parent.absolute()
-    else:
+    if is_production_env():
         return pathlib.Path(__file__).parent.parent.absolute()
+    else:
+        return pathlib.Path(__file__).parent.parent.parent.absolute()
 
 def get_include_path():
-    if is_dev_mode():
-        app_path = pathlib.Path(__file__).parent.parent.parent.absolute()
+    if is_production_env():
+        app_path = pathlib.Path(__file__).parent.parent
         return f"{app_path}/include"
     else:
-        app_path = pathlib.Path(__file__).parent.parent
+        app_path = pathlib.Path(__file__).parent.parent.parent.absolute()
         return f"{app_path}/include"
 
 # Get absolute path to resource, works for dev and for PyInstaller

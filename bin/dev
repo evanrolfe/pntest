@@ -1,1 +1,1 @@
-DEV_MODE=true python src
+PNTEST_ENV=development python src

@@ -78,10 +78,12 @@ class ClientService(QtCore.QObject):
         # 3. Set the client to closed and update the widget (via a signal)
         open_client.open = False
         ClientRepo().save(open_client)
-        self.clients_changed.emit()
 
         # 4. Remove from open_clients
         self.open_clients.remove(open_client)
+
+        # 5. Emit signal
+        self.clients_changed.emit()
 
     def on_exit(self):
         print("[ClientService] killing all clients...")
@@ -100,10 +102,12 @@ class ClientService(QtCore.QObject):
         # 2. Set the client to closed and update the widget (via a signal)
         open_client.open = False
         ClientRepo().save(open_client)
-        self.clients_changed.emit()
 
         # 3. Remove from open_clients
         self.open_clients.remove(open_client)
+
+        # 4. Emit signal
+        self.clients_changed.emit()
 
     def __get_available_client_for_client(self, client: Client) -> AvailableClient:
         settings = AppSettingsRepo().get()

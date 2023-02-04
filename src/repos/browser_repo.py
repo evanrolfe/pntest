@@ -9,7 +9,6 @@ from models.browser import Browser
 from models.client import Client
 from models.process import Process
 from models.project_settings import ProjectSettings
-from lib.utils import is_dev_mode
 from lib.browser_launcher.launch_browser import launch_chrome_or_chromium, launch_firefox
 from PyQt6 import QtCore
 
@@ -62,4 +61,4 @@ class BrowserRepo(QtCore.QObject):
         return browser
 
     def close_browser(self, browser: Browser):
-        browser.proc.kill()
+        browser.kill()

@@ -13,10 +13,6 @@ from models.http_flow import HttpFlow
 from models.project_settings import ProjectSettings
 from models.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
-from lib.paths import get_app_path
-from lib.utils import is_dev_mode
-from lib.browser_launcher.launch_docker import launch_docker
-from lib.browser_launcher.launch_browser import launch_chrome_or_chromium, launch_firefox
 from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo

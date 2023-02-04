@@ -5,8 +5,18 @@ def format_timestamp(timestamp):
     if type(timestamp) == Pendulum:
         return timestamp.format('%H:%M:%S %Y-%m-%d')
 
-def is_dev_mode():
-    return os.getenv('DEV_MODE') is not None
+# development/test/production
+def pntest_env() -> str:
+    return os.getenv('PNTEST_ENV') or 'production'
+
+def is_test_env() -> bool:
+    return pntest_env() == 'test'
+
+def is_development_env() -> bool:
+    return pntest_env() == 'development'
+
+def is_production_env() -> bool:
+    return pntest_env() == 'production'
 
 def get_status_colour(status: int) -> str:
     status_str = str(status)
