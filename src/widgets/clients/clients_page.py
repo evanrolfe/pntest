@@ -14,6 +14,7 @@ from views._compiled.clients.clients_page import Ui_ClientsPage
 from models.qt.clients_table_model import ClientsTableModel
 from models.client import Client
 from lib.process_manager import ProcessManager
+from widgets.clients.docker_window import DockerWindow
 
 class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager
@@ -63,6 +64,8 @@ class ClientsPage(QtWidgets.QWidget):
         self.process_manager.clients_changed.connect(self.reload)
         self.client_service.clients_changed.connect(self.reload)
 
+        self.docker_window = DockerWindow(self)
+
     def reload(self):
         self.reload_table_data()
 
@@ -71,6 +74,10 @@ class ClientsPage(QtWidgets.QWidget):
         self.clients_table_model.set_clients(clients)
 
     def create_client(self, client_type: str):
+        if client_type == 'docker':
+            self.docker_window.show()
+            return
+
         client = self.client_service.build_client(client_type)
         ClientRepo().save(client)
         self.open_client_clicked(client)
