@@ -4,6 +4,7 @@ from PyQt6 import QtCore
 from models.available_client import AvailableClient
 from models.browser import Browser
 from models.client import Client
+from models.container import Container
 from repos.browser_repo import BrowserRepo
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
@@ -46,38 +47,54 @@ class ClientService(QtCore.QObject):
             ClientService.__instance = self
     # /Singleton method stuff
 
-    def build_client(self, client_type: str) -> Client:
-        settings = AppSettingsRepo().get()
-        available_ports = settings['proxy_ports_available']
-        used_ports = ClientRepo().get_used_ports()
-        first_port_available = None
+    def build_client(self, client_type: str, container: Optional[Container] = None) -> Client:
+        if client_type == 'docker':
+            if container is None:
+                raise Exception("no container given for docker client")
 
-        for available_port in available_ports:
-            if available_port not in used_ports:
-                first_port_available = available_port
-                break
-
-        if first_port_available is None:
-            raise Exception("no more ports available! add some in the settings.")
-
-        return Client(
-            type = client_type,
-            proxy_port = first_port_available,
-            title = 'client'
-        )
+            return Client(
+                type = 'docker',
+                proxy_port = 0,
+                title = 'client',
+                intercepted_container=container,
+                container_id=container.short_id
+            )
+        else:
+            port = self.__get_first_port_available()
+            return Client(
+                type = client_type,
+                proxy_port = port,
+                title = 'client'
+            )
 
     def launch_client(self, client: Client):
-        # 1. Get the available client details
-        available_client = self.__get_available_client_for_client(client)
+        if client.type == 'docker':
+            if client.container_id is None:
+                raise Exception("no container_id on client")
 
-        # 2. Launch the proxy
-        proxy_proc = self.process_repo.launch_proxy(client)
-        client.proxy = proxy_proc
+            # 1. Get the running container to intercept if its not already there
+            if client.intercepted_container is None:
+                container = self.container_repo.find_by_short_id(client.container_id)
+                if container is None:
+                    raise Exception("no running container found with id: ", client.container_id)
+                client.intercepted_container = container
 
-        # 3. Optionally launch the browser
-        if client.is_browser() and available_client.command is not None:
-            browser = self.browser_repo.launch_browser(client, available_client.command)
-            client.browser = browser
+            # 2. Proxify the running container
+            new_intercepted, proxy = self.container_repo.proxify_container(client.intercepted_container)
+            client.intercepted_container = new_intercepted
+            client.proxy_container = proxy
+        else:
+            # 1. Get the available client details
+            available_client = self.__get_available_client_for_client(client)
+
+            # 2. Launch the proxy
+            proxy_proc = self.process_repo.launch_proxy(client)
+            client.proxy = proxy_proc
+
+            # 3. Optionally launch the browser
+            if client.is_browser() and available_client.command is not None:
+                browser = self.browser_repo.launch_browser(client, available_client.command)
+                client.browser = browser
 
         # 4. Save to open_clients
         self.open_clients.append(client)
@@ -154,3 +171,19 @@ class ClientService(QtCore.QObject):
         except IndexError:
             return None
         return open_client
+
+    def __get_first_port_available(self) -> int:
+        settings = AppSettingsRepo().get()
+        available_ports = settings['proxy_ports_available']
+        used_ports = ClientRepo().get_used_ports()
+        first_port_available = None
+
+        for available_port in available_ports:
+            if available_port not in used_ports:
+                first_port_available = available_port
+                break
+
+        if first_port_available is None:
+            raise Exception("no more ports available! add some in the settings.")
+
+        return first_port_available

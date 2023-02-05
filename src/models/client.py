@@ -4,6 +4,7 @@ from typing import Optional
 from models.browser import Browser
 from models.model import Model
 from models.process import Process
+from models.container import Container
 
 PROXY_PORT = 8080
 
@@ -14,6 +15,7 @@ class Client(Model):
     created_at: int = field(init=False, default=0)
 
     proxy_port: int
+    container_id: Optional[str] = field(default=None)
     launched_at: Optional[int] = field(default=None)
     title: str
     type: str
@@ -24,12 +26,14 @@ class Client(Model):
     meta = {
         "relationship_keys": [],
         "json_columns": [],
-        "do_not_save_keys": ["browser", "proxy"],
+        "do_not_save_keys": ["browser", "proxy", "intercepted_container", "proxy_container"],
     }
 
     # Ephemeral properties
     browser: Optional[Browser] = field(default=None)
     proxy: Optional[Process] = field(default=None)
+    intercepted_container: Optional[Container] = field(default=None)
+    proxy_container: Optional[Container] = field(default=None)
 
     # Constants
     PROXY_PORT = 8080

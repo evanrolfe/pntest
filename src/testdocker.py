@@ -1,4 +1,6 @@
 import docker
+from repos.container_repo import ContainerRepo
+from services.client_service import ClientService
 
 def attach_to_container(container_ids: list[str]):
     client = docker.from_env()
@@ -52,4 +54,19 @@ def attach_to_container(container_ids: list[str]):
     print('Done.')
 
 id = '831aa94f4700'
-attach_to_container([id])
+# attach_to_container([id])
+
+print("starting...")
+container_repo = ContainerRepo.get_instance()
+client_service = ClientService.get_instance()
+container = container_repo.find_by_short_id(id)
+if container is None:
+    raise Exception("no container found with id ", id)
+
+print("found container: ", container.raw_container)
+# container_repo.proxify_container(container)
+client = client_service.build_client('docker', container)
+print("client before: ", client)
+client_service.launch_client(client)
+
+print("client after: ", client)

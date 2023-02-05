@@ -46,20 +46,23 @@ class ContainerRepo(QtCore.QObject):
         containers = []
         raw_containers = self.docker.containers.list()
         for raw_container in raw_containers:
-            container = Container(
-                short_id=raw_container.short_id,
-                name=raw_container.name, # type:ignore
-                status=raw_container.status, # type:ignore
-                ports=raw_container.ports, # type:ignore
-                image=raw_container.attrs['Config']['Image'], # type:ignore
-                networks=list(raw_container.attrs['NetworkSettings']['Networks'].keys()), # type:ignore
-                raw_container=raw_container,
-            )
+            container = self.__raw_container_to_container(raw_container)
             containers.append(container)
 
         return containers
 
-    def proxify_container(self, container: Container):
+    def find_by_short_id(self, short_id: str) -> Optional[Container]:
+        containers = self.get_all()
+        try:
+            container = [c for c in containers if c.short_id == short_id][0]
+        except IndexError:
+            return
+
+        return container
+
+    # Starts a proxy container, then restarts the inputted container with its network set to the proxy
+    # returns the newly restarted intercepted container and the proxy container instance.
+    def proxify_container(self, container: Container) -> tuple[Container, Container]:
         if len(container.networks) > 1:
             raise Exception("The docker container must only be on a single network")
         network = container.networks[0]
@@ -84,21 +87,28 @@ class ContainerRepo(QtCore.QObject):
         print(f'Started proxy container: {proxy_raw_container.short_id}') # type:ignore
 
         # 3. Restart the original container but with the network set to the proxy container
-        restarted_container = self.docker.containers.run(
+        intercepted_raw_container = self.docker.containers.run(
             image,
             detach=True,
             network=f'container:{proxy_raw_container.short_id}' # type:ignore
         )
-        print(f'Restarted container: {restarted_container.short_id}') # type:ignore
-        return
+        print(f'Restarted container: {intercepted_raw_container.short_id}') # type:ignore
 
-    # def launch_container(self, client: Client) -> Container:
-    #     if client.type != 'docker':
-    #         raise Exception("client is not a browser")
+        intercepted_container = self.__raw_container_to_container(intercepted_raw_container)
+        proxy_container = self.__raw_container_to_container(proxy_raw_container)
 
-    #     container = Container()
-    #     return container
-    #     # return browser
+        return intercepted_container, proxy_container
+
+    def __raw_container_to_container(self, raw_container) -> Container:
+        return Container(
+            short_id=raw_container.short_id,
+            name=raw_container.name,
+            status=raw_container.status,
+            ports=raw_container.ports,
+            image=raw_container.attrs['Config']['Image'],
+            networks=list(raw_container.attrs['NetworkSettings']['Networks'].keys()),
+            raw_container=raw_container,
+        )
 
     # def close_container(self, container: Container):
     #     # container.kill()
