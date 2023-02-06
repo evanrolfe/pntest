@@ -192,16 +192,16 @@ class ProxyEventsAddon:
         if not self.should_request_be_captured(flow):
             return
 
-        # NOTE: WE have to re-write this when in docker_proxy because iptables intercepts this after the host
-        # has been replaced with an ip address
-        flow.request.host = str(flow.request.host_header or '')
-
         request_state = cast(ProxyRequest, convert_dict_bytes_to_strings(flow.request.get_state()))
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
         request_state['intercepted'] = self.__should_intercept_request(flow)
         request_state['content'] = flow.request.text or ''
+        # NOTE: WE have to re-write this when in docker_proxy because iptables intercepts this after the host
+        # has been replaced with an ip address
+        if flow.request.host_header:
+            request_state['host'] = flow.request.host_header
         self.__send_message(request_state)
 
         if request_state['intercepted']:

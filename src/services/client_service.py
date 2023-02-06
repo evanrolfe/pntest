@@ -73,6 +73,10 @@ class ClientService(QtCore.QObject):
                 raise Exception("no container_id on client")
 
             # 1. Get the running container to intercept if its not already there
+            # TODO: This probably isn't going to work if client.intercepted_container is set
+            # becuase intercepted_container comes from ContainerRepo.get_all() which annoyingly doesn't
+            # return as much details (i.e. network aliases are not included in the response)
+            # so this should be changed to use ContainerRepo.find_by_short_id() which call docker inspect under the bonnet
             if client.intercepted_container is None:
                 container = self.container_repo.find_by_short_id(client.container_id)
                 if container is None:
@@ -80,7 +84,7 @@ class ClientService(QtCore.QObject):
                 client.intercepted_container = container
 
             # 2. Proxify the running container
-            new_intercepted, proxy = self.container_repo.proxify_container(client.intercepted_container)
+            new_intercepted, proxy = self.container_repo.proxify_container(client.intercepted_container, client.id)
             client.intercepted_container = new_intercepted
             client.proxy_container = proxy
         else:

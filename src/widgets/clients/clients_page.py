@@ -1,4 +1,5 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from models.container import Container
 from repos.browser_repo import BrowserRepo
 from services.available_client_service import AvailableClientService
 from services.client_service import ClientService
@@ -65,6 +66,7 @@ class ClientsPage(QtWidgets.QWidget):
         self.client_service.clients_changed.connect(self.reload)
 
         self.docker_window = DockerWindow(self)
+        self.docker_window.proxify_containers.connect(self.create_clients_for_containers)
 
     def reload(self):
         self.reload_table_data()
@@ -81,6 +83,14 @@ class ClientsPage(QtWidgets.QWidget):
         client = self.client_service.build_client(client_type)
         ClientRepo().save(client)
         self.open_client_clicked(client)
+
+    def create_clients_for_containers(self, containers: list[Container]):
+        for container in containers:
+            print(f'Building client for container id {container.short_id}')
+            client = self.client_service.build_client('docker', container)
+            ClientRepo().save(client)
+            print(client, "\n")
+            self.open_client_clicked(client)
 
     def load_available_clients(self):
         available_clients = AvailableClientService().get_all()

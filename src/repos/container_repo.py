@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 import os
 import signal
 import subprocess
@@ -62,7 +63,8 @@ class ContainerRepo(QtCore.QObject):
 
     # Starts a proxy container, then restarts the inputted container with its network set to the proxy
     # returns the newly restarted intercepted container and the proxy container instance.
-    def proxify_container(self, container: Container) -> tuple[Container, Container]:
+    # TODO: Maybe this should just accept client, so its not "primitive obsession"...
+    def proxify_container(self, container: Container, client_id: int) -> tuple[Container, Container]:
         if len(container.networks) > 1:
             raise Exception("The docker container must only be on a single network")
         network = container.networks[0]
@@ -74,23 +76,16 @@ class ContainerRepo(QtCore.QObject):
         print('Stopped.')
 
         # 2. Start a proxy container
-        print(f'Starting proxy container with image: {PROXY_DOCKER_IMAGE}')
-        proxy_env = ['CLIENT_ID=2', 'ZMQ_SERVER=host.docker.internal:5556']
-        proxy_raw_container = self.docker.containers.run(
-            PROXY_DOCKER_IMAGE,
-            detach=True,
-            privileged=True,
-            environment=proxy_env,
-            ports=container.ports,  #type:ignore
-            network=network
-        )
-        print(f'Started proxy container: {proxy_raw_container.short_id}') # type:ignore
+        proxy_container_id = self.__run_proxy_container(container, client_id)
+        # IMPORTANT: THIS NEEDS TO BE .get() because it calls docker inspect!!!
+        proxy_raw_container = self.docker.containers.get(proxy_container_id)
 
         # 3. Restart the original container but with the network set to the proxy container
         intercepted_raw_container = self.docker.containers.run(
             image,
             detach=True,
-            network=f'container:{proxy_raw_container.short_id}' # type:ignore
+            network=f'container:{proxy_raw_container.short_id}', # type:ignore
+            links={}
         )
         print(f'Restarted container: {intercepted_raw_container.short_id}') # type:ignore
 
@@ -100,6 +95,8 @@ class ContainerRepo(QtCore.QObject):
         return intercepted_container, proxy_container
 
     def __raw_container_to_container(self, raw_container) -> Container:
+        # print("---> Container: ", raw_container.short_id)
+        # print(json.dumps(raw_container.attrs))
         return Container(
             short_id=raw_container.short_id,
             name=raw_container.name,
@@ -113,3 +110,43 @@ class ContainerRepo(QtCore.QObject):
     # def close_container(self, container: Container):
     #     # container.kill()
     #     return
+
+    def __run_proxy_container(self, container: Container, client_id: int) -> str:
+        print(f'Starting proxy container with image: {PROXY_DOCKER_IMAGE}')
+        # network = container.networks[0]
+        proxy_env = [f'CLIENT_ID={client_id}', 'ZMQ_SERVER=host.docker.internal:5556']
+
+        old_network_config = container.raw_container.attrs['NetworkSettings']['Networks']['example_app_default'] # type:ignore
+        print("---------------------> container aliases: ", old_network_config['Aliases'])
+
+        proxy_networking_config = self.docker.api.create_networking_config({
+            # TODO: DONT HARDCODE THE NETWORK HERE!
+            'example_app_default': self.docker.api.create_endpoint_config(
+                aliases=old_network_config['Aliases'],
+                links=old_network_config['Links']
+            )
+        })
+        proxy_host_config = self.docker.api.create_host_config(
+            port_bindings=container.ports, # type:ignore
+            privileged=True,
+        )
+        exposed_ports = {}
+        for export_port,_ in container.ports.items(): #type:ignore
+            exposed_ports[export_port] = {}
+        print("---------------------> exposed_ports: ", exposed_ports)
+
+        result = self.docker.api.create_container(
+            PROXY_DOCKER_IMAGE,
+            None,
+            networking_config=proxy_networking_config,
+            host_config=proxy_host_config,
+            ports=exposed_ports,
+            environment=proxy_env,
+        )
+        proxy_container_id = result['Id']
+        print("Created proxy container id: ", proxy_container_id)
+
+        self.docker.api.start(proxy_container_id)
+        print(f'Started proxy container: {proxy_container_id}') # type:ignore
+
+        return proxy_container_id
