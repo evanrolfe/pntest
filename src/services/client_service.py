@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtWidgets
 from models.available_client import AvailableClient
 from models.browser import Browser
 from models.client import Client
@@ -110,13 +110,22 @@ class ClientService(QtCore.QObject):
         if open_client is None:
             return
 
-        # 1. Close the client's proxy
-        if open_client.proxy is not None:
-            self.process_repo.close_proxy(open_client.proxy)
+        if client.type == 'docker':
+            # 1. Close the client's proxy container
+            if open_client.proxy_container is None or open_client.intercepted_container is None:
+                return
 
-        # 2. Optionally close the client's browser
-        if open_client.browser is not None:
-            self.browser_repo.close_browser(open_client.browser)
+            self.container_repo.close_container(open_client.proxy_container)
+            self.container_repo.close_container(open_client.intercepted_container)
+
+        else:
+            # 1.1 Close the client's proxy
+            if open_client.proxy is not None:
+                self.process_repo.close_proxy(open_client.proxy)
+
+            # 1.2. Optionally close the client's browser
+            if open_client.browser is not None:
+                self.browser_repo.close_browser(open_client.browser)
 
         # 3. Set the client to closed and update the widget (via a signal)
         open_client.open = False

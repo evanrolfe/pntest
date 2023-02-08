@@ -1,4 +1,5 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from lib.background_worker import BackgroundWorker
 from models.container import Container
 from repos.browser_repo import BrowserRepo
 from services.available_client_service import AvailableClientService
@@ -21,6 +22,7 @@ class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager
     client_service: ClientService
     available_clients: list[AvailableClient]
+    threadpool: QtCore.QThreadPool
 
     def __init__(self, *args, **kwargs):
         super(ClientsPage, self).__init__(*args, **kwargs)
@@ -32,8 +34,8 @@ class ClientsPage(QtWidgets.QWidget):
         self.clients_table_model = ClientsTableModel(clients)
 
         self.ui.clientsTable.setTableModel(self.clients_table_model)
-        self.ui.clientsTable.open_client_clicked.connect(self.open_client_clicked)
-        self.ui.clientsTable.close_client_clicked.connect(self.close_client_clicked)
+        self.ui.clientsTable.open_client_clicked.connect(self.open_client_clicked_async)
+        self.ui.clientsTable.close_client_clicked.connect(self.close_client_clicked_async)
 
         # Add Icons:
         self.ui.chromiumButton.setIcon(QtGui.QIcon('assets:icons/icons8-chromium.svg'))
@@ -68,6 +70,8 @@ class ClientsPage(QtWidgets.QWidget):
         self.docker_window = DockerWindow(self)
         self.docker_window.proxify_containers.connect(self.create_clients_for_containers)
 
+        self.threadpool = QtCore.QThreadPool()
+
     def reload(self):
         self.reload_table_data()
 
@@ -82,7 +86,7 @@ class ClientsPage(QtWidgets.QWidget):
 
         client = self.client_service.build_client(client_type)
         ClientRepo().save(client)
-        self.open_client_clicked(client)
+        self.open_client_clicked_async(client)
 
     def create_clients_for_containers(self, containers: list[Container]):
         for container in containers:
@@ -90,7 +94,8 @@ class ClientsPage(QtWidgets.QWidget):
             client = self.client_service.build_client('docker', container)
             ClientRepo().save(client)
             print(client, "\n")
-            self.open_client_clicked(client)
+            self.reload_table_data()
+            self.open_client_clicked_async(client)
 
     def load_available_clients(self):
         available_clients = AvailableClientService().get_all()
@@ -99,10 +104,31 @@ class ClientsPage(QtWidgets.QWidget):
             available_client = [ac for ac in available_clients if ac.name == key][0]
             button.setEnabled(available_client.enabled())
 
-    def open_client_clicked(self, client: Client):
-        self.client_service.launch_client(client)
+    def open_client_clicked_async(self, client: Client):
+        worker = BackgroundWorker(lambda x: self.client_service.launch_client(client))
+        worker.signals.error.connect(self.client_error)
+        worker.signals.finished.connect(self.reload_table_data)
+        self.threadpool.start(worker)
         self.reload_table_data()
 
-    def close_client_clicked(self, client: Client):
-        self.client_service.close_client(client)
+    def client_error(self, err):
+        raise Exception(err)
+
+    def close_client_clicked_async(self, client: Client):
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('Warning')
+        message_box.setText(
+            f'WARNING: The intercepted container will be stopped. Please start the container again if you wish to continue running it.'
+        )
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
+        response = message_box.exec()
+
+        if response != QtWidgets.QMessageBox.StandardButton.Yes:
+            return
+
+        worker = BackgroundWorker(lambda x: self.client_service.close_client(client))
+        worker.signals.error.connect(self.client_error)
+        worker.signals.finished.connect(self.reload_table_data)
+        self.threadpool.start(worker)
         self.reload_table_data()

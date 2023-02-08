@@ -94,6 +94,11 @@ class ContainerRepo(QtCore.QObject):
 
         return intercepted_container, proxy_container
 
+    def close_container(self, container: Container):
+        if container.raw_container is None:
+            return
+        container.raw_container.stop() # type:ignore
+
     def __raw_container_to_container(self, raw_container) -> Container:
         # print("---> Container: ", raw_container.short_id)
         # print(json.dumps(raw_container.attrs))
@@ -117,7 +122,6 @@ class ContainerRepo(QtCore.QObject):
         proxy_env = [f'CLIENT_ID={client_id}', 'ZMQ_SERVER=host.docker.internal:5556']
 
         old_network_config = container.raw_container.attrs['NetworkSettings']['Networks']['example_app_default'] # type:ignore
-        print("---------------------> container aliases: ", old_network_config['Aliases'])
 
         proxy_networking_config = self.docker.api.create_networking_config({
             # TODO: DONT HARDCODE THE NETWORK HERE!
@@ -133,7 +137,6 @@ class ContainerRepo(QtCore.QObject):
         exposed_ports = {}
         for export_port,_ in container.ports.items(): #type:ignore
             exposed_ports[export_port] = {}
-        print("---------------------> exposed_ports: ", exposed_ports)
 
         result = self.docker.api.create_container(
             PROXY_DOCKER_IMAGE,
