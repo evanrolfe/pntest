@@ -26,7 +26,7 @@ Linux:
 ```bash
 $ git clone git@github.com:evanrolfe/pntest.git
 $ cd pntest
-$ virtualenv -p /usr/bin/python3.9 venv
+$ virtualenv -p /usr/bin/python3.11 venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
 $ pip install -r dev-requirements.txt

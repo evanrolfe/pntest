@@ -1,5 +1,7 @@
 # Creates a docker image for the docker proxy node
-FROM python:3.11-alpine3.17
+# We opted for the python slim base image instead of alpine, because alpine does not support
+# python wheels and so all packages need to be built from source which results in a much bigger image.
+FROM python:3.11-slim
 
 WORKDIR /app
 ADD ./docker_proxy /app
@@ -7,14 +9,14 @@ ADD ./docker_proxy /app
 ENV CLIENT_ID=1
 ENV ZMQ_SERVER=host.docker.internal:5556
 
-RUN apk update && apk add iptables curl ca-certificates gcc libffi-dev python3-dev musl-dev openssl-dev g++  \
-  libxml2-dev libxslt-dev libjpeg-turbo-dev zlib-dev tshark musl-dev rust cargo bash
+RUN apt-get update
+RUN apt-get upgrade -qy
+RUN apt-get install iptables curl -qy
 
 ADD ./src/mitmproxy /app/mitmproxy
-# VOLUME ["/app/mitmproxy"]
+# # VOLUME ["/app/mitmproxy"]
 RUN pip install --upgrade pip
-
 RUN pip install -r /app/requirements.txt
 
-RUN adduser -D mitmproxyuser
+RUN useradd --create-home mitmproxyuser
 ENTRYPOINT /bin/bash run.sh
