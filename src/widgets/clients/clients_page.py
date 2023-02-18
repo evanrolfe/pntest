@@ -115,17 +115,18 @@ class ClientsPage(QtWidgets.QWidget):
         raise Exception(err)
 
     def close_client_clicked_async(self, client: Client):
-        message_box = QtWidgets.QMessageBox()
-        message_box.setWindowTitle('Warning')
-        message_box.setText(
-            f'WARNING: The intercepted container will be stopped. Please start the container again if you wish to continue running it.'
-        )
-        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.Cancel)
-        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
-        response = message_box.exec()
+        if client.type == 'docker':
+            message_box = QtWidgets.QMessageBox()
+            message_box.setWindowTitle('Warning')
+            message_box.setText(
+                f'WARNING: The intercepted container will be stopped. Please start the container again if you wish to continue running it.'
+            )
+            message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.Cancel)
+            message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
+            response = message_box.exec()
 
-        if response != QtWidgets.QMessageBox.StandardButton.Yes:
-            return
+            if response != QtWidgets.QMessageBox.StandardButton.Yes:
+                return
 
         worker = BackgroundWorker(lambda x: self.client_service.close_client(client))
         worker.signals.error.connect(self.client_error)
