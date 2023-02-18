@@ -169,7 +169,7 @@ class HttpFlow(Model):
         new_request.overwrite_calculated_headers()
 
         return HttpFlow(
-            type = self.type,
+            type = HttpFlow.TYPE_EDITOR,
             title =  f'{self.title} (Copy)',
             request = new_request,
         )
