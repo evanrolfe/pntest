@@ -55,7 +55,7 @@ class ClientService(QtCore.QObject):
             return Client(
                 type = 'docker',
                 proxy_port = 0,
-                title = 'client',
+                title = f'container',
                 intercepted_container=container,
                 container_id=container.short_id
             )
@@ -64,7 +64,7 @@ class ClientService(QtCore.QObject):
             return Client(
                 type = client_type,
                 proxy_port = port,
-                title = 'client'
+                title = client_type
             )
 
     def launch_client(self, client: Client):

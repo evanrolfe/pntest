@@ -33,6 +33,10 @@ class ClientRepo(BaseRepo):
         else:
             self.generic_insert(client, self.table)
 
+            # Once we have inserted it and we have an ID, append the ID to the title
+            client.title = f'{client.title}-{client.id}'
+            self.generic_update(client, self.table)
+
     def update_all_to_closed(self):
         query = Query.update(self.table).set(self.table.open, 0)
         self.conn.execute(query.get_sql())
