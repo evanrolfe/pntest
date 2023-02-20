@@ -8,7 +8,7 @@ from models.http_flow import HttpFlow
 from models.http_request import FormData, HttpRequest
 from models.http_response import HttpResponse
 from models.websocket_message import WebsocketMessage
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from repos.client_repo import ClientRepo
 from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
@@ -46,8 +46,8 @@ def create_multiple_flows() -> list[HttpFlow]:
         response=HttpResponseFactory.build(status_code=200, content="<html>hello world</html>"),
         original_response=HttpResponseFactory.build(status_code=200, content="<html>original</html>"),
     )
-    HttpFlowRepo().save(flow1)
-    HttpFlowRepo().save(flow2)
+    HttpFlowService().save(flow1)
+    HttpFlowService().save(flow2)
 
     return [flow1, flow2]
 

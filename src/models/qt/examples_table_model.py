@@ -1,7 +1,7 @@
 from typing import Optional
 from PyQt6 import QtCore
 from models.http_flow import HttpFlow
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 
 class ExamplesTableModel(QtCore.QAbstractTableModel):
     headers: list[str]
@@ -81,7 +81,7 @@ class ExamplesTableModel(QtCore.QAbstractTableModel):
             if value != '':
                 flow = self.flows[index.row()]
                 flow.title = value
-                HttpFlowRepo().save(flow)
+                HttpFlowService().save(flow)
 
             return True
 

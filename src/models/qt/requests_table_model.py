@@ -2,7 +2,7 @@ from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
 
 from models.http_flow import HttpFlow
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 
 # TODO: Rename this to FlowsTableModel
 class RequestsTableModel(QtCore.QAbstractTableModel):
@@ -46,7 +46,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
             return
 
         self.beginRemoveRows(QtCore.QModelIndex(), row_index, row_index2)
-        [HttpFlowRepo().delete(f) for f in self.flows if f.id in flow_ids]
+        [HttpFlowService().delete(f) for f in self.flows if f.id in flow_ids]
 
         self.flows = list(filter(lambda r: r.id not in flow_ids, self.flows))
         self.endRemoveRows()

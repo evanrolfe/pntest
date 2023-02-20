@@ -7,7 +7,7 @@ from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
 from models.editor_item import EditorItem
 from models.http_flow import HttpFlow
 from models.http_request import HttpRequest
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures, build_an_editor_flow_with_payloads
 from widgets.editor.editor_page import EditorPage
 from widgets.shared.my_scintilla import MyScintilla
@@ -207,7 +207,7 @@ class TestMyScintilla:
     # --------------------------------------------------------------------------
     def test_text_trigger_autocomplete_payload(self, database, cleanup_database, qtbot: QtBot):
         http_flow = build_an_editor_flow_with_payloads()
-        HttpFlowRepo().save(http_flow)
+        HttpFlowService().save(http_flow)
 
         widget = MyScintilla()
         widget.resize(500, 200)
@@ -225,7 +225,7 @@ class TestMyScintilla:
 
     def test_indicator_click_trigger_autocomplete_payload(self, database, cleanup_database, qtbot: QtBot):
         http_flow = build_an_editor_flow_with_payloads()
-        HttpFlowRepo().save(http_flow)
+        HttpFlowService().save(http_flow)
 
         widget = MyScintilla()
         widget.setText('${payload:password}')

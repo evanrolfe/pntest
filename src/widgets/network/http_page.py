@@ -3,13 +3,14 @@ from PyQt6 import QtCore, QtWidgets
 from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from repos.app_settings_repo import AppSettingsRepo
+from services.find_http_flows_for_table_query import FindHttpFlowsForTableQuery
 from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.debounce import debounce
 from lib.background_worker import BackgroundWorker
 from models.qt.requests_table_model import RequestsTableModel
 from models.http_flow import HttpFlow
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 
 class HttpPage(QtWidgets.QWidget):
     toggle_page = QtCore.pyqtSignal()
@@ -26,7 +27,7 @@ class HttpPage(QtWidgets.QWidget):
 
         self.search_text = None
         # Setup the request model
-        http_flows = HttpFlowRepo().find_for_table('')
+        http_flows = FindHttpFlowsForTableQuery().run('')
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
@@ -98,13 +99,12 @@ class HttpPage(QtWidgets.QWidget):
     def load_flows(self, signals):
         print(f'Searching for {self.search_text}')
 
-        http_flows = HttpFlowRepo().find_for_table(self.search_text or '')
-
+        http_flows = FindHttpFlowsForTableQuery().run(self.search_text or '')
         return http_flows
 
     def load_full_flow(self, signals) -> HttpFlow:
         flow = self.ui.requestViewWidget.flow
-        flow_full = HttpFlowRepo().find(flow.id)
+        flow_full = HttpFlowService().find(flow.id, load_minimal_response_data=False)
         if flow_full is None:
             return flow
         return flow_full

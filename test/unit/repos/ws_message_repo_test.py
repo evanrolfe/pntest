@@ -7,7 +7,7 @@ from models.http_flow import HttpFlow
 from models.http_request import FormData, HttpRequest
 from models.http_response import HttpResponse
 from models.websocket_message import WebsocketMessage
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from repos.ws_message_repo import WsMessageRepo
 from repos.client_repo import ClientRepo
 from lib.database import Database
@@ -26,7 +26,7 @@ class TestWsMessageRepo:
         ws_message_repo = WsMessageRepo()
 
         # 1. Create a Client, HttpFlow with HttpRequest and WebsocketMessage
-        http_flow_repo = HttpFlowRepo()
+        http_flow_repo = HttpFlowService()
         client_repo = ClientRepo()
 
         client = Client(title="test client!", type="browser", proxy_port=8080)

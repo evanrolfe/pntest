@@ -2,7 +2,7 @@ from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from pytest_httpserver import HTTPServer
 from models.http_flow import HttpFlow
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures
 
 from models.editor_item import EditorItem
@@ -36,7 +36,7 @@ class TestEditorPage:
         qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton, pos=button.rect().center())
 
         assert editor_item.item is not None
-        http_flows = HttpFlowRepo().find_by_ids([editor_item.item.id])
+        http_flows = HttpFlowService().find_by_ids([editor_item.item.id])
         assert len(http_flows) == 1
         http_flow = http_flows[0]
 

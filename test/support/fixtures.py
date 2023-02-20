@@ -6,7 +6,7 @@ from models.variable import Variable
 from models.payload_file import PayloadFileSerialised
 from mitmproxy.common_types import ProxyRequest
 from repos.client_repo import ClientRepo
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from repos.variable_repo import VariableRepo
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory
@@ -20,7 +20,7 @@ def create_http_flow():
         request=HttpRequestFactory.build(),
         response=HttpResponseFactory.build(),
     )
-    HttpFlowRepo().save(http_flow)
+    HttpFlowService().save(http_flow)
 
 def create_variables():
     var1 = Variable(key='host', value='localhost', source_type=Variable.SOURCE_TYPE_GLOBAL)

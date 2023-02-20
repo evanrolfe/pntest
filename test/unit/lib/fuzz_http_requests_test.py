@@ -4,7 +4,7 @@ from lib.fuzz_http_requests import FuzzHttpRequests
 from models.http_flow import HttpFlow
 from models.http_request import HttpRequest, FormData
 from lib.background_worker import WorkerSignals
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory
 from support.factories.websocket_message_factory import WebsocketMessageFactory
@@ -40,7 +40,7 @@ class TestFuzzHttpRequests:
             type=HttpFlow.TYPE_EDITOR_FUZZ,
             request=http_request,
         )
-        HttpFlowRepo().save(http_flow)
+        HttpFlowService().save(http_flow)
 
         signals = WorkerSignals()
         fuzzer = FuzzHttpRequests(http_flow)
@@ -86,7 +86,7 @@ class TestFuzzHttpRequests:
             type=HttpFlow.TYPE_EDITOR_FUZZ,
             request=http_request,
         )
-        HttpFlowRepo().save(http_flow)
+        HttpFlowService().save(http_flow)
 
         signals = WorkerSignals()
         fuzzer = FuzzHttpRequests(http_flow)

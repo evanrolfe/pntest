@@ -116,6 +116,20 @@ class HttpRequest(Model):
             form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'fuzz_data': None},
         )
 
+    @classmethod
+    def build_blank_placeholder(cls):
+        return HttpRequest(
+            http_version = 'HTTP/1.1',
+            headers = {},
+            host = '',
+            port = 80,
+            method = 'GET',
+            scheme = 'http',
+            path = '',
+            content = '',
+            form_data = {'method': 'GET', 'url': 'http://', 'headers': {}, 'content': '', 'fuzz_data': None},
+        )
+
     def set_headers(self, headers: Headers) -> None:
         self.headers = headers
 

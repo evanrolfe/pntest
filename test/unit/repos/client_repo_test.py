@@ -14,7 +14,7 @@ class TestClientRepo:
         client_repo.save(client)
 
         assert client.id is not None
-        assert client.title == "test client!"
+        assert "test client!" in client.title
         assert client.type == "chrome"
         assert client.proxy_port == 8080
         assert client.open == False

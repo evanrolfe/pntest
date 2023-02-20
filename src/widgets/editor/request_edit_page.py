@@ -7,7 +7,7 @@ from models.http_flow import HttpFlow
 from models.http_response import HttpResponse
 from repos.app_settings_repo import AppSettingsRepo
 from repos.editor_item_repo import EditorItemRepo
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 
 from views._compiled.editor.request_edit_page import Ui_RequestEditPage
 from models.http_request import FormData
@@ -141,7 +141,7 @@ class RequestEditPage(QtWidgets.QWidget):
         self.update_request_with_values_from_form()
 
         EditorItemRepo().save(self.editor_item)
-        HttpFlowRepo().save(self.flow)
+        HttpFlowService().save(self.flow)
 
         self.form_input_changed.emit(False)
         self.request_saved.emit(self.editor_item)
@@ -156,7 +156,7 @@ class RequestEditPage(QtWidgets.QWidget):
 
         self.update_request_with_values_from_form()
         example_flow = self.flow.build_example(self.latest_response)
-        HttpFlowRepo().save(example_flow)
+        HttpFlowService().save(example_flow)
 
         # 4. Update GUI
         self.ui.examplesTable.refresh()

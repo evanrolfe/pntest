@@ -26,27 +26,6 @@ Developing
 
 Start the proxy container with a volume:
 `
-docker run -i -t --privileged -v /Users/evan/Code/pntest/src/mitmproxy:/app/mitmproxy pntest-proxy:latest --network example_app_default
+docker run -i -t --privileged -v /Users/evan/Code/pntest/src/mitmproxy:/app/mitmproxy pntest-proxy:latest
 `
 docker run -i -t --privileged -p 3001:3001 pntest-proxy:latest
---------------------------------------------------------------------------------
-TODO:
---------------------------------------------------------------------------------
-DONE do not rely on cmd line args for the proxy?
-DONE add a proper cmd line args parser (add the zmq_host arg), and pass the args in from Docker using ENV vars
-DONE include ssh certs
-DONE figure out how we're going to copy the files from ./src to ./docker_proxy?
-DONE dynamically set the network for the proxy containers
-
-Friday:
-- integerate docker with the client models/repo in pntest (do we need a new model?)
-  ContainerRepo()
-    => get all running containers
-    => get all running proxy containers
-    => launch_container()
-    => close_container()
-
-- what happens when you close pntest? what do we do then with the containers?
-- GUI to start/monitor docker proxies
-- need to close the orphaned containers on exit
-- need to check that all containers are on the same network?

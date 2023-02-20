@@ -6,7 +6,7 @@ from pypika import Query, Table, Field, QmarkParameter
 from models.editor_item import EditorItem, LoadChildrenOnEditorItems
 from models.http_flow import HttpFlow
 from repos.base_repo import BaseRepo
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 
 class EditorItemRepo(BaseRepo):
     table: Table
@@ -36,7 +36,7 @@ class EditorItemRepo(BaseRepo):
         # Set original_request_id from associated HttpRequest object and save if its not persisted
         if editor_item.item is not None:
             if editor_item.item.id == 0 and editor_item.item_is_flow():
-                HttpFlowRepo().save(editor_item.item)
+                HttpFlowService().save(editor_item.item)
             editor_item.item_id = editor_item.item.id
 
         if editor_item.id > 0:
@@ -60,7 +60,7 @@ class EditorItemRepo(BaseRepo):
         # Pre-load the associated HttpFlows from db in a single query
         http_flow_ids = [r['item_id'] for r in rows if r['item_id'] is not None and r['item_type'] in [EditorItem.TYPE_HTTP_FLOW, EditorItem.TYPE_FUZZ]]
 
-        http_flows = HttpFlowRepo().find_by_ids(http_flow_ids)
+        http_flows = HttpFlowService().find_by_ids(http_flow_ids)
         http_flows_by_id: dict[int, HttpFlow] = self.index_models_by_id(http_flows)
 
         # Instantiate the editor_items with their associated objects

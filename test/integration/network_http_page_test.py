@@ -4,7 +4,7 @@ from pytestqt.qtbot import QtBot
 from models.http_flow import HttpFlow
 from models.http_request import HttpRequest
 from models.http_response import HttpResponse
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory
 from widgets.network.http_page import HttpPage
@@ -36,7 +36,7 @@ def create_http_flow(scheme: str, host: str, port: int, path: str) -> HttpFlow:
         request=http_request,
         response=HttpResponseFactory.build(status_code=404, content=str.encode("not found")),
     )
-    HttpFlowRepo().save(http_flow)
+    HttpFlowService().save(http_flow)
     return http_flow
 
 class TestNetworkHttpPage:

@@ -16,7 +16,7 @@ from lib.proxy_handler import ProxyHandler
 from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 from repos.project_settings_repo import ProjectSettingsRepo
 
 # TODO: This should go in a service class
@@ -118,19 +118,19 @@ class ProcessManager(QtCore.QObject):
 
     def proxy_request_slot(self, proxy_request: ProxyRequest):
         flow = HttpFlow.from_proxy_request(proxy_request)
-        HttpFlowRepo().save(flow)
+        HttpFlowService().save(flow)
 
         self.proxy_request.emit(flow)
         if proxy_request['intercepted']:
             self.flow_intercepted.emit(flow)
 
     def proxy_response_slot(self, proxy_response: ProxyResponse):
-        flow = HttpFlowRepo().find_by_uuid(proxy_response['flow_uuid'])
+        flow = HttpFlowService().find_by_uuid(proxy_response['flow_uuid'])
         if flow is None:
             return
         response = HttpResponse.from_state(proxy_response)
         flow.add_response(response)
-        HttpFlowRepo().save(flow)
+        HttpFlowService().save(flow)
 
         # So we dont use unecessary memory
         flow.clear_extra_data()
@@ -140,13 +140,13 @@ class ProcessManager(QtCore.QObject):
             self.flow_intercepted.emit(flow)
 
     def proxy_ws_message_slot(self, proxy_ws_message: ProxyWebsocketMessage):
-        flow = HttpFlowRepo().find_by_uuid(proxy_ws_message['flow_uuid'])
+        flow = HttpFlowService().find_by_uuid(proxy_ws_message['flow_uuid'])
         if flow is None:
             return
 
         ws_message = WebsocketMessage.from_state(proxy_ws_message)
         flow.add_ws_message(ws_message)
-        HttpFlowRepo().save(flow)
+        HttpFlowService().save(flow)
 
         self.proxy_ws_message.emit(ws_message)
         if proxy_ws_message['intercepted']:

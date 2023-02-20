@@ -1,6 +1,6 @@
 import sqlite3
 from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order
+from pypika import Query, Table, Field, Order, QmarkParameter
 
 from models.client import Client
 from repos.base_repo import BaseRepo
@@ -26,6 +26,23 @@ class ClientRepo(BaseRepo):
     def find_all(self) -> list[Client]:
         query = Query.from_(self.table).select('*').orderby(self.table.id, order=Order.desc)
         return self.__find_by_query(query.get_sql())
+
+    def find_by_ids(self, ids: list[int]) -> list[Client]:
+        qmark_values = [QmarkParameter() for _ in ids]
+        # TODO: Use __find_by_query
+        query = Query.from_(self.table).select('*').where(self.table.id.isin(qmark_values))
+        cursor = self.conn.cursor()
+        cursor.execute(query.get_sql(), ids)
+        rows: list[sqlite3.Row] = cursor.fetchall()
+
+        clients = []
+        for row in rows:
+            client = Client(**self.row_to_dict(row))
+            client.id = row['id']
+            client.created_at = row['created_at']
+            clients.append(client)
+
+        return clients
 
     def save(self, client: Client):
         if client.id > 0:

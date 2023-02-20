@@ -1,7 +1,7 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore, QtGui
 from models.editor_item import EditorItem
-from repos.http_flow_repo import HttpFlowRepo
+from services.http_flow_service import HttpFlowService
 
 from views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
 
@@ -93,7 +93,7 @@ class FuzzEditPage(QtWidgets.QWidget):
         if not self.ui.examplesTable.isVisible():
             self.toggle_examples_table()
 
-        HttpFlowRepo().save(example_flow)
+        HttpFlowService().save(example_flow)
         self.show_examples()
 
     def fuzz_finished(self):
@@ -150,7 +150,7 @@ class FuzzEditPage(QtWidgets.QWidget):
             return
 
         for example in example_flows:
-            HttpFlowRepo().delete(example)
+            HttpFlowService().delete(example)
             self.original_flow.examples = [ex for ex in self.original_flow.examples if ex.id != example.id]
 
         self.show_examples()
@@ -158,7 +158,7 @@ class FuzzEditPage(QtWidgets.QWidget):
 
     def save_request(self):
         self.update_request_with_values_from_form()
-        HttpFlowRepo().save(self.flow)
+        HttpFlowService().save(self.flow)
 
         self.form_input_changed.emit(False)
         self.request_saved.emit()
