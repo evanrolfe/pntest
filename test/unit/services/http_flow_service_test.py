@@ -12,7 +12,6 @@ from repos.http_flow_repo import HttpFlowRepo
 from repos.client_repo import ClientRepo
 from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
-from services.find_http_flows_for_table_query import FindHttpFlowsForTableQuery
 from services.http_flow_service import HttpFlowService
 from support.factories.client_factory import ClientFactory
 from support.factories.http_request_factory import HttpRequestFactory

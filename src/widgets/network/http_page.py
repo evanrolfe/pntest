@@ -3,7 +3,7 @@ from PyQt6 import QtCore, QtWidgets
 from models.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from repos.app_settings_repo import AppSettingsRepo
-from services.find_http_flows_for_table_query import FindHttpFlowsForTableQuery
+from services.http_flow_service import HttpFlowService
 from views._compiled.network.http_page import Ui_HttpPage
 
 from lib.debounce import debounce
@@ -27,7 +27,7 @@ class HttpPage(QtWidgets.QWidget):
 
         self.search_text = None
         # Setup the request model
-        http_flows = FindHttpFlowsForTableQuery().run('')
+        http_flows = HttpFlowService().find_for_table('')
         self.table_model = RequestsTableModel(http_flows)
         self.ui.requestsTableWidget.setTableModel(self.table_model)
 
@@ -99,7 +99,7 @@ class HttpPage(QtWidgets.QWidget):
     def load_flows(self, signals):
         print(f'Searching for {self.search_text}')
 
-        http_flows = FindHttpFlowsForTableQuery().run(self.search_text or '')
+        http_flows = HttpFlowService().find_for_table(self.search_text or '')
         return http_flows
 
     def load_full_flow(self, signals) -> HttpFlow:
