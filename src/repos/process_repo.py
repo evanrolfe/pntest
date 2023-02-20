@@ -50,7 +50,7 @@ class ProcessRepo():
         if is_development_env():
             proxy_command = f'mitmdump -s {self.app_path}/src/mitmproxy/addon.py -p {client.proxy_port} --set confdir=./include --set client_certs=./include/mitmproxy-client.pem - {args_str}'
         elif is_test_env():
-            proxy_command = f'/Users/evan/Code/pntest/test/fake_proxy'
+            proxy_command = f'./test/fake_proxy'
         else:
             proxy_command = f'{self.app_path}/mitmdump -s {self.app_path}/addon.py -p {client.proxy_port} --set confdir={self.app_path}/include --set client_certs={self.app_path}/include/mitmproxy-client.pem - {args_str}'
 

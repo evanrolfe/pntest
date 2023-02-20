@@ -46,7 +46,7 @@ class TestClientService:
 
         # Set chrome browser to use our fake_browser executable
         app_settings = AppSettingsRepo().get()
-        app_settings["browser_commands"]["chrome"] = "/Users/evan/Code/pntest/test/fake_browser"
+        app_settings["browser_commands"]["chrome"] = "./test/fake_browser"
         AppSettingsRepo().save(app_settings)
 
         # Create the Client
@@ -80,7 +80,7 @@ class TestClientService:
 
         # Set chrome browser to use our fake_browser executable
         app_settings = AppSettingsRepo().get()
-        app_settings["browser_commands"]["chrome"] = "/Users/evan/Code/pntest/test/fake_browser"
+        app_settings["browser_commands"]["chrome"] = "./test/fake_browser"
         AppSettingsRepo().save(app_settings)
 
         # Create the Client
