@@ -19,11 +19,11 @@ jobs:
       - run: sudo apt-get update && sudo apt install libnss3 libxcomposite-dev libxrandr2 libxi6 libxtst6 libasound2 libxcursor1 libxdamage1 x11-utils xvfb qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
       #- run: sudo apt-get update && sudo apt install libglapi-mesa libxcb-glx0 libxxf86vm1 libxdamage1 libxcursor1
       - run:
-          command: DEV_MODE=true QT_DEBUG_PLUGINS=1 PYTHONPATH="./src:./test:./src/proxy" xvfb-run python -m pytest -s ./test/unit
+          command: PNTEST_ENV=test QT_DEBUG_PLUGINS=1 PYTHONPATH="./src:./test:./src/proxy" xvfb-run python -m pytest -s ./test/unit
           name: Unit Tests
 
       - run:
-          command: DEV_MODE=true QT_DEBUG_PLUGINS=1 PYTHONPATH="./src:./test:./src/proxy" xvfb-run python -m pytest -s ./test/integration
+          command: PNTEST_ENV=test QT_DEBUG_PLUGINS=1 PYTHONPATH="./src:./test:./src/proxy" xvfb-run python -m pytest -s ./test/integration
           name: Integration Tests
 
 workflows:
