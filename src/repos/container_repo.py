@@ -13,6 +13,7 @@ from models.project_settings import ProjectSettings
 from lib.browser_launcher.launch_browser import launch_chrome_or_chromium, launch_firefox
 from PyQt6 import QtCore
 import docker
+from lib.utils import is_test_env
 
 PROXY_DOCKER_IMAGE = 'pntest-proxy:latest'
 
@@ -34,7 +35,8 @@ class ContainerRepo(QtCore.QObject):
     def __init__(self, app_path: str):
         super().__init__()
 
-        self.docker = docker.from_env()
+        if not is_test_env():
+            self.docker = docker.from_env()
 
         # Virtually private constructor.
         if ContainerRepo.__instance is not None:
@@ -118,7 +120,6 @@ class ContainerRepo(QtCore.QObject):
 
     def __run_proxy_container(self, container: Container, client_id: int) -> str:
         print(f'Starting proxy container with image: {PROXY_DOCKER_IMAGE}')
-        # network = container.networks[0]
         proxy_env = [f'CLIENT_ID={client_id}', 'ZMQ_SERVER=host.docker.internal:5556']
 
         old_network_config = container.raw_container.attrs['NetworkSettings']['Networks']['example_app_default'] # type:ignore

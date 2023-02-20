@@ -305,7 +305,7 @@ class TestHttpFlowService:
         assert example.response.id > 0
         assert example.http_flow_id == flow.id
 
-        flow2 = HttpFlowService().find(flow.id)
+        flow2 = HttpFlowService().find(flow.id, load_examples = True)
         assert flow2 is not None
         assert flow2.id == flow.id
         assert len(flow2.examples) == 1
