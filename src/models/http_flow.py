@@ -141,9 +141,14 @@ class HttpFlow(Model):
         else:
             status_code = None
 
+        if self.client is not None:
+            client_col = self.client.title
+        else:
+            client_col = self.client_id
+
         return [
             self.id,
-            self.client_id,
+            client_col,
             self.request.scheme,
             self.request.method,
             self.request.host,

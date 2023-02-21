@@ -91,7 +91,7 @@ class RequestsTable(QtWidgets.QWidget):
         horizontalHeader = self.ui.requestsTable.horizontalHeader()
         # horizontalHeader.setStretchLastSection(True)
         horizontalHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
-        horizontalHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontalHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Interactive)
         horizontalHeader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontalHeader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontalHeader.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Interactive)
