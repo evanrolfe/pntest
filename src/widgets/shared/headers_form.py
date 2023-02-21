@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore, QtGui
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 
 from views._compiled.shared.headers_form import Ui_HeadersForm
 from qt_models.request_headers_table_model import RequestHeadersTableModel, HeaderTuple

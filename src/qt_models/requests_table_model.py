@@ -1,7 +1,7 @@
 from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
 
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 from services.http_flow_service import HttpFlowService
 
 # TODO: Rename this to FlowsTableModel

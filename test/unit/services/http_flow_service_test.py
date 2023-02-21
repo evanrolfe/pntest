@@ -3,11 +3,11 @@ import sqlite3
 import uuid
 from venv import create
 from lib.database import Database
-from models.client import Client
-from models.http_flow import HttpFlow
-from models.http_request import FormData, HttpRequest
-from models.http_response import HttpResponse
-from models.websocket_message import WebsocketMessage
+from entities.client import Client
+from entities.http_flow import HttpFlow
+from entities.http_request import FormData, HttpRequest
+from entities.http_response import HttpResponse
+from entities.websocket_message import WebsocketMessage
 from repos.http_flow_repo import HttpFlowRepo
 from repos.client_repo import ClientRepo
 from lib.database import Database

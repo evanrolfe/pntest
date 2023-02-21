@@ -3,7 +3,7 @@ from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, QmarkParameter
 
 
-from models.editor_item import EditorItem, LoadChildrenOnEditorItems
+from entities.editor_item import EditorItem, LoadChildrenOnEditorItems
 from repos.base_repo import BaseRepo
 
 class EditorItemRepo(BaseRepo):

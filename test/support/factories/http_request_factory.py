@@ -1,6 +1,6 @@
 import factory
 
-from models.http_request import FormData, HttpRequest
+from entities.http_request import FormData, HttpRequest
 
 def generate_form_data(request: HttpRequest) -> FormData:
     return {

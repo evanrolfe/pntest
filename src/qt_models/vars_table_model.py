@@ -1,6 +1,6 @@
 from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
-from models.variable import Variable
+from entities.variable import Variable
 
 class VarsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.pyqtSignalInstance

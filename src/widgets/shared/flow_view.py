@@ -4,8 +4,8 @@ from typing import Optional
 from bs4 import BeautifulSoup
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore, QtGui
-from models.http_flow import HttpFlow
-from models.http_response import HttpResponse
+from entities.http_flow import HttpFlow
+from entities.http_response import HttpResponse
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type

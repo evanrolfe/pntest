@@ -3,7 +3,7 @@ import sqlite3
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order, QmarkParameter
 
-from models.http_request import HttpRequest
+from entities.http_request import HttpRequest
 from repos.base_repo import BaseRepo
 
 # NOTE: This repo should not be accessed directly, only via the HttpFlowRepo

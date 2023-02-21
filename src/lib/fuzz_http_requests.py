@@ -4,8 +4,8 @@ from PyQt6 import QtCore
 import itertools
 from typing import cast
 from lib.background_worker import WorkerSignals
-from models.http_flow import HttpFlow
-from models.http_request import FuzzFormData, HttpRequest
+from entities.http_flow import HttpFlow
+from entities.http_request import FuzzFormData, HttpRequest
 
 class FuzzHttpRequests:
     flow: HttpFlow

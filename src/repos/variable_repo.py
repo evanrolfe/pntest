@@ -3,7 +3,7 @@ import sqlite3
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order, QmarkParameter
 
-from models.variable import Variable
+from entities.variable import Variable
 from repos.base_repo import BaseRepo
 
 class VariableRepo(BaseRepo):

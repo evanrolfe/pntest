@@ -2,7 +2,7 @@ import sqlite3
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order, QmarkParameter
 
-from models.client import Client
+from entities.client import Client
 from repos.base_repo import BaseRepo
 
 class ClientRepo(BaseRepo):

@@ -1,9 +1,9 @@
-from models.client import Client
-from models.http_flow import HttpFlow
-from models.http_request import HttpRequest, FormData
-from models.http_response import HttpResponse
-from models.variable import Variable
-from models.payload_file import PayloadFileSerialised
+from entities.client import Client
+from entities.http_flow import HttpFlow
+from entities.http_request import HttpRequest, FormData
+from entities.http_response import HttpResponse
+from entities.variable import Variable
+from entities.payload_file import PayloadFileSerialised
 from mitmproxy.common_types import ProxyRequest
 from repos.client_repo import ClientRepo
 from services.http_flow_service import HttpFlowService

@@ -4,7 +4,7 @@ import time
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order, QmarkParameter
 
-from models.project_settings import ProjectSettings, get_default_project_settings
+from entities.project_settings import ProjectSettings, get_default_project_settings
 from repos.base_repo import BaseRepo
 
 class ProjectSettingsRepo(BaseRepo):

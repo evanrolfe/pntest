@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
 
-from models.model import Model
+from entities.model import Model
 from mitmproxy.common_types import ProxyWebsocketMessage
 
 @dataclass(kw_only=True)

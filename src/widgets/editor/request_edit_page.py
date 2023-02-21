@@ -3,15 +3,15 @@ from typing import Optional
 import pyperclip
 
 from PyQt6 import QtWidgets, QtCore, QtGui
-from models.http_flow import HttpFlow
-from models.http_response import HttpResponse
+from entities.http_flow import HttpFlow
+from entities.http_response import HttpResponse
 from repos.app_settings_repo import AppSettingsRepo
 from services.editor_item_service import EditorItemService
 from services.http_flow_service import HttpFlowService
 
 from views._compiled.editor.request_edit_page import Ui_RequestEditPage
-from models.http_request import FormData
-from models.editor_item import EditorItem
+from entities.http_request import FormData
+from entities.editor_item import EditorItem
 from lib.background_worker import BackgroundWorker
 
 class RequestEditPage(QtWidgets.QWidget):

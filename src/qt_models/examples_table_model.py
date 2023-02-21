@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6 import QtCore
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 from services.http_flow_service import HttpFlowService
 
 class ExamplesTableModel(QtCore.QAbstractTableModel):

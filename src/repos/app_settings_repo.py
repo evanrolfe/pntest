@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6 import QtCore
-from models.app_settings import AppSettings, get_default_app_settings
+from entities.app_settings import AppSettings, get_default_app_settings
 
 class AppSettingsRepo():
     qsettings: QtCore.QSettings

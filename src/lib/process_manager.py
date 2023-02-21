@@ -7,13 +7,13 @@ import os
 import sys
 from typing import Optional, TypedDict
 from PyQt6 import QtCore
-from models.available_client import AvailableClient
-from models.client import Client
-from models.http_flow import HttpFlow
-from models.project_settings import ProjectSettings
-from models.websocket_message import WebsocketMessage
+from entities.available_client import AvailableClient
+from entities.client import Client
+from entities.http_flow import HttpFlow
+from entities.project_settings import ProjectSettings
+from entities.websocket_message import WebsocketMessage
 from lib.proxy_handler import ProxyHandler
-from models.http_response import HttpResponse
+from entities.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo
 from services.http_flow_service import HttpFlowService

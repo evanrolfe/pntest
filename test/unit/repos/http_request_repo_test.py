@@ -1,4 +1,4 @@
-from models.http_request import HttpRequest
+from entities.http_request import HttpRequest
 from repos.http_request_repo import HttpRequestRepo
 
 class TestHttpRequestRepo:

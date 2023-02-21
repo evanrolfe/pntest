@@ -1,6 +1,6 @@
 import factory
 
-from models.websocket_message import WebsocketMessage
+from entities.websocket_message import WebsocketMessage
 
 class WebsocketMessageFactory(factory.Factory):
     class Meta:

@@ -2,8 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
-from models.http_flow import HttpFlow
-from models.model import Model
+from entities.http_flow import HttpFlow
+from entities.model import Model
 
 @dataclass(kw_only=True)
 class EditorItem(Model):

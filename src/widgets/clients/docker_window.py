@@ -1,11 +1,11 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore
-from models.container import Container
+from entities.container import Container
 from repos.container_repo import ContainerRepo
 from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
-from models.available_client import AvailableClient
+from entities.available_client import AvailableClient
 from services.client_service import ClientService
 from views._compiled.clients.docker_window import Ui_DockerWindow
 

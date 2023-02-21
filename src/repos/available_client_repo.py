@@ -3,8 +3,8 @@ import re
 import sqlite3
 import subprocess
 from typing import Generic, Optional, Type, TypeVar
-from models.app_settings import AppSettings
-from models.available_client import AvailableClient
+from entities.app_settings import AppSettings
+from entities.available_client import AvailableClient
 
 DEFAULT_CLIENTS = [
     {

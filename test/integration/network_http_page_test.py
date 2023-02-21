@@ -1,9 +1,9 @@
 # import time
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from models.http_flow import HttpFlow
-from models.http_request import HttpRequest
-from models.http_response import HttpResponse
+from entities.http_flow import HttpFlow
+from entities.http_request import HttpRequest
+from entities.http_response import HttpResponse
 from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory

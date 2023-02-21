@@ -2,7 +2,7 @@ from asyncio import create_task
 import sqlite3
 from venv import create
 from lib.database import Database
-from models.client import Client
+from entities.client import Client
 from repos.client_repo import ClientRepo
 from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES

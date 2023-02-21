@@ -6,7 +6,7 @@ from views._compiled.network.http.requests_table import Ui_RequestsTable
 from widgets.network.http.display_filters import DisplayFilters
 from widgets.network.http.capture_filters import CaptureFilters
 from widgets.qt.row_style_delegate import RowStyleDelegate
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 
 class RequestsTable(QtWidgets.QWidget):
     request_selected = QtCore.pyqtSignal(QtCore.QItemSelection, QtCore.QItemSelection)

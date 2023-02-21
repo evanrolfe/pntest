@@ -1,6 +1,6 @@
 import sqlite3
-from models.client import Client
-from models.process import Process
+from entities.client import Client
+from entities.process import Process
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
 from repos.project_settings_repo import ProjectSettingsRepo

@@ -1,5 +1,5 @@
 from lib.input_parsing.text_wrapper import TextWrapper
-from models.variable import Variable
+from entities.variable import Variable
 from repos.variable_repo import VariableRepo
 
 class TestTextWrapper:

@@ -2,8 +2,8 @@ import sqlite3
 from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order
 
-from models.http_flow import HttpFlow
-from models.http_request import HttpRequest
+from entities.http_flow import HttpFlow
+from entities.http_request import HttpRequest
 from repos.base_repo import BaseRepo
 
 class HttpFlowRepo(BaseRepo):

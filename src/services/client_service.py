@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets
-from models.available_client import AvailableClient
-from models.browser import Browser
-from models.client import Client
-from models.container import Container
+from entities.available_client import AvailableClient
+from entities.browser import Browser
+from entities.client import Client
+from entities.container import Container
 from repos.browser_repo import BrowserRepo
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo

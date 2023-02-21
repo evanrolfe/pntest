@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
-from models.model import Model
+from entities.model import Model
 
 @dataclass(kw_only=True)
 class Variable(Model):

@@ -3,7 +3,7 @@ import sqlite3
 from typing import Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, Order
 
-from models.websocket_message import WebsocketMessage
+from entities.websocket_message import WebsocketMessage
 from repos.base_repo import BaseRepo
 
 # NOTE: This repo should not be accessed directly for saving, only via the HttpFlowRepo

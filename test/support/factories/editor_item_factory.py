@@ -1,6 +1,6 @@
 import factory
 
-from models.editor_item import EditorItem
+from entities.editor_item import EditorItem
 
 class EditorItemFactory(factory.Factory):
     class Meta:

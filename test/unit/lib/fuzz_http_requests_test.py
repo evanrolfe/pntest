@@ -1,8 +1,8 @@
 from pytest_httpserver import HTTPServer
 
 from lib.fuzz_http_requests import FuzzHttpRequests
-from models.http_flow import HttpFlow
-from models.http_request import HttpRequest, FormData
+from entities.http_flow import HttpFlow
+from entities.http_request import HttpRequest, FormData
 from lib.background_worker import WorkerSignals
 from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory

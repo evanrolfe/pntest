@@ -1,14 +1,14 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore, QtGui
-from models.editor_item import EditorItem
+from entities.editor_item import EditorItem
 from services.http_flow_service import HttpFlowService
 
 from views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
 
 from lib.background_worker import BackgroundWorker
 from lib.fuzz_http_requests import FuzzHttpRequests
-from models.http_flow import HttpFlow
-from models.http_request import FormData
+from entities.http_flow import HttpFlow
+from entities.http_request import FormData
 
 class FuzzEditPage(QtWidgets.QWidget):
     flow: HttpFlow

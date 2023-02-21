@@ -5,7 +5,7 @@ from repos.http_flow_repo import HttpFlowRepo
 from views._compiled.network.ws_page import Ui_WsPage
 
 from qt_models.messages_table_model import MessagesTableModel
-from models.websocket_message import WebsocketMessage
+from entities.websocket_message import WebsocketMessage
 from repos.ws_message_repo import WsMessageRepo
 
 class WsPage(QtWidgets.QWidget):

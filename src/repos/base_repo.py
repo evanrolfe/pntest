@@ -3,7 +3,7 @@ import time
 import sqlite3
 from typing import Any, Generic, Optional, Type, TypeVar
 from pypika import Query, Table, Field, QmarkParameter
-from models.model import Model
+from entities.model import Model
 
 from lib.database import Database
 

@@ -1,5 +1,5 @@
 import sqlite3
-from models.variable import Variable
+from entities.variable import Variable
 from repos.variable_repo import VariableRepo
 from lib.database import Database
 

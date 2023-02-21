@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Any, Optional
-from models.client import Client
-from models.http_flow import HttpFlow
-from models.http_request import HttpRequest
-from models.http_response import HttpResponse
+from entities.client import Client
+from entities.http_flow import HttpFlow
+from entities.http_request import HttpRequest
+from entities.http_response import HttpResponse
 from repos.client_repo import ClientRepo
 from repos.http_flow_repo import HttpFlowRepo
 from repos.http_request_repo import HttpRequestRepo

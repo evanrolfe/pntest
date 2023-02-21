@@ -4,12 +4,12 @@ import os
 import signal
 import subprocess
 from typing import Generic, Optional, Type, TypeVar
-from models.app_settings import AppSettings
-from models.available_client import AvailableClient
-from models.container import Container
-from models.client import Client
-from models.process import Process
-from models.project_settings import ProjectSettings
+from entities.app_settings import AppSettings
+from entities.available_client import AvailableClient
+from entities.container import Container
+from entities.client import Client
+from entities.process import Process
+from entities.project_settings import ProjectSettings
 from lib.browser_launcher.launch_browser import launch_chrome_or_chromium, launch_firefox
 from PyQt6 import QtCore
 import docker

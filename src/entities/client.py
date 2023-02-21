@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Optional
-from models.browser import Browser
-from models.model import Model
-from models.process import Process
-from models.container import Container
+from entities.browser import Browser
+from entities.model import Model
+from entities.process import Process
+from entities.container import Container
 
 PROXY_PORT = 8080
 

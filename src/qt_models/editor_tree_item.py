@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from PyQt6 import QtWidgets, QtGui
-from models.editor_item import EditorItem
+from entities.editor_item import EditorItem
 from services.editor_item_service import EditorItemService
 
 class EditorTreeItem:

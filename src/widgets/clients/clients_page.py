@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from lib.background_worker import BackgroundWorker
-from models.container import Container
+from entities.container import Container
 from repos.browser_repo import BrowserRepo
 from services.available_client_service import AvailableClientService
 from services.client_service import ClientService
@@ -9,12 +9,12 @@ from repos.process_repo import ProcessRepo
 from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
-from models.available_client import AvailableClient
+from entities.available_client import AvailableClient
 
 from views._compiled.clients.clients_page import Ui_ClientsPage
 
 from qt_models.clients_table_model import ClientsTableModel
-from models.client import Client
+from entities.client import Client
 from lib.process_manager import ProcessManager
 from widgets.clients.docker_window import DockerWindow
 

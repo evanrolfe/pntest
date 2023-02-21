@@ -1,11 +1,11 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 from repos.editor_item_repo import EditorItemRepo
 from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures
-from models.editor_item import EditorItem
-from models.payload_file import PayloadFile
+from entities.editor_item import EditorItem
+from entities.payload_file import PayloadFile
 from widgets.editor.fuzz_edit_page import FuzzEditPage
 
 class TestFuzzEditPage:

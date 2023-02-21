@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 from repos.http_flow_repo import HttpFlowRepo
 from repos.ws_message_repo import WsMessageRepo
 

@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 
 from views._compiled.editor.examples_table import Ui_ExamplesTable
 from qt_models.examples_table_model import ExamplesTableModel
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 
 class ExamplesTable(QtWidgets.QWidget):
     example_selected = QtCore.pyqtSignal(HttpFlow)

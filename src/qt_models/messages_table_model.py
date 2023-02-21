@@ -2,7 +2,7 @@ from typing import Any, Optional
 from PyQt6 import QtCore
 
 from lib.utils import format_timestamp
-from models.websocket_message import WebsocketMessage
+from entities.websocket_message import WebsocketMessage
 from repos.ws_message_repo import WsMessageRepo
 
 class MessagesTableModel(QtCore.QAbstractTableModel):

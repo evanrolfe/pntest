@@ -4,7 +4,7 @@ from dataclasses import field
 from typing import Any, Optional
 from requests import Response as RequestsResponse
 from lib.types import Headers, get_content_type
-from models.model import Model
+from entities.model import Model
 from mitmproxy.common_types import ProxyResponse
 from lib.types import Headers
 

@@ -4,8 +4,8 @@ import sqlite3
 import time
 import pytestqt
 from pytestqt.qtbot import QtBot
-from models.client import Client
-from models.process import Process
+from entities.client import Client
+from entities.process import Process
 from repos.app_settings_repo import AppSettingsRepo
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo

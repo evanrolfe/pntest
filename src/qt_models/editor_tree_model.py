@@ -2,7 +2,7 @@ from typing import cast, Optional, Any
 from PyQt6 import QtCore, QtGui
 import json
 
-from models.editor_item import EditorItem
+from entities.editor_item import EditorItem
 from qt_models.editor_tree_item import EditorTreeItem
 from services.editor_item_service import EditorItemService
 

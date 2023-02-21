@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from typing import Any, Optional
-from models.client import Client
-from models.http_request import HttpRequest
-from models.http_response import HttpResponse
-from models.websocket_message import WebsocketMessage
-from models.model import Model
+from entities.client import Client
+from entities.http_request import HttpRequest
+from entities.http_response import HttpResponse
+from entities.websocket_message import WebsocketMessage
+from entities.model import Model
 from lib.types import Headers
 from lib.background_worker import WorkerSignals
 from lib.http_request import HttpRequest as HttpRequestLib

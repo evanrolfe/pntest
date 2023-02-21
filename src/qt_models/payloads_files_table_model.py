@@ -1,6 +1,6 @@
 from typing import Dict, Optional, cast, Any
 from PyQt6 import QtCore
-from models.payload_file import PayloadFile
+from entities.payload_file import PayloadFile
 
 class PayloadFilesTableModel(QtCore.QAbstractTableModel):
     payloads_changed = QtCore.pyqtSignal()

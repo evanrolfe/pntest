@@ -4,9 +4,9 @@ from PyQt6 import QtCore, QtWidgets, Qsci
 from pytestqt.qtbot import QtBot
 from lib.input_parsing.encode_base64 import EncodeBase64
 from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
-from models.editor_item import EditorItem
-from models.http_flow import HttpFlow
-from models.http_request import HttpRequest
+from entities.editor_item import EditorItem
+from entities.http_flow import HttpFlow
+from entities.http_request import HttpRequest
 from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures, build_an_editor_flow_with_payloads
 from widgets.editor.editor_page import EditorPage

@@ -1,7 +1,7 @@
 import json
 from PyQt6 import QtCore
 from lib.process_manager import ProcessManager
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 
 # InterceptQueue takes in multiple flows from multiple proxies, it puts them all on a queue
 # and waits for a decision one at a time from the intercept page

@@ -1,6 +1,6 @@
 import factory
 
-from models.http_response import HttpResponse
+from entities.http_response import HttpResponse
 
 class HttpResponseFactory(factory.Factory):
     class Meta:

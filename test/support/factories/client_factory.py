@@ -1,6 +1,6 @@
 import factory
 
-from models.client import Client
+from entities.client import Client
 
 class ClientFactory(factory.Factory):
     class Meta:

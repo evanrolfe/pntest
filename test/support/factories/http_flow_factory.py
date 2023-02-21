@@ -1,6 +1,6 @@
 import factory
 
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 factory.django.DjangoModelFactory
 class HttpFlowFactory(factory.Factory):
     class Meta:

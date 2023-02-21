@@ -3,11 +3,11 @@ import os
 import signal
 import subprocess
 from typing import Generic, Optional, Type, TypeVar
-from models.app_settings import AppSettings
-from models.available_client import AvailableClient
-from models.client import Client
-from models.process import Process
-from models.project_settings import ProjectSettings
+from entities.app_settings import AppSettings
+from entities.available_client import AvailableClient
+from entities.client import Client
+from entities.process import Process
+from entities.project_settings import ProjectSettings
 from lib.utils import is_development_env, is_test_env
 
 # TODO: This should be imported from teh file that defines the zmq server

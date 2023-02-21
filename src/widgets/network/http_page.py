@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets
-from models.http_response import HttpResponse
+from entities.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from repos.app_settings_repo import AppSettingsRepo
 from services.http_flow_service import HttpFlowService
@@ -9,7 +9,7 @@ from views._compiled.network.http_page import Ui_HttpPage
 from lib.debounce import debounce
 from lib.background_worker import BackgroundWorker
 from qt_models.requests_table_model import RequestsTableModel
-from models.http_flow import HttpFlow
+from entities.http_flow import HttpFlow
 from services.http_flow_service import HttpFlowService
 
 class HttpPage(QtWidgets.QWidget):
