@@ -6,6 +6,7 @@ from models.editor_item import EditorItem
 from repos.editor_item_repo import EditorItemRepo
 from lib.database import Database
 from lib.database_schema import SCHEMA_SQL, NUM_TABLES
+from services.editor_item_service import EditorItemService
 from support.factories.editor_item_factory import EditorItemFactory
 
 def create_editor_item_with_many_children() -> list[EditorItem]:
@@ -49,33 +50,34 @@ def create_editor_item_with_many_children() -> list[EditorItem]:
 
     return editor_items
 
-class TestEditorItemRepo:
+class TestEditorItemService:
     def test_saving_and_retrieving_an_item(self, database, cleanup_database):
-        repo = EditorItemRepo()
         editor_item: EditorItem = EditorItemFactory.build()
         editor_item.build_blank_http_flow()
-        repo.save(editor_item)
+        EditorItemService().save(editor_item)
 
         assert editor_item.id is not None
         assert editor_item.created_at is not None
+        assert editor_item.item is not None
+        assert editor_item.item.id > 0
 
-        editor_item2 = repo.find(editor_item.id)
+        editor_item2 = EditorItemService().find(editor_item.id)
         assert editor_item2 is not None
         assert editor_item2.id == editor_item.id
         assert editor_item2.created_at == editor_item.created_at
 
-    def test_finding_a_client_that_doesnt_exist(self, database, cleanup_database):
-        repo = EditorItemRepo()
-        result = repo.find(0)
+        assert editor_item2.item is not None
+        assert editor_item2.item.id == editor_item.item.id
 
+    def test_finding_a_client_that_doesnt_exist(self, database, cleanup_database):
+        result = EditorItemService().find(0)
         assert result is None
 
     def test_saving_and_retrieving_an_item_with_children(self, database, cleanup_database):
-        repo = EditorItemRepo()
         create_editor_item_with_many_children()
 
         # Find all items with children
-        editor_items = repo.find_all_with_children()
+        editor_items = EditorItemService().find_all_with_children()
         assert len(editor_items) == 7
 
         root_items = [item for item in editor_items if item.parent_id is None]
@@ -84,18 +86,16 @@ class TestEditorItemRepo:
         # TODO: Actually test the result is correct here
 
     def test_deleting_an_item_and_all_its_offspring(self, database, cleanup_database):
-        repo = EditorItemRepo()
-        created_items = create_editor_item_with_many_children()
+        create_editor_item_with_many_children()
 
         # Delete one of the root items
-        editor_items = repo.find_all_with_children()
+        editor_items = EditorItemService().find_all_with_children()
         assert editor_items[0] is not None
-        repo.delete(editor_items[0])
+        EditorItemService().delete(editor_items[0])
 
         # Find all items with children
-        editor_items = repo.find_all_with_children()
+        editor_items = EditorItemService().find_all_with_children()
         assert len(editor_items) == 4
 
         root_items = [item for item in editor_items if item.parent_id is None]
         assert len(root_items) == 1
-

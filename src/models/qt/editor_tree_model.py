@@ -4,7 +4,7 @@ import json
 
 from models.editor_item import EditorItem
 from models.qt.editor_tree_item import EditorTreeItem
-from repos.editor_item_repo import EditorItemRepo
+from services.editor_item_service import EditorItemService
 
 class EditorTreeModel(QtCore.QAbstractItemModel):
     item_renamed = QtCore.pyqtSignal(EditorItem)
@@ -50,7 +50,7 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
             if item.editor_item is None:
                 return True
 
-            EditorItemRepo().save(item.editor_item)
+            EditorItemService().save(item.editor_item)
             if not item.is_dir:
                 self.item_renamed.emit(item.editor_item)
 
@@ -107,7 +107,6 @@ class EditorTreeModel(QtCore.QAbstractItemModel):
     ) -> bool:
         if (action != QtCore.Qt.DropAction.MoveAction):
             return False
-
         indexes, tree_items = self.decode_mime_data(data)
         rows = sorted([i.row() for i in indexes])
         diff = rows[-1] - rows[0]

@@ -105,7 +105,7 @@ class HttpFlowService():
         *,
         load_examples = False,
         load_minimal_response_data = True
-    ) -> list[HttpFlow]:
+    ):
         # Pre-load the associated requests from db in a single query
         request_ids = [flow.request_id for flow in http_flows] + \
             [flow.original_request_id for flow in http_flows if flow.original_request_id is not None]
@@ -161,8 +161,6 @@ class HttpFlowService():
             examples = example_flows_by_id.get(http_flow.id)
             if examples:
                 http_flow.examples = examples
-
-        return http_flows
 
     def __index_models_by_id(self, models: list[Any]) -> dict[int, Any]:
         indexed_models = {}

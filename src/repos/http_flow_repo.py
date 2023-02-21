@@ -85,7 +85,7 @@ class HttpFlowRepo(BaseRepo):
         cursor.execute(sql_query, sql_params)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
-        # Instantiate the flows with their associated objects
+        # Instantiate the flows
         flows: list[HttpFlow] = []
         for row in rows:
             row_values = self.row_to_dict(row)

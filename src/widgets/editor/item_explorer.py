@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 
-from repos.editor_item_repo import EditorItemRepo
+from services.editor_item_service import EditorItemService
 from models.editor_item import EditorItem
 from models.qt.editor_tree_model import EditorTreeModel
 from models.qt.editor_tree_item import EditorTreeItem
@@ -35,7 +35,7 @@ class ItemExplorer(QtWidgets.QTreeView):
         self.copied_editor_item = None
 
     def reload_data(self):
-        editor_items = EditorItemRepo().find_all_with_children()
+        editor_items = EditorItemService().find_all_with_children()
         self.tree_model = EditorTreeModel('Requests', editor_items)
         self.tree_model.change_selection.connect(self.change_selection)
         self.tree_model.item_renamed.connect(self.item_renamed)
@@ -160,9 +160,11 @@ class ItemExplorer(QtWidgets.QTreeView):
             return
 
         self.copied_editor_item = copied_editor_item
-        EditorItemRepo().save(self.copied_editor_item)
+        EditorItemService().save(self.copied_editor_item)
 
     def paste_clicked(self, parent_index: QtCore.QModelIndex):
+        if self.copied_editor_item is None:
+            return
         self.insertChild(self.copied_editor_item, parent_index)
         self.item_created.emit(self.copied_editor_item)
 
@@ -185,7 +187,7 @@ class ItemExplorer(QtWidgets.QTreeView):
             self.tree_model.removeRows(index.row(), 1, index.parent(), True)
             self.item_deleted.emit(tree_item.editor_item)
 
-    def multi_delete_clicked(self, indexes):
+    def multi_delete_clicked(self, indexes: list[QtCore.QModelIndex]):
         tree_items = [self.tree_model.getItem(i) for i in indexes]
         message_box = QtWidgets.QMessageBox()
         message_box.setWindowTitle('PNTest')
@@ -206,13 +208,13 @@ class ItemExplorer(QtWidgets.QTreeView):
                 self.item_deleted.emit(tree_item.editor_item)
 
     # TODO: Most of this method's logic should be in EditorTreeModel, not here.
-    def insertChild(self, child_editor_item, parent_index):
+    def insertChild(self, child_editor_item: EditorItem, parent_index: QtCore.QModelIndex):
         parent_tree_item = self.tree_model.getItem(parent_index)
 
         if parent_tree_item.editor_item is not None:
             child_editor_item.parent_id = parent_tree_item.editor_item.id
 
-        EditorItemRepo().save(child_editor_item)
+        EditorItemService().save(child_editor_item)
 
         child_tree_item = EditorTreeItem.from_editor_item(child_editor_item)
         self.tree_model.insertChild(child_tree_item, parent_index)
@@ -234,7 +236,7 @@ class ItemExplorer(QtWidgets.QTreeView):
             return
 
         self.copied_editor_item = copied_editor_item
-        EditorItemRepo().save(self.copied_editor_item)
+        EditorItemService().save(self.copied_editor_item)
 
         self.insertChild(self.copied_editor_item, index.parent())
         self.item_created.emit(self.copied_editor_item)

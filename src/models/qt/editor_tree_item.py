@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from PyQt6 import QtWidgets, QtGui
 from models.editor_item import EditorItem
-from repos.editor_item_repo import EditorItemRepo
+from services.editor_item_service import EditorItemService
 
 class EditorTreeItem:
     label: str
@@ -57,13 +57,12 @@ class EditorTreeItem:
         if child_item.editor_item is None:
             return
 
-        # TODO: Save this when it actually needs to be saved
-        # if self.editor_item is not None:
-        #     child_item.editor_item.parent_id = self.editor_item.id
-        #     child_item.editor_item.save()
-        # else:
-        #     child_item.editor_item.parent_id = None
-        #     child_item.editor_item.save()
+        if self.editor_item is not None:
+            child_item.editor_item.parent_id = self.editor_item.id
+        else:
+            child_item.editor_item.parent_id = None
+
+        EditorItemService().save(child_item.editor_item)
 
         self.sortChildren()
 
@@ -78,7 +77,7 @@ class EditorTreeItem:
         for row in range(count):
             removed_item = self.childItems.pop(position)
             if delete and removed_item.editor_item is not None:
-                EditorItemRepo().delete(removed_item.editor_item)
+                EditorItemService().delete(removed_item.editor_item)
 
         return True
 

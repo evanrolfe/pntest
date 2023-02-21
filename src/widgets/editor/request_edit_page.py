@@ -6,7 +6,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from models.http_flow import HttpFlow
 from models.http_response import HttpResponse
 from repos.app_settings_repo import AppSettingsRepo
-from repos.editor_item_repo import EditorItemRepo
+from services.editor_item_service import EditorItemService
 from services.http_flow_service import HttpFlowService
 
 from views._compiled.editor.request_edit_page import Ui_RequestEditPage
@@ -140,7 +140,7 @@ class RequestEditPage(QtWidgets.QWidget):
     def save_request(self):
         self.update_request_with_values_from_form()
 
-        EditorItemRepo().save(self.editor_item)
+        EditorItemService().save(self.editor_item)
         HttpFlowService().save(self.flow)
 
         self.form_input_changed.emit(False)

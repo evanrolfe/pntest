@@ -4,9 +4,7 @@ from pypika import Query, Table, Field, QmarkParameter
 
 
 from models.editor_item import EditorItem, LoadChildrenOnEditorItems
-from models.http_flow import HttpFlow
 from repos.base_repo import BaseRepo
-from services.http_flow_service import HttpFlowService
 
 class EditorItemRepo(BaseRepo):
     table: Table
@@ -33,12 +31,6 @@ class EditorItemRepo(BaseRepo):
         return editor_items
 
     def save(self, editor_item: EditorItem):
-        # Set original_request_id from associated HttpRequest object and save if its not persisted
-        if editor_item.item is not None:
-            if editor_item.item.id == 0 and editor_item.item_is_flow():
-                HttpFlowService().save(editor_item.item)
-            editor_item.item_id = editor_item.item.id
-
         if editor_item.id > 0:
             self.generic_update(editor_item, self.table)
         else:
@@ -57,20 +49,10 @@ class EditorItemRepo(BaseRepo):
         cursor.execute(sql_query, sql_params)
         rows: list[sqlite3.Row] = cursor.fetchall()
 
-        # Pre-load the associated HttpFlows from db in a single query
-        http_flow_ids = [r['item_id'] for r in rows if r['item_id'] is not None and r['item_type'] in [EditorItem.TYPE_HTTP_FLOW, EditorItem.TYPE_FUZZ]]
-
-        http_flows = HttpFlowService().find_by_ids(http_flow_ids)
-        http_flows_by_id: dict[int, HttpFlow] = self.index_models_by_id(http_flows)
-
-        # Instantiate the editor_items with their associated objects
+        # Instantiate the editor items
         editor_items: list[EditorItem] = []
         for row in rows:
             row_values = self.row_to_dict(row)
-
-            # Load Original Request
-            if row_values['item_id'] is not None:
-                row_values['item'] = http_flows_by_id[row_values['item_id']]
 
             editor_item = EditorItem(**row_values)
             editor_item.id = row['id']
