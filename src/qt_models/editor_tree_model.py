@@ -3,7 +3,7 @@ from PyQt6 import QtCore, QtGui
 import json
 
 from models.editor_item import EditorItem
-from models.qt.editor_tree_item import EditorTreeItem
+from qt_models.editor_tree_item import EditorTreeItem
 from services.editor_item_service import EditorItemService
 
 class EditorTreeModel(QtCore.QAbstractItemModel):

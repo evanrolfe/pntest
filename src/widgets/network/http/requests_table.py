@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets, QtGui
-from models.qt.requests_table_model import RequestsTableModel
+from qt_models.requests_table_model import RequestsTableModel
 
 from views._compiled.network.http.requests_table import Ui_RequestsTable
 from widgets.network.http.display_filters import DisplayFilters

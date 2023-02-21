@@ -13,7 +13,7 @@ from models.available_client import AvailableClient
 
 from views._compiled.clients.clients_page import Ui_ClientsPage
 
-from models.qt.clients_table_model import ClientsTableModel
+from qt_models.clients_table_model import ClientsTableModel
 from models.client import Client
 from lib.process_manager import ProcessManager
 from widgets.clients.docker_window import DockerWindow

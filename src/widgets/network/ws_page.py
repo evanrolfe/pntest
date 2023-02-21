@@ -4,7 +4,7 @@ from repos.http_flow_repo import HttpFlowRepo
 
 from views._compiled.network.ws_page import Ui_WsPage
 
-from models.qt.messages_table_model import MessagesTableModel
+from qt_models.messages_table_model import MessagesTableModel
 from models.websocket_message import WebsocketMessage
 from repos.ws_message_repo import WsMessageRepo
 

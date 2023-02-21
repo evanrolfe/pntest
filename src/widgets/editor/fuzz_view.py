@@ -6,7 +6,7 @@ from models.http_request import HttpRequest
 
 from views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type
-from models.qt.payloads_files_table_model import PayloadFilesTableModel
+from qt_models.payloads_files_table_model import PayloadFilesTableModel
 from models.payload_file import PayloadFile
 
 from widgets.shared.flow_view import FlowView

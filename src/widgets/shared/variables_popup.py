@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtWidgets
 from repos.variable_repo import VariableRepo
 
 from views._compiled.shared.variables_popup import Ui_VariablesPopup
-from models.qt.vars_table_model import VarsTableModel
+from qt_models.vars_table_model import VarsTableModel
 
 class VariablesPopup(QtWidgets.QDialog):
     def __init__(self, parent=None):
