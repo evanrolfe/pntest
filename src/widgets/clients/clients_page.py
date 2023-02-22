@@ -11,7 +11,7 @@ from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from entities.available_client import AvailableClient
 
-from views._compiled.clients.clients_page import Ui_ClientsPage
+from ui.views._compiled.clients.clients_page import Ui_ClientsPage
 
 from qt_models.clients_table_model import ClientsTableModel
 from entities.client import Client

@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
 
-from views._compiled.clients.clients_table import Ui_ClientsTable
+from ui.views._compiled.clients.clients_table import Ui_ClientsTable
 from entities.client import Client
 
 class ClientsTable(QtWidgets.QWidget):

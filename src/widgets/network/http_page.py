@@ -4,7 +4,7 @@ from entities.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from repos.app_settings_repo import AppSettingsRepo
 from services.http_flow_service import HttpFlowService
-from views._compiled.network.http_page import Ui_HttpPage
+from ui.views._compiled.network.http_page import Ui_HttpPage
 
 from lib.debounce import debounce
 from lib.background_worker import BackgroundWorker

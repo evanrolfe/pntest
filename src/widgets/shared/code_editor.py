@@ -5,7 +5,7 @@ from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
 from bs4 import BeautifulSoup
 from entities.http_flow import HttpFlow
 
-from views._compiled.shared.code_editor import Ui_CodeEditor
+from ui.views._compiled.shared.code_editor import Ui_CodeEditor
 
 # TODO: This class should be merged into MyScintilla
 class CodeEditor(QtWidgets.QWidget):

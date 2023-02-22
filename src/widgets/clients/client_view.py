@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from views._compiled.clients.client_view import Ui_ClientView
+from ui.views._compiled.clients.client_view import Ui_ClientView
 
 class ClientView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):

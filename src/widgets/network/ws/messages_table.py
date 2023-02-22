@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
 
-from views._compiled.network.ws.messages_table import Ui_MessagesTable
+from ui.views._compiled.network.ws.messages_table import Ui_MessagesTable
 from widgets.network.http.display_filters import DisplayFilters
 from widgets.qt.row_style_delegate import RowStyleDelegate
 

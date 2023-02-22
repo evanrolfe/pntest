@@ -5,7 +5,7 @@ from typing import Optional
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
 from lib.process_manager import ProcessManager
 
-from views._compiled.main_window import Ui_MainWindow
+from ui.views._compiled.main_window import Ui_MainWindow
 from repos.app_settings_repo import AppSettingsRepo
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
@@ -180,7 +180,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def reload_style(self):
         print("Reloading style...")
-        style_loader = StyleheetLoader('/Users/evan/Code/pntest/src/assets/style')
+        style_loader = StyleheetLoader('/Users/evan/Code/pntest/src/ui/style')
         stylesheet = style_loader.load_theme('dark')
         if stylesheet is None:
             return

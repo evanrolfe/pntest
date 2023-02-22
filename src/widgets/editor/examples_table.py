@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
 
-from views._compiled.editor.examples_table import Ui_ExamplesTable
+from ui.views._compiled.editor.examples_table import Ui_ExamplesTable
 from qt_models.examples_table_model import ExamplesTableModel
 from entities.http_flow import HttpFlow
 

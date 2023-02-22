@@ -2,8 +2,8 @@ from typing import Optional
 from PyQt6 import QtCore, QtWidgets, QtGui
 from lib.input_parsing.text_tree import TreeNode
 
-from views._compiled.shared.encoders_popup import Ui_EncodersPopup
-from views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
+from ui.views._compiled.shared.encoders_popup import Ui_EncodersPopup
+from ui.views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers
 from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_wrapper import parse_text

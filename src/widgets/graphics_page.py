@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
-from views._compiled.graphics_page import Ui_GraphicsPage
+from ui.views._compiled.graphics_page import Ui_GraphicsPage
 
 class HoverRectItem(QtWidgets.QGraphicsRectItem):
     def __init__(self, *args, **kwargs):

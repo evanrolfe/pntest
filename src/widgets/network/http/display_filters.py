@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtWidgets
 from repos.project_settings_repo import ProjectSettingsRepo
 
-from views._compiled.network.http.display_filters import Ui_DisplayFilters
+from ui.views._compiled.network.http.display_filters import Ui_DisplayFilters
 
 class DisplayFilters(QtWidgets.QDialog):
     display_filters_saved = QtCore.pyqtSignal()

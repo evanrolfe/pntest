@@ -7,7 +7,7 @@ from PyQt6 import QtCore, QtGui
 from entities.http_flow import HttpFlow
 from entities.http_response import HttpResponse
 
-from views._compiled.shared.flow_view import Ui_FlowView
+from ui.views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type
 from lib.utils import get_status_colour, get_status_colour_bright
 from widgets.shared.code_editor import CodeEditor

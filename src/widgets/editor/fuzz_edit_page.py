@@ -3,7 +3,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from entities.editor_item import EditorItem
 from services.http_flow_service import HttpFlowService
 
-from views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
+from ui.views._compiled.editor.fuzz_edit_page import Ui_FuzzEditPage
 
 from lib.background_worker import BackgroundWorker
 from lib.fuzz_http_requests import FuzzHttpRequests

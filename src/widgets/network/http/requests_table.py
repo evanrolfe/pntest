@@ -2,7 +2,7 @@ from typing import Optional
 from PyQt6 import QtCore, QtWidgets, QtGui
 from qt_models.requests_table_model import RequestsTableModel
 
-from views._compiled.network.http.requests_table import Ui_RequestsTable
+from ui.views._compiled.network.http.requests_table import Ui_RequestsTable
 from widgets.network.http.display_filters import DisplayFilters
 from widgets.network.http.capture_filters import CaptureFilters
 from widgets.qt.row_style_delegate import RowStyleDelegate

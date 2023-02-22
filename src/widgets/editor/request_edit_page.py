@@ -9,7 +9,7 @@ from repos.app_settings_repo import AppSettingsRepo
 from services.editor_item_service import EditorItemService
 from services.http_flow_service import HttpFlowService
 
-from views._compiled.editor.request_edit_page import Ui_RequestEditPage
+from ui.views._compiled.editor.request_edit_page import Ui_RequestEditPage
 from entities.http_request import FormData
 from entities.editor_item import EditorItem
 from lib.background_worker import BackgroundWorker

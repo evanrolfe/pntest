@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtWidgets
 from mitmproxy.common_types import ProxyWebsocketMessage
 from repos.http_flow_repo import HttpFlowRepo
 
-from views._compiled.network.ws_page import Ui_WsPage
+from ui.views._compiled.network.ws_page import Ui_WsPage
 
 from qt_models.messages_table_model import MessagesTableModel
 from entities.websocket_message import WebsocketMessage

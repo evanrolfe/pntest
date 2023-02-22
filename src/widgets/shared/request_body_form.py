@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from views._compiled.shared.request_body_form import Ui_RequestBodyForm
+from ui.views._compiled.shared.request_body_form import Ui_RequestBodyForm
 
 class RequestBodyForm(QtWidgets.QWidget):
     def __init__(self, request_body, *args, **kwargs):

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from views._compiled.network.ws.message_view import Ui_MessageView
+from ui.views._compiled.network.ws.message_view import Ui_MessageView
 
 class MessageView(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
