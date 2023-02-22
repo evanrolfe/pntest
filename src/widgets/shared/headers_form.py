@@ -4,7 +4,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from entities.http_flow import HttpFlow
 
 from ui.views._compiled.shared.headers_form import Ui_HeadersForm
-from qt_models.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
+from ui.qt_models.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
 from widgets.shared.line_scintilla import LineScintilla
 from lib.types import Headers
 from constants import DEFAULT_HEADERS, EMPTY_HEADER

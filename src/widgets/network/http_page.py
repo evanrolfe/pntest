@@ -8,7 +8,7 @@ from ui.views._compiled.network.http_page import Ui_HttpPage
 
 from lib.debounce import debounce
 from lib.background_worker import BackgroundWorker
-from qt_models.requests_table_model import RequestsTableModel
+from ui.qt_models.requests_table_model import RequestsTableModel
 from entities.http_flow import HttpFlow
 from services.http_flow_service import HttpFlowService
 

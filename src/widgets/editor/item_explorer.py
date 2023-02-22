@@ -2,8 +2,8 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from services.editor_item_service import EditorItemService
 from entities.editor_item import EditorItem
-from qt_models.editor_tree_model import EditorTreeModel
-from qt_models.editor_tree_item import EditorTreeItem
+from ui.qt_models.editor_tree_model import EditorTreeModel
+from ui.qt_models.editor_tree_item import EditorTreeItem
 
 class ItemExplorer(QtWidgets.QTreeView):
     item_created = QtCore.pyqtSignal(EditorItem)

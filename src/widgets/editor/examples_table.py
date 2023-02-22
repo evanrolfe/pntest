@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
 
 from ui.views._compiled.editor.examples_table import Ui_ExamplesTable
-from qt_models.examples_table_model import ExamplesTableModel
+from ui.qt_models.examples_table_model import ExamplesTableModel
 from entities.http_flow import HttpFlow
 
 class ExamplesTable(QtWidgets.QWidget):
