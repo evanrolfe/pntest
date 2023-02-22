@@ -9,7 +9,7 @@ from lib.types import Headers, get_content_type
 from ui.qt_models.payloads_files_table_model import PayloadFilesTableModel
 from entities.payload_file import PayloadFile
 
-from widgets.shared.flow_view import FlowView
+from ui.widgets.shared.flow_view import FlowView
 
 class FuzzView(FlowView):
     payloads_changed = QtCore.pyqtSignal()

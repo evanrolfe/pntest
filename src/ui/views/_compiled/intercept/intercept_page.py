@@ -119,4 +119,4 @@ class Ui_InterceptPage(object):
         self.enabledButton.setText(_translate("InterceptPage", "Enable Intercept"))
         self.interceptTabs.setTabText(self.interceptTabs.indexOf(self.headersTab), _translate("InterceptPage", "Headers"))
         self.interceptTabs.setTabText(self.interceptTabs.indexOf(self.bodyTab), _translate("InterceptPage", "Body"))
-from widgets.shared.headers_form import HeadersForm
+from ui.widgets.shared.headers_form import HeadersForm

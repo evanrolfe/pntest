@@ -88,7 +88,7 @@ class Ui_HttpPage(object):
         HttpPage.setWindowTitle(_translate("HttpPage", "Form"))
         self.label.setText(_translate("HttpPage", "NETWORK - HTTP"))
         self.toggleButton.setText(_translate("HttpPage", "WEBSOCKET"))
-from widgets.editor.item_explorer import ItemExplorer
-from widgets.network.http.requests_table import RequestsTable
-from widgets.shared.flow_view import FlowView
-from widgets.shared.loader import Loader
+from ui.widgets.editor.item_explorer import ItemExplorer
+from ui.widgets.network.http.requests_table import RequestsTable
+from ui.widgets.shared.flow_view import FlowView
+from ui.widgets.shared.loader import Loader

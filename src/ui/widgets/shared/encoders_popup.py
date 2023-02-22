@@ -7,7 +7,7 @@ from ui.views._compiled.shared.encoder_formfield import Ui_EncoderFormfield
 from lib.input_parsing.parse import get_available_encoders, get_available_hashers
 from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_wrapper import parse_text
-from widgets.shared.user_action import UserAction
+from ui.widgets.shared.user_action import UserAction
 
 class EncoderFormField(QtWidgets.QDialog):
     clicked = QtCore.pyqtSignal(str)

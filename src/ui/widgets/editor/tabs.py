@@ -3,8 +3,8 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 
 from entities.editor_item import EditorItem
 from ui.qt_models.editor_tree_item import EditorTreeItem
-from widgets.editor.request_edit_page import RequestEditPage
-from widgets.editor.fuzz_edit_page import FuzzEditPage
+from ui.widgets.editor.request_edit_page import RequestEditPage
+from ui.widgets.editor.fuzz_edit_page import FuzzEditPage
 
 class Tabs(QtWidgets.QTabWidget):
     item_changed = QtCore.pyqtSignal(EditorItem)

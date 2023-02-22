@@ -174,6 +174,6 @@ class Ui_FuzzView(object):
         self.label_5.setText(_translate("FuzzView", "Delay Duration Minimum (s)"))
         self.label_6.setText(_translate("FuzzView", "Delay Duration Maximum (s)"))
         self.requestTabs.setTabText(self.requestTabs.indexOf(self.fuzzPayloadsTab), _translate("FuzzView", "Fuzzing Options"))
-from widgets.shared.code_editor import CodeEditor
-from widgets.shared.headers_form import HeadersForm
-from widgets.shared.loader import Loader
+from ui.widgets.shared.code_editor import CodeEditor
+from ui.widgets.shared.headers_form import HeadersForm
+from ui.widgets.shared.loader import Loader

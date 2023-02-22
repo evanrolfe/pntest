@@ -91,6 +91,6 @@ class Ui_RequestEditPage(object):
         self.sendButton.setText(_translate("RequestEditPage", "Send"))
         self.saveButton.setText(_translate("RequestEditPage", "Save"))
         self.actionsButton.setText(_translate("RequestEditPage", "..."))
-from widgets.editor.examples_table import ExamplesTable
-from widgets.shared.flow_view import FlowView
-from widgets.shared.line_scintilla import LineScintilla
+from ui.widgets.editor.examples_table import ExamplesTable
+from ui.widgets.shared.flow_view import FlowView
+from ui.widgets.shared.line_scintilla import LineScintilla

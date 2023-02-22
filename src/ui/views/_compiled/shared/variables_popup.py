@@ -46,4 +46,4 @@ class Ui_VariablesPopup(object):
         self.label.setText(_translate("VariablesPopup", "Global Variables are available in all requests and in the interceptor."))
         self.cancelButton.setText(_translate("VariablesPopup", "Cancel"))
         self.saveButton.setText(_translate("VariablesPopup", "Save"))
-from widgets.qt.hoverable_q_table_view import HoverableQTableView
+from ui.widgets.qt.hoverable_q_table_view import HoverableQTableView

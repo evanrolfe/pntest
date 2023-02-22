@@ -67,4 +67,4 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionPreferences.setText(_translate("MainWindow", "Preferences"))
         self.actionAbout_PnTest.setText(_translate("MainWindow", "About PnTest"))
-from widgets.qt.sidebar import Sidebar
+from ui.widgets.qt.sidebar import Sidebar

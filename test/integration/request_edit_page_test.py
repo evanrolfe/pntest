@@ -6,7 +6,7 @@ from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures
 
 from entities.editor_item import EditorItem
-from widgets.editor.request_edit_page import RequestEditPage
+from ui.widgets.editor.request_edit_page import RequestEditPage
 
 class TestEditorPage:
     def test_editor_page_saving_a_request_with_variables(self, database, cleanup_database, qtbot: QtBot):

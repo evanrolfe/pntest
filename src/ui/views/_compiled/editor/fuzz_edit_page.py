@@ -92,7 +92,7 @@ class Ui_FuzzEditPage(object):
         self.toggleExamplesButton.setText(_translate("FuzzEditPage", "Saved Examples (10) <<"))
         self.fuzzButton.setText(_translate("FuzzEditPage", "Fuzz"))
         self.saveButton.setText(_translate("FuzzEditPage", "Save"))
-from widgets.editor.examples_table import ExamplesTable
-from widgets.editor.fuzz_view import FuzzView
-from widgets.shared.line_scintilla import LineScintilla
-from widgets.shared.loader import Loader
+from ui.widgets.editor.examples_table import ExamplesTable
+from ui.widgets.editor.fuzz_view import FuzzView
+from ui.widgets.shared.line_scintilla import LineScintilla
+from ui.widgets.shared.loader import Loader

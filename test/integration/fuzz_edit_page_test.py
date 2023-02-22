@@ -6,7 +6,7 @@ from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures
 from entities.editor_item import EditorItem
 from entities.payload_file import PayloadFile
-from widgets.editor.fuzz_edit_page import FuzzEditPage
+from ui.widgets.editor.fuzz_edit_page import FuzzEditPage
 
 class TestFuzzEditPage:
     def test_saving_a_fuzz_request(self, database, cleanup_database, qtbot: QtBot):

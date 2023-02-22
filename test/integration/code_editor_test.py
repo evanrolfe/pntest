@@ -3,7 +3,7 @@ import time
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from support.fixtures import load_fixtures
-from widgets.shared.code_editor import CodeEditor
+from ui.widgets.shared.code_editor import CodeEditor
 
 lorem_ipsum = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ullamcorper non nunc at sollicitudin.
 Ut sit amet aliquam lectus. Mauris consequat varius leo vel tempus. Suspendisse vitae nisl nibh.

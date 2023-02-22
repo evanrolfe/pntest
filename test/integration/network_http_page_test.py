@@ -7,7 +7,7 @@ from entities.http_response import HttpResponse
 from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory
-from widgets.network.http_page import HttpPage
+from ui.widgets.network.http_page import HttpPage
 import time
 
 EXPECTED_BODY = """{

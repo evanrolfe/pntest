@@ -2,7 +2,7 @@ from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from lib.process_manager import ProcessManager
 from support.fixtures import load_fixtures
-from widgets.intercept.intercept_page import InterceptPage
+from ui.widgets.intercept.intercept_page import InterceptPage
 
 class TestInterceptPage:
     pass

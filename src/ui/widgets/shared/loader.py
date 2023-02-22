@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 
 from ui.views._compiled.shared.loader import Ui_Loader
-from widgets.qt.waiting_spinner import QtWaitingSpinner
+from ui.widgets.qt.waiting_spinner import QtWaitingSpinner
 
 class Loader(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):

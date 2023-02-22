@@ -6,9 +6,9 @@ from lib.input_parsing.transform_payload import TransformPayload
 from entities.http_flow import HttpFlow
 from repos.variable_repo import VariableRepo
 
-from widgets.shared.code_themes import DarkTheme
-from widgets.shared.encoders_popup import EncodersPopup
-from widgets.shared.user_action import UserAction
+from ui.widgets.shared.code_themes import DarkTheme
+from ui.widgets.shared.encoders_popup import EncodersPopup
+from ui.widgets.shared.user_action import UserAction
 from lib.input_parsing.parse import get_available_encoders
 from lib.input_parsing.transformer import Transformer
 from lib.input_parsing.text_tree import TreeNode

@@ -3,7 +3,7 @@ import time
 from PyQt6 import QtCore, QtWidgets
 from pytestqt.qtbot import QtBot
 from repos.editor_item_repo import EditorItemRepo
-from widgets.editor.editor_page import EditorPage
+from ui.widgets.editor.editor_page import EditorPage
 
 class TestEditorPage:
     def test_deleting_an_item(self, database, cleanup_database, qtbot: QtBot):

@@ -5,7 +5,7 @@ from entities.http_flow import HttpFlow
 
 from ui.views._compiled.shared.headers_form import Ui_HeadersForm
 from ui.qt_models.request_headers_table_model import RequestHeadersTableModel, HeaderTuple
-from widgets.shared.line_scintilla import LineScintilla
+from ui.widgets.shared.line_scintilla import LineScintilla
 from lib.types import Headers
 from constants import DEFAULT_HEADERS, EMPTY_HEADER
 

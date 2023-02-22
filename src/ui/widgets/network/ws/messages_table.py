@@ -1,8 +1,8 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
 
 from ui.views._compiled.network.ws.messages_table import Ui_MessagesTable
-from widgets.network.http.display_filters import DisplayFilters
-from widgets.qt.row_style_delegate import RowStyleDelegate
+from ui.widgets.network.http.display_filters import DisplayFilters
+from ui.widgets.qt.row_style_delegate import RowStyleDelegate
 
 class MessagesTable(QtWidgets.QWidget):
     row_selected = QtCore.pyqtSignal(QtCore.QItemSelection, QtCore.QItemSelection)

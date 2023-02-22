@@ -8,7 +8,7 @@ from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from repos.process_repo import ProcessRepo
 from services.open_clients_service import OpenClientsService
-from widgets.main_window import MainWindow
+from ui.widgets.main_window import MainWindow
 from version import version
 
 THEME = 'dark'

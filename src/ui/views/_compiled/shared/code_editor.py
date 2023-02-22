@@ -73,4 +73,4 @@ class Ui_CodeEditor(object):
         self.findPrevButton.setText(_translate("CodeEditor", "Previous"))
         self.replaceButton.setText(_translate("CodeEditor", "Replace"))
         self.replaceAllButton.setText(_translate("CodeEditor", "Replace All"))
-from widgets.shared.my_scintilla import MyScintilla
+from ui.widgets.shared.my_scintilla import MyScintilla

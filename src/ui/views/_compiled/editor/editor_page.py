@@ -65,5 +65,5 @@ class Ui_EditorPage(object):
         EditorPage.setWindowTitle(_translate("EditorPage", "Form"))
         self.label.setText(_translate("EditorPage", "EDITOR"))
         self.varsButton.setText(_translate("EditorPage", "Variables"))
-from widgets.editor.item_explorer import ItemExplorer
-from widgets.editor.tabs import Tabs
+from ui.widgets.editor.item_explorer import ItemExplorer
+from ui.widgets.editor.tabs import Tabs

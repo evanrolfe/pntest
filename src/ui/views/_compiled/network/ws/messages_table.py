@@ -54,4 +54,4 @@ class Ui_MessagesTable(object):
         MessagesTable.setWindowTitle(_translate("MessagesTable", "Form"))
         self.searchBox.setPlaceholderText(_translate("MessagesTable", "Search"))
         self.displayFiltersButton.setText(_translate("MessagesTable", "Display"))
-from widgets.qt.hoverable_q_table_view import HoverableQTableView
+from ui.widgets.qt.hoverable_q_table_view import HoverableQTableView

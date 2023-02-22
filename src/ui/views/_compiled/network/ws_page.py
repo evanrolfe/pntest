@@ -71,5 +71,5 @@ class Ui_WsPage(object):
         WsPage.setWindowTitle(_translate("WsPage", "Form"))
         self.label.setText(_translate("WsPage", "NETWORK - WEBSOCKETS"))
         self.toggleButton.setText(_translate("WsPage", "HTTP"))
-from widgets.network.ws.message_view import MessageView
-from widgets.network.ws.messages_table import MessagesTable
+from ui.widgets.network.ws.message_view import MessageView
+from ui.widgets.network.ws.messages_table import MessagesTable

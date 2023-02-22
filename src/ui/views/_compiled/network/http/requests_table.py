@@ -66,4 +66,4 @@ class Ui_RequestsTable(object):
         self.searchBox.setPlaceholderText(_translate("RequestsTable", "Press enter to search"))
         self.displayFiltersButton.setText(_translate("RequestsTable", "Display"))
         self.captureFiltersButton.setText(_translate("RequestsTable", "Capture"))
-from widgets.qt.hoverable_q_table_view import HoverableQTableView
+from ui.widgets.qt.hoverable_q_table_view import HoverableQTableView

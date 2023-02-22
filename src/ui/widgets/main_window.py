@@ -9,11 +9,11 @@ from ui.views._compiled.main_window import Ui_MainWindow
 from repos.app_settings_repo import AppSettingsRepo
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
-from widgets.network.network_page import NetworkPage
-from widgets.intercept.intercept_page import InterceptPage
-from widgets.clients.clients_page import ClientsPage
-from widgets.editor.editor_page import EditorPage
-from widgets.preferences_window import PreferencesWindow
+from ui.widgets.network.network_page import NetworkPage
+from ui.widgets.intercept.intercept_page import InterceptPage
+from ui.widgets.clients.clients_page import ClientsPage
+from ui.widgets.editor.editor_page import EditorPage
+from ui.widgets.preferences_window import PreferencesWindow
 
 # Makes CTRL+C close the app:
 import signal

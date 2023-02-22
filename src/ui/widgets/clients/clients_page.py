@@ -16,7 +16,7 @@ from ui.views._compiled.clients.clients_page import Ui_ClientsPage
 from ui.qt_models.clients_table_model import ClientsTableModel
 from entities.client import Client
 from lib.process_manager import ProcessManager
-from widgets.clients.docker_window import DockerWindow
+from ui.widgets.clients.docker_window import DockerWindow
 
 class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager

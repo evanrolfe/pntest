@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtWidgets
 
-from widgets.network.http_page import HttpPage
-from widgets.network.ws_page import WsPage
+from ui.widgets.network.http_page import HttpPage
+from ui.widgets.network.ws_page import WsPage
 
 class NetworkPage(QtWidgets.QWidget):
     send_flow_to_editor = QtCore.pyqtSignal(object)

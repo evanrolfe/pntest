@@ -16,7 +16,7 @@
 # from lib.paths import get_app_path
 # from lib.process_manager import ProcessManager
 # from proxy.common_types import SettingsJson
-# from widgets.main_window import MainWindow
+# from ui.widgets.main_window import MainWindow
 # from models.client import Client
 # from models.http_flow import HttpFlow
 # from repos.client_repo import ClientRepo

@@ -217,6 +217,6 @@ class Ui_FlowView(object):
         self.requestTabs.setTabText(self.requestTabs.indexOf(self.fuzzPayloadsTab), _translate("FlowView", "Fuzzing Options"))
         self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseHeadersTab), _translate("FlowView", "Response"))
         self.responseTabs.setTabText(self.responseTabs.indexOf(self.responseBodyRawTab), _translate("FlowView", "Body"))
-from widgets.shared.code_editor import CodeEditor
-from widgets.shared.headers_form import HeadersForm
-from widgets.shared.loader import Loader
+from ui.widgets.shared.code_editor import CodeEditor
+from ui.widgets.shared.headers_form import HeadersForm
+from ui.widgets.shared.loader import Loader

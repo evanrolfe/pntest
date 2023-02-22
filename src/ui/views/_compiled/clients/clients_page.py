@@ -132,4 +132,4 @@ class Ui_ClientsPage(object):
         self.firefoxButton.setText(_translate("ClientsPage", "Firefox"))
         self.chromiumButton.setText(_translate("ClientsPage", "Chromium"))
         self.dockerButton.setText(_translate("ClientsPage", "Docker Container"))
-from widgets.clients.clients_table import ClientsTable
+from ui.widgets.clients.clients_table import ClientsTable

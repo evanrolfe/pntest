@@ -10,7 +10,7 @@ from entities.http_response import HttpResponse
 from ui.views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type
 from lib.utils import get_status_colour, get_status_colour_bright
-from widgets.shared.code_editor import CodeEditor
+from ui.widgets.shared.code_editor import CodeEditor
 from constants import HTTP_STATUS_CODE_DESCRIPTIONS
 
 class FlowView(QtWidgets.QWidget):

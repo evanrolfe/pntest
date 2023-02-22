@@ -9,9 +9,9 @@ from entities.http_flow import HttpFlow
 from entities.http_request import HttpRequest
 from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures, build_an_editor_flow_with_payloads
-from widgets.editor.editor_page import EditorPage
-from widgets.shared.my_scintilla import MyScintilla
-from widgets.shared.user_action import UserAction
+from ui.widgets.editor.editor_page import EditorPage
+from ui.widgets.shared.my_scintilla import MyScintilla
+from ui.widgets.shared.user_action import UserAction
 
 class TestMyScintilla:
     # --------------------------------------------------------------------------
