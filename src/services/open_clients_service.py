@@ -13,7 +13,8 @@ from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 
-class ClientService(QtCore.QObject):
+# OpenClientsService is a singleton class which keeps track of which clients are open
+class OpenClientsService(QtCore.QObject):
     open_clients: list[Client]
     process_repo: ProcessRepo
     browser_repo: BrowserRepo
@@ -24,12 +25,12 @@ class ClientService(QtCore.QObject):
     __instance = None
 
     @staticmethod
-    def get_instance() -> ClientService:
+    def get_instance() -> OpenClientsService:
         # Static access method.
-        if ClientService.__instance is None:
-            ClientService()
+        if OpenClientsService.__instance is None:
+            OpenClientsService()
 
-        return ClientService.__instance # type:ignore
+        return OpenClientsService.__instance # type:ignore
 
     def __init__(self):
         super().__init__()
@@ -41,10 +42,10 @@ class ClientService(QtCore.QObject):
         self.browser_repo.browser_exited.connect(self.__browser_was_closed)
 
         # Virtually private constructor.
-        if ClientService.__instance is not None:
+        if OpenClientsService.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            ClientService.__instance = self
+            OpenClientsService.__instance = self
     # /Singleton method stuff
 
     def build_client(self, client_type: str, container: Optional[Container] = None) -> Client:
@@ -138,7 +139,7 @@ class ClientService(QtCore.QObject):
         self.clients_changed.emit()
 
     def on_exit(self):
-        print("[ClientService] killing all clients...")
+        print("[OpenClientsService] killing all clients...")
         for open_client in self.open_clients:
             self.close_client(open_client)
 

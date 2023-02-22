@@ -6,13 +6,11 @@ from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from entities.available_client import AvailableClient
-from services.client_service import ClientService
 from views._compiled.clients.docker_window import Ui_DockerWindow
 
 class DockerWindow(QtWidgets.QDialog):
     proxify_containers = QtCore.pyqtSignal(list)
     container_repo: ContainerRepo
-    client_service: ClientService
 
     check_boxes_and_containers: dict[QtWidgets.QCheckBox, Container]
 
@@ -27,7 +25,6 @@ class DockerWindow(QtWidgets.QDialog):
         self.ui.saveButton.clicked.connect(self.save)
 
         self.container_repo = ContainerRepo.get_instance()
-        self.client_service = ClientService.get_instance()
         self.check_boxes_and_containers = {}
 
         self.load_containers()

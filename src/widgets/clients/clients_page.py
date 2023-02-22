@@ -2,8 +2,8 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from lib.background_worker import BackgroundWorker
 from entities.container import Container
 from repos.browser_repo import BrowserRepo
-from services.available_client_service import AvailableClientService
-from services.client_service import ClientService
+from services.available_clients_service import AvailableClientsService
+from services.open_clients_service import OpenClientsService
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
 from repos.project_settings_repo import ProjectSettingsRepo
@@ -20,7 +20,7 @@ from widgets.clients.docker_window import DockerWindow
 
 class ClientsPage(QtWidgets.QWidget):
     process_manager: ProcessManager
-    client_service: ClientService
+    open_clients_service: OpenClientsService
     available_clients: list[AvailableClient]
     threadpool: QtCore.QThreadPool
 
@@ -62,10 +62,10 @@ class ClientsPage(QtWidgets.QWidget):
         self.load_available_clients()
 
         self.process_manager = ProcessManager.get_instance()
-        self.client_service = ClientService.get_instance()
+        self.open_clients_service = OpenClientsService.get_instance()
 
         self.process_manager.clients_changed.connect(self.reload)
-        self.client_service.clients_changed.connect(self.reload)
+        self.open_clients_service.clients_changed.connect(self.reload)
 
         self.docker_window = DockerWindow(self)
         self.docker_window.proxify_containers.connect(self.create_clients_for_containers)
@@ -84,28 +84,28 @@ class ClientsPage(QtWidgets.QWidget):
             self.docker_window.show()
             return
 
-        client = self.client_service.build_client(client_type)
+        client = self.open_clients_service.build_client(client_type)
         ClientRepo().save(client)
         self.open_client_clicked_async(client)
 
     def create_clients_for_containers(self, containers: list[Container]):
         for container in containers:
             print(f'Building client for container id {container.short_id}')
-            client = self.client_service.build_client('docker', container)
+            client = self.open_clients_service.build_client('docker', container)
             ClientRepo().save(client)
             print(client, "\n")
             self.reload_table_data()
             self.open_client_clicked_async(client)
 
     def load_available_clients(self):
-        available_clients = AvailableClientService().get_all()
+        available_clients = AvailableClientsService().get_all()
 
         for key, button in self.client_buttons.items():
             available_client = [ac for ac in available_clients if ac.name == key][0]
             button.setEnabled(available_client.enabled())
 
     def open_client_clicked_async(self, client: Client):
-        worker = BackgroundWorker(lambda x: self.client_service.launch_client(client))
+        worker = BackgroundWorker(lambda x: self.open_clients_service.launch_client(client))
         worker.signals.error.connect(self.client_error)
         worker.signals.finished.connect(self.reload_table_data)
         self.threadpool.start(worker)
@@ -128,7 +128,7 @@ class ClientsPage(QtWidgets.QWidget):
             if response != QtWidgets.QMessageBox.StandardButton.Yes:
                 return
 
-        worker = BackgroundWorker(lambda x: self.client_service.close_client(client))
+        worker = BackgroundWorker(lambda x: self.open_clients_service.close_client(client))
         worker.signals.error.connect(self.client_error)
         worker.signals.finished.connect(self.reload_table_data)
         self.threadpool.start(worker)

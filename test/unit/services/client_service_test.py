@@ -9,7 +9,7 @@ from entities.process import Process
 from repos.app_settings_repo import AppSettingsRepo
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
-from services.client_service import ClientService
+from services.open_clients_service import OpenClientsService
 from lib.paths import get_app_path
 
 class TestClientService:
@@ -25,7 +25,7 @@ class TestClientService:
         client_repo.save(client)
 
         # Start the client
-        client_service = ClientService.get_instance()
+        client_service = OpenClientsService.get_instance()
         client_service.launch_client(client)
 
         assert len(client_service.open_clients) == 1
@@ -55,7 +55,7 @@ class TestClientService:
         client_repo.save(client)
 
         # Start the client
-        client_service = ClientService.get_instance()
+        client_service = OpenClientsService.get_instance()
         client_service.launch_client(client)
 
         assert len(client_service.open_clients) == 1
@@ -89,7 +89,7 @@ class TestClientService:
         client_repo.save(client)
 
         # Start the client
-        client_service = ClientService.get_instance()
+        client_service = OpenClientsService.get_instance()
         client_service.launch_client(client)
         time.sleep(1)
 

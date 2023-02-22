@@ -7,7 +7,7 @@ from lib.process_manager import ProcessManager
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from repos.process_repo import ProcessRepo
-from services.client_service import ClientService
+from services.open_clients_service import OpenClientsService
 from widgets.main_window import MainWindow
 from version import version
 
@@ -56,7 +56,7 @@ def main():
 
     database = Database(db_path)
 
-    client_service = ClientService.get_instance()
+    client_service = OpenClientsService.get_instance()
     process_manager = ProcessManager()
     process_repo = ProcessRepo.get_instance()
     process_repo.set_app_path(str(app_path))
@@ -65,6 +65,7 @@ def main():
     main_window.set_process_manager(process_manager)
     main_window.show()
     sys.excepthook = main_window.exception_handler
+
     # On Quit:
     app.aboutToQuit.connect(main_window.about_to_quit)
     app.aboutToQuit.connect(client_service.on_exit)
