@@ -1,8 +1,6 @@
 import json
 from PyQt6 import QtCore
-from lib.proxy_message_receiver import ProxyMessageReceiver
 from entities.http_flow import HttpFlow
-from lib.proxy_zmq_server import ProxyZmqServer
 from services.proxy_service import ProxyService
 
 # InterceptQueue takes in multiple flows from multiple proxies, it puts them all on a queue

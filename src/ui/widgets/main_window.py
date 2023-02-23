@@ -3,7 +3,6 @@ from pathlib import Path
 import traceback
 from typing import Optional
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
-from lib.proxy_message_receiver import ProxyMessageReceiver
 from services.proxy_service import ProxyService
 
 from ui.views._compiled.main_window import Ui_MainWindow

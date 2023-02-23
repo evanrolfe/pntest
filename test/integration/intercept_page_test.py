@@ -1,6 +1,6 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from lib.proxy_message_receiver import ProxyMessageReceiver
+from services.proxy.proxy_message_receiver import ProxyMessageReceiver
 from support.fixtures import load_fixtures
 from ui.widgets.intercept.intercept_page import InterceptPage
 

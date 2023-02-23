@@ -1,7 +1,9 @@
 from PyQt6 import QtCore
 
-from lib.proxy_zmq_server import ProxyZmqServer
+from services.proxy.proxy_zmq_server import ProxyZmqServer
 
+# ProxyStateManager keeps track of the state of all the proxies. Mainly around whether or not network
+# recording or intercept is enabled/disabled.
 class ProxyStateManager(QtCore.QObject):
     proxy_zmq_server: ProxyZmqServer
     recording_enabled: bool

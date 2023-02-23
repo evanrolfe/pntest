@@ -1,11 +1,13 @@
 from __future__ import annotations
 from PyQt6 import QtCore
-from lib.proxy_message_receiver import ProxyMessageReceiver
+from services.proxy.proxy_message_receiver import ProxyMessageReceiver
 
-from lib.proxy_zmq_server import ProxyZmqServer
-from services.proxy_state_manager import ProxyStateManager
+from services.proxy.proxy_zmq_server import ProxyZmqServer
+from services.proxy.proxy_state_manager import ProxyStateManager
 
+#ProxyService is a singleton class which provdies an interface to related proxy functionality.
 class ProxyService(QtCore.QObject):
+    proxy_zmq_server: ProxyZmqServer
     process_manager: ProxyMessageReceiver
     proxy_state_manager: ProxyStateManager
 

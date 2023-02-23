@@ -3,7 +3,6 @@ import sys
 from PyQt6 import QtWidgets, QtGui, QtCore
 
 from lib.paths import get_app_path, get_resource_path, get_app_config_path
-from lib.proxy_message_receiver import ProxyMessageReceiver
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from repos.process_repo import ProcessRepo

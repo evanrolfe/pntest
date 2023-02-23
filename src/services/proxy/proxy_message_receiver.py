@@ -12,23 +12,21 @@ from entities.client import Client
 from entities.http_flow import HttpFlow
 from entities.project_settings import ProjectSettings
 from entities.websocket_message import WebsocketMessage
-from lib.proxy_zmq_server import ProxyZmqServer
+from services.proxy.proxy_zmq_server import ProxyZmqServer
 from entities.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo
 from services.http_flow_service import HttpFlowService
 from repos.project_settings_repo import ProjectSettingsRepo
 
+# ProxyMessageReceiver handles message sent to the ProxyZmqServer from the proxies themselves.
 class ProxyMessageReceiver(QtCore.QObject):
     proxy_request = QtCore.pyqtSignal(HttpFlow)
     proxy_response = QtCore.pyqtSignal(HttpFlow)
     proxy_ws_message = QtCore.pyqtSignal(WebsocketMessage)
     flow_intercepted = QtCore.pyqtSignal(HttpFlow)
     proxy_started = QtCore.pyqtSignal(int)
-
     clients_changed = QtCore.pyqtSignal()
-
-    proxy_handler: ProxyZmqServer
 
     def __init__(self, proxy_zmq_server: ProxyZmqServer):
         super().__init__()

@@ -14,6 +14,8 @@ PROXY_ZMQ_PORT = 5556
 
 # ProxyZmqServer is a wrapper for ProxyZmqServerThread and runs ProxyZmqServerThread in a thread.
 # All outside code should call ProxyZmqServer and not ProxyZmqServerThread.
+# It can send message to proxies and also receives messages from them too.
+# There is one ProxyServerServer and there can be multiple (or zero) proxies running.
 class ProxyZmqServer():
     def __init__(self):
         self.thread = QtCore.QThread()
