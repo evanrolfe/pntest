@@ -5,7 +5,7 @@ from repos.http_flow_repo import HttpFlowRepo
 from repos.ws_message_repo import WsMessageRepo
 
 from ui.views._compiled.intercept.intercept_page import Ui_InterceptPage
-from lib.intercept_queue import InterceptQueue
+from services.intercept_queue import InterceptQueue
 
 class InterceptPage(QtWidgets.QWidget):
     intercepted_flow: Optional[HttpFlow]
