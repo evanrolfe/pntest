@@ -1,7 +1,9 @@
 import json
 from PyQt6 import QtCore
-from lib.process_manager import ProcessManager
+from lib.proxy_message_receiver import ProxyMessageReceiver
 from entities.http_flow import HttpFlow
+from lib.proxy_zmq_server import ProxyZmqServer
+from services.proxy_service import ProxyService
 
 # InterceptQueue takes in multiple flows from multiple proxies, it puts them all on a queue
 # and waits for a decision one at a time from the intercept page
@@ -17,9 +19,9 @@ class InterceptQueue(QtCore.QObject):
         self.queue = []
         self.awaiting_decision = False
 
-        self.process_manager = ProcessManager.get_instance()
-        self.process_manager.flow_intercepted.connect(self.flow_intercepted)
-        self.process_manager.intercept_changed.connect(self.intercept_changed)
+        self.proxy_service = ProxyService.get_instance()
+        self.proxy_service.proxy_state_manager.intercept_changed.connect(self.intercept_changed)
+        self.proxy_service.process_manager.flow_intercepted.connect(self.flow_intercepted)
 
     def flow_intercepted(self, flow: HttpFlow):
         print(f'[InterceptQueue] received intercepted flow {flow.uuid}')
@@ -33,23 +35,23 @@ class InterceptQueue(QtCore.QObject):
         self.decision_required.emit(flow)
 
     def forward_flow(self, flow: HttpFlow, intercept_response: bool):
-        self.process_manager.forward_flow(flow, intercept_response)
+        self.proxy_service.proxy_zmq_server.forward_flow(flow, intercept_response)
         self.__pop_queue_and_await_next_decision()
 
     def drop_flow(self, flow: HttpFlow):
-        self.process_manager.drop_flow(flow)
+        self.proxy_service.proxy_zmq_server.drop_flow(flow)
         self.__pop_queue_and_await_next_decision()
 
     def forward_all(self):
-        self.process_manager.forward_all()
+        self.proxy_service.proxy_zmq_server.forward_all()
         self.queue = []
         self.queue_empty.emit()
 
     def enabled(self) -> bool:
-        return self.process_manager.intercept_enabled
+        return self.proxy_service.proxy_state_manager.intercept_enabled
 
     def toggle_intercept_enabled(self):
-        self.process_manager.toggle_intercept_enabled()
+        self.proxy_service.proxy_state_manager.toggle_intercept_enabled()
 
     # Private Methods
 

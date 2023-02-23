@@ -12,15 +12,14 @@ from entities.client import Client
 from entities.http_flow import HttpFlow
 from entities.project_settings import ProjectSettings
 from entities.websocket_message import WebsocketMessage
-from lib.proxy_handler import ProxyHandler
+from lib.proxy_zmq_server import ProxyZmqServer
 from entities.http_response import HttpResponse
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from repos.client_repo import ClientRepo
 from services.http_flow_service import HttpFlowService
 from repos.project_settings_repo import ProjectSettingsRepo
 
-# TODO: This should go in a service class
-class ProcessManager(QtCore.QObject):
+class ProxyMessageReceiver(QtCore.QObject):
     proxy_request = QtCore.pyqtSignal(HttpFlow)
     proxy_response = QtCore.pyqtSignal(HttpFlow)
     proxy_ws_message = QtCore.pyqtSignal(WebsocketMessage)
@@ -28,55 +27,29 @@ class ProcessManager(QtCore.QObject):
     proxy_started = QtCore.pyqtSignal(int)
 
     clients_changed = QtCore.pyqtSignal()
-    recording_changed = QtCore.pyqtSignal(bool)
-    intercept_changed = QtCore.pyqtSignal(bool)
 
-    app_path: str
-    proxy_handler: ProxyHandler
-    recording_enabled: bool
-    intercept_enabled: bool
+    proxy_handler: ProxyZmqServer
 
-    # Singleton method stuff:
-    __instance = None
-
-    @staticmethod
-    def get_instance() -> ProcessManager:
-        # Static access method.
-        if ProcessManager.__instance is None:
-            raise Exception("Calling ProcessManager.get_instance() when there is not instance!")
-        return ProcessManager.__instance
-
-    def __init__(self):
+    def __init__(self, proxy_zmq_server: ProxyZmqServer):
         super().__init__()
-        self.init()
 
-        # Virtually private constructor.
-        if ProcessManager.__instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            ProcessManager.__instance = self
-    # /Singleton method stuff
-
-    def init(self):
-        self.proxy_handler = ProxyHandler(self)
-        self.proxy_handler.start()
-
-        self.proxy_handler.signals.proxy_request.connect(self.proxy_request_slot)
-        self.proxy_handler.signals.proxy_response.connect(self.proxy_response_slot)
-        self.proxy_handler.signals.proxy_ws_message.connect(self.proxy_ws_message_slot)
-        self.proxy_handler.signals.proxy_started.connect(self.proxy_was_launched)
+        self.proxy_zmq_server = proxy_zmq_server
+        self.proxy_zmq_server.signals.proxy_request.connect(self.proxy_request_slot)
+        self.proxy_zmq_server.signals.proxy_response.connect(self.proxy_response_slot)
+        self.proxy_zmq_server.signals.proxy_ws_message.connect(self.proxy_ws_message_slot)
+        self.proxy_zmq_server.signals.proxy_started.connect(self.proxy_was_launched)
 
         self.recording_enabled = True
         self.intercept_enabled = False
 
     def on_exit(self):
-        print("[ProcessManager] killing all proxy handler...")
-        self.proxy_handler.stop()
+        print("[ProxyMessageReceiver] killing all proxy handler...")
+        self.proxy_zmq_server.stop()
 
     def proxy_was_launched(self, client_id: int):
         self.set_settings(ProjectSettingsRepo().get())
-        self.proxy_handler.set_recording_enabled(self.recording_enabled)
-        self.proxy_handler.set_intercept_enabled(self.intercept_enabled)
+        self.proxy_zmq_server.set_recording_enabled(self.recording_enabled)
+        self.proxy_zmq_server.set_intercept_enabled(self.intercept_enabled)
 
         client = ClientRepo().find(client_id)
         if client is None:
@@ -86,35 +59,8 @@ class ProcessManager(QtCore.QObject):
         ClientRepo().save(client)
         self.clients_changed.emit()
 
-    def forward_flow(self, flow: HttpFlow, intercept_response: bool):
-        self.proxy_handler.forward_flow(flow, intercept_response)
-
-    def forward_all(self):
-        self.proxy_handler.forward_all()
-
-    def drop_flow(self, flow: HttpFlow):
-        self.proxy_handler.drop_flow(flow)
-
-    def toggle_intercept_enabled(self):
-        self.intercept_enabled = not self.intercept_enabled
-
-        if self.intercept_enabled and not self.recording_enabled:
-            self.toggle_recording_enabled()
-
-        self.proxy_handler.set_intercept_enabled(self.intercept_enabled)
-        self.intercept_changed.emit(self.intercept_enabled)
-
-    def toggle_recording_enabled(self):
-        self.recording_enabled = not self.recording_enabled
-
-        if not self.recording_enabled and self.intercept_enabled:
-            self.toggle_intercept_enabled()
-
-        self.proxy_handler.set_recording_enabled(self.recording_enabled)
-        self.recording_changed.emit(self.recording_enabled)
-
     def set_settings(self, settings: ProjectSettings) -> None:
-        self.proxy_handler.set_settings(settings)
+        self.proxy_zmq_server.set_settings(settings)
 
     def proxy_request_slot(self, proxy_request: ProxyRequest):
         flow = HttpFlow.from_proxy_request(proxy_request)

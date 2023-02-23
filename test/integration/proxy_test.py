@@ -14,7 +14,7 @@
 # from lib.browser_launcher.detect import Browser
 
 # from lib.paths import get_app_path
-# from lib.process_manager import ProcessManager
+# from lib.process_manager import ProxyMessageReceiver
 # from proxy.common_types import SettingsJson
 # from ui.widgets.main_window import MainWindow
 # from models.client import Client
@@ -35,7 +35,7 @@
 #     # Determine paths
 #     app_path = get_app_path()
 #     src_path = os.path.join(app_path, 'src')
-#     request.cls.process_manager = ProcessManager(src_path)
+#     request.cls.process_manager = ProxyMessageReceiver(src_path)
 
 #     # Launch a proxy
 #     request.cls.client = Client(
@@ -88,7 +88,7 @@
 
 # @pytest.mark.usefixtures("proxy")
 # class TestProxy:
-#     process_manager: ProcessManager
+#     process_manager: ProxyMessageReceiver
 #     client: Client
 
 #     flow_signals: list[HttpFlow]

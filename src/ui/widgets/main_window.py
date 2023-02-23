@@ -3,7 +3,8 @@ from pathlib import Path
 import traceback
 from typing import Optional
 from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
-from lib.process_manager import ProcessManager
+from lib.proxy_message_receiver import ProxyMessageReceiver
+from services.proxy_service import ProxyService
 
 from ui.views._compiled.main_window import Ui_MainWindow
 from repos.app_settings_repo import AppSettingsRepo
@@ -121,8 +122,9 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box.exec()
 
     # Wire-up the proxies (via the process_manager) to the pages and the InterceptQueue
-    def set_process_manager(self, process_manager: ProcessManager):
-        self.process_manager = process_manager
+    def set_proxy_service(self, proxy_service: ProxyService):
+        self.process_manager = proxy_service.process_manager
+        self.proxy_service = proxy_service
 
         # TODO: We could probably use the singleton get_instance() and set these in the page's constructors
         # Network Page:
@@ -133,8 +135,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.network_status.clicked.connect(self.toggle_recording_enabled)
         self.intercept_status.clicked.connect(self.toggle_intercept_enabled)
 
-        self.process_manager.recording_changed.connect(self.recording_changed)
-        self.process_manager.intercept_changed.connect(self.intercept_changed)
+        self.proxy_service.proxy_state_manager.recording_changed.connect(self.recording_changed)
+        self.proxy_service.proxy_state_manager.intercept_changed.connect(self.intercept_changed)
     #     self.process_manager.clients_changed.connect(self.clients_changed)
 
     # def clients_changed(self):
@@ -148,19 +150,19 @@ class MainWindow(QtWidgets.QMainWindow):
     #         self.proxy_status.setText("Proxies: None")
 
     def toggle_recording_enabled(self):
-        self.process_manager.toggle_recording_enabled()
+        self.proxy_service.proxy_state_manager.toggle_recording_enabled()
 
     def toggle_intercept_enabled(self):
-        self.process_manager.toggle_intercept_enabled()
+        self.proxy_service.proxy_state_manager.toggle_intercept_enabled()
 
     def recording_changed(self):
-        if self.process_manager.recording_enabled:
+        if self.proxy_service.proxy_state_manager.recording_enabled:
             self.network_status.setText("Network: Recording")
         else:
             self.network_status.setText("Network: Paused")
 
     def intercept_changed(self):
-        if self.process_manager.intercept_enabled:
+        if self.proxy_service.proxy_state_manager.intercept_enabled:
             self.intercept_status.setText("Intercept: Enabled")
         else:
             self.intercept_status.setText("Intercept: Disabled")

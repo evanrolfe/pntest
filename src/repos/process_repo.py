@@ -44,7 +44,7 @@ class ProcessRepo():
         self.app_path = app_path
 
     def launch_proxy(self, client: Client) -> Process:
-        print(f"[ProcessManager] Launching proxy, app_path: {self.app_path}")
+        print(f"[ProcessRepo] Launching proxy, app_path: {self.app_path}")
         args_str = f'--client-id {client.id} --zmq-server {ZMQ_SERVER_ADDR}'
 
         if is_development_env():

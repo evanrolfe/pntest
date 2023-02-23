@@ -3,11 +3,12 @@ import sys
 from PyQt6 import QtWidgets, QtGui, QtCore
 
 from lib.paths import get_app_path, get_resource_path, get_app_config_path
-from lib.process_manager import ProcessManager
+from lib.proxy_message_receiver import ProxyMessageReceiver
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from repos.process_repo import ProcessRepo
 from services.open_clients_service import OpenClientsService
+from services.proxy_service import ProxyService
 from ui.widgets.main_window import MainWindow
 from version import version
 
@@ -56,20 +57,21 @@ def main():
 
     database = Database(db_path)
 
+    proxy_service = ProxyService()
+
     client_service = OpenClientsService.get_instance()
-    process_manager = ProcessManager()
     process_repo = ProcessRepo.get_instance()
     process_repo.set_app_path(str(app_path))
 
     main_window = MainWindow()
-    main_window.set_process_manager(process_manager)
+    main_window.set_proxy_service(proxy_service)
     main_window.show()
     sys.excepthook = main_window.exception_handler
 
     # On Quit:
     app.aboutToQuit.connect(main_window.about_to_quit)
     app.aboutToQuit.connect(client_service.on_exit)
-    app.aboutToQuit.connect(process_manager.on_exit)
+    app.aboutToQuit.connect(proxy_service.process_manager.on_exit)
 
     # Style:
     app.setStyle('Fusion')

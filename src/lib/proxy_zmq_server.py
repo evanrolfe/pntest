@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import ByteString, cast
 from PyQt6 import QtCore, QtWidgets
 import zmq
@@ -11,13 +12,50 @@ from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMe
 
 PROXY_ZMQ_PORT = 5556
 
+# ProxyZmqServer is a wrapper for ProxyZmqServerThread and runs ProxyZmqServerThread in a thread.
+# All outside code should call ProxyZmqServer and not ProxyZmqServerThread.
+class ProxyZmqServer():
+    def __init__(self):
+        self.thread = QtCore.QThread()
+        self.zmq_server = ProxyZmqServerThread()
+        self.zmq_server.moveToThread(self.thread)
+        self.signals = self.zmq_server.signals
+        self.thread.started.connect(self.zmq_server.run)
+
+    def start(self):
+        self.thread.start()
+
+    def stop(self):
+        print("Stopping ProxyEventsWorker...")
+        self.zmq_server.stop()
+        self.thread.quit()
+        self.thread.wait()
+
+    def forward_flow(self, flow: HttpFlow, intercept_response: bool):
+        self.zmq_server.forward_flow(flow, intercept_response)
+
+    def forward_all(self):
+        self.zmq_server.forward_all()
+
+    def drop_flow(self, flow: HttpFlow):
+        self.zmq_server.drop_flow(flow)
+
+    def set_intercept_enabled(self, enabled: bool):
+        self.zmq_server.set_intercept_enabled(enabled)
+
+    def set_recording_enabled(self, enabled: bool):
+        self.zmq_server.set_recording_enabled(enabled)
+
+    def set_settings(self, settings: ProjectSettings) -> None:
+        self.zmq_server.set_settings(settings)
+
 class ProxySignals(QtCore.QObject):
     proxy_request = QtCore.pyqtSignal(object) # NOTE: Needs to be object even though its actually ProxyRequest
     proxy_response = QtCore.pyqtSignal(object) # NOTE: Needs to be object even though its actually ProxyResponse
     proxy_ws_message = QtCore.pyqtSignal(object) # NOTE: ^^
     proxy_started = QtCore.pyqtSignal(int)
 
-class ProxyZmqServer(QtCore.QObject):
+class ProxyZmqServerThread(QtCore.QObject):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.signals = ProxySignals()
@@ -32,7 +70,7 @@ class ProxyZmqServer(QtCore.QObject):
         poll = zmq.Poller()
         poll.register(self.socket, zmq.POLLIN)
 
-        print('[ProxyZmqServer] starting...')
+        print('[ProxyZmqServerThread] starting...')
         self.should_continue = True
         while self.should_continue:
             try:
@@ -40,10 +78,10 @@ class ProxyZmqServer(QtCore.QObject):
             except zmq.error.ZMQError:
                 # TODO: Figure out why this error is raise from here on exit:
                 # zmq.error.ZMQError: Socket operation on non-socket
-                print('[ProxyZmqServer] error')
+                print('[ProxyZmqServerThread] error')
                 return
 
-            # print(f'[ProxyZmqServer] polling client_ids {list(self.client_ids)}')
+            # print(f'[ProxyZmqServerThread] polling client_ids {list(self.client_ids)}')
             for client_id in list(self.client_ids):
                 message = {'type': 'poll'}
                 self.socket.send_multipart([str(client_id).encode(), json.dumps(message).encode()])
@@ -67,7 +105,7 @@ class ProxyZmqServer(QtCore.QObject):
                     pass
 
     def stop(self):
-        print('[ProxyZmqServer] stopping...')
+        print('[ProxyZmqServerThread] stopping...')
         self.should_continue = False
         self.socket.close()
         self.context.term()
@@ -75,15 +113,15 @@ class ProxyZmqServer(QtCore.QObject):
     def handle_message(self, message, id: int):
         obj = json.loads(message)
         if (obj['type'] == 'request'):
-            print(f'[ProxyZmqServer] Received http request')
+            print(f'[ProxyZmqServerThread] Received http request')
             self.request(obj)
         elif (obj['type'] == 'response'):
-            print(f'[ProxyZmqServer] Received http response')
+            print(f'[ProxyZmqServerThread] Received http response')
             # Decode the hex string
             obj['content'] = bytes.fromhex(obj['content'])
             self.response(obj)
         elif (obj['type'] == 'websocket_message'):
-            print(f'[ProxyZmqServer] Received websocket message')
+            print(f'[ProxyZmqServerThread] Received websocket message')
             self.websocket_message(obj)
         elif (obj['type'] == 'started'):
             self.signals.proxy_started.emit(id)
@@ -132,43 +170,8 @@ class ProxyZmqServer(QtCore.QObject):
 
     def __show_error_box(self, message):
         message_box = QtWidgets.QMessageBox()
-        message_box.setWindowTitle('ProxyZmqServer: Error')
+        message_box.setWindowTitle('ProxyZmqServerThread: Error')
         message_box.setText(message)
         message_box.exec()
 
         print(message)
-
-class ProxyHandler():
-    def __init__(self, parent=None):
-        self.thread = QtCore.QThread(parent)
-        self.zmq_server = ProxyZmqServer()
-        self.zmq_server.moveToThread(self.thread)
-        self.signals = self.zmq_server.signals
-        self.thread.started.connect(self.zmq_server.run)
-
-    def start(self):
-        self.thread.start()
-
-    def stop(self):
-        print("Stopping ProxyEventsWorker...")
-        self.zmq_server.stop()
-        self.thread.quit()
-        self.thread.wait()
-
-    def forward_flow(self, flow: HttpFlow, intercept_response):
-        self.zmq_server.forward_flow(flow, intercept_response)
-
-    def forward_all(self):
-        self.zmq_server.forward_all()
-
-    def drop_flow(self, flow: HttpFlow):
-        self.zmq_server.drop_flow(flow)
-
-    def set_intercept_enabled(self, enabled: bool):
-        self.zmq_server.set_intercept_enabled(enabled)
-
-    def set_recording_enabled(self, enabled: bool):
-        self.zmq_server.set_recording_enabled(enabled)
-
-    def set_settings(self, settings: ProjectSettings) -> None:
-        self.zmq_server.set_settings(settings)

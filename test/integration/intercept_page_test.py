@@ -1,17 +1,17 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from lib.process_manager import ProcessManager
+from lib.proxy_message_receiver import ProxyMessageReceiver
 from support.fixtures import load_fixtures
 from ui.widgets.intercept.intercept_page import InterceptPage
 
 class TestInterceptPage:
     pass
-    # TODO: Only create a ProcessManager singleton instance once for the whole test suite, so this test can run
+    # TODO: Only create a ProxyMessageReceiver singleton instance once for the whole test suite, so this test can run
     # along side proxy_test.py
     # def test_receiving_multiple_flows_and_forwarding_them(self, database, cleanup_database, qtbot: QtBot):
     #     Settings.create_defaults()
     #     # try:
-    #     #     process_manager = ProcessManager('./src')
+    #     #     process_manager = ProxyMessageReceiver('./src')
     #     # except:
     #     #     pass
 

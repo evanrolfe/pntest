@@ -223,7 +223,7 @@ class ProxyEventsAddon:
         response_state['intercepted'] = intercept_response
 
         # NOTE: Even though it breaks the type-checking, we convert this to a string so it can be sent
-        # over zmq, then in ProxyHandler we decode base64 and decode back to raw bytes
+        # over zmq, then in ProxyZmqServer we decode base64 and decode back to raw bytes
         # TODO: Have a seperate ProxyResponseZmq type with content: str
         if flow.response.content is None:
             response_state['content'] = '' # type:ignore

@@ -10,16 +10,16 @@ from repos.project_settings_repo import ProjectSettingsRepo
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from entities.available_client import AvailableClient
+from services.proxy_service import ProxyService
 
 from ui.views._compiled.clients.clients_page import Ui_ClientsPage
 
 from ui.qt_models.clients_table_model import ClientsTableModel
 from entities.client import Client
-from lib.process_manager import ProcessManager
 from ui.widgets.clients.docker_window import DockerWindow
 
 class ClientsPage(QtWidgets.QWidget):
-    process_manager: ProcessManager
+    proxy_service: ProxyService
     open_clients_service: OpenClientsService
     available_clients: list[AvailableClient]
     threadpool: QtCore.QThreadPool
@@ -61,10 +61,10 @@ class ClientsPage(QtWidgets.QWidget):
         }
         self.load_available_clients()
 
-        self.process_manager = ProcessManager.get_instance()
+        self.proxy_service = ProxyService.get_instance()
         self.open_clients_service = OpenClientsService.get_instance()
 
-        self.process_manager.clients_changed.connect(self.reload)
+        self.proxy_service.process_manager.clients_changed.connect(self.reload)
         self.open_clients_service.clients_changed.connect(self.reload)
 
         self.docker_window = DockerWindow(self)

@@ -1,8 +1,8 @@
 from PyQt6 import QtCore, QtWidgets
 from repos.project_settings_repo import ProjectSettingsRepo
+from services.proxy_service import ProxyService
 
 from ui.views._compiled.network.http.capture_filters import Ui_CaptureFilters
-from lib.process_manager import ProcessManager
 
 class CaptureFilters(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -42,8 +42,9 @@ class CaptureFilters(QtWidgets.QDialog):
         capture_filters['host_setting'] = host_setting
 
         ProjectSettingsRepo().save(self.settings)
-        process_manager = ProcessManager.get_instance()
-        process_manager.set_settings(self.settings)
+
+        proxy_service = ProxyService.get_instance()
+        proxy_service.process_manager.set_settings(self.settings)
 
         self.close()
 
