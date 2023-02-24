@@ -1,4 +1,7 @@
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+from lib.debounce import debounce
+
 
 class HeaderViewFilter(QtCore.QObject):
     headers_hovered = QtCore.pyqtSignal()
@@ -33,3 +36,8 @@ class HoverableQTableView(QtWidgets.QTableView):
         if self.hover_index is not None:
             self.hover_index = QtCore.QModelIndex() # blank index
             self.hover_index_changed.emit(self.hover_index)
+
+    # Its slow to resize the QTableView, so we debounce it when the user resizes the pane or window
+    @debounce(0.1)
+    def resizeEvent(self, event: QtGui.QResizeEvent):
+        super().resizeEvent(event)
