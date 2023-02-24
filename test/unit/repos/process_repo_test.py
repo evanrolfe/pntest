@@ -1,9 +1,6 @@
-import sqlite3
 from entities.client import Client
-from entities.process import Process
 from repos.client_repo import ClientRepo
 from repos.process_repo import ProcessRepo
-from repos.project_settings_repo import ProjectSettingsRepo
 
 class TestProcessRepo:
     def test_launch_proxy(self, database, cleanup_database):

@@ -1,6 +1,5 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from entities.http_flow import HttpFlow
 from repos.editor_item_repo import EditorItemRepo
 from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures

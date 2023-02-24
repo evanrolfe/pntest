@@ -1,7 +1,6 @@
 from entities.client import Client
 from entities.http_flow import HttpFlow
 from entities.http_request import HttpRequest, FormData
-from entities.http_response import HttpResponse
 from entities.variable import Variable
 from entities.payload_file import PayloadFileSerialised
 from mitmproxy.common_types import ProxyRequest

@@ -1,11 +1,5 @@
-from asyncio import create_task
-import sqlite3
-from venv import create
-from lib.database import Database
 from entities.editor_item import EditorItem
 from repos.editor_item_repo import EditorItemRepo
-from lib.database import Database
-from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 from services.editor_item_service import EditorItemService
 from support.factories.editor_item_factory import EditorItemFactory
 

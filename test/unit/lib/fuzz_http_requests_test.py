@@ -2,12 +2,10 @@ from pytest_httpserver import HTTPServer
 
 from lib.fuzz_http_requests import FuzzHttpRequests
 from entities.http_flow import HttpFlow
-from entities.http_request import HttpRequest, FormData
+from entities.http_request import HttpRequest
 from lib.background_worker import WorkerSignals
 from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory
-from support.factories.http_response_factory import HttpResponseFactory
-from support.factories.websocket_message_factory import WebsocketMessageFactory
 
 class TestFuzzHttpRequests:
     def test_fuzzing_one_to_one(self, database, cleanup_database, httpserver: HTTPServer):

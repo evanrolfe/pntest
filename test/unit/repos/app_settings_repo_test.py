@@ -1,6 +1,4 @@
-import sqlite3
 from repos.app_settings_repo import AppSettingsRepo
-from lib.database import Database
 
 class TestSettingsRepo:
     SETTINGS_APP_NAME = "PnTest_TEST"

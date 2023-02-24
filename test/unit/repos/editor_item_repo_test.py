@@ -1,11 +1,5 @@
-from asyncio import create_task
-import sqlite3
-from venv import create
-from lib.database import Database
 from entities.editor_item import EditorItem
 from repos.editor_item_repo import EditorItemRepo
-from lib.database import Database
-from lib.database_schema import SCHEMA_SQL, NUM_TABLES
 from support.factories.editor_item_factory import EditorItemFactory
 
 def create_editor_item_with_many_children() -> list[EditorItem]:

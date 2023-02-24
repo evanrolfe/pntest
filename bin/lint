@@ -1,2 +1,4 @@
+echo "\nRemoving unused imports from ./src\n"
 autoflake --in-place --remove-all-unused-imports -r ./src
+echo "\nRemoving unused imports from ./test\n"
 autoflake --in-place --remove-all-unused-imports -r ./test

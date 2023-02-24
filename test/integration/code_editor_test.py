@@ -1,5 +1,3 @@
-import threading
-import time
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from support.fixtures import load_fixtures

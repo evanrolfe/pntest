@@ -1,5 +1,4 @@
 import threading
-import time
 from PyQt6 import QtCore, QtWidgets
 from pytestqt.qtbot import QtBot
 from repos.editor_item_repo import EditorItemRepo

@@ -1,7 +1,5 @@
-import sqlite3
 from entities.variable import Variable
 from repos.variable_repo import VariableRepo
-from lib.database import Database
 
 class TestVariableRepo:
     def test_inserting_and_fetching_a_var(self, database, cleanup_database):

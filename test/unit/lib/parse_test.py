@@ -1,4 +1,3 @@
-import re
 from lib.input_parsing.text_wrapper import parse_text
 from lib.input_parsing.encode_base64 import EncodeBase64
 from lib.input_parsing.encode_base64_url import EncodeBase64Url

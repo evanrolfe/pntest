@@ -1,6 +1,4 @@
-import sqlite3
 from repos.project_settings_repo import ProjectSettingsRepo
-from lib.database import Database
 
 class TestSettingsRepo:
     def test_get(self, database, cleanup_database):

@@ -1,15 +1,8 @@
-import threading
-import time
-from PyQt6 import QtCore, QtWidgets, Qsci
+from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from lib.input_parsing.encode_base64 import EncodeBase64
-from lib.input_parsing.encode_ascii_hex import EncodeAsciiHex
-from entities.editor_item import EditorItem
-from entities.http_flow import HttpFlow
-from entities.http_request import HttpRequest
 from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures, build_an_editor_flow_with_payloads
-from ui.widgets.editor.editor_page import EditorPage
 from ui.widgets.shared.my_scintilla import MyScintilla
 from ui.widgets.shared.user_action import UserAction
 

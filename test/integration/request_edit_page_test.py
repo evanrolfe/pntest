@@ -1,7 +1,6 @@
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
 from pytest_httpserver import HTTPServer
-from entities.http_flow import HttpFlow
 from services.http_flow_service import HttpFlowService
 from support.fixtures import load_fixtures
 
