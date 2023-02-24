@@ -1,6 +1,6 @@
 from copy import deepcopy
 from typing import Optional
-from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtCore, QtWidgets
 from entities.http_flow import HttpFlow
 
 from ui.views._compiled.shared.headers_form import Ui_HeadersForm

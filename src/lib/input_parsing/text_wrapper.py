@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional, TypedDict
-import re
+from typing import Optional
 
 from lib.input_parsing.text_tree import TreeNode, tree_node_from_string
 

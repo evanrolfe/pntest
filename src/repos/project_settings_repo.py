@@ -1,8 +1,6 @@
 import json
-import sqlite3
 import time
-from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order, QmarkParameter
+from pypika import Table
 
 from entities.project_settings import ProjectSettings, get_default_project_settings
 from repos.base_repo import BaseRepo

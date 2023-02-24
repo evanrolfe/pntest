@@ -1,6 +1,6 @@
 import sqlite3
-from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order, QmarkParameter
+from typing import Optional
+from pypika import Order, QmarkParameter, Query, Table
 
 from entities.client import Client
 from repos.base_repo import BaseRepo

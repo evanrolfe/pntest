@@ -1,12 +1,9 @@
 from __future__ import annotations
-from typing import ByteString, cast
 from PyQt6 import QtCore, QtWidgets
 import zmq
 import sys
 import simplejson as json
-import base64
 from entities.project_settings import ProjectSettings
-from repos.http_flow_repo import HttpFlowRepo
 from entities.http_flow import HttpFlow
 from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 
@@ -104,7 +101,6 @@ class ProxyZmqServerThread(QtCore.QObject):
                 except Exception:  # noqa
                     exctype, value = sys.exc_info()[:2]
                     print(f'{exctype}: {value}')
-                    pass
 
     def stop(self):
         print('[ProxyZmqServerThread] stopping...')

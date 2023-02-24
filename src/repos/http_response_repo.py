@@ -1,7 +1,6 @@
 import json
 import sqlite3
-from typing import Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order, QmarkParameter
+from pypika import QmarkParameter, Query, Table
 
 from entities.http_response import HttpResponse
 from repos.base_repo import BaseRepo

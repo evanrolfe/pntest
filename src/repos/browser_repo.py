@@ -1,14 +1,6 @@
 from __future__ import annotations
-import os
-import signal
-import subprocess
-from typing import Generic, Optional, Type, TypeVar
-from entities.app_settings import AppSettings
-from entities.available_client import AvailableClient
 from entities.browser import Browser
 from entities.client import Client
-from entities.process import Process
-from entities.project_settings import ProjectSettings
 from lib.browser_launcher.launch_browser import launch_chrome_or_chromium, launch_firefox
 from PyQt6 import QtCore
 

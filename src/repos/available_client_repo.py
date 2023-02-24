@@ -1,8 +1,4 @@
-import platform
-import re
-import sqlite3
-import subprocess
-from typing import Generic, Optional, Type, TypeVar
+from typing import Optional
 from entities.app_settings import AppSettings
 from entities.available_client import AvailableClient
 

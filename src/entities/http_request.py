@@ -2,7 +2,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from dataclasses import field
 from urllib.parse import urlsplit
-import json
 from typing import Any, Optional, TypedDict
 from lib.types import Headers
 from entities.payload_file import PayloadFile, PayloadFileSerialised

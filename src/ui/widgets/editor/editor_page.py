@@ -1,4 +1,4 @@
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtGui, QtWidgets
 from entities.http_flow import HttpFlow
 from services.editor_item_service import EditorItemService
 

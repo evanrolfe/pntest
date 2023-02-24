@@ -1,4 +1,3 @@
-from ast import For
 from typing import Optional
 import pyperclip
 

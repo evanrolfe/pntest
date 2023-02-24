@@ -1,14 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from lib.background_worker import BackgroundWorker
 from entities.container import Container
-from repos.browser_repo import BrowserRepo
 from services.available_clients_service import AvailableClientsService
 from services.open_clients_service import OpenClientsService
 from repos.client_repo import ClientRepo
-from repos.process_repo import ProcessRepo
-from repos.project_settings_repo import ProjectSettingsRepo
-from repos.app_settings_repo import AppSettingsRepo
-from repos.available_client_repo import AvailableClientRepo
 from entities.available_client import AvailableClient
 from services.proxy_service import ProxyService
 

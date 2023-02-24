@@ -1,6 +1,4 @@
 from PyQt6 import QtCore, QtWidgets
-from mitmproxy.common_types import ProxyWebsocketMessage
-from repos.http_flow_repo import HttpFlowRepo
 
 from ui.views._compiled.network.ws_page import Ui_WsPage
 

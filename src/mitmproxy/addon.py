@@ -9,7 +9,6 @@ import signal
 import zmq
 from typing import Any, cast, Optional
 import simplejson as json
-from pathlib import Path
 import time
 import threading
 from mitmproxy.http import Headers, Response as MitmResponse, HTTPFlow as MitmHTTPFlow

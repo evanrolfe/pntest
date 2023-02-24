@@ -1,6 +1,5 @@
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtCore import  QMetaProperty
 
 # Used for highlighting the intercept button
 class SidebarStyleDelegate(QtWidgets.QStyledItemDelegate):

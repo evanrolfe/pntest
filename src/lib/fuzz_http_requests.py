@@ -1,8 +1,6 @@
 import time
 import random
-from PyQt6 import QtCore
 import itertools
-from typing import cast
 from lib.background_worker import WorkerSignals
 from entities.http_flow import HttpFlow
 from entities.http_request import FuzzFormData, HttpRequest

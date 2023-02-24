@@ -1,4 +1,3 @@
-from typing import Optional
 from PyQt6 import QtCore, QtWidgets, QtGui
 from ui.qt_models.requests_table_model import RequestsTableModel
 

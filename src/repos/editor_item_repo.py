@@ -1,6 +1,6 @@
 import sqlite3
-from typing import Any, Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, QmarkParameter
+from typing import Any, Optional
+from pypika import QmarkParameter, Query, Table
 
 
 from entities.editor_item import EditorItem, LoadChildrenOnEditorItems

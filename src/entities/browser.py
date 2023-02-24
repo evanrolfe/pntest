@@ -1,9 +1,6 @@
-from dataclasses import dataclass
-from dataclasses import field
 import os
 import signal
 import subprocess
-from typing import Optional
 from PyQt6 import QtCore
 
 class WorkerSignals(QtCore.QObject):

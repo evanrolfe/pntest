@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtCore, QtWidgets
 
 from ui.views._compiled.shared.loader import Ui_Loader
 from ui.widgets.qt.waiting_spinner import QtWaitingSpinner

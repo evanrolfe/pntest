@@ -1,6 +1,6 @@
 import sqlite3
-from typing import Any, Generic, Optional, Type, TypeVar
-from pypika import Query, Table, Field, Order
+from typing import Any, Optional
+from pypika import Order, Query, Table
 
 from entities.http_flow import HttpFlow
 from entities.http_request import HttpRequest

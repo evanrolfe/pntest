@@ -1,7 +1,5 @@
 from typing import Optional
 from PyQt6 import QtCore, QtWidgets
-from entities.http_response import HttpResponse
-from mitmproxy.common_types import ProxyRequest, ProxyResponse
 from repos.app_settings_repo import AppSettingsRepo
 from services.http_flow_service import HttpFlowService
 from ui.views._compiled.network.http_page import Ui_HttpPage

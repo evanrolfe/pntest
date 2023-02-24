@@ -1,4 +1,4 @@
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtWidgets
 from repos.variable_repo import VariableRepo
 
 from ui.views._compiled.shared.variables_popup import Ui_VariablesPopup

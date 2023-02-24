@@ -1,8 +1,7 @@
 import shutil
 from pathlib import Path
 import traceback
-from typing import Optional
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+from PyQt6 import QtCore, QtGui, QtWidgets
 from services.proxy_service import ProxyService
 
 from ui.views._compiled.main_window import Ui_MainWindow

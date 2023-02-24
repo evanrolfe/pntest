@@ -1,5 +1,5 @@
 import re
-from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from PyQt6 import Qsci, QtCore, QtGui
 
 from ui.widgets.shared.code_themes import DarkTheme
 from ui.widgets.shared.my_scintilla import MyScintilla

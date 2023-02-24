@@ -1,6 +1,6 @@
 import os
 import sys
-from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtCore, QtWidgets
 
 from lib.paths import get_app_path, get_resource_path, get_app_config_path
 from lib.database import Database

@@ -1,4 +1,4 @@
-from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from PyQt6 import Qsci, QtGui
 
 # These values are just used for testing, you can delete them:
 VALUE_JSON = """{

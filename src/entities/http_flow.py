@@ -8,10 +8,9 @@ from entities.http_request import HttpRequest
 from entities.http_response import HttpResponse
 from entities.websocket_message import WebsocketMessage
 from entities.model import Model
-from lib.types import Headers
 from lib.background_worker import WorkerSignals
 from lib.http_request import HttpRequest as HttpRequestLib
-from mitmproxy.common_types import ProxyRequest, ProxyResponse
+from mitmproxy.common_types import ProxyRequest
 
 @dataclass(kw_only=True)
 class HttpFlow(Model):

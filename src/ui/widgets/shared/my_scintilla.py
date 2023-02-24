@@ -1,7 +1,6 @@
-from optparse import Option
 import re
 from typing import Optional, TypedDict
-from PyQt6 import QtCore, QtWidgets, Qsci, QtGui
+from PyQt6 import Qsci, QtCore, QtGui
 from lib.input_parsing.transform_payload import TransformPayload
 from entities.http_flow import HttpFlow
 from repos.variable_repo import VariableRepo

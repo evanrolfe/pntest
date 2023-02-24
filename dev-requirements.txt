@@ -1,3 +1,4 @@
+autoflake
 factory_boy
 pytest
 pytest-qt

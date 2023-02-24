@@ -1,4 +1,3 @@
-import hashlib
 from lib.input_parsing.transformer import Transformer
 from repos.variable_repo import VariableRepo
 

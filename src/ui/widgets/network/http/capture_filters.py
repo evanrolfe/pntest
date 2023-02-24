@@ -1,4 +1,4 @@
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtWidgets
 from repos.project_settings_repo import ProjectSettingsRepo
 from services.proxy_service import ProxyService
 

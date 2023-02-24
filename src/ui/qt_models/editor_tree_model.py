@@ -1,5 +1,5 @@
 from typing import cast, Optional, Any
-from PyQt6 import QtCore, QtGui
+from PyQt6 import QtCore
 import json
 
 from entities.editor_item import EditorItem

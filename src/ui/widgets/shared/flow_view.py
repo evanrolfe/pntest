@@ -1,7 +1,5 @@
-import json
 from typing import Optional
 # from html5print import HTMLBeautifier
-from bs4 import BeautifulSoup
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore, QtGui
 from entities.http_flow import HttpFlow
@@ -9,7 +7,7 @@ from entities.http_response import HttpResponse
 
 from ui.views._compiled.shared.flow_view import Ui_FlowView
 from lib.types import Headers, get_content_type
-from lib.utils import get_status_colour, get_status_colour_bright
+from lib.utils import get_status_colour_bright
 from ui.widgets.shared.code_editor import CodeEditor
 from constants import HTTP_STATUS_CODE_DESCRIPTIONS
 
