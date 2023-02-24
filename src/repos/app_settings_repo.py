@@ -25,3 +25,5 @@ class AppSettingsRepo():
         for key, value in app_settings.items():
             self.qsettings.setValue(key, value)
 
+    def reset(self):
+        self.qsettings.clear()

@@ -72,6 +72,8 @@ class TestClientService:
         client_service.close_client(client)
         assert len(client_service.open_clients) == 0
 
+        AppSettingsRepo().reset()
+
     def test_launching_a_chrome_client_and_killing_the_brower_process(self, database, cleanup_database, qtbot: QtBot):
         app_path = get_app_path()
         src_path = os.path.join(app_path, 'src')
@@ -101,3 +103,5 @@ class TestClientService:
             os.kill(client.browser.proc.pid, signal.SIGTERM)
 
         assert len(client_service.open_clients) == 0
+
+        AppSettingsRepo().reset()

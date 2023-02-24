@@ -17,5 +17,5 @@ class TestSettingsRepo:
         assert settings2['network_layout'] == 'helloworld'
         assert settings2['browser_commands']['chrome'] == 'google-chrome'
 
-        repo.qsettings.clear()
+        repo.reset()
 
