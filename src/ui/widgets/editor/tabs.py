@@ -1,14 +1,17 @@
 from typing import Optional, cast
-from PyQt6 import QtCore, QtWidgets, QtGui
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from entities.editor_item import EditorItem
 from ui.qt_models.editor_tree_item import EditorTreeItem
-from ui.widgets.editor.request_edit_page import RequestEditPage
 from ui.widgets.editor.fuzz_edit_page import FuzzEditPage
+from ui.widgets.editor.request_edit_page import RequestEditPage
+
 
 class Tabs(QtWidgets.QTabWidget):
     item_changed = QtCore.pyqtSignal(EditorItem)
     new_request_saved = QtCore.pyqtSignal(EditorItem)
+    blank_item_has_been_opened = False
 
     def __init__(self, *args, **kwargs):
         super(Tabs, self).__init__(*args, **kwargs)
@@ -17,23 +20,37 @@ class Tabs(QtWidgets.QTabWidget):
         self.setMovable(True)
         self.setIconSize(QtCore.QSize(20, 12))
 
+        new_button = QtWidgets.QPushButton('New')
+        new_button.setObjectName("editorTabsNewButton")
+        new_button.clicked.connect(self.open_blank_item)
+
+        self.setCornerWidget(new_button)
         self.tabCloseRequested.connect(self.close_tab)
+
+    def showEvent(self, event: QtGui.QShowEvent):
+        super().showEvent(event)
+
+        # Open a blank item the first time this has been shown
+        if not self.blank_item_has_been_opened:
+            self.open_blank_item()
+            self.blank_item_has_been_opened = True
 
     def remove_new_tab_btn(self):
         self.removeTab(self.count())
 
-    def add_new_tab_btn(self):
-        # icon = QtGui.QIcon(f"assets:icons/dark/methods/get.png")
-        # self.insertTab(self.count(), QtWidgets.QWidget(), icon, "")
+    # Not in use anymore:
+    # def add_new_tab_btn(self):
+    #     # icon = QtGui.QIcon(f"assets:icons/dark/methods/get.png")
+    #     # self.insertTab(self.count(), QtWidgets.QWidget(), icon, "")
 
-        new_tab_btn = QtWidgets.QToolButton(self)
-        new_tab_btn.setText("+")
+    #     new_tab_btn = QtWidgets.QToolButton(self)
+    #     new_tab_btn.setText("+")
 
-        i = self.count()
-        self.addTab(QtWidgets.QLabel(""), "")
-        self.setTabEnabled(i, False)
-        self.tabBar().setTabButton(i, QtWidgets.QTabBar.ButtonPosition.RightSide, new_tab_btn)
-        self.tabBar().setTabButton(i, QtWidgets.QTabBar.ButtonPosition.LeftSide, None) # type:ignore
+    #     i = self.count()
+    #     self.addTab(QtWidgets.QLabel(""), "")
+    #     self.setTabEnabled(i, False)
+    #     self.tabBar().setTabButton(i, QtWidgets.QTabBar.ButtonPosition.RightSide, new_tab_btn)
+    #     self.tabBar().setTabButton(i, QtWidgets.QTabBar.ButtonPosition.LeftSide, None) # type:ignore
 
     def open_blank_item(self):
         editor_item = EditorItem(name='Untitled', item_type=EditorItem.TYPE_HTTP_FLOW)
@@ -44,7 +61,8 @@ class Tabs(QtWidgets.QTabWidget):
         request_edit_page.request_saved.connect(self.new_request_saved)
 
         icon = self.__get_icon(editor_item)
-        self.insertTab(self.count(), request_edit_page, icon, editor_item.name)
+        # self.insertTab(self.count(), request_edit_page, icon, editor_item.name)
+        self.addTab(request_edit_page, icon, editor_item.name)
         self.setCurrentIndex(self.count() - 1)
 
     def open_item(self, editor_item: EditorItem):
@@ -70,7 +88,9 @@ class Tabs(QtWidgets.QTabWidget):
             self.setCurrentIndex(existing_tab_index)
 
     def close_tab(self, index):
-        self.removeTab(index)
+        # Don't let the user close all tabs
+        if self.count() > 1:
+            self.removeTab(index)
 
     def close_item(self, editor_item: EditorItem):
         index = self.get_index_for_editor_item(editor_item)

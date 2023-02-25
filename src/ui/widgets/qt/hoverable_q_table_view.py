@@ -38,6 +38,6 @@ class HoverableQTableView(QtWidgets.QTableView):
             self.hover_index_changed.emit(self.hover_index)
 
     # Its slow to resize the QTableView, so we debounce it when the user resizes the pane or window
-    @debounce(0.1)
+    @debounce(0.25)
     def resizeEvent(self, event: QtGui.QResizeEvent):
         super().resizeEvent(event)

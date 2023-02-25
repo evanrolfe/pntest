@@ -1,11 +1,12 @@
 from PyQt6 import QtGui, QtWidgets
-from entities.http_flow import HttpFlow
-from services.editor_item_service import EditorItemService
 
+from entities.editor_item import EditorItem
+from entities.http_flow import HttpFlow
+from repos.app_settings_repo import AppSettingsRepo
+from services.editor_item_service import EditorItemService
 from ui.views._compiled.editor.editor_page import Ui_EditorPage
 from ui.widgets.shared.variables_popup import VariablesPopup
-from repos.app_settings_repo import AppSettingsRepo
-from entities.editor_item import EditorItem
+
 
 class EditorPage(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):

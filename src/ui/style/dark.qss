@@ -493,7 +493,7 @@ QComboBox#responseFormatDropdown {
     font-size: 10px;
 }
 
-QPushButton#saveAsExample {
+QPushButton#saveAsExample, #editorTabsNewButton {
   margin: 3px;
   font-size: 12px;
   padding-right: 10px;
