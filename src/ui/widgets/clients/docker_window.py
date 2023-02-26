@@ -1,7 +1,9 @@
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtCore, QtWidgets
+
 from entities.container import Container
 from repos.container_repo import ContainerRepo
 from ui.views._compiled.clients.docker_window import Ui_DockerWindow
+
 
 class DockerWindow(QtWidgets.QDialog):
     proxify_containers = QtCore.pyqtSignal(list)
@@ -48,7 +50,7 @@ class DockerWindow(QtWidgets.QDialog):
         for container in containers:
             check_box = QtWidgets.QCheckBox(self)
             check_box.setObjectName(f"container_{container.short_id}")
-            check_box.setText(f"Container ID: {container.short_id} | Image: {container.image} | Ports: {container.ports} | Name: {container.name} |  Networks: {container.networks}")
-            check_box.setChecked(True)
+            check_box.setText(f"Container ID: {container.short_id} | Name: {container.name} | Image: {container.image}")
+            check_box.setChecked(False)
             self.ui.verticalLayout_2.addWidget(check_box)
             self.check_boxes_and_containers[check_box] = container

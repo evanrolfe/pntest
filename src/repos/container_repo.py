@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 from typing import Optional
-from entities.container import Container
-from PyQt6 import QtCore
+
 import docker
+from PyQt6 import QtCore
+
+from entities.container import Container
 from lib.utils import is_test_env
 
 PROXY_DOCKER_IMAGE = 'pntest-proxy:latest'
@@ -56,6 +59,8 @@ class ContainerRepo(QtCore.QObject):
     # Starts a proxy container, then restarts the inputted container with its network set to the proxy
     # returns the newly restarted intercepted container and the proxy container instance.
     # TODO: Maybe this should just accept client, so its not "primitive obsession"...
+    # TODO: This is probably more "business logic" rather than storage logic so the code below should
+    # probably go in the Container entity class
     def proxify_container(self, container: Container, client_id: int) -> tuple[Container, Container]:
         if len(container.networks) > 1:
             raise Exception("The docker container must only be on a single network")
@@ -71,6 +76,7 @@ class ContainerRepo(QtCore.QObject):
         proxy_container_id = self.__run_proxy_container(container, client_id)
         # IMPORTANT: THIS NEEDS TO BE .get() because it calls docker inspect!!!
         proxy_raw_container = self.docker.containers.get(proxy_container_id)
+        print(f"Proxy container short_id: {proxy_raw_container.short_id}")
 
         # 3. Restart the original container but with the network set to the proxy container
         intercepted_raw_container = self.docker.containers.run(
@@ -112,29 +118,44 @@ class ContainerRepo(QtCore.QObject):
         print(f'Starting proxy container with image: {PROXY_DOCKER_IMAGE}')
         proxy_env = [f'CLIENT_ID={client_id}', 'ZMQ_SERVER=host.docker.internal:5556']
 
-        old_network_config = container.raw_container.attrs['NetworkSettings']['Networks']['example_app_default'] # type:ignore
+        # 1. Get the original network config from the container being proxified
+        network_name  = container.networks[0]
+        print(f"Network name: {network_name}")
+        old_network_config = container.raw_container.attrs['NetworkSettings']['Networks'][network_name] # type:ignore
+        print(old_network_config)
 
-        proxy_networking_config = self.docker.api.create_networking_config({
-            # TODO: DONT HARDCODE THE NETWORK HERE!
-            'example_app_default': self.docker.api.create_endpoint_config(
-                aliases=old_network_config['Aliases'],
-                links=old_network_config['Links']
-            )
-        })
+        # 2. Create a new network config based on the original one
+        opts = {}
+        opts[network_name] = self.docker.api.create_endpoint_config(
+            aliases=old_network_config['Aliases'],
+            links=old_network_config['Links']
+        )
+        proxy_networking_config = self.docker.api.create_networking_config(opts)
+
+        # 3. Create a host config for the proxy container
         proxy_host_config = self.docker.api.create_host_config(
             port_bindings=container.ports, # type:ignore
             privileged=True,
         )
-        exposed_ports = {}
-        for export_port,_ in container.ports.items(): #type:ignore
-            exposed_ports[export_port] = {}
 
+        # 4. Ensure the same ports are exposed on the proxy container
+        ports = {}
+        # print("------------------------------------ container.ports: \n", list(container.ports.keys()))
+        # TODO: Check if this is correct, i.e. if the container has these ports: 80/tcp, 0.0.0.0:8080->8080/tcp
+        # then the proxy container ends up with these ports which doesn't seem right it still works:
+        for port,val in container.ports.items(): #type:ignore
+            if val:
+                ports[port] = {}
+            else:
+                ports[port] = None
+
+        # 5. Create and start the proxy container
         result = self.docker.api.create_container(
             PROXY_DOCKER_IMAGE,
             None,
             networking_config=proxy_networking_config,
             host_config=proxy_host_config,
-            ports=exposed_ports,
+            ports=ports,
             environment=proxy_env,
         )
         proxy_container_id = result['Id']
