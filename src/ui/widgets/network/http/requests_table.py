@@ -1,21 +1,26 @@
-from PyQt6 import QtCore, QtWidgets, QtGui
-from ui.qt_models.requests_table_model import RequestsTableModel
+from typing import Optional
 
-from ui.views._compiled.network.http.requests_table import Ui_RequestsTable
-from ui.widgets.network.http.display_filters import DisplayFilters
-from ui.widgets.network.http.capture_filters import CaptureFilters
-from ui.widgets.qt.row_style_delegate import RowStyleDelegate
+from PyQt6 import QtCore, QtGui, QtWidgets
+
 from entities.http_flow import HttpFlow
+from lib.background_worker import BackgroundWorker
+from lib.debounce import debounce
+from ui.qt_models.requests_table_model import RequestsTableModel
+from ui.views._compiled.network.http.requests_table import Ui_RequestsTable
+from ui.widgets.network.http.capture_filters import CaptureFilters
+from ui.widgets.network.http.display_filters import DisplayFilters
+from ui.widgets.qt.row_style_delegate import RowStyleDelegate
 
+
+# TODO: Rename this to FlowsTable
 class RequestsTable(QtWidgets.QWidget):
     request_selected = QtCore.pyqtSignal(QtCore.QItemSelection, QtCore.QItemSelection)
-    delete_requests = QtCore.pyqtSignal(list)
-    search_text_changed = QtCore.pyqtSignal(str)
     send_flow_to_editor = QtCore.pyqtSignal(HttpFlow)
     send_flow_to_fuzzer = QtCore.pyqtSignal(HttpFlow)
     display_filters_saved = QtCore.pyqtSignal()
 
     table_model: RequestsTableModel
+    threadpool: QtCore.QThreadPool
 
     def __init__(self, *args, **kwargs):
         super(RequestsTable, self).__init__(*args, **kwargs)
@@ -33,7 +38,8 @@ class RequestsTable(QtWidgets.QWidget):
         verticalHeader.setVisible(False)
         verticalHeader.setDefaultAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.ui.requestsTable.setSortingEnabled(True)
+        # NOTE: I've disabled sorting for now because it needs more work to get it with fetchMore() from RequestsTableModel
+        self.ui.requestsTable.setSortingEnabled(False)
         self.ui.requestsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.ui.requestsTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
 
@@ -45,7 +51,7 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.requestsTable.hover_index_changed.connect(delegate.highlight_index)
 
         # Search box:
-        self.ui.searchBox.returnPressed.connect(self.search_text_edited)
+        self.ui.searchBox.returnPressed.connect(self.load_flows_async)
 
         # Display & Capture Filters:
         self.network_display_filters = DisplayFilters(self)
@@ -69,9 +75,13 @@ class RequestsTable(QtWidgets.QWidget):
         self.ui.siteMapButton.setIconSize(QtCore.QSize(25, 25))
         self.ui.siteMapButton.setText(">>")
 
-    def setTableModel(self, model: RequestsTableModel):
-        self.table_model = model
-        self.ui.requestsTable.setModel(model)
+        self.threadpool = QtCore.QThreadPool()
+
+        self.load_table_model()
+
+    def load_table_model(self):
+        self.table_model = RequestsTableModel()
+        self.ui.requestsTable.setModel(self.table_model)
 
         # Request Selected Signal:
         self.ui.requestsTable.selectionModel().selectionChanged.connect(self.request_selected)
@@ -130,7 +140,7 @@ class RequestsTable(QtWidgets.QWidget):
         if (len(self.selected_request_ids) > 1):
             action = QtGui.QAction(f"Delete {len(self.selected_request_ids)} selected requests")
             menu.addAction(action)
-            action.triggered.connect(lambda: self.delete_requests.emit(self.selected_request_ids))
+            action.triggered.connect(lambda: self.delete_requests(self.selected_request_ids))
         else:
             if flow.is_editable():
                 send_action = QtGui.QAction("Send to editor")
@@ -143,14 +153,55 @@ class RequestsTable(QtWidgets.QWidget):
 
             action = QtGui.QAction("Delete request")
             menu.addAction(action)
-            action.triggered.connect(lambda: self.delete_requests.emit([flow.id]))
+            action.triggered.connect(lambda: self.delete_requests([flow.id]))
 
         # NOTE: The generated types seem to be in correct, QObject does indeed have mapToGlobal() as a method
         position = self.sender().mapToGlobal(position) # type: ignore
         menu.exec(position)
 
+    def delete_requests(self, request_ids):
+        if len(request_ids) > 1:
+            message = f'Are you sure you want to delete {len(request_ids)} requests?'
+        else:
+            message = 'Are you sure you want to delete this request?'
+
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('PNTest')
+        message_box.setText(message)
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Yes)
+        response = message_box.exec()
+
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
+            self.table_model.delete_requests(request_ids)
+
+    def get_flow(self, id: int) -> Optional[HttpFlow]:
+        flow = [f for f in self.table_model.flows if f.id == id][0]
+        return flow
+
     def display_filters_clicked(self):
         print("You clicked me!")
 
-    def search_text_edited(self):
-        self.search_text_changed.emit(self.ui.searchBox.text())
+    def load_flows(self, signals):
+        search_text = self.ui.searchBox.text()
+        print("load_flows search_text: ", search_text)
+
+        self.table_model.reload_flows(search_text)
+        self.ui.requestsTable.verticalScrollBar().setValue(0)
+
+    @debounce(0.25)
+    def load_flows_async(self, show_loader: bool = True):
+        self.worker = BackgroundWorker(self.load_flows)
+        # self.worker.signals.result.connect(self.update_table)
+        self.worker.signals.error.connect(self.request_error)
+
+        # if show_loader:
+        #     self.show_loader()
+        #     self.worker.signals.finished.connect(self.hide_loader)
+
+        self.threadpool.start(self.worker)  # type:ignore
+
+    def request_error(self, error):
+        exctype, value, traceback = error
+        print(value)
+        print(traceback)

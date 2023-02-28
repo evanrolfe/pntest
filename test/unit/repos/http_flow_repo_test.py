@@ -1,11 +1,14 @@
 import uuid
-from entities.client import Client
-from entities.http_flow import HttpFlow
-from repos.http_flow_repo import HttpFlowRepo
-from repos.client_repo import ClientRepo
+
 from support.factories.client_factory import ClientFactory
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory
+
+from entities.client import Client
+from entities.http_flow import HttpFlow
+from repos.client_repo import ClientRepo
+from repos.http_flow_repo import HttpFlowRepo
+
 
 def create_multiple_flows() -> list[HttpFlow]:
     client = Client(title="test client!", type="browser", proxy_port=8080)
@@ -98,7 +101,9 @@ class TestHttpFlowRepo:
 
         HttpFlowRepo().delete(flow2)
 
-        results = HttpFlowRepo().find_for_table("")
+        results, total_count = HttpFlowRepo().find_for_table("", 0, 20)
+
+        assert total_count == 1
         assert len(results) == 1
 
     def test_null_character_error(self, database, cleanup_database):

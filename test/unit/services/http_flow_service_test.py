@@ -1,14 +1,17 @@
 import uuid
+
+from support.factories.client_factory import ClientFactory
+from support.factories.http_request_factory import HttpRequestFactory
+from support.factories.http_response_factory import HttpResponseFactory
+from support.factories.websocket_message_factory import WebsocketMessageFactory
+
 from entities.client import Client
 from entities.http_flow import HttpFlow
 from entities.http_request import HttpRequest
 from entities.http_response import HttpResponse
 from repos.client_repo import ClientRepo
 from services.http_flow_service import HttpFlowService
-from support.factories.client_factory import ClientFactory
-from support.factories.http_request_factory import HttpRequestFactory
-from support.factories.http_response_factory import HttpResponseFactory
-from support.factories.websocket_message_factory import WebsocketMessageFactory
+
 
 def create_multiple_flows() -> list[HttpFlow]:
     client = Client(title="test client!", type="browser", proxy_port=8080)
@@ -108,8 +111,9 @@ class TestHttpFlowService:
     def test_find_for_table(self, database, cleanup_database):
         flow1, flow2 = create_multiple_flows()
 
-        results = HttpFlowService().find_for_table("")
+        results, count = HttpFlowService().find_for_table("", 0, 20)
 
+        assert count == 2
         assert len(results) == 2
         assert results[0].id == flow2.id
         assert results[1].id == flow1.id
@@ -172,7 +176,9 @@ class TestHttpFlowService:
 
         assert flow1.id is not None
 
-        results = HttpFlowService().find_for_table('pntest')
+        results, total_count = HttpFlowService().find_for_table('pntest', 0, 20)
+
+        assert total_count == 1
         assert len(results) == 1
         assert results[0].id == flow3.id
 
@@ -308,5 +314,7 @@ class TestHttpFlowService:
 
         HttpFlowService().delete(flow2)
 
-        results = HttpFlowService().find_for_table("")
+        results, total_count = HttpFlowService().find_for_table("", 0, 20)
+
+        assert total_count == 1
         assert len(results) == 1

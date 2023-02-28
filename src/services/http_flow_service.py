@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Any, Optional
+
+from typing import Any, Optional, Tuple
+
 from entities.client import Client
 from entities.http_flow import HttpFlow
 from entities.http_request import HttpRequest
@@ -9,6 +11,7 @@ from repos.http_flow_repo import HttpFlowRepo
 from repos.http_request_repo import HttpRequestRepo
 from repos.http_response_repo import HttpResponseRepo
 from repos.ws_message_repo import WsMessageRepo
+
 
 class HttpFlowService():
     def __init__(self):
@@ -30,11 +33,11 @@ class HttpFlowService():
         self.__load_associations([http_flow])
         return http_flow
 
-    def find_for_table(self, search_term: str) -> list[HttpFlow]:
-        http_flows = HttpFlowRepo().find_for_table(search_term)
+    def find_for_table(self, search_term: str, offset: int, limit: int) -> Tuple[list[HttpFlow], int]:
+        http_flows, count = HttpFlowRepo().find_for_table(search_term, offset, limit)
 
         self.__load_associations(http_flows)
-        return http_flows
+        return http_flows, count
 
     def find_by_ids(self, ids: list[int], **kwargs) -> list[HttpFlow]:
         http_flows = HttpFlowRepo().find_by_ids(ids)

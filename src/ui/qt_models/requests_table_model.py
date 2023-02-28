@@ -1,8 +1,11 @@
-from typing import Dict, Optional, cast, Any
+from typing import Any, Dict, Optional, cast
+
 from PyQt6 import QtCore
 
 from entities.http_flow import HttpFlow
 from services.http_flow_service import HttpFlowService
+
+BATCH_SIZE = 100
 
 # TODO: Rename this to FlowsTableModel
 class RequestsTableModel(QtCore.QAbstractTableModel):
@@ -12,10 +15,17 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
     headers: list[str]
     flows: list[HttpFlow]
 
-    def __init__(self, flows, parent=None):
+    offset: int
+    limit: int
+    total_count: int
+
+    def __init__(self, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.headers = ['ID', 'Source', 'Type', 'Method', 'Host', 'Path', 'Status', 'Modified']
-        self.flows = list(flows)
+
+        self.offset = 0
+        self.limit = BATCH_SIZE
+        self.flows, self.total_count = HttpFlowService().find_for_table('', self.offset, self.limit)
 
     def add_flow(self, flow: HttpFlow) -> None:
         rowIndex = 0
@@ -142,7 +152,36 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
     def refresh(self) -> None:
         self.layoutChanged.emit()
 
+    def reload_flows(self, search_text: str):
+        self.offset = 0
+        self.limit = BATCH_SIZE
+
+        self.flows, self.total_count = HttpFlowService().find_for_table(search_text, self.offset, self.limit)
+        print("flows reloaded, total_count: ", self.total_count)
+
+        self.layoutChanged.emit()
+
     def get_index_of(self, request_id: int) -> Optional[int]:
         for i, r in enumerate(self.flows):
             if r.id == request_id:
                 return i
+
+    def canFetchMore(self, parent: QtCore.QModelIndex) -> bool:
+        if parent.isValid():
+            print("can fetch more? invalid parent")
+            return False
+
+        result = (len(self.flows) < self.total_count)
+        print("Can fetch more? ", result, " len(flows)=", len(self.flows), ", total_count=",self.total_count)
+        return result
+
+    def fetchMore(self, parent: QtCore.QModelIndex) -> None:
+        print("fetching more!!!")
+        self.offset += BATCH_SIZE
+
+        new_flows, _ = HttpFlowService().find_for_table('', self.offset, self.limit)
+        print(f"found {len(new_flows)} new flows! (offset {self.offset})")
+
+        self.beginInsertRows(QtCore.QModelIndex(), self.offset, self.offset+BATCH_SIZE)
+        self.flows = self.flows + new_flows
+        self.endInsertRows()

@@ -1,21 +1,22 @@
 import shutil
-from pathlib import Path
-import traceback
-from PyQt6 import QtCore, QtGui, QtWidgets
-from services.proxy_service import ProxyService
-
-from ui.views._compiled.main_window import Ui_MainWindow
-from repos.app_settings_repo import AppSettingsRepo
-from lib.database import Database
-from lib.stylesheet_loader import StyleheetLoader
-from ui.widgets.network.network_page import NetworkPage
-from ui.widgets.intercept.intercept_page import InterceptPage
-from ui.widgets.clients.clients_page import ClientsPage
-from ui.widgets.editor.editor_page import EditorPage
-from ui.widgets.preferences_window import PreferencesWindow
-
 # Makes CTRL+C close the app:
 import signal
+import traceback
+from pathlib import Path
+
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+from lib.database import Database
+from lib.stylesheet_loader import StyleheetLoader
+from repos.app_settings_repo import AppSettingsRepo
+from services.proxy_service import ProxyService
+from ui.views._compiled.main_window import Ui_MainWindow
+from ui.widgets.clients.clients_page import ClientsPage
+from ui.widgets.editor.editor_page import EditorPage
+from ui.widgets.intercept.intercept_page import InterceptPage
+from ui.widgets.network.network_page import NetworkPage
+from ui.widgets.preferences_window import PreferencesWindow
+
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -124,10 +125,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.process_manager = proxy_service.process_manager
         self.proxy_service = proxy_service
 
-        # TODO: We could probably use the singleton get_instance() and set these in the page's constructors
         # Network Page:
-        self.process_manager.proxy_request.connect(self.network_page.http_page.proxy_request_received)
-        self.process_manager.proxy_response.connect(self.network_page.http_page.proxy_response_received)
+        self.process_manager.proxy_request.connect(self.network_page.http_page.proxy_requests_changed)
+        self.process_manager.proxy_response.connect(self.network_page.http_page.proxy_requests_changed)
         self.process_manager.proxy_ws_message.connect(self.network_page.ws_page.proxy_ws_message_received)
 
         self.network_status.clicked.connect(self.toggle_recording_enabled)

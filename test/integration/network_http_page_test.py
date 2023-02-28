@@ -1,10 +1,11 @@
 # import time
 from PyQt6 import QtCore
 from pytestqt.qtbot import QtBot
-from entities.http_flow import HttpFlow
-from services.http_flow_service import HttpFlowService
 from support.factories.http_request_factory import HttpRequestFactory
 from support.factories.http_response_factory import HttpResponseFactory
+
+from entities.http_flow import HttpFlow
+from services.http_flow_service import HttpFlowService
 from ui.widgets.network.http_page import HttpPage
 
 EXPECTED_BODY = """{
@@ -54,7 +55,7 @@ class TestNetworkHttpPage:
         # Click the second row of the table
         # table = widget.ui.crawlsTable.ui.crawlsTable
         table = widget.ui.requestsTableWidget.ui.requestsTable
-        index = widget.table_model.index(1, 0)
+        index = widget.ui.requestsTableWidget.table_model.index(1, 0)
         rect = table.visualRect(index)
         qtbot.mouseClick(table.viewport(), QtCore.Qt.MouseButton.LeftButton, pos=rect.center())
 

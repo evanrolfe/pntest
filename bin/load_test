@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for run in {1..100}; do
+  curl -s http://localhost:8080/api/catalogue/categories --proxy localhost:8090 && echo "done1" &
+done
+
+wait
