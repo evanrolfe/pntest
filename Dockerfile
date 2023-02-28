@@ -8,6 +8,7 @@ ADD ./docker_proxy /app
 
 ENV CLIENT_ID=1
 ENV ZMQ_SERVER=host.docker.internal:5556
+ENV PROXY_PORT=61782
 
 RUN apt-get update
 RUN apt-get upgrade -qy
