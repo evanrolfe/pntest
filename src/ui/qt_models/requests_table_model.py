@@ -182,6 +182,6 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         new_flows, _ = HttpFlowService().find_for_table('', self.offset, self.limit)
         print(f"found {len(new_flows)} new flows! (offset {self.offset})")
 
-        self.beginInsertRows(QtCore.QModelIndex(), self.offset, self.offset+BATCH_SIZE)
+        self.beginInsertRows(QtCore.QModelIndex(), self.offset, self.offset+len(new_flows))
         self.flows = self.flows + new_flows
         self.endInsertRows()
