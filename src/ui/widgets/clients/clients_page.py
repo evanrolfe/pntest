@@ -13,6 +13,8 @@ from ui.widgets.clients.docker_window import DockerWindow
 
 
 class ClientsPage(QtWidgets.QWidget):
+    clients_changed = QtCore.pyqtSignal()
+
     proxy_service: ProxyService
     open_clients_service: OpenClientsService
     available_clients: list[AvailableClient]
@@ -25,6 +27,7 @@ class ClientsPage(QtWidgets.QWidget):
 
         self.ui.clientsTable.open_client_clicked.connect(self.open_client_clicked_async)
         self.ui.clientsTable.close_client_clicked.connect(self.close_client_clicked_async)
+        self.ui.clientsTable.clients_changed.connect(self.clients_changed)
 
         # Add Icons:
         self.ui.chromiumButton.setIcon(QtGui.QIcon('assets:icons/icons8-chromium.svg'))

@@ -56,6 +56,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.intercept_page.something_intercepted.connect(self.ui.sideBar.highlight_intercept)
         self.intercept_page.intercept_queue_empty.connect(self.ui.sideBar.un_highlight_intercept)
 
+        self.clients_page.clients_changed.connect(self.network_page.http_page.reload)
+
         # Prefrences Window
         self.preferences_window = PreferencesWindow(self)
         self.preferences_window.network_layout_changed.connect(self.network_page.set_layout)

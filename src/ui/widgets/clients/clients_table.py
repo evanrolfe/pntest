@@ -12,6 +12,7 @@ class ClientsTable(QtWidgets.QWidget):
     open_client_clicked = QtCore.pyqtSignal(Client)
     close_client_clicked = QtCore.pyqtSignal(Client)
     bring_to_front_client_clicked = QtCore.pyqtSignal(Client)
+    clients_changed = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(ClientsTable, self).__init__(*args, **kwargs)
@@ -40,12 +41,13 @@ class ClientsTable(QtWidgets.QWidget):
         # Set right-click behaviour:
         self.ui.clientsTable.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.ui.clientsTable.customContextMenuRequested.connect(self.right_clicked)
-
         # self.ui.clientsTable.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
+
         # Setup model
         ClientRepo().update_all_to_closed()
         clients = ClientRepo().find_all()
         self.table_model = ClientsTableModel(clients)
+        self.table_model.clients_changed.connect(self.clients_changed)
         self.ui.clientsTable.setModel(self.table_model)
         self.ui.clientsTable.selectionModel().selectionChanged.connect(self.client_selected)
 

@@ -7,8 +7,8 @@ from repos.client_repo import ClientRepo
 
 
 class ClientsTableModel(QtCore.QAbstractTableModel):
-    # dataChanged: QtCore.SignalInstance
-    # layoutChanged: QtCore.SignalInstance
+    clients_changed = QtCore.pyqtSignal()
+
     headers: list[str]
     clients: list[Client]
 
@@ -78,6 +78,7 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
             client.title = value
             ClientRepo().save(client)
 
+            self.clients_changed.emit()
             return True
 
         return False
