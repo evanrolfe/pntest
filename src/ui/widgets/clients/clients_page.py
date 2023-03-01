@@ -1,17 +1,16 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from lib.background_worker import BackgroundWorker
+
+from entities.available_client import AvailableClient
+from entities.client import Client
 from entities.container import Container
+from lib.background_worker import BackgroundWorker
+from repos.client_repo import ClientRepo
 from services.available_clients_service import AvailableClientsService
 from services.open_clients_service import OpenClientsService
-from repos.client_repo import ClientRepo
-from entities.available_client import AvailableClient
 from services.proxy_service import ProxyService
-
 from ui.views._compiled.clients.clients_page import Ui_ClientsPage
-
-from ui.qt_models.clients_table_model import ClientsTableModel
-from entities.client import Client
 from ui.widgets.clients.docker_window import DockerWindow
+
 
 class ClientsPage(QtWidgets.QWidget):
     proxy_service: ProxyService
@@ -24,11 +23,6 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui = Ui_ClientsPage()
         self.ui.setupUi(self)
 
-        ClientRepo().update_all_to_closed()
-        clients = ClientRepo().find_all()
-        self.clients_table_model = ClientsTableModel(clients)
-
-        self.ui.clientsTable.setTableModel(self.clients_table_model)
         self.ui.clientsTable.open_client_clicked.connect(self.open_client_clicked_async)
         self.ui.clientsTable.close_client_clicked.connect(self.close_client_clicked_async)
 
@@ -68,11 +62,7 @@ class ClientsPage(QtWidgets.QWidget):
         self.threadpool = QtCore.QThreadPool()
 
     def reload(self):
-        self.reload_table_data()
-
-    def reload_table_data(self):
-        clients = ClientRepo().find_all()
-        self.clients_table_model.set_clients(clients)
+        self.ui.clientsTable.reload()
 
     def create_client(self, client_type: str):
         if client_type == 'docker':
@@ -89,7 +79,7 @@ class ClientsPage(QtWidgets.QWidget):
             client = self.open_clients_service.build_client('docker', container)
             ClientRepo().save(client)
             print(client, "\n")
-            self.reload_table_data()
+            self.reload()
             self.open_client_clicked_async(client)
 
     def load_available_clients(self):
@@ -102,9 +92,9 @@ class ClientsPage(QtWidgets.QWidget):
     def open_client_clicked_async(self, client: Client):
         worker = BackgroundWorker(lambda x: self.open_clients_service.launch_client(client))
         worker.signals.error.connect(self.client_error)
-        worker.signals.finished.connect(self.reload_table_data)
+        worker.signals.finished.connect(self.reload)
         self.threadpool.start(worker)
-        self.reload_table_data()
+        self.reload()
 
     def client_error(self, err):
         raise Exception(err)
@@ -125,6 +115,6 @@ class ClientsPage(QtWidgets.QWidget):
 
         worker = BackgroundWorker(lambda x: self.open_clients_service.close_client(client))
         worker.signals.error.connect(self.client_error)
-        worker.signals.finished.connect(self.reload_table_data)
+        worker.signals.finished.connect(self.reload)
         self.threadpool.start(worker)
-        self.reload_table_data()
+        self.reload()

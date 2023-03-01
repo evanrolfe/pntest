@@ -1,6 +1,10 @@
-from typing import Optional, Union
+from typing import Any, Optional, Union
+
 from PyQt6 import QtCore
+
 from entities.client import Client
+from repos.client_repo import ClientRepo
+
 
 class ClientsTableModel(QtCore.QAbstractTableModel):
     # dataChanged: QtCore.SignalInstance
@@ -18,6 +22,10 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
         self.clients = clients
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
+
+    def reload(self):
+        clients = ClientRepo().find_all()
+        self.set_clients(clients)
 
     # def roleNames(self):
     #     roles = {}
@@ -37,8 +45,14 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
     def rowCount(self, parent: QtCore.QModelIndex) -> int:
         return len(self.clients)
 
+    def flags(self, index: QtCore.QModelIndex) -> QtCore.Qt.ItemFlag:
+        if index.column() == 2:
+            return QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
+        else:
+            return QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
+
     def data(self, index: QtCore.QModelIndex, role: int) -> Union[None, str]:
-        if role == QtCore.Qt.ItemDataRole.DisplayRole:
+        if role in [QtCore.Qt.ItemDataRole.DisplayRole, QtCore.Qt.ItemDataRole.EditRole]:
             if not index.isValid():
                 return None
 
@@ -57,6 +71,16 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
                 return str(client.open_text())
             elif (index.column() == 4):
                 return str(client.proxy_port)
+
+    def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.EditRole) -> bool:
+        if role == QtCore.Qt.ItemDataRole.EditRole:
+            client = self.clients[index.row()]
+            client.title = value
+            ClientRepo().save(client)
+
+            return True
+
+        return False
 
     def roleNameArray(self) -> list[str]:
         return self.headers

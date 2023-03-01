@@ -1,9 +1,13 @@
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtGui, QtWidgets
 
-from ui.views._compiled.clients.clients_table import Ui_ClientsTable
 from entities.client import Client
+from repos.client_repo import ClientRepo
+from ui.qt_models.clients_table_model import ClientsTableModel
+from ui.views._compiled.clients.clients_table import Ui_ClientsTable
+
 
 class ClientsTable(QtWidgets.QWidget):
+    table_model: ClientsTableModel
     client_selected = QtCore.pyqtSignal(QtCore.QItemSelection, QtCore.QItemSelection)
     open_client_clicked = QtCore.pyqtSignal(Client)
     close_client_clicked = QtCore.pyqtSignal(Client)
@@ -37,17 +41,29 @@ class ClientsTable(QtWidgets.QWidget):
         self.ui.clientsTable.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.ui.clientsTable.customContextMenuRequested.connect(self.right_clicked)
 
-    def setTableModel(self, model):
-        self.table_model = model
-        self.ui.clientsTable.setModel(model)
-
-        # Client Selected Signal:
+        # self.ui.clientsTable.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
+        # Setup model
+        ClientRepo().update_all_to_closed()
+        clients = ClientRepo().find_all()
+        self.table_model = ClientsTableModel(clients)
+        self.ui.clientsTable.setModel(self.table_model)
         self.ui.clientsTable.selectionModel().selectionChanged.connect(self.client_selected)
+
+    def reload(self):
+        self.table_model.reload()
+
+    def rename_client_clicked(self, index: QtCore.QModelIndex):
+        name_col = index.sibling(index.row(), 2)
+        self.ui.clientsTable.edit(name_col)
 
     def right_clicked(self, position):
         index = self.ui.clientsTable.indexAt(position)
         client = self.table_model.clients[index.row()]
         menu = QtWidgets.QMenu()
+
+        rename_action = QtGui.QAction("Rename")
+        rename_action.triggered.connect(lambda: self.rename_client_clicked(index))
+        menu.addAction(rename_action)
 
         if client.open == 1:
             close_action = QtGui.QAction("Close Client")
