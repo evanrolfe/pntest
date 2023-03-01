@@ -29,6 +29,7 @@ class ClientsTable(QtWidgets.QWidget):
         self.ui.clientsTable.setColumnWidth(1, 80)
         self.ui.clientsTable.setColumnWidth(2, 400)
         self.ui.clientsTable.setColumnWidth(3, 60)
+        self.ui.clientsTable.setColumnWidth(4, 60)
 
         verticalHeader = self.ui.clientsTable.verticalHeader()
         verticalHeader.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
