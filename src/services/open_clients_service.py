@@ -59,7 +59,7 @@ class OpenClientsService(QtCore.QObject):
             return Client(
                 type = 'docker',
                 proxy_port = 0,
-                title = f'container',
+                title = container.host_name,
                 intercepted_container=container,
                 container_id=container.short_id
             )

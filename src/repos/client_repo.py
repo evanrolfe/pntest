@@ -1,9 +1,11 @@
 import sqlite3
 from typing import Optional
+
 from pypika import Order, QmarkParameter, Query, Table
 
 from entities.client import Client
 from repos.base_repo import BaseRepo
+
 
 class ClientRepo(BaseRepo):
     table: Table
@@ -51,7 +53,8 @@ class ClientRepo(BaseRepo):
             self.generic_insert(client, self.table)
 
             # Once we have inserted it and we have an ID, append the ID to the title
-            client.title = f'{client.title}-{client.id}'
+            if client.type != 'docker':
+                client.title = f'{client.title}-{client.id}'
             self.generic_update(client, self.table)
 
     def update_all_to_closed(self):

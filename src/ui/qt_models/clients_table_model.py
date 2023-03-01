@@ -14,8 +14,7 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, clients: list[Client], parent: Optional[QtCore.QObject] = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        self.headers = ['ID', 'Type', 'Name',
-                        'Status', 'Proxy Port']
+        self.headers = ['ID', 'Type', 'Name','Status', 'Container ID', 'Proxy Port']
         self.clients = clients
 
     def set_clients(self, clients: list[Client]) -> None:
@@ -70,6 +69,8 @@ class ClientsTableModel(QtCore.QAbstractTableModel):
             elif (index.column() == 3):
                 return str(client.open_text())
             elif (index.column() == 4):
+                return str(client.container_id or '')
+            elif (index.column() == 5):
                 return str(client.proxy_port)
 
     def setData(self, index: QtCore.QModelIndex, value: str, role: QtCore.Qt.ItemDataRole = QtCore.Qt.ItemDataRole.EditRole) -> bool:

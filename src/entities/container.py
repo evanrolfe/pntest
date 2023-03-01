@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-@dataclass(kw_only=True)
 
+@dataclass(kw_only=True)
 # A Docker container
 class Container():
     short_id: str
@@ -11,3 +11,4 @@ class Container():
     image: str
     networks: list[str]
     raw_container: object
+    host_name: str

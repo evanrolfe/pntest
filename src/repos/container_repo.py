@@ -98,7 +98,19 @@ class ContainerRepo(QtCore.QObject):
         container.raw_container.stop() # type:ignore
 
     def __raw_container_to_container(self, raw_container) -> Container:
-        # print("---> Container: ", raw_container.short_id)
+        networks = list(raw_container.attrs['NetworkSettings']['Networks'].keys())
+
+        if len(networks) == 0:
+            host_name = ''
+        else:
+            docker_compose_host = raw_container.attrs['Config']['Labels'].get('com.docker.compose.service')
+            network_aliases = raw_container.attrs['NetworkSettings']['Networks'].get(networks[0], {}).get('Aliases')
+            network_alias_host = network_aliases[0]
+            if docker_compose_host:
+                host_name = docker_compose_host
+            else:
+                host_name = network_alias_host
+
         # print(json.dumps(raw_container.attrs))
         return Container(
             short_id=raw_container.short_id,
@@ -106,8 +118,9 @@ class ContainerRepo(QtCore.QObject):
             status=raw_container.status,
             ports=raw_container.ports,
             image=raw_container.attrs['Config']['Image'],
-            networks=list(raw_container.attrs['NetworkSettings']['Networks'].keys()),
+            networks=networks,
             raw_container=raw_container,
+            host_name=host_name
         )
 
     # def close_container(self, container: Container):
