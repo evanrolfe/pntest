@@ -8,7 +8,7 @@ from PyQt6 import QtCore
 from entities.container import Container
 from lib.utils import is_test_env
 
-PROXY_DOCKER_IMAGE = 'pntest-proxy:latest'
+PROXY_DOCKER_IMAGE = 'pntest/proxy:0.0.1'
 
 class ContainerRepo(QtCore.QObject):
     containers: list[Container]

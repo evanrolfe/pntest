@@ -1,1 +1,1 @@
-docker build -t pntest-proxy .
+docker build -t pntest/proxy:0.0.1 .
