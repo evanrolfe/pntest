@@ -39,6 +39,9 @@ class DockerWindow(QtWidgets.QDialog):
         self.close()
 
     def load_containers(self):
+        if not self.container_repo.has_docker_available():
+            return
+
         # Clear existing check boxes
         for check_box,_ in self.check_boxes_and_containers.items():
             self.ui.verticalLayout_2.removeWidget(check_box)

@@ -13,7 +13,7 @@ PROXY_DOCKER_IMAGE = 'pntest/proxy:0.0.1'
 
 class ContainerRepo(QtCore.QObject):
     containers: list[Container]
-    docker: docker.DockerClient
+    docker: Optional[docker.DockerClient]
 
     # Singleton method stuff:
     __instance = None
@@ -29,8 +29,10 @@ class ContainerRepo(QtCore.QObject):
     def __init__(self, app_path: str):
         super().__init__()
 
-        if not is_test_env():
+        try:
             self.docker = docker.from_env()
+        except:
+            self.docker = None
 
         # Virtually private constructor.
         if ContainerRepo.__instance is not None:
@@ -40,6 +42,9 @@ class ContainerRepo(QtCore.QObject):
     # /Singleton method stuff
 
     def get_all(self) -> list[Container]:
+        if self.docker is None:
+            raise Exception("docker is not available!")
+
         containers = []
         raw_containers = self.docker.containers.list()
         for raw_container in raw_containers:
@@ -57,7 +62,13 @@ class ContainerRepo(QtCore.QObject):
 
         return container
 
+    def has_docker_available(self):
+        return self.docker is not None
+
     def has_proxy_image_downloaded(self) -> bool:
+        if self.docker is None:
+            raise Exception("docker is not available!")
+
         images = self.docker.images.list()
         pntest_proxy_images = [img for img in images if PROXY_DOCKER_IMAGE in img.tags] # type:ignore
 
@@ -69,6 +80,9 @@ class ContainerRepo(QtCore.QObject):
     # TODO: This is probably more "business logic" rather than storage logic so the code below should
     # probably go in the Container entity class
     def proxify_container(self, container: Container, client_id: int) -> tuple[Container, Container]:
+        if self.docker is None:
+            raise Exception("docker is not available!")
+
         if len(container.networks) > 1:
             raise Exception("The docker container must only be on a single network")
         network = container.networks[0]
@@ -84,7 +98,6 @@ class ContainerRepo(QtCore.QObject):
         # IMPORTANT: THIS NEEDS TO BE .get() because it calls docker inspect!!!
         proxy_raw_container = self.docker.containers.get(proxy_container_id)
         print(f"Proxy container short_id: {proxy_raw_container.short_id}")
-
 
         old_mounts = container.raw_container.attrs['Mounts'] # type:ignore
         new_mounts = []
@@ -151,6 +164,9 @@ class ContainerRepo(QtCore.QObject):
     #     return
 
     def __run_proxy_container(self, container: Container, client_id: int) -> str:
+        if self.docker is None:
+            raise Exception("docker is not available!")
+
         print(f'Starting proxy container with image: {PROXY_DOCKER_IMAGE}')
         proxy_env = [f'CLIENT_ID={client_id}', 'ZMQ_SERVER=host.docker.internal:5556']
 

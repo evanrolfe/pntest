@@ -1,8 +1,11 @@
-from dataclasses import dataclass
 import platform
 import re
 import subprocess
+from dataclasses import dataclass
 from typing import Optional
+
+import docker
+
 
 # AvailableClient is a client that is available to be started on the machine that this code is running on.
 # Unlike other models it does not represent a row in the database.
@@ -23,6 +26,10 @@ class AvailableClient():
 
     # Run through each of the commands and if any of them work, then set the command to that value
     def verify_command(self):
+        if self.name == 'docker':
+            self.__check_docker()
+            return
+
         result = None
         for command in self.commands:
             result = self.__check_command(command)
@@ -55,3 +62,14 @@ class AvailableClient():
             return result
         except FileNotFoundError:
             return None
+
+    # TODO: We should actually call ContainerRepo().has_docker_available() from AvailableClientService
+    def __check_docker(self):
+        try:
+            docker_client = docker.from_env()
+        except:
+            docker_client = None
+
+        if docker_client:
+            self.command = 'docker'
+            self.version = '1.2.3'
