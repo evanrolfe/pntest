@@ -5,6 +5,7 @@ from entities.client import Client
 from entities.container import Container
 from lib.background_worker import BackgroundWorker
 from repos.client_repo import ClientRepo
+from repos.container_repo import PROXY_DOCKER_IMAGE
 from services.available_clients_service import AvailableClientsService
 from services.open_clients_service import OpenClientsService
 from services.proxy_service import ProxyService
@@ -68,13 +69,23 @@ class ClientsPage(QtWidgets.QWidget):
         self.ui.clientsTable.reload()
 
     def create_client(self, client_type: str):
-        if client_type == 'docker':
-            self.docker_window.show()
+        if client_type != 'docker':
+            client = self.open_clients_service.build_client(client_type)
+            ClientRepo().save(client)
+            self.open_client_clicked_async(client)
             return
 
-        client = self.open_clients_service.build_client(client_type)
-        ClientRepo().save(client)
-        self.open_client_clicked_async(client)
+        if not self.open_clients_service.container_repo.has_proxy_image_downloaded():
+            message_box = QtWidgets.QMessageBox()
+            # message_box.setWindowTitle('PNTest')
+            message_box.setText(f"You must download the PnTest proxy image with this command, then try again:\ndocker pull {PROXY_DOCKER_IMAGE}")
+            message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
+            message_box.exec()
+            return
+
+        self.docker_window.show()
+        return
 
     def create_clients_for_containers(self, containers: list[Container]):
         for container in containers:

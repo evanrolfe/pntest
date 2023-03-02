@@ -56,6 +56,12 @@ class ContainerRepo(QtCore.QObject):
 
         return container
 
+    def has_proxy_image_downloaded(self) -> bool:
+        images = self.docker.images.list()
+        pntest_proxy_images = [img for img in images if PROXY_DOCKER_IMAGE in img.tags] # type:ignore
+
+        return len(pntest_proxy_images) > 0
+
     # Starts a proxy container, then restarts the inputted container with its network set to the proxy
     # returns the newly restarted intercepted container and the proxy container instance.
     # TODO: Maybe this should just accept client, so its not "primitive obsession"...
