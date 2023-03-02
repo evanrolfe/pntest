@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 import docker
+from docker.types.services import Mount
 from PyQt6 import QtCore
 
 from entities.container import Container
@@ -84,12 +85,27 @@ class ContainerRepo(QtCore.QObject):
         proxy_raw_container = self.docker.containers.get(proxy_container_id)
         print(f"Proxy container short_id: {proxy_raw_container.short_id}")
 
+
+        old_mounts = container.raw_container.attrs['Mounts'] # type:ignore
+        new_mounts = []
+
+        for old_mount in old_mounts:
+            new_mount = Mount(
+                target = old_mount['Destination'],
+                source=old_mount['Source'],
+                type=old_mount['Type'],
+                read_only=old_mount['RW'],
+                propagation=old_mount['Propagation']
+            )
+            new_mounts.append(new_mount)
+
         # 3. Restart the original container but with the network set to the proxy container
         intercepted_raw_container = self.docker.containers.run(
             image,
             detach=True,
             network=f'container:{proxy_raw_container.short_id}', # type:ignore
             environment=container.raw_container.attrs['Config']['Env'],  # type:ignore
+            mounts=new_mounts,
             links={}
         )
         print(f'Restarted container: {intercepted_raw_container.short_id}') # type:ignore
