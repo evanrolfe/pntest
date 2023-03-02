@@ -58,7 +58,8 @@ b = Analysis(
     binaries=[], #[('include/cert9.db', 'include/'), ('include/rootCA.key', 'include/')],
     datas=[
         ('src/mitmproxy/addon.py', '.'),
-        ('src/mitmproxy/common_types.py', '.')
+        ('src/mitmproxy/common_types.py', '.'),
+        ('src/mitmproxy/home_page_html.py', '.')
     ],
     hiddenimports=[],
     hookspath=[],
