@@ -89,6 +89,7 @@ class ContainerRepo(QtCore.QObject):
             image,
             detach=True,
             network=f'container:{proxy_raw_container.short_id}', # type:ignore
+            environment=container.raw_container.attrs['Config']['Env'],  # type:ignore
             links={}
         )
         print(f'Restarted container: {intercepted_raw_container.short_id}') # type:ignore
