@@ -51,6 +51,17 @@ class OpenClientsService(QtCore.QObject):
             OpenClientsService.__instance = self
     # /Singleton method stuff
 
+    # Return the containers which can be intercepted with a proxy
+    def get_interceptable_containers(self) -> list[Container]:
+        original_container_ids = [c.container_id for c in ClientRepo().find_all() if c.type == 'docker']
+        intercepted_container_ids = [c.intercepted_container.short_id for c in self.open_clients if c.intercepted_container]
+        proxy_container_ids = [c.proxy_container.short_id for c in self.open_clients if c.proxy_container]
+
+        do_not_intercept_container_ids = original_container_ids + intercepted_container_ids + proxy_container_ids
+        all_containers = self.container_repo.get_all()
+
+        return [c for c in all_containers if c.short_id not in do_not_intercept_container_ids]
+
     def build_client(self, client_type: str, container: Optional[Container] = None) -> Client:
         if client_type == 'docker':
             if container is None:
