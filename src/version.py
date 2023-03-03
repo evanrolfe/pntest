@@ -1,1 +1,2 @@
 PNTEST_VERSION = '0.0.1'
+PROXY_DOCKER_IMAGE = 'pntest/proxy:0.0.1'
