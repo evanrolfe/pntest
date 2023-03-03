@@ -62,6 +62,14 @@ class OpenClientsService(QtCore.QObject):
 
         return [c for c in all_containers if c.short_id not in do_not_intercept_container_ids]
 
+    # The message that will be displayed to the user when they exit the application
+    def on_exit_message(self) -> str:
+        msg = f'You have {len(self.open_docker_clients())} open docker clients. These will be stopped now, please allow up to a minute for the containers to be stopped.'
+        return msg
+
+    def open_docker_clients(self) -> list[Client]:
+        return [c for c in self.open_clients if c.type == 'docker']
+
     def build_client(self, client_type: str, container: Optional[Container] = None) -> Client:
         if client_type == 'docker':
             if container is None:
@@ -155,6 +163,7 @@ class OpenClientsService(QtCore.QObject):
     def on_exit(self):
         print("[OpenClientsService] killing all clients...")
         for open_client in self.open_clients:
+            print("[OpenClientsService] closing ", open_client.title)
             self.close_client(open_client)
 
     def __browser_was_closed(self, browser: Browser):

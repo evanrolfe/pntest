@@ -9,6 +9,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from lib.database import Database
 from lib.stylesheet_loader import StyleheetLoader
 from repos.app_settings_repo import AppSettingsRepo
+from services.open_clients_service import OpenClientsService
 from services.proxy_service import ProxyService
 from ui.views._compiled.main_window import Ui_MainWindow
 from ui.widgets.clients.clients_page import ClientsPage
@@ -107,6 +108,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.statusBar.insertPermanentWidget(3, line2)
         self.ui.statusBar.insertPermanentWidget(4, self.intercept_status)
 
+        self.open_client_service = OpenClientsService.get_instance()
+
     def exception_handler(self, type, exception, tb):
         print("------------------------------------------------\nERROR\n------------------------------------------------")
         exception_str = "\n".join(traceback.format_exception_only(exception))
@@ -196,6 +199,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
+
+        if len(self.open_client_service.open_docker_clients()) > 0:
+            msg = self.open_client_service.on_exit_message()
+            message_box = QtWidgets.QMessageBox()
+            message_box.setWindowTitle('Closing Docker Containers')
+            message_box.setText(msg)
+            message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
+            message_box.exec()
 
     def exit(self):
         QtWidgets.QApplication.quit()
