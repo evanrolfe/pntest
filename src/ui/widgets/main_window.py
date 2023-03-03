@@ -17,6 +17,7 @@ from ui.widgets.editor.editor_page import EditorPage
 from ui.widgets.intercept.intercept_page import InterceptPage
 from ui.widgets.network.network_page import NetworkPage
 from ui.widgets.preferences_window import PreferencesWindow
+from version import PNTEST_VERSION
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -275,14 +276,24 @@ class MainWindow(QtWidgets.QMainWindow):
     def show_preferences(self):
         self.preferences_window.show()
 
+    def show_about(self):
+        msg = f"PnTest\nVersion {PNTEST_VERSION}\n"
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle('About PnTest')
+        message_box.setText(msg)
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        message_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
+        message_box.exec()
+
     def setup_menu_actions(self):
         # File menu
         fileMenu = self.menuBar().addMenu("&File")
-
         action_open = fileMenu.addAction("Open project")
         action_save = fileMenu.addAction("Save project as")
         action_preferences = fileMenu.addAction("Preferences")
+        action_help = fileMenu.addAction("About PnTest")
 
         action_open.triggered.connect(self.open_project)
         action_save.triggered.connect(self.save_project_as)
         action_preferences.triggered.connect(self.show_preferences)
+        action_help.triggered.connect(self.show_about)

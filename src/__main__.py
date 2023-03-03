@@ -1,22 +1,23 @@
 import os
 import sys
+
 from PyQt6 import QtCore, QtWidgets
 
-from lib.paths import get_app_path, get_resource_path, get_app_config_path
 from lib.database import Database
+from lib.paths import get_app_config_path, get_app_path, get_resource_path
 from lib.stylesheet_loader import StyleheetLoader
 from repos.process_repo import ProcessRepo
 from services.open_clients_service import OpenClientsService
 from services.proxy_service import ProxyService
 from ui.widgets.main_window import MainWindow
-from version import version
+from version import PNTEST_VERSION
 
 THEME = 'dark'
 
 db_file_arg = None
 version_arg = sys.argv[1] if len(sys.argv) > 1 else None
 if version_arg == '--version':
-    sys.exit(f'pntest v{version}')
+    sys.exit(f'pntest v{PNTEST_VERSION}')
 else:
     db_file_arg = version_arg
 

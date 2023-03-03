@@ -1,1 +1,1 @@
-version = '0.0.1'
+PNTEST_VERSION = '0.0.1'
