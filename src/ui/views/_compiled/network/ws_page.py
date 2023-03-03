@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'src/views/network/ws_page.ui'
+# Form implementation generated from reading ui file 'src/ui/views/network/ws_page.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #

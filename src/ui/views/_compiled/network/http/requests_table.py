@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'src/views/network/http/requests_table.ui'
+# Form implementation generated from reading ui file 'src/ui/views/network/http/requests_table.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #

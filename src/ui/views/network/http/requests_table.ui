@@ -124,7 +124,7 @@
   <customwidget>
    <class>HoverableQTableView</class>
    <extends>QWidget</extends>
-   <header>widgets.qt.hoverable_q_table_view.h</header>
+   <header>ui.widgets.qt.hoverable_q_table_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

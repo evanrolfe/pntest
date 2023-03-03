@@ -7,18 +7,18 @@ import os
 def compile_dir(start_dir):
     for item in os.scandir(start_dir):
         if item.is_dir():
-            view_dir_arr = item.path.split('/')[2:]
+            view_dir_arr = item.path.split('/')[3:]
             view_dir = '/'.join(view_dir_arr)
 
             if view_dir == '_compiled':
                 continue
 
-            from_dir = 'src/views/' + view_dir
-            to_dir = 'src/views/_compiled/' + view_dir
+            from_dir = 'src/ui/views/' + view_dir
+            to_dir = 'src/ui/views/_compiled/' + view_dir
             print(f'Converting from {from_dir} to {to_dir}')
 
             os.system(f'pyqt6rc {from_dir} -o {to_dir}')
             compile_dir(item.path)
 
-compile_dir('src/views')
-os.system(f'pyqt6rc src/views -o src/views/_compiled')
+compile_dir('src/ui/views')
+os.system(f'pyqt6rc src/ui/views -o src/ui/views/_compiled')

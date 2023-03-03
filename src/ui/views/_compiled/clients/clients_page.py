@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'src/views/clients/clients_page.ui'
+# Form implementation generated from reading ui file 'src/ui/views/clients/clients_page.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #

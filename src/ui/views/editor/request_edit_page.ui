@@ -190,19 +190,19 @@
   <customwidget>
    <class>FlowView</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.flow_view.h</header>
+   <header>ui.widgets.shared.flow_view.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ExamplesTable</class>
    <extends>QWidget</extends>
-   <header>widgets.editor.examples_table.h</header>
+   <header>ui.widgets.editor.examples_table.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LineScintilla</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.line_scintilla.h</header>
+   <header>ui.widgets.shared.line_scintilla.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -124,13 +124,13 @@
   <customwidget>
    <class>Tabs</class>
    <extends>QTabWidget</extends>
-   <header>widgets.editor.tabs.h</header>
+   <header>ui.widgets.editor.tabs.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ItemExplorer</class>
    <extends>QTreeView</extends>
-   <header>widgets.editor.item_explorer.h</header>
+   <header>ui.widgets.editor.item_explorer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

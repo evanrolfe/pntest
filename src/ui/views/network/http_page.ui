@@ -161,25 +161,25 @@
   <customwidget>
    <class>RequestsTable</class>
    <extends>QWidget</extends>
-   <header>widgets.network.http.requests_table.h</header>
+   <header>ui.widgets.network.http.requests_table.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FlowView</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.flow_view.h</header>
+   <header>ui.widgets.shared.flow_view.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Loader</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.loader.h</header>
+   <header>ui.widgets.shared.loader.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ItemExplorer</class>
    <extends>QTreeView</extends>
-   <header>widgets.editor.item_explorer.h</header>
+   <header>ui.widgets.editor.item_explorer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -251,7 +251,7 @@
   <customwidget>
    <class>HeadersForm</class>
    <extends>QWidget</extends>
-   <header>widgets.shared.headers_form.h</header>
+   <header>ui.widgets.shared.headers_form.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

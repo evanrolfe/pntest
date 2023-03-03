@@ -327,7 +327,7 @@ Click an option below to start.</string>
   <customwidget>
    <class>ClientsTable</class>
    <extends>QWidget</extends>
-   <header>widgets.clients.clients_table.h</header>
+   <header>ui.widgets.clients.clients_table.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

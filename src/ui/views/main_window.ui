@@ -107,7 +107,7 @@
   <customwidget>
    <class>Sidebar</class>
    <extends>QListWidget</extends>
-   <header>widgets.qt.sidebar.h</header>
+   <header>ui.widgets.qt.sidebar.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -137,13 +137,13 @@
   <customwidget>
    <class>MessagesTable</class>
    <extends>QWidget</extends>
-   <header>widgets.network.ws.messages_table.h</header>
+   <header>ui.widgets.network.ws.messages_table.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>MessageView</class>
    <extends>QWidget</extends>
-   <header>widgets.network.ws.message_view.h</header>
+   <header>ui.widgets.network.ws.message_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
