@@ -145,3 +145,6 @@ The final step, run: `xcrun stapler staple ./dist/pntest.dmg`.
 Icons come from:
 https://icons8.com/icon/set/console/dusk
 https://www.flaticon.com/search?word=terminal
+
+Test out the docker proxy image with:
+`docker run -i -t --privileged -v ~/Code/pntest/src/mitmproxy:/app/mitmproxy pntest-proxy:latest`
