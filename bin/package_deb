@@ -2,7 +2,7 @@
 
 # Builds a .deb file from dist/pntest
 
-# If the DMG already exists, delete it.
+# If the deb already exists, delete it.
 test -f "dist/pntest.deb" && rm "dist/pntest.deb"
 
 cd dist

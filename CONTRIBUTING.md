@@ -34,18 +34,20 @@ $ bin/test test/integration
 ```
 
 ## Build & Package (Mac .dmg)
-1. Run `bin/build_mac` this outputs to `./dist/pntest.app`
+1. Run `bin/build` this outputs to `./dist/pntest.app`
 
 2. Codesign with: `codesign --deep --force --verbose --options=runtime --sign "Evan Rolfe" ./dist/pntest.app/`
 
-3. Package to dmg with: `bin/build_dmg`
+3. Package to dmg with: `bin/package_dmg`
 
 4. Notarize the dmg: `xcrun notarytool submit ./dist/pntest.dmg --keychain-profile "PnTest" --wait`
 
 5. Staple the dmg: `xcrun stapler staple ./dist/pntest.dmg`
 
 ## Build & Package (Linux .deb)
-TODO
+1. Run `bin/build` this outputs to `./dist/pntest`
+
+2. Run `bin/package_deb`
 
 ## Build & Package (Linux .rpm)
 TODO
@@ -119,7 +121,7 @@ Once you have the app built to `./dist/pntest.app`, you need to codesign that di
 (You may need to enter a password, and then click "Always Allow")
 
 **Package**
-Run `bin/build_dmg` which outputs to `./dist/pntest.dmg`.
+Run `bin/package_dmg` which outputs to `./dist/pntest.dmg`.
 
 **Notarize**
 
