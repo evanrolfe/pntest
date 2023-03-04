@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Builds a .deb file from dist/pntest
+
+# If the DMG already exists, delete it.
+test -f "dist/pntest.deb" && rm "dist/pntest.deb"
+
+cd dist
+# Setup new file structure for the installed app
+mv pntest pntest2
+mkdir pntest
+
+# Copy debian files over
+mkdir pntest/DEBIAN
+cp ../include/DEBIAN/* ./pntest/DEBIAN/
+
+# Copy pntest contents to /usr/local/lib/pntest
+mkdir pntest/usr
+mkdir pntest/usr/local
+mkdir pntest/usr/local/lib
+mv pntest2 pntest/usr/local/lib/pntest
+
+# Copy pntest.desktop to /usr/share/applications/
+mkdir pntest/usr/share
+mkdir pntest/usr/share/applications
+cp pntest/DEBIAN/pntest.desktop pntest/usr/share/applications/
+
+# Package the deb!
+dpkg-deb --build pntest

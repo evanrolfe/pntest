@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=PnTest
+GenericName=pntest
+Comment=backend web development software
+Exec=/usr/local/bin/pntest
+Icon=/usr/local/lib/pntest/include/icons8-guide-dog-48.png
+Terminal=false
+Categories=Development;

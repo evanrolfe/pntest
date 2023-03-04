@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+import platform
 
 block_cipher = None
 
@@ -16,6 +16,7 @@ a = Analysis(
         ('include/mitmproxy-client.pem', 'include/'),
         ('include/html_page.html', 'include/'),
         ('include/config.yaml', 'include/'),
+        ('include/icons8-guide-dog-48.png', 'include/'),
         ('src/ui/style/dark.qss', 'ui/style/'),
         ('src/ui/style/dark_theme.qss', 'ui/style/'),
         ('src/ui/style/light.qss', 'ui/style/'),
@@ -104,12 +105,13 @@ coll = COLLECT(exea,
                name='pntest')
 
 # Mac OS X Bundle
-app = BUNDLE(
-    coll,
-    name='pntest.app',
-    icon='p_icon-icons.com_60469.icns',
-    bundle_identifier='pntest.pntest',
-    info_plist={
-        'LSBackgroundOnly': False
-    }
-)
+if platform.system() == 'Darwin':
+    app = BUNDLE(
+        coll,
+        name='pntest.app',
+        icon='p_icon-icons.com_60469.icns',
+        bundle_identifier='pntest.pntest',
+        info_plist={
+            'LSBackgroundOnly': False
+        }
+    )

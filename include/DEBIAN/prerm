@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Clean up files that have been added by pntest while running
+rm /usr/local/bin/pntest 2> /dev/null || true
+rm /usr/local/lib/pntest/include/* 2> /dev/null || true
+rm /usr/local/lib/pntest/pntest-tmp.db 2> /dev/null || true
