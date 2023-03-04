@@ -1,4 +1,5 @@
 from __future__ import annotations
+import platform
 
 from typing import Optional
 
@@ -7,7 +8,7 @@ from docker.types.services import Mount
 from PyQt6 import QtCore
 
 from entities.container import Container
-from lib.utils import is_test_env
+from lib.utils import get_local_ip_addr, is_test_env
 from version import PROXY_DOCKER_IMAGE
 
 
@@ -141,11 +142,12 @@ class ContainerRepo(QtCore.QObject):
         else:
             docker_compose_host = raw_container.attrs['Config']['Labels'].get('com.docker.compose.service')
             network_aliases = raw_container.attrs['NetworkSettings']['Networks'].get(networks[0], {}).get('Aliases')
-            network_alias_host = network_aliases[0]
             if docker_compose_host:
                 host_name = docker_compose_host
+            elif network_aliases and len(network_aliases) > 0:
+                host_name = network_aliases[0]
             else:
-                host_name = network_alias_host
+                host_name = 'unknown'
 
         # print(json.dumps(raw_container.attrs))
         return Container(
@@ -185,9 +187,19 @@ class ContainerRepo(QtCore.QObject):
         proxy_networking_config = self.docker.api.create_networking_config(opts)
 
         # 3. Create a host config for the proxy container
+        pltfrm = platform.system()
+        extra_hosts = {}
+
+        # Docker's networking works differently in mac/linux. In linux host.docker.internal is not set by default
+        if pltfrm == 'Linux':
+            local_ip = get_local_ip_addr()
+            print("[ContainerRepo] local ip found to be ", local_ip)
+            extra_hosts['host.docker.internal'] = local_ip
+
         proxy_host_config = self.docker.api.create_host_config(
             port_bindings=container.ports, # type:ignore
             privileged=True,
+            extra_hosts=extra_hosts
         )
 
         # 4. Ensure the same ports are exposed on the proxy container

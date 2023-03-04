@@ -1,9 +1,17 @@
 import os
+import socket
 from pendulum import Pendulum
 
 def format_timestamp(timestamp):
     if type(timestamp) == Pendulum:
         return timestamp.format('%H:%M:%S %Y-%m-%d')
+
+def get_local_ip_addr():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 1))
+    local_ip_addr = s.getsockname()[0]
+
+    return local_ip_addr
 
 # development/test/production
 def pntest_env() -> str:

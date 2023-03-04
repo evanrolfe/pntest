@@ -55,6 +55,7 @@ class DockerWindow(QtWidgets.QDialog):
             check_box = QtWidgets.QCheckBox(self)
             check_box.setObjectName(f"container_{container.short_id}")
             check_box.setStyleSheet("margin-bottom: 5px;")
+            # TODO!!!!
             check_box.setText(f"Container: {container.short_id} | Name: {container.name} | Image: {container.image}\nDepends on: catalogue:service_started, user:service_started")
             check_box.setChecked(False)
             self.ui.verticalLayout_2.addWidget(check_box)
