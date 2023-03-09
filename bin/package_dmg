@@ -7,11 +7,11 @@ test -f "dist/pntest.dmg" && rm "dist/pntest.dmg"
 
 create-dmg \
   --volname "PnTest" \
-  --volicon "./p_icon-icons.com_60469.icns" \
+  --volicon "./pntest.icns" \
   --window-pos 200 120 \
   --window-size 600 300 \
   --icon-size 100 \
-  --icon "./p_icon-icons.com_60469.icns" 175 120 \
+  --icon "./pntest.icns" 175 120 \
   --hide-extension "pntest.app" \
   --app-drop-link 425 120 \
   "dist/pntest.dmg" \

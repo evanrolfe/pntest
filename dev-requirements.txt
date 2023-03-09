@@ -4,5 +4,6 @@ pytest
 pytest-qt
 pyinstaller
 pytest-httpserver
+pyqt6rc
 websockets==10.3
 websocket-client==1.4.1

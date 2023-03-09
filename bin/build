@@ -1,4 +1,4 @@
 rm -rf build/*
 rm -rf dist/*
 
-pyinstaller pntest_mac.spec
+pyinstaller pntest.spec

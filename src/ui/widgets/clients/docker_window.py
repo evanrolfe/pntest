@@ -10,7 +10,7 @@ class DockerWindow(QtWidgets.QDialog):
     proxify_containers = QtCore.pyqtSignal(list)
 
     open_clients_service: OpenClientsService
-    check_boxes_and_containers: dict[QtWidgets.QCheckBox, Container]
+    check_boxes_and_containers: dict[QtWidgets.QRadioButton, Container]
 
     def __init__(self, *args, **kwargs):
         super(DockerWindow, self).__init__(*args, **kwargs)
@@ -32,6 +32,7 @@ class DockerWindow(QtWidgets.QDialog):
 
     def save(self):
         containers_to_proxify = []
+        # TODO: Since this now uses radio buttons, not checkboxes, there is only ever one checked item
         for check_box, container in self.check_boxes_and_containers.items():
             if check_box.isChecked():
                 containers_to_proxify.append(container)
@@ -52,11 +53,11 @@ class DockerWindow(QtWidgets.QDialog):
         self.check_boxes_and_containers = {}
 
         for container in containers:
-            check_box = QtWidgets.QCheckBox(self)
-            check_box.setObjectName(f"container_{container.short_id}")
-            check_box.setStyleSheet("margin-bottom: 5px;")
-            # TODO!!!!
-            check_box.setText(f"Container: {container.short_id} | Name: {container.name} | Image: {container.image}\nDepends on: catalogue:service_started, user:service_started")
-            check_box.setChecked(False)
-            self.ui.verticalLayout_2.addWidget(check_box)
-            self.check_boxes_and_containers[check_box] = container
+            radio_button =QtWidgets.QRadioButton(self)
+            radio_button.setObjectName(f"container_{container.short_id}")
+            radio_button.setStyleSheet("margin-bottom: 5px;")
+
+            radio_button.setText(f"Container: {container.short_id} | Name: {container.name} | Image: {container.image}\nDepends on: {container.get_depends_on()}")
+            radio_button.setChecked(False)
+            self.ui.verticalLayout_2.addWidget(radio_button)
+            self.check_boxes_and_containers[radio_button] = container

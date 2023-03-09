@@ -4,6 +4,6 @@ Name=PnTest
 GenericName=pntest
 Comment=backend web development software
 Exec=/usr/local/bin/pntest
-Icon=/usr/local/lib/pntest/include/icons8-guide-dog-48.png
+Icon=/usr/local/lib/pntest/include/icon_128x128.png
 Terminal=false
 Categories=Development;
