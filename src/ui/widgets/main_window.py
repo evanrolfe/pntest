@@ -13,6 +13,7 @@ from services.open_clients_service import OpenClientsService
 from services.proxy_service import ProxyService
 from ui.views._compiled.main_window import Ui_MainWindow
 from ui.widgets.clients.clients_page import ClientsPage
+from ui.widgets.docker.docker_page import DockerPage
 from ui.widgets.editor.editor_page import EditorPage
 from ui.widgets.intercept.intercept_page import InterceptPage
 from ui.widgets.network.network_page import NetworkPage
@@ -38,13 +39,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.intercept_page = InterceptPage()
         self.clients_page = ClientsPage()
         self.editor_page = EditorPage()
+        self.docker_page = DockerPage()
 
         # Setup stacked widget:
         self.ui.stackedWidget.addWidget(self.network_page)
         self.ui.stackedWidget.addWidget(self.intercept_page)
         self.ui.stackedWidget.addWidget(self.clients_page)
         self.ui.stackedWidget.addWidget(self.editor_page)
-        self.ui.stackedWidget.setCurrentWidget(self.network_page)
+        self.ui.stackedWidget.addWidget(self.docker_page)
+        self.ui.stackedWidget.setCurrentWidget(self.docker_page)
 
         # Set padding on widgets:
         self.ui.centralWidget.layout().setContentsMargins(0, 0, 0, 0)
@@ -224,6 +227,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.clients_page)
         elif item_value == 'editor':
             self.ui.stackedWidget.setCurrentWidget(self.editor_page)
+        elif item_value == 'docker':
+            self.ui.stackedWidget.setCurrentWidget(self.docker_page)
 
     def reload(self):
         self.network_page.reload()
