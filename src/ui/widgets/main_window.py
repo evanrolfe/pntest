@@ -216,13 +216,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def sidebar_item_clicked(self, item: QtWidgets.QListWidgetItem, prev: QtWidgets.QListWidgetItem):
         item_value = item.data(QtCore.Qt.ItemDataRole.UserRole)
 
-        if item_value == 'network':
+        if item_value == 'proxy':
             self.ui.stackedWidget.setCurrentWidget(self.network_page)
         elif item_value == 'intercept':
             self.ui.stackedWidget.setCurrentWidget(self.intercept_page)
-        elif item_value == 'clients':
+        elif item_value == 'browser':
             self.ui.stackedWidget.setCurrentWidget(self.clients_page)
-        elif item_value == 'requests':
+        elif item_value == 'editor':
             self.ui.stackedWidget.setCurrentWidget(self.editor_page)
 
     def reload(self):

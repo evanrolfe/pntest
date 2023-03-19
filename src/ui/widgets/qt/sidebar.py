@@ -1,5 +1,7 @@
 from typing import Optional
-from PyQt6 import QtWidgets, QtCore, QtGui
+
+from PyQt6 import QtCore, QtGui, QtWidgets
+
 
 # Used for highlighting the intercept button
 class SidebarStyleDelegate(QtWidgets.QStyledItemDelegate):
@@ -36,11 +38,11 @@ class Sidebar(QtWidgets.QListWidget):
         self.setUniformItemSizes(True)
         # icon_size = QSize(52, 35)
 
-        # Network Item
-        network_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-cloud-backup-restore-50.png"), "Network", None)
-        network_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'network')
-        network_item.setToolTip("Network")
-        self.addItem(network_item)
+        # Proxy Item
+        proxy_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-cloud-backup-restore-50.png"), "Proxy", None)
+        proxy_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'proxy')
+        proxy_item.setToolTip("Proxy")
+        self.addItem(proxy_item)
 
         # Intercept Item
         intercept_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-rich-text-converter-50.png"), "Intercept", None)
@@ -51,17 +53,23 @@ class Sidebar(QtWidgets.QListWidget):
         self.delegate = SidebarStyleDelegate()
         self.setItemDelegate(self.delegate)
 
-        # Clients Item
-        clients_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-browse-page-50.png"), "Clients", None)
-        clients_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'clients')
-        clients_item.setToolTip("Clients")
-        self.addItem(clients_item)
+        # Editor Item
+        editor_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-compose-50.png"), "Editor", None)
+        editor_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'editor')
+        editor_item.setToolTip("Request Editor")
+        self.addItem(editor_item)
 
-        # Requests Item
-        requests_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-compose-50.png"), "Requests", None)
-        requests_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'requests')
-        requests_item.setToolTip("Request Editor")
-        self.addItem(requests_item)
+        # Docker Item
+        docker_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-docker-64.png"), "Docker", None)
+        docker_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'docker')
+        docker_item.setToolTip("Docker")
+        self.addItem(docker_item)
+
+        # Browser Item
+        browser_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-browse-page-50.png"), "Browser", None)
+        browser_item.setData(QtCore.Qt.ItemDataRole.UserRole, 'browser')
+        browser_item.setToolTip("Clients")
+        self.addItem(browser_item)
 
         # Extensions Item
         # extensions_item = QtWidgets.QListWidgetItem(QtGui.QIcon("assets:icons/dark/icons8-plus-math-50.png"), None)
