@@ -203,6 +203,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_layout_state()
         self.network_page.save_layout_state()
         self.editor_page.save_layout_state()
+        self.docker_page.kill_console()
 
         if len(self.open_client_service.open_docker_clients()) > 0:
             msg = self.open_client_service.on_exit_message()

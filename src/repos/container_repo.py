@@ -1,6 +1,6 @@
 from __future__ import annotations
-import platform
 
+import platform
 from typing import Optional
 
 import docker
@@ -62,6 +62,11 @@ class ContainerRepo(QtCore.QObject):
             return
 
         return container
+
+    # TODO: change to find_for_network(self, network: Network)
+    def find_by_ids(self, ids: list[str]) -> list[Container]:
+        containers = self.get_all()
+        return [c for c in containers if c.id in ids]
 
     def has_docker_available(self):
         return self.docker is not None
@@ -151,6 +156,7 @@ class ContainerRepo(QtCore.QObject):
 
         # print(json.dumps(raw_container.attrs))
         return Container(
+            id=raw_container.attrs['Id'],
             short_id=raw_container.short_id,
             name=raw_container.name,
             status=raw_container.status,

@@ -153,65 +153,72 @@
           <widget class="QComboBox" name="dockerNetworkDropdown"/>
          </item>
          <item>
-          <widget class="QPushButton" name="refreshButton">
-          </widget>
+          <widget class="QPushButton" name="refreshButton"/>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="tableView_2"/>
+        <widget class="HoverableQTableView" name="containerTable" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>300</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>99999</height>
+          </size>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QSplitter" name="dockerViewSplitter">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+     <widget class="DockerTabs" name="tabs">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <widget class="QStackedWidget" name="requestStackedWidget">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <widget class="QTabWidget" name="dockerNetworkTabs">
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <widget class="QWidget" name="tab">
-         <attribute name="title">
-          <string>Network</string>
-         </attribute>
-        </widget>
-       </widget>
-      </widget>
-      <widget class="QStackedWidget" name="responseStackedWidget">
-       <widget class="QTabWidget" name="dockerContainerTabs">
-        <property name="currentIndex">
-         <number>2</number>
-        </property>
-        <widget class="QWidget" name="tab_2">
-         <attribute name="title">
-          <string>Container</string>
-         </attribute>
-        </widget>
-        <widget class="QWidget" name="tab_3">
-         <attribute name="title">
-          <string>Logs</string>
-         </attribute>
-        </widget>
-        <widget class="QWidget" name="tab_4">
-         <attribute name="title">
-          <string>Console</string>
-         </attribute>
-        </widget>
-       </widget>
-      </widget>
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>300</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>99999</height>
+       </size>
+      </property>
      </widget>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HoverableQTableView</class>
+   <extends>QWidget</extends>
+   <header>ui.widgets.qt.hoverable_q_table_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DockerTabs</class>
+   <extends>QTabWidget</extends>
+   <header>ui.widgets.docker.docker_tabs.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
