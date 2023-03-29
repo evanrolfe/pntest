@@ -9,7 +9,6 @@ import sys
 import pyte
 from PyQt6 import Qsci, QtCore, QtGui, QtWidgets
 
-import qbash_util
 from lib.paths import get_app_config_path, get_app_path, get_resource_path
 from lib.stylesheet_loader import StyleheetLoader
 from ui.widgets.shared.code_themes import DarkTheme
@@ -73,7 +72,7 @@ class ConsoleProc(QtCore.QRunnable):
                     data = os.read(self.file_desc, 1024)
                     if not data:
                         break
-                    print('received data:', data.decode())
+
                     # Feed output into Pyte's state machine and send the new screen
                     # output to the GUI thread.
                     self.stream.feed(data)
@@ -86,5 +85,4 @@ class ConsoleProc(QtCore.QRunnable):
             self.signals.error.emit((exctype, value))
 
     def key_pressed(self, byte_code: bytes):
-        print("Sending: ", byte_code)
         os.write(self.file_desc, byte_code)
