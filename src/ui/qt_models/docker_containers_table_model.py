@@ -14,7 +14,7 @@ class DockerContainersTableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, parent: Optional[QtCore.QObject] = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        self.headers = ['ID', 'Host', 'Name', 'Status', 'Gateway Configured?']
+        self.headers = ['ID', 'Host', 'Name', 'Status', 'Network Interception']
         self.containers = []
 
     def set_network(self, network: Network):
@@ -22,7 +22,7 @@ class DockerContainersTableModel(QtCore.QAbstractTableModel):
         self.reload()
 
     def reload(self):
-        self.containers = ContainerRepo.get_instance().find_by_ids(self.network.container_ids())
+        self.containers = self.network.containers
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
 
@@ -66,7 +66,16 @@ class DockerContainersTableModel(QtCore.QAbstractTableModel):
             elif (index.column() == 3):
                 return str(container.status)
             elif (index.column() == 4):
-                return str('Yes')
+                return ''
+
+    def get_container(self, index: QtCore.QModelIndex) -> Optional[Container]:
+        if not index.isValid():
+            return None
+
+        if index.row() > len(self.containers):
+            return None
+
+        return self.containers[index.row()]
 
     def roleNameArray(self) -> list[str]:
         return self.headers

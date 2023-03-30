@@ -10,6 +10,7 @@ from repos.container_repo import ContainerRepo
 from repos.http_flow_repo import HttpFlowRepo
 from repos.network_repo import NetworkRepo
 from repos.ws_message_repo import WsMessageRepo
+from services.docker_service import DockerService
 from services.intercept_queue import InterceptQueue
 from ui.qt_models.docker_containers_table_model import \
     DockerContainersTableModel
@@ -39,6 +40,35 @@ class ContainerRowStyleDelegate(QtWidgets.QStyledItemDelegate):
         # options.displayAlignment = QtCore.Qt.AlignmentFlag.AlignCenter
         if self.hovered_index.row() == index.row():
             options.backgroundBrush = QtGui.QBrush(QtGui.QColor(self.HOVER_COLOUR))
+
+    def paint(self, painter: QtGui.QPainter, options: QtWidgets.QStyleOptionViewItem, index: QtCore.QModelIndex):
+        super().paint(painter, options, index)
+
+        model: DockerContainersTableModel = index.model()  # type: ignore
+        container = model.get_container(index)
+
+        # Response status column
+        if index.column() == 4:
+            if container is None:
+                return
+
+            if container.interception_active:
+                label_text = "Active"
+                bg_color = "#3B6118"
+            else:
+                label_text = "Inactive"
+                bg_color = "#7A4C15"
+
+            label = QtWidgets.QLabel(label_text)
+            label.setAutoFillBackground(True)
+            label.setObjectName("responseStatusLabelTable")
+            label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            label.setMinimumWidth(30)
+            label.setStyleSheet(f"background-color: {bg_color};")
+            # painter.fillRect(options.rect, QtGui.QColor("#C3E88D"))
+            x_offest = 9
+            y_offset = 0
+            painter.drawPixmap(options.rect.x()+x_offest, options.rect.y()+y_offset, label.grab())
 
 class DockerPage(QtWidgets.QWidget):
     networks: list[Network]
@@ -113,6 +143,9 @@ class DockerPage(QtWidgets.QWidget):
 
     def network_selected(self, index: int):
         self.network = self.networks[index]
+        DockerService().load_containers_to_network(self.network)
+        print("GATEWAY CONTAINER: ", self.network.gateway_container())
+
         self.table_model.set_network(self.network)
 
         # self.ui.dockerTab.ui.networkText.setPlainText(network.human_readable_desc())
@@ -126,6 +159,7 @@ class DockerPage(QtWidgets.QWidget):
             return
 
         container = selected_containers[0]
+        print("CONTAINER HAS TOOLS? ", container.has_tools_installed())
         # self.ui.dockerTab.ui.containerText.setPlainText(container.human_readable_desc())
         self.ui.tabs.open_tab(self.network, container)
         # self.setup_console(container)

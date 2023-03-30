@@ -1,4 +1,11 @@
 from dataclasses import dataclass
+from typing import Optional
+
+from entities.container import Container
+
+# TODO: Use the real image
+# from version import PROXY_DOCKER_IMAGE
+PROXY_DOCKER_IMAGE = 'proxy:latest'
 
 
 @dataclass(kw_only=True)
@@ -12,6 +19,7 @@ class Network():
     raw_network: object
     subnet: str
     gateway: str
+    containers: list[Container]
 
     def container_ids(self) -> list[str]:
         return list(self.raw_network.attrs['Containers'].keys()) # type: ignore
@@ -24,3 +32,16 @@ class Network():
         desc += f'Labels: {self.labels}'
 
         return desc
+
+    def has_active_gateway_container(self) -> bool:
+        container = self.gateway_container()
+        if not container:
+            return False
+
+        return (container.status == 'running')
+
+    def gateway_container(self) -> Optional[Container]:
+        containers_found = [c for c in self.containers if c.image == PROXY_DOCKER_IMAGE]
+
+        if len(containers_found) > 0:
+            return containers_found[0]

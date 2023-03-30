@@ -55,4 +55,5 @@ class NetworkRepo(QtCore.QObject):
             raw_network=raw_network,
             subnet=subnet,
             gateway=gateway,
+            containers=[]
         )

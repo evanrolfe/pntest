@@ -26,15 +26,35 @@ class DockerTab(QtWidgets.QWidget):
         self.threadpool = QtCore.QThreadPool()
         self.threadpool.setMaxThreadCount(2)
 
+        self.ui.dockerContainerTabs.currentChanged.connect(self.tab_changed)
+
+        # Tabs Corner Widget
+        self.activate_intercept_button = QtWidgets.QPushButton('Activate Network Interception')
+        self.activate_intercept_button.setObjectName('activateInterception')
+
+        self.response_corner_widget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout(self.response_corner_widget)
+        layout.setContentsMargins(0, 0, 3, 3)
+        layout.addWidget(self.activate_intercept_button)
+
+        self.ui.dockerContainerTabs.setCornerWidget(self.response_corner_widget)
+
+
     def set_container(self, network: Network, container: Container):
         self.container = container
         self.ui.networkText.setPlainText(network.human_readable_desc())
         self.ui.containerText.setPlainText(container.human_readable_desc())
 
-        self.setup_console()
-        self.setup_logs()
+    def tab_changed(self, i: int):
+        if i == 2:
+            self.setup_logs()
+        elif i == 3:
+            self.setup_console()
 
     def setup_console(self):
+        if self.console_proc:
+            return
+
         # Setup console
         console_args = ['docker', 'exec', '-it', self.container.short_id, 'bash']
         self.console_proc = ConsoleProc(console_args, NUM_LINES, 80)
@@ -45,11 +65,11 @@ class DockerTab(QtWidgets.QWidget):
         self.ui.consoleText.key_pressed.connect(self.console_proc.key_pressed)
 
     def setup_logs(self):
+        if self.logs_proc:
+            return
+
         self.logs_proc = LogsProc(self.container, self.ui.logsText)
         self.threadpool.start(self.logs_proc, )
-
-        # self.ui.logsText.appendPlainText("line 1")
-        # self.ui.logsText.appendPlainText("line 2")
 
         # Connect the signals:
         self.logs_proc.signals.result.connect(self.new_log_line)

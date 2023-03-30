@@ -323,11 +323,17 @@ QPushButton#sendButton {
   width: 100px;
 }
 
-QPushButton#sendButton:hover {
+QPushButton#activateInterception {
+  background-color: $button-bright;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+QPushButton#sendButton:hover, #activateInterception:hover {
   background-color: $button-bright-hover;
 }
 
-QPushButton#sendButton:pressed {
+QPushButton#sendButton:pressed, #activateInterception:hover {
   background-color: $button-bright-pressed;
 }
 

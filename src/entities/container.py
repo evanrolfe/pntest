@@ -13,6 +13,10 @@ class Container():
     networks: list[str]
     raw_container: object
     host_name: str
+    interception_active: bool = False
+
+    def __post_init__(self):
+        self.interception_active = self.has_tools_installed()
 
     # Get the other containers that this one depends on
     def get_depends_on(self) -> str:
@@ -29,3 +33,13 @@ class Container():
         desc += f'Network(s): {self.networks}'
 
         return desc
+
+    # Check if ip and curl are installed on the container
+    def has_tools_installed(self) -> bool:
+        _, output = self.raw_container.exec_run("ip help") # type:ignore
+        has_ip = 'usage' in output.decode().lower()
+
+        _, output = self.raw_container.exec_run("curl --help") # type:ignore
+        has_curl = 'usage' in output.decode().lower()
+
+        return has_ip and has_curl

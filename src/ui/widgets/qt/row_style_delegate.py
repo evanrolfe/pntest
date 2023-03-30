@@ -1,8 +1,10 @@
 from typing import Optional
+
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 from lib.utils import get_method_colour, get_status_colour
 from ui.qt_models.requests_table_model import RequestsTableModel
+
 
 class RowStyleDelegate(QtWidgets.QStyledItemDelegate):
     HOVER_COLOUR = "#252526"
