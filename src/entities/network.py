@@ -2,10 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from entities.container import Container
-
-# TODO: Use the real image
-# from version import PROXY_DOCKER_IMAGE
-PROXY_DOCKER_IMAGE = 'proxy:latest'
+from version import PROXY_DOCKER_IMAGE
 
 
 @dataclass(kw_only=True)

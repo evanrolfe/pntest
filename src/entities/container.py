@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 
@@ -13,6 +15,9 @@ class Container():
     networks: list[str]
     raw_container: object
     host_name: str
+    ip: str
+    # The original gateway IP addr that this container was started with
+    gateway: str
     interception_active: bool = False
 
     def __post_init__(self):
@@ -43,3 +48,31 @@ class Container():
         has_curl = 'usage' in output.decode().lower()
 
         return has_ip and has_curl
+
+    def set_gateway(self, gateway_container: Container):
+        cmd = "ip route del default"
+        self.__run_cmd(cmd, privileged=True)
+
+        cmd = f"ip route add default via {gateway_container.ip} dev eth0"
+        self.__run_cmd(cmd, privileged=True)
+
+        # The table 200 rule is necessary for container2container traffic
+        cmd = f"ip rule add from {self.ip} table 200"
+        self.__run_cmd(cmd, privileged=True)
+
+        cmd = f"ip route add default via {gateway_container.ip} table 200"
+        self.__run_cmd(cmd, privileged=True)
+
+    def reset_gateway(self):
+        cmd = "ip route del default"
+        self.__run_cmd(cmd, privileged=True)
+
+        cmd = f"ip route add default via {self.gateway} dev eth0"
+        self.__run_cmd(cmd, privileged=True)
+
+        cmd = f"ip route show table 200"
+        self.__run_cmd(cmd, privileged=True)
+
+    def __run_cmd(self, cmd: str, privileged=False):
+        code, output = self.raw_container.exec_run(cmd, privileged=privileged) # type:ignore
+        print("Command: ", cmd, "\nCode: ", code, " Output: ", output)

@@ -6,6 +6,7 @@ from entities.network import Network
 from repos.app_settings_repo import AppSettingsRepo
 from repos.available_client_repo import AvailableClientRepo
 from repos.container_repo import ContainerRepo
+from version import PROXY_DOCKER_IMAGE_TAG
 
 
 # DockerService

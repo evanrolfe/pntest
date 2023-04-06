@@ -8,6 +8,7 @@ from docker.types.services import Mount
 from PyQt6 import QtCore
 
 from entities.container import Container
+from entities.network import Network
 from lib.utils import get_local_ip_addr, is_test_env
 from version import PROXY_DOCKER_IMAGE
 
@@ -80,6 +81,40 @@ class ContainerRepo(QtCore.QObject):
 
         return len(pntest_proxy_images) > 0
 
+    def run_gateway_container(self, network: Network) -> Container:
+        if self.docker is None:
+            raise Exception("docker is not available!")
+
+        proxy_host_config = self.docker.api.create_host_config(
+            port_bindings={8092: ('0.0.0.0', 8092), 8093: ('0.0.0.0', 8093)},
+            privileged=True,
+            sysctls={
+                'net.ipv4.conf.all.send_redirects': 0,
+                'net.ipv4.ip_forward': 1,
+                'net.ipv6.conf.all.forwarding': 1
+            }
+        )
+
+        opts = {}
+        opts[network.name] = self.docker.api.create_endpoint_config()
+        proxy_networking_config = self.docker.api.create_networking_config(opts)
+
+        raw_container = self.docker.api.create_container(
+            PROXY_DOCKER_IMAGE,
+            None,
+            ports=[8092,8093],
+            host_config=proxy_host_config,
+            networking_config=proxy_networking_config,
+        )
+        container_id = raw_container['Id']
+        self.docker.api.start(container_id)
+
+        raw_container = self.docker.containers.get(container_id)
+        gateway_container = self.__raw_container_to_container(raw_container)
+        print(f'Started gateway container: {gateway_container.short_id}')
+
+        return gateway_container
+
     # Starts a proxy container, then restarts the inputted container with its network set to the proxy
     # returns the newly restarted intercepted container and the proxy container instance.
     # TODO: Maybe this should just accept client, so its not "primitive obsession"...
@@ -144,6 +179,8 @@ class ContainerRepo(QtCore.QObject):
 
         if len(networks) == 0:
             host_name = ''
+            ip = ''
+            gateway = ''
         else:
             docker_compose_host = raw_container.attrs['Config']['Labels'].get('com.docker.compose.service')
             network_aliases = raw_container.attrs['NetworkSettings']['Networks'].get(networks[0], {}).get('Aliases')
@@ -153,6 +190,9 @@ class ContainerRepo(QtCore.QObject):
                 host_name = network_aliases[0]
             else:
                 host_name = 'unknown'
+
+            ip = raw_container.attrs['NetworkSettings']['Networks'].get(networks[0], {}).get('IPAddress')
+            gateway = raw_container.attrs['NetworkSettings']['Networks'].get(networks[0], {}).get('Gateway')
 
         # print(json.dumps(raw_container.attrs))
         return Container(
@@ -164,7 +204,9 @@ class ContainerRepo(QtCore.QObject):
             image=raw_container.attrs['Config']['Image'],
             networks=networks,
             raw_container=raw_container,
-            host_name=host_name
+            host_name=host_name,
+            ip= ip,
+            gateway= gateway,
         )
 
     # def close_container(self, container: Container):
