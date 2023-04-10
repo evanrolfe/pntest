@@ -85,14 +85,21 @@ class ContainerRepo(QtCore.QObject):
         if self.docker is None:
             raise Exception("docker is not available!")
 
+        # port_bindings={8092: ('0.0.0.0', 8092), 8093: ('0.0.0.0', 8093)}
         proxy_host_config = self.docker.api.create_host_config(
-            port_bindings={8092: ('0.0.0.0', 8092), 8093: ('0.0.0.0', 8093)},
+            # port_bindings=port_bindings,
             privileged=True,
             sysctls={
                 'net.ipv4.conf.all.send_redirects': 0,
                 'net.ipv4.ip_forward': 1,
                 'net.ipv6.conf.all.forwarding': 1
-            }
+            },
+            # binds={
+            #     '/Users/evan/Code/pntest/src/mitmproxy': {
+            #         'bind': '/app/mitmproxy',
+            #         'mode': 'rw',
+            #     },
+            # }
         )
 
         opts = {}
@@ -102,9 +109,10 @@ class ContainerRepo(QtCore.QObject):
         raw_container = self.docker.api.create_container(
             PROXY_DOCKER_IMAGE,
             None,
-            ports=[8092,8093],
+            # ports=list(port_bindings.keys()),
             host_config=proxy_host_config,
             networking_config=proxy_networking_config,
+            # volumes=['/app/mitmproxy']
         )
         container_id = raw_container['Id']
         self.docker.api.start(container_id)

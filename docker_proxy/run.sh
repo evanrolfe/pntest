@@ -13,6 +13,6 @@ iptables -t nat -A PREROUTING -i eth0 -p udp --dport 53 -j REDIRECT --to-port $P
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 # while true; do sleep 1000; done
-mitmweb -p $PROXY_PORT --web-port $WEB_UI_PORT --web-host 0.0.0.0 --mode transparent --showhost &
+mitmdump -s /app/mitmproxy/addon.py -p $PROXY_PORT --mode transparent - --client-id $CLIENT_ID --zmq-server $ZMQ_SERVER &
 mitmweb --web-port $WEB_UI_PORT_DNS --web-host 0.0.0.0 --mode dns@$PROXY_PORT_DNS &
 wait

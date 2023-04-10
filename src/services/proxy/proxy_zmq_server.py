@@ -1,11 +1,15 @@
 from __future__ import annotations
-from PyQt6 import QtCore, QtWidgets
-import zmq
+
 import sys
+
 import simplejson as json
-from entities.project_settings import ProjectSettings
+import zmq
+from PyQt6 import QtCore, QtWidgets
+
 from entities.http_flow import HttpFlow
-from mitmproxy.common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
+from entities.project_settings import ProjectSettings
+from mitmproxy.common_types import (ProxyRequest, ProxyResponse,
+                                    ProxyWebsocketMessage)
 
 PROXY_ZMQ_PORT = 5556
 

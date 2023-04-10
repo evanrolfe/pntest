@@ -21,6 +21,7 @@ class ProxyRequest(TypedDict):
     type: str
     client_id: int
     intercepted: bool
+    source_ip: str
 
 class ProxyResponse(TypedDict):
     http_version: str

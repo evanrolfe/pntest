@@ -6,16 +6,22 @@ Run as follows: mitmproxy -s anatomy.py
 import os
 import pathlib
 import signal
-import zmq
-from typing import Any, cast, Optional
-import simplejson as json
-import time
 import threading
-from mitmproxy.http import Headers, Response as MitmResponse, HTTPFlow as MitmHTTPFlow
+import time
+from argparse import ArgumentParser
+from sys import argv
+from typing import Any, Optional, cast
+
+import simplejson as json
+import zmq
 from common_types import ProxyRequest, ProxyResponse, ProxyWebsocketMessage
 from home_page_html import HOME_PAGE_HTML
-from sys import argv
-from argparse import ArgumentParser
+
+from mitmproxy.connection import Client
+from mitmproxy.http import Headers
+from mitmproxy.http import HTTPFlow as MitmHTTPFlow
+from mitmproxy.http import Response as MitmResponse
+from mitmproxy.proxy.server_hooks import ServerConnectionHookData
 
 TIMEOUT_AFTER_SECONDS_NO_POLL = 3
 
@@ -85,11 +91,11 @@ class ProxyEventsAddon:
         while True:
             sockets = dict(poll.poll(1000))
 
-            diff = int(time.time()) - last_poll_at
+            # diff = int(time.time()) - last_poll_at
             # If the src/__main__.py process has stopped, then the proxy should kill itself
-            if diff >= TIMEOUT_AFTER_SECONDS_NO_POLL:
-                print(f'[Proxy] last poll was {diff} secs ago! Shutting down..')
-                os.kill(os.getpid(), signal.SIGTERM)
+            # if diff >= TIMEOUT_AFTER_SECONDS_NO_POLL:
+            #     print(f'[Proxy] last poll was {diff} secs ago! Shutting down..')
+            #     os.kill(os.getpid(), signal.SIGTERM)
 
             if sockets:
                 message_raw = self.socket.recv()
@@ -182,8 +188,14 @@ class ProxyEventsAddon:
     # ---------------------------------------------------------------------------
     # MitmProxy Events:
     # ---------------------------------------------------------------------------
+    # def server_connect(self, data: ServerConnectionHookData):
+        # To forward localhost:8090 to 10.0.1.4:8090, this is i required:
+        # if data.server.address == ('10.0.1.2', 8090):
+        #     data.server.address = ('10.0.1.4', 8090)
+
     def request(self, flow: MitmHTTPFlow):
-        print('[Proxy] HTTP request')
+        print('[Proxy] HTTP request to ', flow.request.host, ':', flow.request.port)
+
         # The default homepage at http://pntest
         if flow.request.host == 'pntest':
             flow.response = MitmResponse.make(200, self.__proxy_home_page_html(), {"content-type": "text/html"})
@@ -191,12 +203,19 @@ class ProxyEventsAddon:
         if not self.should_request_be_captured(flow):
             return
 
+        source_ip = flow.client_conn.peername[0]
+        # source_port = flow.client_conn.peername[1]
+        # source_addr = source_host + ':' + str(source_port)
+        # destination_addr = flow.server_conn.peername
+
         request_state = cast(ProxyRequest, convert_dict_bytes_to_strings(flow.request.get_state()))
         request_state['flow_uuid'] = flow.id
         request_state['type'] = 'request'
         request_state['client_id'] = self.client_id
         request_state['intercepted'] = self.__should_intercept_request(flow)
         request_state['content'] = flow.request.text or ''
+        request_state['source_ip'] = source_ip
+
         # NOTE: WE have to re-write this when in docker_proxy because iptables intercepts this after the host
         # has been replaced with an ip address
         if flow.request.host_header:
