@@ -6,7 +6,7 @@ FROM python:3.11-slim
 WORKDIR /app
 ADD ./docker_proxy /app
 
-ENV CLIENT_ID=1
+ENV CLIENT_ID=0
 ENV ZMQ_SERVER=host.docker.internal:5556
 ENV PROXY_PORT=61782
 ENV PROXY_PORT_DNS=61783

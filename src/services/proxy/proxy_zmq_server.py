@@ -144,7 +144,7 @@ class ProxyZmqServerThread(QtCore.QObject):
             type = 'forward'
 
         message = {'type': type, 'flow': flow.serialize()}
-        self.socket.send_multipart([str(flow.client_id).encode(), json.dumps(message).encode()])
+        self.socket.send_multipart([str(flow.source_id).encode(), json.dumps(message).encode()])
 
     def forward_all(self):
         message = {'type': 'forward_all'}

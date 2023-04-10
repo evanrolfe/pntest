@@ -125,7 +125,7 @@ class RequestsTableModel(QtCore.QAbstractTableModel):
         if (column == 0):
             self.flows = sorted(self.flows, key=lambda flow: flow.id, reverse=reverse)
         elif (column == 1):
-            self.flows = sorted(self.flows, key=lambda flow: int(flow.client_id or 0), reverse=reverse)
+            self.flows = sorted(self.flows, key=lambda flow: int(flow.source_id or 0), reverse=reverse)
         elif (column == 2):
             self.flows = sorted(self.flows, key=lambda flow: flow.request.scheme, reverse=reverse)
         elif (column == 3):

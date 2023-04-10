@@ -48,7 +48,7 @@ class HttpFlowService():
     def save(self, flow: HttpFlow):
         # Set client_id from associated Client object
         if flow.client is not None:
-            flow.client_id = flow.client.id
+            flow.source_id = str(flow.client.id)
 
         # Set request_id from associated HttpRequest object and save
         HttpRequestRepo().save(flow.request)
@@ -123,7 +123,7 @@ class HttpFlowService():
         responses_by_id: dict[int, HttpResponse] = self.__index_models_by_id(responses)
 
         # Pre-load associated clients
-        client_ids = [flow.client_id for flow in http_flows if flow.client_id is not None]
+        client_ids = [int(flow.source_id) for flow in http_flows if flow.source_id and flow.source_type == HttpFlow.SOURCE_TYPE_CLIENT]
         client_ids_uniq = list(set(client_ids))
         clients = ClientRepo().find_by_ids(client_ids_uniq)
         clients_by_id: dict[int, Client] = self.__index_models_by_id(clients)
@@ -158,8 +158,8 @@ class HttpFlowService():
             if http_flow.original_response_id is not None:
                 http_flow.original_response = responses_by_id.get(http_flow.original_response_id)
 
-            if http_flow.client_id is not None:
-                http_flow.client = clients_by_id.get(http_flow.client_id)
+            if http_flow.source_id and http_flow.source_type == HttpFlow.SOURCE_TYPE_CLIENT:
+                http_flow.client = clients_by_id.get(int(http_flow.source_id))
 
             examples = example_flows_by_id.get(http_flow.id)
             if examples:

@@ -1,16 +1,17 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from dataclasses import field
 
+from dataclasses import dataclass, field
 from typing import Any, Optional
+
 from entities.client import Client
 from entities.http_request import HttpRequest
 from entities.http_response import HttpResponse
-from entities.websocket_message import WebsocketMessage
 from entities.model import Model
+from entities.websocket_message import WebsocketMessage
 from lib.background_worker import WorkerSignals
 from lib.http_request import HttpRequest as HttpRequestLib
 from mitmproxy.common_types import ProxyRequest
+
 
 @dataclass(kw_only=True)
 class HttpFlow(Model):
@@ -19,7 +20,8 @@ class HttpFlow(Model):
     created_at: int = field(init=False, default=0)
 
     uuid: Optional[str] = None
-    client_id: Optional[int] = None
+    source_id: Optional[str] = None
+    source_type: Optional[str] = None
     type: str
     title: Optional[str] = None
     request_id: int = 0 # TODO: Maybe this should be handled in the same way that id is handled?
@@ -59,6 +61,9 @@ class HttpFlow(Model):
     TYPE_EDITOR_EXAMPLE = 'editor_example'
     TYPE_EDITOR_FUZZ = 'editor_fuzz'
 
+    SOURCE_TYPE_CLIENT = 'client'
+    SOURCE_TYPE_IP = 'ip'
+
     @classmethod
     def build_blank_for_editor(cls, type: str):
         request = HttpRequest.build_blank_for_editor()
@@ -72,9 +77,19 @@ class HttpFlow(Model):
     def from_proxy_request(cls, proxy_request: ProxyRequest):
         request = HttpRequest.from_state(proxy_request)
 
+        if proxy_request['client_id'] > 0:
+            source_id = str(proxy_request['client_id'])
+            source_type = cls.SOURCE_TYPE_CLIENT
+
+            print("--------> source id:", source_id)
+        else:
+            source_id = proxy_request['source_ip']
+            source_type = cls.SOURCE_TYPE_IP
+
         return HttpFlow(
             uuid = proxy_request['flow_uuid'],
-            client_id = proxy_request['client_id'],
+            source_id = source_id,
+            source_type = source_type,
             request_id = request.id,
             type = HttpFlow.TYPE_PROXY,
             request = request,
@@ -143,7 +158,7 @@ class HttpFlow(Model):
         if self.client is not None:
             client_col = self.client.title
         else:
-            client_col = self.client_id
+            client_col = self.source_id
 
         return [
             self.id,
